@@ -1,0 +1,5 @@
+<!ELEMENT screen (ANY*)>
+        <!ELEMENT button (ANY*)>
+        <!ATTLIST button border #IMPLIED>
+        <!ATTLIST button id #IMPLIED>
+        <!ATTLIST button layout #REQUIRED>

@@ -1,0 +1,15 @@
+{
+  "cover_json": {
+    "import": "cubecraft:behavior/block.json",
+    "replacement": [
+      {
+        "from": "#culling",
+        "to": "solid_or_equals"
+      },
+      {
+        "from": "#layer",
+        "to": "cubecraft:transparent_block"
+      }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "used_textures": [
+    "#texture"
+  ],
+  "models": [
+    {
+      "statement": "default",
+      "offset": [0, 0, 0],
+      "rotation": [90, 0, 0, 0, 2.5, 0],
+      "components": [
+        {
+          "id": "humanoid_left_arm",
+          "type": "cube",
+          "render_type": "#render_type",
+          "start": [0, 0, 0],
+          "end": [0.75,0.25,0.75],
+          "faces": {
+            "top": {
+              "id": "cubecraft:cube_0",
+              "texture": "#texture",
+              "uv": [0, 1, 0, 1]
+            },
+            "bottom": {
+              "id": "cubecraft:cube_1",
+              "texture": "#texture",
+              "uv": [0, 1, 0, 1]
+            },
+            "left": {
+              "id": "cubecraft:cube_2",
+              "texture": "#texture",
+              "uv": [0, 1, 0, 1]
+            },
+            "right": {
+              "id": "cubecraft:cube_3",
+              "texture": "#texture",
+              "uv": [0, 1, 0, 1]
+            },
+            "front": {
+              "id": "cubecraft:cube_4",
+              "texture": "#texture",
+              "uv": [0, 1, 0, 1]
+            },
+            "back": {
+              "id": "cubecraft:cube_5",
+              "texture": "#texture",
+              "uv": [0, 1, 0, 1]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

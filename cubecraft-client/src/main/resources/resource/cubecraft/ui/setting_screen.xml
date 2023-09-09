@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<faml ext="cubecraft_ui">
+    <meta>
+        <type>image-bg-blur-mask</type>
+        <id>cubecraft:setting_screen</id>
+    </meta>
+    <elements>
+        <element type="topbar" id="top">
+            <layout type="flow">
+                <type>top</type>
+                <layout>[24,0]</layout>
+
+            </layout>
+            <text type="lang" color="ffffff" align="middle">option.title</text>
+        </element>
+        <element type="panel" id="setting_list_bg">
+            <layout type="origin">
+                <layout>[0,24,240,300]</layout>
+                <type>left_top</type>
+                <border>[16,16,16,16]</border>
+                <scale>[false,false,false,false]</scale>
+            </layout>
+            <elements>
+                <element type="label" id="search_title">
+                    <layout type="origin">
+                        <layout>[0,16,0,12]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,0,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.title</text>
+                </element>
+                <element type="card_panel" style="invisible" id="_setting:video">
+                    <layout type="origin">
+                        <layout>[0,40,0,25]</layout>
+                        <type>left_top</type>
+                        <border>[24,24,4,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="title">
+                            <layout type="origin">
+                                <layout>[22,6,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="lang" color="ffffff" align="left">option.video</text>
+                        </element>
+                        <element type="label" id="icon">
+                            <layout type="origin">
+                                <layout>[4,4,0,13]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="icon" color="dddddd" align="left">E714</text>
+                        </element>
+                    </elements>
+                </element>
+                <element type="card_panel" style="invisible" id="_setting:control">
+                    <layout type="origin">
+                        <layout>[0,60,0,25]</layout>
+                        <type>left_top</type>
+                        <border>[24,24,4,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="title">
+                            <layout type="origin">
+                                <layout>[22,6,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="lang" color="ffffff" align="left">option.control</text>
+                        </element>
+                        <element type="label" id="icon">
+                            <layout type="origin">
+                                <layout>[4,4,0,13]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="icon" color="dddddd" align="left">E765</text>
+                        </element>
+                    </elements>
+                </element>
+                <element type="card_panel" style="invisible" id="_setting:audio">
+                    <layout type="origin">
+                        <layout>[0,80,0,25]</layout>
+                        <type>left_top</type>
+                        <border>[24,24,4,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="title">
+                            <layout type="origin">
+                                <layout>[22,6,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="lang" color="ffffff" align="left">option.audio</text>
+                        </element>
+                        <element type="label" id="icon">
+                            <layout type="origin">
+                                <layout>[4,4,0,13]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="icon" color="dddddd" align="left">E767</text>
+                        </element>
+                    </elements>
+                </element>
+                <element type="card_panel" style="invisible" id="_setting:resource_pack">
+                    <layout type="origin">
+                        <layout>[0,100,0,25]</layout>
+                        <type>left_top</type>
+                        <border>[24,24,4,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="title">
+                            <layout type="origin">
+                                <layout>[22,6,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="lang" color="ffffff" align="left">option.resource_pack</text>
+                        </element>
+                        <element type="label" id="icon">
+                            <layout type="origin">
+                                <layout>[4,4,0,13]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="icon" color="dddddd" align="left">EC50</text>
+                        </element>
+                    </elements>
+                </element>
+                <element type="card_panel" style="invisible" id="_setting:mod">
+                    <layout type="origin">
+                        <layout>[0,120,0,25]</layout>
+                        <type>left_top</type>
+                        <border>[24,24,4,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="title">
+                            <layout type="origin">
+                                <layout>[22,6,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="lang" color="ffffff" align="left">option.mod</text>
+                        </element>
+                        <element type="label" id="icon">
+                            <layout type="origin">
+                                <layout>[4,4,0,13]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="icon" color="dddddd" align="left">E7B8</text>
+                        </element>
+                    </elements>
+                </element>
+                <element type="card_panel" style="invisible" id="_setting:language">
+                    <layout type="origin">
+                        <layout>[0,140,0,25]</layout>
+                        <type>left_top</type>
+                        <border>[24,24,4,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="title">
+                            <layout type="origin">
+                                <layout>[22,6,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="lang" color="ffffff" align="left">option.language</text>
+                        </element>
+                        <element type="label" id="icon">
+                            <layout type="origin">
+                                <layout>[4,4,0,13]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="icon" color="dddddd" align="left">E775</text>
+                        </element>
+                    </elements>
+                </element>
+                <element type="card_panel" style="invisible" id="_setting:about">
+                    <layout type="origin">
+                        <layout>[0,160,0,25]</layout>
+                        <type>left_top</type>
+                        <border>[24,24,4,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="title">
+                            <layout type="origin">
+                                <layout>[22,6,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="lang" color="ffffff" align="left">option.about</text>
+                        </element>
+                        <element type="label" id="icon">
+                            <layout type="origin">
+                                <layout>[4,4,0,13]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="icon" color="dddddd" align="left">EA1F</text>
+                        </element>
+                    </elements>
+                </element>
+
+                <element type="scroll_panel" id="setting_list" yMin="-128" yMax="0" horizontalEnabled="false">
+                    <layout type="origin">
+                        <layout>[0,0,0,0]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,40,70]</border>
+                        <scale>[true,true,true,true]</scale>
+                    </layout>
+                    <elements>
+                    </elements>
+                </element>
+                <element type="button" id="confirm">
+                    <layout type="origin">
+                        <layout>[0,4,0,30]</layout>
+                        <type>middle_bottom</type>
+                        <border>[20,20,4,4]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.button.confirm</text>
+                </element>
+                <element type="button" id="discard">
+                    <layout type="origin">
+                        <layout>[0,32,122,30]</layout>
+                        <type>left_bottom</type>
+                        <border>[20,20,4,4]</border>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.button.quit</text>
+                </element>
+                <element type="button" id="apply">
+                    <layout type="origin">
+                        <layout>[0,32,0,30]</layout>
+                        <type>middle_bottom</type>
+                        <border>[20,20,4,4]</border>
+                        <scale>[false,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.button.apply</text>
+                </element>
+            </elements>
+        </element>
+        <element type="panel" id="about">
+            <layout type="origin">
+                <layout>[240,24,180,210]</layout>
+                <scale>[false,true,true,false]</scale>
+                <type>left_top</type>
+                <border>[0,16,16,16]</border>
+            </layout>
+            <elements>
+                <element type="label" id="about_title">
+                    <layout type="origin">
+                        <layout>[0,16,0,12]</layout>
+                        <type>left_top</type>
+                        <scale>[false,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.about</text>
+                </element>
+                <element type="scroll_panel" id="about_panel" yMin="0" yMax="0" horizontalEnabled="false">
+                    <layout type="origin">
+                        <layout>[0,0,0,0]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,40,20]</border>
+                        <scale>[true,true,true,true]</scale>
+                    </layout>
+                    <elements>
+                        <element type="label" id="about_1">
+                            <layout type="origin">
+                                <layout>[8,8,0,12]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">Cubecraft-alpha0.2.5</text>
+                        </element>
+                        <element type="label" id="about_11">
+                            <layout type="origin">
+                                <layout>[8,24,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">Author：GrassBlock2022</text>
+                        </element>
+                        <element type="label" id="about_12">
+                            <layout type="origin">
+                                <layout>[8,36,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">TechSupport：CubeVlmu</text>
+                        </element>
+                        <element type="label" id="about_13">
+                            <layout type="origin">
+                                <layout>[8,48,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">ArtDirect：HaoYu_Cai,Yakamo_QAQ</text>
+                        </element>
+
+                        <element type="label" id="about_2">
+                            <layout type="origin">
+                                <layout>[8,80,0,12]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">3rd-Libraries</text>
+                        </element>
+                        <element type="label" id="about_21">
+                            <layout type="origin">
+                                <layout>[8,96,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">whirvis:JRakNet(MIT)[https://github.com/whirvis/JRakNet]</text>
+                        </element>
+                        <element type="label" id="about_22">
+                            <layout type="origin">
+                                <layout>[8,108,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">netty:Netty-IO(Apache-2.0)[https://github.com/netty/netty]</text>
+                        </element>
+                        <element type="label" id="about_23">
+                            <layout type="origin">
+                                <layout>[8,120,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">lwjgl:LWJGL-3(BSD-3-clause)[https://github.com/LWJGL/lwjgl3]</text>
+                        </element>
+                        <element type="label" id="about_24">
+                            <layout type="origin">
+                                <layout>[8,132,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">iq80:LEVEL_DB(Apache License 2.0)[https://github.com/755472363/leveldb/]</text>
+                        </element>
+                        <element type="label" id="about_25">
+                            <layout type="origin">
+                                <layout>[8,144,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">JOML-CI:JOML(MIT)[https://github.com/JOML-CI/JOML]</text>
+                        </element>
+                        <element type="label" id="about_26">
+                            <layout type="origin">
+                                <layout>[8,156,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">Google:gson(Apache-2.0)[https://github.com/google/gson]</text>
+                        </element>
+                        <element type="label" id="about_27">
+                            <layout type="origin">
+                                <layout>[8,168,0,8]</layout>
+                                <type>left_top</type>
+                            </layout>
+                            <text type="raw" color="ffffff" align="left">(And other libraries not mentioned...)</text>
+                        </element>
+                    </elements>
+                </element>
+            </elements>
+        </element>
+        <element_factory type="panel" id="video">
+            <layout type="origin">
+                <layout>[240,24,180,210]</layout>
+                <scale>[false,true,true,false]</scale>
+                <type>left_top</type>
+                <border>[0,16,16,16]</border>
+            </layout>
+            <elements>
+                <element type="label" id="video_title">
+                    <layout type="origin">
+                        <layout>[0,16,0,12]</layout>
+                        <type>left_top</type>
+
+                        <scale>[false,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.video</text>
+                </element>
+                <element type="scroll_panel" id="video_panel" yMin="0" yMax="0" horizontalEnabled="false">
+                    <layout type="origin">
+                        <layout>[0,0,0,0]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,40,20]</border>
+                        <scale>[true,true,true,true]</scale>
+                    </layout>
+                    <elements>
+
+                    </elements>
+                </element>
+            </elements>
+        </element_factory>
+        <element_factory type="panel" id="control">
+            <layout type="origin">
+                <layout>[240,24,180,210]</layout>
+                <scale>[false,true,true,false]</scale>
+                <type>left_top</type>
+                <border>[0,16,16,16]</border>
+            </layout>
+            <elements>
+                <element type="label" id="video_title">
+                    <layout type="origin">
+                        <layout>[0,16,0,12]</layout>
+                        <type>left_top</type>
+
+                        <scale>[false,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.video</text>
+                </element>
+                <element type="scroll_panel" id="video_panel" yMin="0" yMax="0" horizontalEnabled="false">
+                    <layout type="origin">
+                        <layout>[0,0,0,0]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,40,20]</border>
+                        <scale>[true,true,true,true]</scale>
+                    </layout>
+                    <elements>
+
+                    </elements>
+                </element>
+            </elements>
+        </element_factory>
+        <element_factory type="panel" id="audio">
+            <layout type="origin">
+                <layout>[240,24,180,210]</layout>
+                <scale>[false,true,true,false]</scale>
+                <type>left_top</type>
+                <border>[0,16,16,16]</border>
+            </layout>
+            <elements>
+                <element type="label" id="video_title">
+                    <layout type="origin">
+                        <layout>[0,16,0,12]</layout>
+                        <type>left_top</type>
+
+                        <scale>[false,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">option.video</text>
+                </element>
+                <element type="scroll_panel" id="video_panel" yMin="0" yMax="0" horizontalEnabled="false">
+                    <layout type="origin">
+                        <layout>[0,0,0,0]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,40,20]</border>
+                        <scale>[true,true,true,true]</scale>
+                    </layout>
+                    <elements>
+
+                    </elements>
+                </element>
+            </elements>
+        </element_factory>
+    </elements>
+</faml>

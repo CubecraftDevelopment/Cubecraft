@@ -1,0 +1,25 @@
+{
+  "global": {
+    "fog_color": "DCE9F5",
+    "clear_color": "DCE9F5"
+  },
+  "renderers": [
+    {
+      "type": "cubecraft:chunk_renderer"
+    },
+    {
+      "type": "cubecraft:hud_renderer"
+    },
+    {
+      "type": "cubecraft:particle_renderer"
+    },
+    {
+      "type": "cubecraft:entity_renderer"
+    },
+    {
+      "type": "cubecraft:sky_box_renderer"
+    }
+  ]
+}
+
+

@@ -1,0 +1,30 @@
+[
+  {
+    "state": "default:normal",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:controls/slider.png",
+        "pos": [0,1,0.5,1]
+      },
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:controls/slider.png",
+        "pos": [0,8,0,8],
+        "pos_type": "rel",
+        "query_offset": true
+      },
+      {
+        "type": "font",
+        "binding": "slider:text",
+        "size": 8,
+        "line_offset": -4,
+        "pos": [0,0]
+      }
+    ]
+  }
+]

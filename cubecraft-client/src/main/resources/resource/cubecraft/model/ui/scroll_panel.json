@@ -1,0 +1,26 @@
+[
+  {
+    "state": "default",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:controls/internal_panel.png",
+        "pos": [0,1,0,1]
+      }
+    ]
+  },
+  {
+    "state": "default:ore_ui",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:controls/panel_ore_ui.png",
+        "pos": [0,1,0,1]
+      }
+    ]
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "state": "default",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:controls/textbar.png",
+        "pos": [0,1,0,1]
+      },
+      {
+        "type": "font",
+        "binding": "default",
+        "size": 8,
+        "line_offset": -4,
+        "pos": [0.0,0.5]
+      },
+      {
+        "type": "font",
+        "binding": "cursor",
+        "size": 8,
+        "line_offset": -4,
+        "pos": [0.0,0.5]
+      }
+    ]
+  },
+  {
+    "state": "default:ore_ui",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:controls/textbar_ore_ui.png",
+        "pos": [0,1,0,1]
+      },
+      {
+        "type": "font",
+        "binding": "default",
+        "size": 8,
+        "line_offset": -4,
+        "pos": [0.0,0.5]
+      },
+      {
+        "type": "font",
+        "binding": "cursor",
+        "size": 8,
+        "line_offset": -4,
+        "pos": [0.0,0.5]
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "cubecraft:intro":{
+    "file": "cubecraft:/ui_animation/preset.lua",
+    "function": "intro",
+    "length": ""
+  },
+
+  "cubecraft:outro":{
+    "file": "cubecraft:/ui_animation/preset.lua",
+    "function": "outro",
+    "length": ""
+  }
+}

@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'io.flybirdStudio'
+version '1.0-SNAPSHOT'
+
+apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'ink.flybird:fcommon-main:1.0.3'
+    implementation 'io.netty:netty-all:4.1.90.Final'
+}
+

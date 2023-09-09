@@ -1,0 +1,20 @@
+[
+  {
+    "type":"zh-cn",
+    "display": "中文-简体",
+    "author": "GrassBlock2022",
+    "file": "cubecraft:chinese_simplified.lang"
+  },
+  {
+    "type":"en",
+    "display": "english-us",
+    "author": "GrassBlock2022",
+    "file": "cubecraft:english.lang"
+  },
+  {
+    "type":"starfish",
+    "display": "海星语言（简中）",
+    "author": "土拨鼠",
+    "file": "cubecraft:starfish.lang"
+  }
+]

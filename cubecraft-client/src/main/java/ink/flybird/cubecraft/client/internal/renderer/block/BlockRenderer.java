@@ -1,0 +1,58 @@
+package ink.flybird.cubecraft.client.internal.renderer.block;
+
+import com.google.gson.JsonObject;
+import ink.flybird.cubecraft.client.render.renderer.IBlockRenderer;
+import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.fcommon.container.Vector3;
+import ink.flybird.fcommon.registry.RegisteredConstructor;
+import ink.flybird.fcommon.registry.TypeItem;
+import io.flybird.cubecraft.world.IWorld;
+import io.flybird.cubecraft.world.block.EnumFacing;
+import io.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.quantum3d.draw.VertexBuilder;
+
+import java.util.Objects;
+import java.util.Set;
+
+@TypeItem("cubecraft:block")
+public final class BlockRenderer implements IBlockRenderer {
+    private final ImageResource texture;
+    private final String layer;
+
+    public BlockRenderer(ImageResource tex, String layer) {
+        this.texture = tex;
+        this.layer = layer;
+    }
+
+    @RegisteredConstructor
+    public BlockRenderer(JsonObject json) {
+        this.texture = new ImageResource(json.get("texture").getAsString());
+        this.layer = json.get("layer").getAsString();
+    }
+
+    @Override
+    public void renderBlock(IBlockAccess blockAccess, String layer, IWorld world, double renderX, double renderY, double renderZ, VertexBuilder builder) {
+        long x = blockAccess.getX();
+        long y = blockAccess.getY();
+        long z = blockAccess.getZ();
+        if (!Objects.equals(layer, this.layer)) {
+            return;
+        }
+        for (int face = 0; face < 6; face++) {
+            if (this.shouldRender(face, blockAccess, world, x, y, z)) {
+                IBlockRenderer.renderFace(face, this.texture.getAbsolutePath(), builder, world, x, y, z, renderX, renderY, renderZ);
+            }
+        }
+    }
+
+    public boolean shouldRender(int current, IBlockAccess blockAccess, IWorld world, long x, long y, long z) {
+        Vector3<Long> pos = EnumFacing.findNear(x, y, z, 1, EnumFacing.clip(blockAccess.getBlockFacing().getNumID(), current));
+        IBlockAccess near = world.getBlockAccess(pos.x(), pos.y(), pos.z());
+        return !near.getBlock().isSolid();
+    }
+
+    @Override
+    public void initializeRenderer(Set<ImageResource> textureList) {
+        textureList.add(this.texture);
+    }
+}

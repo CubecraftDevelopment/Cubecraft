@@ -1,0 +1,11 @@
+{
+  "cover_json": {
+    "import": "cubecraft:behavior/solid.json",
+    "replacement": [
+      {
+        "from": "#texture",
+        "to": "cubecraft:/block/fallback.png"
+      }
+    ]
+  }
+}

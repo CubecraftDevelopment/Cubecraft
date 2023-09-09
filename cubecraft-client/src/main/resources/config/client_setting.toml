@@ -1,0 +1,25 @@
+[render]
+max_fps = 1145
+vsync = false
+fullscreen = false
+vertex_build_mode = 1
+fxaa=0
+
+[gui]
+scale = 2
+skip_studio_logo = true
+
+[chunk_renderer]
+render_dist = 8
+max_update = 16
+use_vbo = false
+sort_chunk = true
+occlusion_culling = false
+frustum_culling = true
+classic_lighing = true
+smooth_liging = false
+
+[cloud_renderer]
+enabled = true
+blocky = true
+blend = true

@@ -1,0 +1,70 @@
+# content
+button.confirm=Confirm
+button.back=Back
+
+# main screen
+title_screen.button.singleplayer=SinglePlayer
+title_screen.button.multiplayer=MultiPlayer
+title_screen.button.setting=Option
+title_screen.button.quit=Quit
+title_screen.version=Cubecraft-%s(Mod:%d)
+title_screen.auth=CurrentAccount：%s
+
+
+# pause screen
+pause_screen.title=GamePaused
+pause_screen.button.back_to_game=BackToGame
+pause_screen.button.option=option
+pause_screen.button.achievement=Achievement
+pause_screen.button.open_to_net=OpenToLAN
+pause_screen.button.save_and_quit=Quit
+
+#option screen
+option.title=Option
+option.video=Video
+option.control=Control
+option.other=Others
+option.audio=Video
+option.resource_pack=ResourcePacks
+option.about=About
+option.language=Language
+option.mod=Mods
+option.confirm=Confirm
+option.apply=Apply
+option.quit=Cansel
+option.apply.title=ApplySuccess
+option.apply.subtitle=changes successfully applied.
+
+# update check
+version_check.exception.title=CannotCheck
+version_check.exception.subtitle=please connect to net and retry.
+version_check.unknown_client.title=UnknownClient
+version_check.unknown_client.subtitle=Unknown client version：%s。
+version_check.unknown_remote.title=UnknownRemote
+version_check.unknown_remote.subtitle=Unknown remote version：%s。
+version_check.latest.title=LatestVersion
+version_check.latest.subtitle=your game is at latest version：%s。
+version_check.require.title=NeedUpdate
+version_check.require.subtitle=current：%s，latest:%s。
+
+# singleplayer
+singleplayer.title=SinglePlayer
+singleplayer.button.join=JoinWorld
+singleplayer.button.create=CreateWorld
+singleplayer.button.delete=DeleteWorld
+singleplayer.button.option=WorldOption
+singleplayer.search_world=Search...
+
+# multiplayer
+multiplayer.search_server=Search...
+multiplayer.title=MultiPlayer
+multiplayer.button.join=JoinServer
+multiplayer.button.create=AddServer
+multiplayer.button.delete=DeleteServer
+
+join_singleplayer.before_server_init=Waiting for server init...
+join_singleplayer.server_init=Starting server...
+join_singleplayer.server_load=Loading world...
+join_singleplayer.connect=Joining World...
+join_singleplayer.finish=Go！
+

@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+group 'ink.flybird'
+version '1.0-SNAPSHOT'
+
+apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:24.0.1'
+    implementation 'org.joml:joml:1.10.5'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.iq80.leveldb:leveldb:0.12'
+    implementation 'io.netty:netty-all:4.1.90.Final'
+    implementation 'ink.flybird:fcommon-main:1.0.3'
+
+    implementation project(":cubecraft-core")
+    implementation project(":JRakNet")
+}

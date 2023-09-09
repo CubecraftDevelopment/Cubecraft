@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<faml ext="cubecraft_ui">
+    <meta>
+        <type>image-bg-blur-mask</type>
+        <id>cubecraft:connection_screen</id>
+    </meta>
+    <elements>
+        <circlewaiting id="wait">
+            <layout type="origin">
+                <layout>[16,-30,24,24]</layout>
+                <type>left_bottom</type>
+                <border>[0,0,0,0]</border>
+            </layout>
+        </circlewaiting>
+        <label id="statement">
+            <layout type="origin">
+                <layout>[50,-40,0,16]</layout>
+                <type>left_bottom</type>
+                <border>[0,0,0,0]</border>
+            </layout>
+            <text type="lang" color="ffffff" align="left">_init_</text>
+        </label>
+        <label id="reason">
+            <layout type="origin">
+                <layout>[50,-30,0,6]</layout>
+                <type>left_bottom</type>
+                <border>[0,0,0,0]</border>
+            </layout>
+            <text type="lang" color="ffffff" align="left">_init_</text>
+        </label>
+    </elements>
+</faml>

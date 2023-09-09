@@ -1,0 +1,13 @@
+{
+  "mod": {
+    "id": "cubecraft_internal_client",
+    "mod_type": "integrated",
+    "main_class": "io.flybird.cubecraft.client.internal.ClientInternalMod",
+    "auto_register_namespace": "cubecraft"
+  },
+  "desc": {
+    "name": "Cubecraft Client Integrated Content",
+    "author" : "GrassBlock2022",
+    "website": "http://flybird.ink"
+  }
+}

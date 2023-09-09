@@ -1,0 +1,8 @@
+{
+  "vert_shaders": [
+    "cubecraft:post/full_screen_cover.glsl"
+  ],
+  "frag_shaders": [
+    "cubecraft:fxaa.glsl"
+  ]
+}

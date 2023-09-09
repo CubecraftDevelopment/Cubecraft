@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<screen bg="in-game-mask" id="cubecraft:pause_screen">
+    <text type="lang" layout="origin/middle_middle,0,-105,0,16" color="ffffff" align="middle">
+        pause_screen.title
+    </text>
+    <button layout="origin/middle_middle,0,-60,300,30" border="0,0,0,4" id="button_resume">
+        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+            pause_screen.button.resume
+        </text>
+    </button>
+    <button layout="origin/middle_middle,0,-30,300,30" border="0,0,0,4" id="button_option">
+        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+            pause_screen.button.option
+        </text>
+    </button>
+    <button layout="origin/middle_middle,-75,0,150,30" border="0,4,0,4" id="button_advancement">
+        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+            pause_screen.button.advancement
+        </text>
+    </button>
+    <button layout="origin/middle_middle,75,0,150,30" border="4,0,0,4" id="button_open_to_net">
+        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+            pause_screen.button.open_to_net
+        </text>
+    </button>
+    <button layout="origin/middle_middle,0,30,300,30" border="0,0,0,4" id="button_quit">
+        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+            pause_screen.button.quit
+        </text>
+    </button>
+</screen>

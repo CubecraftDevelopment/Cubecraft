@@ -1,0 +1,92 @@
+{
+  "windows/arm64": {
+    "dest_prefix": "/windows/arm64/org/lwjgl",
+    "local_prefix": "/windows_arm64",
+    "download_prefix": "https://build.lwjgl.org/stable/windows/arm64/",
+    "files": {
+      "/lwjgl.dll": "/lwjgl.dll",
+      "/glfw/glfw.dll": "/glfw.dll",
+      "/opengl/lwjgl_opengl.dll": "/lwjgl_opengl.dll",
+      "/openal/openAL.dll": "/openAL.dll"
+    }
+  },
+  "windows/x86": {
+    "dest_prefix": "/windows/x86/org/lwjgl",
+    "local_prefix": "/windows_x86",
+    "download_prefix": "https://build.lwjgl.org/stable/windows/x86/",
+    "files": {
+      "/lwjgl.dll": "/lwjgl.dll",
+      "/glfw/glfw.dll": "/glfw.dll",
+      "/opengl/lwjgl_opengl.dll": "/lwjgl_opengl.dll",
+      "/openal/openAL.dll": "/openAL.dll"
+    }
+  },
+  "windows/x64": {
+    "dest_prefix": "/windows/x64/org/lwjgl",
+    "local_prefix": "/windows_x64",
+    "download_prefix": "https://build.lwjgl.org/stable/windows/x64/",
+    "files": {
+      "/lwjgl.dll": "/lwjgl.dll",
+      "/glfw/glfw.dll": "/glfw.dll",
+      "/opengl/lwjgl_opengl.dll": "/lwjgl_opengl.dll",
+      "/openal/openAL.dll": "/openAL.dll"
+    }
+  },
+  "macos/arm64": {
+    "dest_prefix": "/macos/arm64/org/lwjgl",
+    "local_prefix": "/macos_arm64",
+    "download_prefix": "https://build.lwjgl.org/stable/macos/arm64/",
+    "files": {
+      "/liblwjgl.dylib": "/liblwjgl.dylib",
+      "/glfw/libglfw.dylib": "/libglfw.dylib",
+      "/glfw/libglfw_async.dylib": "/libglfw_async.dylib",
+      "/opengl/liblwjgl_opengl.dylib": "/liblwjgl_opengl.dylib",
+      "/openal/libopenal.dylib": "/libopenal.dylib"
+    }
+  },
+  "macos/x64": {
+    "dest_prefix": "/macos/x64/org/lwjgl",
+    "local_prefix": "/macos_x64",
+    "download_prefix": "https://build.lwjgl.org/stable/macos/x64/",
+    "files": {
+      "/liblwjgl.dylib": "/liblwjgl.dylib",
+      "/glfw/libglfw.dylib": "/libglfw.dylib",
+      "/glfw/libglfw_async.dylib": "/libglfw_async.dylib",
+      "/opengl/liblwjgl_opengl.dylib": "/liblwjgl_opengl.dylib",
+      "/openal/libopenal.dylib": "/libopenal.dylib"
+    }
+  },
+  "linux/x64": {
+    "dest_prefix": "/linux/x64/org/lwjgl",
+    "local_prefix": "/linux_x64",
+    "download_prefix": "https://build.lwjgl.org/stable/linux/x64/",
+    "files": {
+      "/liblwjgl.so": "/liblwjgl.so",
+      "/glfw/libglfw.so": "/libglfw.so",
+      "/opengl/liblwjgl_opengl.so": "/liblwjgl_opengl.so",
+      "/openal/libopenal.so": "/libopenal.so"
+    }
+  },
+  "linux/arm32": {
+    "dest_prefix": "/linux/arm32/org/lwjgl",
+    "local_prefix": "/linux_arm32",
+    "download_prefix": "https://build.lwjgl.org/stable/linux/arm32/",
+    "files": {
+      "/liblwjgl.so": "/liblwjgl.so",
+      "/glfw/libglfw.so": "/libglfw.so",
+      "/opengl/liblwjgl_opengl.so": "/liblwjgl_opengl.so",
+      "/openal/libopenal.so": "/libopenal.so"
+    }
+  },
+  "linux/arm64": {
+    "dest_prefix": "/linux/arm64/org/lwjgl",
+    "local_prefix": "/linux_arm64",
+    "download_prefix": "https://build.lwjgl.org/stable/linux/arm64/",
+    "files": {
+      "/liblwjgl.so": "/liblwjgl.so",
+      "/glfw/libglfw.so": "/libglfw.so",
+      "/opengl/liblwjgl_opengl.so": "/liblwjgl_opengl.so",
+      "/openal/libopenal.so": "/libopenal.so"
+    }
+  }
+}

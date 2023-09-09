@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<faml ext="cubecraft_ui">
+    <meta>
+        <type>image-bg-blur</type>
+        <id>cubecraft:join_sing_player_screen</id>
+    </meta>
+    <elements>
+        <circlewaiting id="wait">
+            <layout type="origin">
+                <layout>[16,-30,24,24]</layout>
+                <type>left_bottom</type>
+                <border>[0,0,0,0]</border>
+            </layout>
+        </circlewaiting>
+        <label id="stage">
+            <layout type="origin">
+                <layout>[50,-32,0,16]</layout>
+                <type>left_bottom</type>
+                <border>[0,0,0,0]</border>
+            </layout>
+            <text type="lang" color="ffffff" align="left">awa</text>
+        </label>
+    </elements>
+</faml>

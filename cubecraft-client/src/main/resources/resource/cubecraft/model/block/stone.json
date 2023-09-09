@@ -1,0 +1,7 @@
+{
+  "type": "cubecraft:block",
+  "render_type": "alpha",
+  "culling": "solid",
+  "color": "none",
+  "texture": "cubecraft:/HDR_041_Path.hdr"
+}

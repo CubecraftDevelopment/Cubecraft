@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<faml ext="cubecraft_ui">
+    <meta>
+        <type>image-bg-blur-mask</type>
+        <id>cubecraft:multi_player_screen</id>
+    </meta>
+    <elements>
+        <element type="topbar" id="top">
+            <layout type="flow">
+                <type>top</type>
+                <layout>[24,0]</layout>
+                <border>[0,0,0,0]</border>
+            </layout>
+            <text type="lang" color="ffffff" align="middle">multiplayer.title</text>
+        </element>
+        <element type="panel" id="server_search_bg">
+            <layout type="origin">
+                <layout>[0,24,180,210]</layout>
+                <type>left_top</type>
+                <border>[16,16,16,16]</border>
+            </layout>
+            <elements>
+                <element type="label" id="search_title">
+                    <layout type="origin">
+                        <layout>[0,16,0,12]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,0,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">multiplayer.title</text>
+                </element>
+                <element type="textbar" id="server_search" limit="20">
+                    <layout type="origin">
+                        <layout>[0,32,0,24]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,0,0]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="aaaaaa" align="left">multiplayer.search_server</text>
+                </element>
+                <element type="button" id="join_server">
+                    <layout type="origin">
+                        <layout>[0,60,0,30]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,4,4]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">multiplayer.button.join</text>
+                </element>
+                <element type="button" id="create_server">
+                    <layout type="origin">
+                        <layout>[0,90,176,30]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,4,4]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">multiplayer.button.create</text>
+                </element>
+                <element type="button" id="delete_server">
+                    <layout type="origin">
+                        <layout>[0,120,176,30]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,4,4]</border>
+                        <scale>[true,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">multiplayer.button.delete</text>
+                </element>
+            </elements>
+        </element>
+        <element type="panel" id="server_list_bg">
+            <layout type="origin">
+                <layout>[180,24,180,210]</layout>
+                <scale>[false,true,true,false]</scale>
+                <type>left_top</type>
+                <border>[0,16,16,16]</border>
+            </layout>
+            <elements>
+                <element type="label" id="select_title">
+                    <layout type="origin">
+                        <layout>[0,16,0,12]</layout>
+                        <type>left_top</type>
+                        <border>[0,0,0,0]</border>
+                        <scale>[false,true,false,false]</scale>
+                    </layout>
+                    <text type="lang" color="ffffff" align="middle">multiplayer.select_server</text>
+                </element>
+                <element type="scroll_panel" id="server_list" yMin="-128" yMax="0" horizontalEnabled="false">
+                    <layout type="origin">
+                        <layout>[0,0,0,0]</layout>
+                        <type>left_top</type>
+                        <border>[20,20,40,20]</border>
+                        <scale>[true,true,true,true]</scale>
+                    </layout>
+                    <elements>
+                        <factory_element type="card_panel" id="server_list_factory">
+                            <layout type="origin">
+                                <layout>[0,0,0,50]</layout>
+                                <type>left_top</type>
+                                <border>[4,4,4,0]</border>
+                                <scale>[true,true,false,false]</scale>
+                            </layout>
+                            <text type="lang" color="ffffff" align="middle">multiplayer.button.join</text>
+                            <elements>
+                                <element type="label" id="title">
+                                    <layout type="origin">
+                                        <layout>[4,4,0,12]</layout>
+                                        <type>left_top</type>
+                                    </layout>
+                                    <text type="raw" color="ffffff" align="left">_Title_</text>
+                                </element>
+                                <element type="label" id="sub1">
+                                    <layout type="origin">
+                                        <layout>[4,20,0,6]</layout>
+                                        <type>left_top</type>
+                                    </layout>
+                                    <text type="raw" color="dddddd" align="left">_Subtitle1_</text>
+                                </element>
+                                <element type="label" id="sub2">
+                                    <layout type="origin">
+                                        <layout>[4,30,0,6]</layout>
+                                        <type>left_top</type>
+                                    </layout>
+                                    <text type="raw" color="dddddd" align="left">_Subtitle2_</text>
+                                </element>
+                            </elements>
+                        </factory_element>
+                    </elements>
+                </element>
+            </elements>
+        </element>
+    </elements>
+</faml>
+
