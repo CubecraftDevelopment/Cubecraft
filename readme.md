@@ -261,7 +261,7 @@ Don't forget to give the project a star! Thanks again!
 <hr>
 
 <h4 align="center">Cubecraft</h4>
-<h6 align="center">an artifact made by GrassBlock2022, owned by Proton Games</h6>
+<h6 align="center">artifact by GrassBlock2022, owned by FlybirdGames</h6>
 
 <h6 align="center">(The END)</h6>
 
