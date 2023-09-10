@@ -1,0 +1,24 @@
+# Please do NOT modify it or please refrense enum name from keymapping in quantum3d2.
+
+[cubecraft_player_moving]
+forward="KEY_W"
+backward="KEY_S"
+left="KEY_A"
+right="KEY_D"
+jump="KEY_SPACE"
+sneak="KEY_LSHIFT"
+run="KEY_LEFT_CONTROL"
+
+[cubecraft_player_inventory]
+slot_1="KEY_1"
+slot_2="KEY_2"
+slot_3="KEY_3"
+slot_4="KEY_4"
+slot_5="KEY_5"
+slot_6="KEY_6"
+slot_7="KEY_7"
+slot_8="KEY_8"
+slot_9="KEY_9"
+open_inv="KEY_E"
+swap_item="KEY_F"
+

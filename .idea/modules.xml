@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Cubecraft.iml" filepath="$PROJECT_DIR$/Cubecraft.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Quantum3D.iml" filepath="$PROJECT_DIR$/.idea/modules/Quantum3D.iml" />
       <module fileurl="file://$PROJECT_DIR$/Quantum3D-Native/Quantum3D-Native.iml" filepath="$PROJECT_DIR$/Quantum3D-Native/Quantum3D-Native.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cubecraft-client.iml" filepath="$PROJECT_DIR$/.idea/modules/cubecraft-client.iml" />
     </modules>
   </component>
 </project>
