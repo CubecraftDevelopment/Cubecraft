@@ -7,7 +7,7 @@
 <br/>
 <div align="center" id="readme-top">
 
-![yep](Cubecraft-Client/src/main/resources/resource/cubecraft/texture/gui/logo/game_logo.png)
+![yep](cubecraft-client/src/main/resources/resource/cubecraft/texture/gui/logo/game_logo.png)
 
 <h3 align="center">Cubecraft</h3>
   <p align="center">Your Game,Your Worlds,Your Stories.
