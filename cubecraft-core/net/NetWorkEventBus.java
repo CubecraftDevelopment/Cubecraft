@@ -1,8 +1,8 @@
-package io.flybird.cubecraft.net;
+package ink.flybird.cubecraft.net;
 
 
 
-import io.flybird.cubecraft.net.packet.PacketListener;
+import ink.flybird.cubecraft.net.packet.PacketListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.resources;
 
-import ink.flybird.quantum3d.textures.ITextureImage;
+import ink.flybird.quantum3d_legacy.textures.ITextureImage;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

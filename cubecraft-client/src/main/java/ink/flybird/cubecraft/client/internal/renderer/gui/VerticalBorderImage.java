@@ -5,10 +5,11 @@ import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import ink.flybird.quantum3d.textures.Texture2D;
+import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Set;
 
 public record VerticalBorderImage(double x0,double x1,double y0,double y1,int boarder,String loc) implements IComponentPartRenderer {
     @Override
@@ -17,8 +18,8 @@ public record VerticalBorderImage(double x0,double x1,double y0,double y1,int bo
     }
 
     @Override
-    public void initializeRenderer(List<ResourceLocation> loc) {
-        loc.add(ResourceLocation.uiTexture(this.loc.split(":")[0],this.loc.split(":")[1]));
+    public void initializeRenderer(Set<ImageResource> loc) {
+        loc.add(new ImageResource(this.loc));
     }
 
     public static class JDeserializer implements JsonDeserializer<VerticalBorderImage> {

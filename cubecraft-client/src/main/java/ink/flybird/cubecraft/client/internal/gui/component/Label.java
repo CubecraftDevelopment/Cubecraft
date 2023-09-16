@@ -6,7 +6,7 @@ import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.layout.Layout;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import io.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.register.SharedContext;
 import ink.flybird.fcommon.math.MathHelper;
 import org.w3c.dom.Element;
 

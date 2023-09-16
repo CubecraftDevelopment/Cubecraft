@@ -28,11 +28,11 @@ import ink.flybird.cubecraft.client.internal.gui.layout.OriginLayout;
 import ink.flybird.cubecraft.client.internal.gui.layout.ViewportLayout;
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import io.flybird.cubecraft.event.mod.ClientSideInitializeEvent;
-import io.flybird.cubecraft.event.mod.ModPreInitializeEvent;
-import io.flybird.cubecraft.extansion.CubecraftExtension;
-import io.flybird.cubecraft.register.ContentRegistries;
-import io.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.mod.ClientSideInitializeEvent;
+import ink.flybird.cubecraft.mod.ModPreInitializeEvent;
+import ink.flybird.cubecraft.extansion.CubecraftExtension;
+import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.register.SharedContext;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.fcommon.logging.Logger;
@@ -123,7 +123,7 @@ public class ClientInternalMod {
 
 
 
-        ClientRenderContext.RESOURCE_MANAGER.registerEventListener(new ResourceLoader());
+        ClientSharedContext.RESOURCE_MANAGER.registerEventListener(new ResourceLoader());
         ClientSharedContext.NET_HANDLER.registerGetFunctionProvider(ClientNetworkHandlerRegistry.class);
         ClientRenderContext.COLOR_MAP.registerGetter(ColorMapRegistry.class);
         CubecraftClient.CLIENT.getGuiManager().getEventBus().registerEventListener(new ScreenController());
@@ -139,9 +139,9 @@ public class ClientInternalMod {
 
 
         ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:calm_water",new LiquidRenderer(
-                new ImageResource("cubecraft:/block/water_flow.png"),
-                new ImageResource("cubecraft:/block/water_still.png")
+                new ImageResource("cubecraft:/texture/block/water_flow.png"),
+                new ImageResource("cubecraft:/texture/block/water_still.png")
         ));
-        ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:stone",new BlockRenderer(new ImageResource("cubecraft","/block/stone.png"), "cubecraft:alpha_block"));
+        ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:stone",new BlockRenderer(new ImageResource("cubecraft","/texture/block/stone.png"), "cubecraft:alpha_block"));
     }
 }

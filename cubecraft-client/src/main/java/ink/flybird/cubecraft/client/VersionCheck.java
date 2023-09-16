@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ink.flybird.cubecraft.client.gui.base.Popup;
 import ink.flybird.cubecraft.client.gui.ScreenUtil;
-import io.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.register.SharedContext;
 import ink.flybird.fcommon.NetworkUtil;
 import ink.flybird.fcommon.I18nHelper;
 import ink.flybird.fcommon.logging.Logger;

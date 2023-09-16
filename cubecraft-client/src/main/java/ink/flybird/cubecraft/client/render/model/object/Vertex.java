@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.render.model.object;
 
-import ink.flybird.quantum3d.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;

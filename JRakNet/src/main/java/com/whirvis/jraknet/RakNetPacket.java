@@ -923,12 +923,7 @@ public class RakNetPacket extends Packet {
 	/**
 	 * Returns the name of the packet with the specified ID.
 	 * <p>
-	 * Packet IDs {@link #ID_CUSTOM_0}, {@link #ID_CUSTOM_1},
-	 * {@link #ID_CUSTOM_2}, {@link #ID_CUSTOM_3}, {@link #ID_CUSTOM_4},
-	 * {@link #ID_CUSTOM_5}, {@link #ID_CUSTOM_6}, {@link #ID_CUSTOM_7},
-	 * {@link #ID_CUSTOM_8}, {@link #ID_CUSTOM_9}, {@link #ID_CUSTOM_A},
-	 * {@link #ID_CUSTOM_B}, {@link #ID_CUSTOM_C}, {@link #ID_CUSTOM_D},
-	 * {@link #ID_CUSTOM_E}, {@link #ID_CUSTOM_F}, {@link #ID_ACK}, and
+	 * Packet IDs {@link #ID_CUSTOM_0},  {@link #ID_CUSTOM_F}, {@link #ID_ACK}, and
 	 * {@link #ID_NACK} will never be returned as they are not only internal
 	 * packets but they also override other packets with the same ID.
 	 * 
@@ -951,12 +946,7 @@ public class RakNetPacket extends Packet {
 	/**
 	 * Returns the name of the specified packet.
 	 * <p>
-	 * Packet IDs {@link #ID_CUSTOM_0}, {@link #ID_CUSTOM_1},
-	 * {@link #ID_CUSTOM_2}, {@link #ID_CUSTOM_3}, {@link #ID_CUSTOM_4},
-	 * {@link #ID_CUSTOM_5}, {@link #ID_CUSTOM_6}, {@link #ID_CUSTOM_7},
-	 * {@link #ID_CUSTOM_8}, {@link #ID_CUSTOM_9}, {@link #ID_CUSTOM_A},
-	 * {@link #ID_CUSTOM_B}, {@link #ID_CUSTOM_C}, {@link #ID_CUSTOM_D},
-	 * {@link #ID_CUSTOM_E}, {@link #ID_CUSTOM_F}, {@link #ID_ACK}, and
+	 * Packet IDs {@link #ID_CUSTOM_0}, {@link #ID_CUSTOM_F}, {@link #ID_ACK}, and
 	 * {@link #ID_NACK} will never be returned as they are not only internal
 	 * packets but they also override other packets with the same ID.
 	 * 

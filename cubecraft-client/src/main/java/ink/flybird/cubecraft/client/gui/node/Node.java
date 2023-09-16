@@ -7,7 +7,7 @@ import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.cubecraft.client.gui.ComponentRenderer;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.layout.Layout;
-import ink.flybird.quantum3d.GLUtil;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.fcommon.container.MultiMap;
 
 import ink.flybird.fcommon.file.DocumentUtil;

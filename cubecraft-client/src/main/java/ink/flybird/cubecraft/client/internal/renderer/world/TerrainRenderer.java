@@ -1,54 +1,50 @@
 package ink.flybird.cubecraft.client.internal.renderer.world;
 
 import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.client.internal.renderer.world.chunk.ChunkSorter;
 import ink.flybird.cubecraft.client.internal.renderer.world.chunk.RenderChunk;
 import ink.flybird.cubecraft.client.internal.renderer.world.chunk.RenderChunkPos;
-import ink.flybird.quantum3d.Camera;
-import ink.flybird.quantum3d.GLUtil;
-import ink.flybird.quantum3d.compile.IDrawService;
-import ink.flybird.quantum3d.compile.MultiRenderCompileService;
-import ink.flybird.quantum3d.culling.FrustumCuller;
-import ink.flybird.quantum3d.culling.OcclusionCuller;
-import ink.flybird.quantum3d.draw.*;
-import ink.flybird.quantum3d.device.Window;
+import ink.flybird.cubecraft.client.render.RenderType;
+import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
+import ink.flybird.cubecraft.event.SettingReloadEvent;
+import ink.flybird.cubecraft.internal.entity.EntityPlayer;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.chunk.Chunk;
+import ink.flybird.cubecraft.world.event.BlockIDChangedEvent;
 import ink.flybird.fcommon.GameSetting;
 import ink.flybird.fcommon.container.CollectionUtil;
 import ink.flybird.fcommon.container.KeyMap;
 import ink.flybird.fcommon.event.EventHandler;
-
 import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.cubecraft.client.ClientSharedContext;
-import ink.flybird.cubecraft.client.internal.renderer.world.chunk.ChunkSorter;
-import ink.flybird.cubecraft.client.render.RenderType;
-import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
-import io.flybird.cubecraft.event.SettingReloadEvent;
-import io.flybird.cubecraft.internal.entity.EntityPlayer;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.chunk.Chunk;
-import io.flybird.cubecraft.world.event.BlockIDChangedEvent;
+import ink.flybird.quantum3d_legacy.BufferAllocation;
+import ink.flybird.quantum3d_legacy.Camera;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.compile.IDrawService;
+import ink.flybird.quantum3d_legacy.compile.MultiRenderCompileService;
+import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
+import ink.flybird.quantum3d_legacy.culling.OcclusionCuller;
+import ink.flybird.quantum3d.device.Window;
+import ink.flybird.quantum3d_legacy.draw.DrawCompile;
+import ink.flybird.quantum3d_legacy.draw.IDrawCompile;
 import org.lwjgl.opengl.GL11;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
-//todo:pos_cache_clearing
-//todo: thread chunk check
-
-//todo:region callList copy(4*4*4)
-//todo:remake render system
-//todo:修复世界刷新后区块不渲染的问题
-
+//todo:针对CPU优化（目标占用5%以内）
+//todo: pos_cache_clearing
+//todo: 共享的任务池（区块增删）（拉取队列后allocate）
 // todo:mipmap带来的一些方块变色
 
 @TypeItem("cubecraft:terrain_renderer")
 public class TerrainRenderer extends IWorldRenderer {
-    public static final boolean DISTANCE_FIX = true;
-    private static final String SETTING_NAMESPACE = "client.render.terrain";
+    private static final String SETTING_NAMESPACE = "terrain_renderer";
     public final KeyMap<RenderChunkPos, RenderChunk> chunks = new KeyMap<>();
     public final HashMap<String, Object> posCache = new HashMap<>(16384);
 
@@ -60,7 +56,6 @@ public class TerrainRenderer extends IWorldRenderer {
     private final ChunkSorter chunkSorterAndRemover;
     public IDrawService<RenderChunk> updateService;
     AtomicInteger counter = new AtomicInteger();
-    private int renderDistance;
 
     public TerrainRenderer(Window window, IWorld world, EntityPlayer player, Camera cam, GameSetting setting) {
         super(window, world, player, cam, setting);
@@ -77,14 +72,15 @@ public class TerrainRenderer extends IWorldRenderer {
         }));
     }
 
-
     //world renderer
+    @Override
+    public void tick() {
+        this.checkChunkCache();
+    }
+
     @Override
     public void preRender() {
         this.updateChunks();
-        //if (System.currentTimeMillis() % 50 == 0) {
-            this.checkChunkCache();
-        //}
         this.frustum.calculateFrustum();
     }
 
@@ -93,7 +89,7 @@ public class TerrainRenderer extends IWorldRenderer {
         this.counter.set(0);
         this.parent.setRenderState(this.setting);
         this.camera.setUpGlobalCamera(this.window);
-        if (!DISTANCE_FIX) {
+        if (!(boolean) ClientSettingRegistry.CHUNK_FIX_DISTANCE.getValue()) {
             this.camera.setupGlobalTranslate();
         }
         ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().bind("cubecraft:terrain");
@@ -139,30 +135,30 @@ public class TerrainRenderer extends IWorldRenderer {
         this.updateService = null;
     }
 
-
     public void drawChunk(RenderType type, KeyMap<RenderChunkPos, RenderChunk> callList) {
         ArrayList<RenderChunk> list = new ArrayList<>(callList.map.values());
         list.sort(this.chunkSorterAndRemover);
-        for (RenderChunk chunk : list) {
-            if (!this.camera.objectDistanceSmallerThan(chunk.getKey().clipToWorldPosition(), ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16)) {
-                continue;
-            }
-            GL11.glPushMatrix();
-            this.camera.setupObjectCamera(chunk.getKey().clipToWorldPosition());
-            if (!this.frustum.aabbVisible(chunk.getVisibleArea(this.camera))) {
+        if (ClientSettingRegistry.CHUNK_FIX_DISTANCE.getValue()) {
+            for (RenderChunk chunk : list) {
+                if (!this.camera.objectDistanceSmallerThan(chunk.getKey().clipToWorldPosition(), ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16)) {
+                    continue;
+                }
+
+                GL11.glPushMatrix();
+                this.camera.setupObjectCamera(chunk.getKey().clipToWorldPosition());
+                if (!this.frustum.aabbVisible(chunk.getVisibleArea(this.camera))) {
+                    GL11.glPopMatrix();
+                    continue;
+                }
+                if (!chunk.anyLayerFilled(type)) {
+                    GL11.glPopMatrix();
+                    continue;
+                }
+                chunk.render(type);
+                counter.addAndGet(1);
                 GL11.glPopMatrix();
-                continue;
             }
-            if (!chunk.anyLayerFilled(type)) {
-                GL11.glPopMatrix();
-                continue;
-            }
-            chunk.render(type);
-            counter.addAndGet(1);
-            GL11.glPopMatrix();
             GLUtil.checkError("draw chunks:" + type);
-
-
             /*
             if (type == RenderType.ALPHA) {
                 if (this.setting.getValueAsBoolean("client.render.terrain.use_occlusion", false)) {
@@ -180,9 +176,24 @@ public class TerrainRenderer extends IWorldRenderer {
                 }
             }
              */
+        }else {
+            IntBuffer buffer = BufferAllocation.allocIntBuffer(list.size());
+
+            for (RenderChunk chunk : list) {
+                if (!this.camera.objectDistanceSmallerThan(chunk.getKey().clipToWorldPosition(), ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16)) {
+                    continue;
+                }
+                if (!this.frustum.aabbVisible(chunk.getVisibleArea(this.camera))) {
+                    continue;
+                }
+                buffer.put(chunk.getRenderLists(type));
+            }
+
+            buffer.flip().slice();
+            GL11.glCallLists(buffer);
+            BufferAllocation.free(buffer);
         }
     }
-
 
     //update
     private void updateChunks() {
@@ -192,8 +203,8 @@ public class TerrainRenderer extends IWorldRenderer {
                 if (compile == null) {
                     continue;
                 }
-                RenderChunk chunk=compile.getObject();
-                if(!chunk.getLifetimeCounter().isAllocated()){
+                RenderChunk chunk = compile.getObject();
+                if (!chunk.getLifetimeCounter().isAllocated()) {
                     chunk.allocate();
                 }
                 compile.draw();
@@ -215,7 +226,7 @@ public class TerrainRenderer extends IWorldRenderer {
                     //chunk.destroy();
                 }
             } else {
-                continue;
+
             }
         }
     }
@@ -233,7 +244,7 @@ public class TerrainRenderer extends IWorldRenderer {
     public void checkChunkCache() {
         int dist = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue();
 
-        if(this.updateService==null){
+        if (this.updateService == null) {
             return;
         }
 

@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.client.net;
 
-import io.flybird.cubecraft.net.NetworkListenerAdapter;
-import io.flybird.cubecraft.net.packet.Packet;
+import ink.flybird.cubecraft.net.NetworkListenerAdapter;
+import ink.flybird.cubecraft.net.packet.Packet;
 import ink.flybird.fcommon.registry.ConstructingMap;
 
 import java.net.InetSocketAddress;

@@ -1,14 +1,14 @@
 package ink.flybird.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
-import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.fcommon.container.Pair;
 import ink.flybird.cubecraft.client.render.model.object.Model;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import ink.flybird.quantum3d.draw.VertexBuilder;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -70,7 +70,7 @@ public final class BlockModel implements Model {
                 return element;
             }
             JsonObject root = element.getAsJsonObject().get("cover_json").getAsJsonObject();
-            String src = ClientRenderContext.RESOURCE_MANAGER.getResource(ResourceLocation.blockModel(root.get("import").getAsString())).getAsText();
+            String src = ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.blockModel(root.get("import").getAsString())).getAsText();
 
             JsonArray arr = root.get("replacement").getAsJsonArray();
             for (JsonElement e : arr) {

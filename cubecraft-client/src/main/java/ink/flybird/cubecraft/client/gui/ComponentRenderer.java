@@ -2,14 +2,14 @@ package ink.flybird.cubecraft.client.gui;
 
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
+import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.fcommon.container.CollectionUtil;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 public final class ComponentRenderer{
     private final HashMap<String, IComponentPartRenderer[]> renderers;
@@ -27,7 +27,7 @@ public final class ComponentRenderer{
         }
     }
 
-    public void initializeModel(List<ResourceLocation> loc){
+    public void initializeModel(Set<ImageResource> loc){
         CollectionUtil.iterateMap(this.renderers,((key, item) -> {
             for (IComponentPartRenderer renderer:item){
                 renderer.initializeRenderer(loc);

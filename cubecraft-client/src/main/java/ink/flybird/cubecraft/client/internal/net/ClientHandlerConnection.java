@@ -2,13 +2,13 @@ package ink.flybird.cubecraft.client.internal.net;
 
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.net.ClientNetHandler;
-import io.flybird.cubecraft.internal.network.NetHandlerType;
-import io.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinResponse;
-import io.flybird.cubecraft.net.NetHandlerContext;
-import io.flybird.cubecraft.net.packet.ConnectSuccessPacket;
-import io.flybird.cubecraft.net.packet.PacketListener;
-import io.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinWorld;
-import io.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinWorldResponse;
+import ink.flybird.cubecraft.internal.network.NetHandlerType;
+import ink.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinResponse;
+import ink.flybird.cubecraft.net.NetHandlerContext;
+import ink.flybird.cubecraft.net.packet.ConnectSuccessPacket;
+import ink.flybird.cubecraft.net.packet.PacketListener;
+import ink.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinWorld;
+import ink.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinWorldResponse;
 import ink.flybird.fcommon.registry.TypeItem;
 
 @TypeItem(NetHandlerType.CLIENT_CONNECTION)
@@ -19,7 +19,6 @@ public class ClientHandlerConnection extends ClientNetHandler {
         if(response.isAccepted()){
             ctx.sendPacket(new PacketPlayerJoinWorld());
         }else{
-            System.out.println(response.getReason());
             ctx.closeConnection();
         }
     }

@@ -1,9 +1,9 @@
 package ink.flybird.cubecraft.client.render.model.block;
 
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import ink.flybird.quantum3d.draw.VertexBuilder;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import org.joml.Vector3d;
 
 import java.util.Set;

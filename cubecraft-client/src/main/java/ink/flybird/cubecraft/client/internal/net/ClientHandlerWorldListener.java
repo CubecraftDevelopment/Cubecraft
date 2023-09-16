@@ -2,12 +2,12 @@ package ink.flybird.cubecraft.client.internal.net;
 
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.net.ClientNetHandler;
-import io.flybird.cubecraft.internal.network.NetHandlerType;
-import io.flybird.cubecraft.internal.network.packet.*;
-import io.flybird.cubecraft.world.event.block.BlockChangeEvent;
-import io.flybird.cubecraft.world.event.entity.EntityAttackEvent;
-import io.flybird.cubecraft.world.event.entity.EntityMoveEvent;
-import io.flybird.cubecraft.world.event.world.ChunkLoadEvent;
+import ink.flybird.cubecraft.internal.network.NetHandlerType;
+import ink.flybird.cubecraft.internal.network.packet.*;
+import ink.flybird.cubecraft.world.event.block.BlockChangeEvent;
+import ink.flybird.cubecraft.world.event.entity.EntityAttackEvent;
+import ink.flybird.cubecraft.world.event.entity.EntityMoveEvent;
+import ink.flybird.cubecraft.world.event.world.ChunkLoadEvent;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.fcommon.event.EventHandler;
 

@@ -30,8 +30,8 @@
             title_screen.button.quit
         </text>
     </button>
-    <image layout="origin/middle_middle,2,-80,320,80" h-clip="scale" v-clip="scale">
-        cubecraft:/gui/logo/game_logo.png
+    <image layout="origin/middle_middle,0,-80,318,106" h-clip="scale" v-clip="scale">
+        cubecraft:/texture/gui/logo/game_logo.png
     </image>
     <splash type="lang" id="splash" rotation="-20" bobbing="true" layout="origin/middle_middle,140,-70,16,8" color="efff00" align="middle">
         /resource/cubecraft/text/splash.json

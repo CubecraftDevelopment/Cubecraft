@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.render.renderer;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import io.flybird.cubecraft.world.entity.Entity;
+import ink.flybird.cubecraft.world.entity.Entity;
 
 import java.util.List;
 

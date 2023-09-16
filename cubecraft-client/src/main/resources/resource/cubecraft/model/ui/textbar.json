@@ -6,7 +6,7 @@
         "type": "image_all_boarder",
         "boarderH":8,
         "boarderV": 8,
-        "loc": "cubecraft:controls/textbar.png",
+        "loc": "cubecraft:/texture/gui/controls/textbar.png",
         "pos": [0,1,0,1]
       },
       {
@@ -32,7 +32,7 @@
         "type": "image_all_boarder",
         "boarderH":8,
         "boarderV": 8,
-        "loc": "cubecraft:controls/textbar_ore_ui.png",
+        "loc": "cubecraft:/texture/gui/controls/textbar_ore_ui.png",
         "pos": [0,1,0,1]
       },
       {

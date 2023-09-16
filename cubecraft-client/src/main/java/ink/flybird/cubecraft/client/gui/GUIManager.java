@@ -3,6 +3,7 @@ package ink.flybird.cubecraft.client.gui;
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializer;
 import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.base.Popup;
@@ -13,11 +14,12 @@ import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
 import ink.flybird.cubecraft.client.internal.gui.event.ComponentInitializeEvent;
+import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.quantum3d.device.Window;
 import ink.flybird.quantum3d.device.event.MousePosEvent;
-import io.flybird.cubecraft.register.SharedContext;
-import ink.flybird.quantum3d.GLUtil;
+import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.fcommon.container.CollectionUtil;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.EventHandler;
@@ -29,9 +31,7 @@ import ink.flybird.fcommon.logging.SimpleLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public final class GUIManager{
@@ -70,9 +70,9 @@ public final class GUIManager{
     public void setScreen(String location, String parent) {
         try {
             if (location.endsWith(".xml") && parent.endsWith(".xml")) {
-                Document dom = ClientRenderContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(location)).getAsDom();
+                Document dom = ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(location)).getAsDom();
                 Element faml = (Element) dom.getElementsByTagName("screen").item(0);
-                Document dom2 = ClientRenderContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(parent)).getAsDom();
+                Document dom2 = ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(parent)).getAsDom();
                 Element faml2 = (Element) dom2.getElementsByTagName("screen").item(0);
                 Screen scr = this.deserializer.deserialize(faml, Screen.class);
                 scr.setParentScreen(this.deserializer.deserialize(faml2, Screen.class));
@@ -123,12 +123,14 @@ public final class GUIManager{
         SharedContext.GSON_BUILDER.registerTypeAdapter(IComponentPartRenderer.class, new IComponentPartRenderer.JDeserializer());
         Gson gson = SharedContext.createJsonReader();
         CollectionUtil.iterateMap(this.renderControllerLocations, (key, item) -> this.renderers.put(key, gson.fromJson(
-                ClientRenderContext.RESOURCE_MANAGER.getResource(item).getAsText(), ComponentRenderer.class)
+                ClientSharedContext.RESOURCE_MANAGER.getResource(item).getAsText(), ComponentRenderer.class)
         ));
-        List<ResourceLocation> locations = new ArrayList<>();
+        Set<ImageResource> locations = new HashSet<>();
         CollectionUtil.iterateMap(this.renderers, ((key, item) -> item.initializeModel(locations)));
-        for (ResourceLocation loc : locations) {
-            ClientRenderContext.TEXTURE.createTexture2D(ClientRenderContext.RESOURCE_MANAGER.getResource(loc), false, false);
+        for (ImageResource resource : locations) {
+            //todo:delegate resource
+            ClientSharedContext.RESOURCE_MANAGER.loadResource(resource);
+            ClientRenderContext.TEXTURE.createTexture2D(resource, false, false);
         }
     }
 
@@ -201,7 +203,7 @@ public final class GUIManager{
 
     public void setScreen(String location) {
         if (location.endsWith(".xml")) {
-            Document dom = ClientRenderContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(location)).getAsDom();
+            Document dom = ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(location)).getAsDom();
             this.setScreen((Screen) this.deserializer.deserialize(((Element) dom.getFirstChild()), Screen.class));
         } else {
             throw new RuntimeException("loaded a none exist file!");
@@ -223,7 +225,7 @@ public final class GUIManager{
 
     public void setHoverScreen(String location) {
         if (location.endsWith(".xml")) {
-            Document dom = ClientRenderContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(location)).getAsDom();
+            Document dom = ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(location)).getAsDom();
             Element faml = (Element) dom.getElementsByTagName("faml").item(0);
             if (!faml.getAttribute("ext").equals("cubecraft_ui")) {
                 throw new RuntimeException("invalid ui xml");

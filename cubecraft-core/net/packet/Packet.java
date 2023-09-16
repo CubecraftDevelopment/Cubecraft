@@ -1,4 +1,4 @@
-package io.flybird.cubecraft.net.packet;
+package ink.flybird.cubecraft.net.packet;
 
 
 import io.netty.buffer.ByteBuf;

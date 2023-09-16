@@ -3,11 +3,11 @@ package ink.flybird.cubecraft.client.internal.gui.screen;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.cubecraft.client.gui.screen.ScreenBackgroundType;
-import ink.flybird.quantum3d.GLUtil;
-import ink.flybird.quantum3d.ShapeRenderer;
-import ink.flybird.quantum3d.draw.VertexBuilder;
-import ink.flybird.quantum3d.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d.textures.Texture2D;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import ink.flybird.cubecraft.client.internal.registry.ResourceRegistry;
 import org.w3c.dom.Element;
 

@@ -1,9 +1,9 @@
 package ink.flybird.cubecraft.client.render.model.block;
 
-import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import io.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.IWorld;
 
 import java.awt.image.BufferedImage;
 
@@ -15,7 +15,7 @@ public abstract class IColorMap {
     }
 
     public void load(){
-        this.image= ClientRenderContext.RESOURCE_MANAGER.getResource(loc).getAsImage();
+        this.image= ClientSharedContext.RESOURCE_MANAGER.getResource(loc).getAsImage();
     }
 
     public abstract int sample(IWorld w, IBlockAccess blockAccess, long x, long y, long z);

@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.client.internal.entity;
 
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.entity.EntityParticle;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.entity.EntityParticle;
 import ink.flybird.fcommon.registry.TypeItem;
 
 @TypeItem("cubecraft:block_brake_particle")

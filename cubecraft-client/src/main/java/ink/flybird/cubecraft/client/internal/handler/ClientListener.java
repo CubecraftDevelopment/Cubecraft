@@ -10,7 +10,7 @@ import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
-import io.flybird.cubecraft.event.BlockRegisterEvent;
+import ink.flybird.cubecraft.event.BlockRegisterEvent;
 
 
 public class ClientListener {
@@ -18,7 +18,7 @@ public class ClientListener {
     @EventHandler
     public void onBlockRegister(BlockRegisterEvent e) {
         String id = e.id();
-        ClientRenderContext.BLOCK_RENDERER.registerItem(id, new ModelRenderer(ResourceLocation.blockModel(id + ".json")));
+        ClientRenderContext.BLOCK_RENDERER.registerItem(id, new ModelRenderer("/resource/cubecraft/model/block/"+id + ".json"));
     }
 
     @EventHandler

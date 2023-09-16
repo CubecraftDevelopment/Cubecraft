@@ -7,7 +7,7 @@ import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.cubecraft.client.internal.entity.BlockBrakeParticle;
-import io.flybird.cubecraft.world.event.BlockIDChangedEvent;
+import ink.flybird.cubecraft.world.event.BlockIDChangedEvent;
 
 public class ParticleHandler {
     @EventHandler

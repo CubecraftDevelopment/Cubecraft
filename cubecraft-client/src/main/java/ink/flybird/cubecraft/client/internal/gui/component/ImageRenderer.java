@@ -1,17 +1,18 @@
 package ink.flybird.cubecraft.client.internal.gui.component;
 
 
-import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.node.Component;
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
-import ink.flybird.quantum3d.ShapeRenderer;
-import ink.flybird.quantum3d.textures.Texture2D;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import org.w3c.dom.Element;
 
 public class ImageRenderer extends Component {
     private final Texture2D texture = new Texture2D(false, false);
     public HorizontalClipping hClip;
     public VerticalClipping vClip;
+    private ImageResource resource;
 
     @Override
     public void init(Element element) {
@@ -20,13 +21,11 @@ public class ImageRenderer extends Component {
         String file = element.getTextContent();
         this.texture.generateTexture();
 
-        ImageResource resource = ClientRenderContext.RESOURCE_MANAGER.getResource(
-                file.trim().split(":")[0],
-                file.trim().split(":")[1],
-                ImageResource.class
-        );
+        this.resource = new ImageResource(file.trim().split(":")[0], file.trim().split(":")[1]);
 
-        this.texture.load(resource);
+        ClientSharedContext.RESOURCE_MANAGER.loadResource(this.resource);
+
+        this.texture.load(this.resource);
         this.texture.bind();
         super.init(element);
     }

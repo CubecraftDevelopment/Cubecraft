@@ -7,8 +7,7 @@ import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
 import ink.flybird.quantum3d.device.event.MousePosEvent;
 import ink.flybird.quantum3d.device.event.MouseScrollEvent;
-import io.flybird.cubecraft.util.GameSetting;
-import io.flybird.cubecraft.world.entity.EntityLiving;
+import ink.flybird.cubecraft.world.entity.EntityLiving;
 
 
 public class PlayerController {

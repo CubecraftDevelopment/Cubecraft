@@ -19,5 +19,9 @@ public abstract class ResourceLoader {
         return true;
     }
 
+    public int getPriority() {
+        return 0;
+    }
+
     public abstract InputStream getStream(IResource resource);
 }

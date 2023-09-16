@@ -25,6 +25,13 @@ public abstract class IResource {
         );
     }
 
+    public static String format(String loc) {
+        String namespace = loc.trim().split(":")[0];
+        String relativePath = loc.trim().split(":")[1];
+
+        return "/resource/" + namespace + relativePath;
+    }
+
     public abstract void load(InputStream stream) throws Exception;
 
 
@@ -40,7 +47,9 @@ public abstract class IResource {
         return this.getPathPrefix() + getRelativePath();
     }
 
-    public abstract String getPathPrefix();
+    public String getPathPrefix() {
+        return "/resource/" + this.getNamespace();
+    }
 
     @Override
     public boolean equals(Object obj) {

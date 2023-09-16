@@ -4,14 +4,15 @@ import com.google.gson.*;
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import ink.flybird.quantum3d.ShapeRenderer;
-import ink.flybird.quantum3d.draw.VertexBuilder;
-import ink.flybird.quantum3d.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d.textures.Texture2D;
+import ink.flybird.cubecraft.client.resources.resource.IResource;
+import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Set;
 
 
 public record BoarderImage(double x0, double x1, double y0, double y1, int boarderH, int boarderV,
@@ -25,7 +26,7 @@ public record BoarderImage(double x0, double x1, double y0, double y1, int board
         int w = (int) (node.getLayout().getAbsoluteWidth() * (x1 - x0));
         int h = (int) (node.getLayout().getAbsoluteHeight() * (y1 - y0));
 
-        Texture2D tex = ClientRenderContext.TEXTURE.getTexture2DContainer().get(ResourceLocation.uiTexture(this.loc.split(":")[0], this.loc.split(":")[1]).format());
+        Texture2D tex = ClientRenderContext.TEXTURE.getTexture2DContainer().get(IResource.format(this.loc));
 
         double tbh = (double) boarderH / tex.getWidth();
         double tbv = (double) boarderV / tex.getHeight();
@@ -58,8 +59,8 @@ public record BoarderImage(double x0, double x1, double y0, double y1, int board
     }
 
     @Override
-    public void initializeRenderer(List<ResourceLocation> loc) {
-        loc.add(ResourceLocation.uiTexture(this.loc.split(":")[0], this.loc.split(":")[1]));
+    public void initializeRenderer(Set<ImageResource> loc) {
+        loc.add(new ImageResource(this.loc));
     }
 
     public static class JDeserializer implements JsonDeserializer<BoarderImage> {

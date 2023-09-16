@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.resources;
 
-import io.flybird.cubecraft.register.EnvironmentPath;
+import ink.flybird.cubecraft.register.EnvironmentPath;
 
 import java.io.File;
 import java.io.FileInputStream;

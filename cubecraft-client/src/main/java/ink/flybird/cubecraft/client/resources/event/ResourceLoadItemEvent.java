@@ -6,7 +6,7 @@ public class ResourceLoadItemEvent extends ResourceLoadEvent{
     private final IResource resource;
     private final String id;
 
-    protected ResourceLoadItemEvent(String stage, IResource resource, String id) {
+    public ResourceLoadItemEvent(String stage, IResource resource, String id) {
         super(stage);
         this.resource = resource;
         this.id = id;

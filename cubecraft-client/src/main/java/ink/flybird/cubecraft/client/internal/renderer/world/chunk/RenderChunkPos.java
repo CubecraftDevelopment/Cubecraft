@@ -1,14 +1,13 @@
 package ink.flybird.cubecraft.client.internal.renderer.world.chunk;
 
-import ink.flybird.quantum3d.Camera;
+import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.fcommon.container.Key;
 import ink.flybird.fcommon.math.AABB;
 import ink.flybird.cubecraft.client.render.DistanceComparable;
-import io.flybird.cubecraft.world.entity.Entity;
-import org.jetbrains.annotations.NotNull;
+import ink.flybird.cubecraft.world.entity.Entity;
 import org.joml.Vector3d;
 
-public class RenderChunkPos implements Key, DistanceComparable, Comparable<RenderChunkPos> {
+public class RenderChunkPos implements Key, DistanceComparable{
     private final long x, y, z;
 
     public RenderChunkPos(long x, long y, long z) {
@@ -33,12 +32,6 @@ public class RenderChunkPos implements Key, DistanceComparable, Comparable<Rende
                 (renderChunkPos.getZ() * 16 + 16 - camera.getPosition().z)
         );
     }
-
-    @Override
-    public int compareTo(@NotNull RenderChunkPos o) {
-        return 0;
-    }
-
 
     @Override
     public double distanceTo(Entity target) {

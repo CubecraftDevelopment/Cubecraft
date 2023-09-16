@@ -10,10 +10,10 @@ import ink.flybird.fcommon.container.OrderedHashMap;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
 import ink.flybird.cubecraft.client.gui.ScreenUtil;
-import ink.flybird.quantum3d.BufferAllocation;
-import ink.flybird.quantum3d.GLUtil;
-import ink.flybird.quantum3d.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d.draw.VertexUploader;
+import ink.flybird.quantum3d_legacy.BufferAllocation;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import ink.flybird.quantum3d_legacy.draw.VertexUploader;
 import org.w3c.dom.Element;
 
 public class Screen extends Container {

@@ -2,25 +2,40 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![GPL3 License][license-shield]][license-url]
+
+<!-- fill links here -->
+[repo-url]: https://github.com/FlybirdGameStudio/Cubecraft/
+[issues-url]: https://github.com/FlybirdGameStudio/Cubecraft/issues
+[stars-url]: https://github.com/FlybirdGameStudio/Cubecraft/stargazers
+[forks-url]: https://github.com/FlybirdGameStudio/Cubecraft/network/members
+[contributors-url]: https://github.com/FlybirdGameStudio/Cubecraft/graphs/contributors
+
+[doc-url]: https://example.org
+[logo-url]: logo.png
+[demo-url]: https://example.org
+
+[org-website]: https://flybird.ink
+[org-github]: https://github.com/FlybirdGameStudio/
+
+[contributors-shield]: https://img.shields.io/github/contributors/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
+
+
 
 <br/>
 <div align="center" id="readme-top">
 
-![yep](cubecraft-client/src/main/resources/resource/cubecraft/texture/gui/logo/game_logo.png)
+![logo][logo-url]
 
 <h3 align="center">Cubecraft</h3>
-  <p align="center">Your Game,Your Worlds,Your Stories.
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
-  </p>
+<p align="center">filled with bugs (or game features)...
+
+[Explore The Docs >>][doc-url]
+
+[View Demo][demo-url] | [Report Bug][issues-url] | [Request Feature][issues-url]
+
 </div>
 
 ## Content
@@ -60,12 +75,7 @@
 
 <div id="about-the-project"></div>
 
-
-
-
 <hr>
-
-
 
 
 ## About the project
@@ -87,8 +97,6 @@ In the future, we may (as far as possible) implement data compatibility with min
 (In addition, the architecture of cubecraft has been basically stable.
 If anyone wants to write a data compatible mod, welcome.)
 
-
-
 <div id="built-with"></div>
 
 ### Built With
@@ -102,7 +110,6 @@ these are the core technology that we used to uil the platform itself.
 | LWJGL3      | OpenGL binding,GLFW and Memory Control | https://github.com/LWJGL/lwjgl3             |
 | FCommon     | Common tools,Registering               | https://github.com/ProtonGameStudio/FCommon |
 | Quantum3D   | OpenGL packaging,Memory Control        | N/A                                         |
-| SmartSocket | Network protocol implementation        | https://github.com/smartboot/smart-socket   |
 | JRakNet     | Network protocol implementation        | https://github.com/whirvis/JRakNet          |
 | NettyIO     | Network protocol implementation        | https://github.com/netty/netty              |
 | JOML        | General math computing                 | https://github.com/JOML-CI/JOML             |
@@ -111,27 +118,11 @@ these are the core technology that we used to uil the platform itself.
 
 ### Licence
 
-This project is under GPL-3 licence.
-here are some of the licence.
-
-```
-                    GNU GENERAL PUBLIC LICENSE
-                       Version 3, 29 June 2007
-
-Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
-Everyone is permitted to copy and distribute verbatim copies
-of this license document, but changing it is not allowed. 
-
-```
+//todo
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <hr/>
-
-
-
 
 <div id="getting-started"></div>
 
@@ -174,8 +165,6 @@ of this license document, but changing it is not allowed.
 2. start mod developing(the "Default" module could be an example)
 3. See docs for more information(coming soon)
 
-<!-- USAGE EXAMPLES -->
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <hr/>
@@ -205,27 +194,18 @@ of this license document, but changing it is not allowed.
     - [x] English
     - [ ] Japanese
 
-See the [open issues](https://github.com/ProtonGameStudio/Cubecraft/issues) for a full list of proposed features (
-and known issues).
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 
 <hr/>
 
-
-
-
 <div id="more-info"></div>
+
 
 ## More Information
 
 <div id="special-thanks"></div>
 
 ### Special thanks:
-
 - MojangStudio and Microsoft did not sue me:).
 - the makers of third-party java libraries.
 - AdamYuan,Dreamtowards for giving me instructions on rendering.
@@ -234,9 +214,8 @@ and known issues).
 <div id="contact"></div>
 
 ### Contact
-
-- Grasslock2022: https://github.com/Grass-block
-- FlyBird Games: https://github.com/ProtonGameStudio
+- [FlyBirdGames](https://github.com/FlybirdGameStudio)
+- [GrassBlock2022](https://github.com/Grass-Block)
 
 <div id="contributing"></div>
 
@@ -254,7 +233,6 @@ Don't forget to give the project a star! Thanks again!
 3. Commit your Changes
 4. Push to the Branch
 5. Open a Pull Request
-6. Waiting for the stupid GrassBlock2022 to merge it :D
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -264,18 +242,3 @@ Don't forget to give the project a star! Thanks again!
 <h6 align="center">artifact by GrassBlock2022, owned by FlybirdGames</h6>
 
 <h6 align="center">(The END)</h6>
-
-
-
-
-[contributors-shield]: https://img.shields.io/github/contributors/ProtonGameStudio/Cubecraft.svg?style=for-the-badge
-[contributors-url]: https://github.com/ProtonGameStudio/Cubecraft/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/ProtonGameStudio/Cubecraft.svg?style=for-the-badge
-[forks-url]: https://github.com/ProtonGameStudio/Cubecraft/network/members
-[stars-shield]: https://img.shields.io/github/stars/ProtonGameStudio/Cubecraft.svg?style=for-the-badge
-[stars-url]: https://github.com/ProtonGameStudio/Cubecraft/stargazers
-[issues-shield]: https://img.shields.io/github/issues/ProtonGameStudio/Cubecraft.svg?style=for-the-badge
-[issues-url]: https://github.com/ProtonGameStudio/Cubecraft/issues
-[license-shield]: https://img.shields.io/github/license/ProtonGameStudio/Cubecraft.svg?style=for-the-badge
-[license-url]: https://github.com/ProtonGameStudio/Cubecraft/blob/master/LICENSE.txt
-

@@ -1,0 +1,14 @@
+import java.nio.charset.StandardCharsets
+
+tasks.register('syncGitIgnore') {
+    FileInputStream stream = new FileInputStream(".gitignore")
+    String s = new String(stream.readAllBytes(), StandardCharsets.UTF_8)
+    stream.close()
+    for (String s2 : s.split("\n")) {
+        if (s2.length() <= 1) {
+            continue
+        }
+        Runtime.getRuntime().exec("git", null, new File("E:/Java/Projects/Cubecraft/"))
+        println "git rm -r --cached "+s2.replaceFirst("/","")
+    }
+}

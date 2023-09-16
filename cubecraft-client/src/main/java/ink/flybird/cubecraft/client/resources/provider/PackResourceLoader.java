@@ -7,9 +7,11 @@ import java.io.InputStream;
 
 //todo:resource loader,resource pack
 public final class PackResourceLoader extends ResourceLoader {
+    private final int priority;
     private final ResourcePack pack;
 
-    public PackResourceLoader(ResourcePack pack) {
+    public PackResourceLoader(int priority, ResourcePack pack) {
+        this.priority = priority;
         this.pack = pack;
     }
 
@@ -20,5 +22,10 @@ public final class PackResourceLoader extends ResourceLoader {
     @Override
     public InputStream getStream(IResource resource) {
         return null;
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
     }
 }

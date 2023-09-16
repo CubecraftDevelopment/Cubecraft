@@ -8,10 +8,10 @@ import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Set;
 
 public record Font(double x, double y, int size, int col, int yOffset, String query,float iconModifier) implements IComponentPartRenderer {
     @Override
@@ -28,8 +28,8 @@ public record Font(double x, double y, int size, int col, int yOffset, String qu
     }
 
     @Override
-    public void initializeRenderer(List<ResourceLocation> loc) {
-        //nope
+    public void initializeRenderer(Set<ImageResource> loc) {
+
     }
 
     public static class JDeserializer implements JsonDeserializer<Font>{

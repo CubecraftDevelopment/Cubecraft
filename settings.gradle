@@ -1,0 +1,6 @@
+include 'cubecraft-client'
+include 'cubecraft-core'
+include 'cubecraft-server'
+
+include 'Quantum3D'
+include 'JRakNet'

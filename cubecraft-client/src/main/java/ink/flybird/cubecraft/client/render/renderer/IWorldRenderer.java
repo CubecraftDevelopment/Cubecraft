@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import ink.flybird.cubecraft.client.render.RenderType;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.cubecraft.client.render.LevelRenderer;
-import io.flybird.cubecraft.internal.entity.EntityPlayer;
-import io.flybird.cubecraft.world.IWorld;
-import ink.flybird.quantum3d.Camera;
+import ink.flybird.cubecraft.internal.entity.EntityPlayer;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d.device.Window;
 import ink.flybird.fcommon.GameSetting;
 
@@ -72,6 +72,10 @@ public abstract class IWorldRenderer {
     public void config(JsonElement json) {
     }
 
+
+    //world renderer
+    public void tick(){
+    }
 
     //render
     public void preRender() {

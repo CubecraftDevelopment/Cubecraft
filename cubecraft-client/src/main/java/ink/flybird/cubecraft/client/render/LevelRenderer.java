@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.event.ClientRendererInitializeEvent;
 import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
@@ -12,10 +13,10 @@ import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
 import ink.flybird.quantum3d.device.event.KeyboardReleaseEvent;
-import io.flybird.cubecraft.internal.entity.EntityPlayer;
-import io.flybird.cubecraft.world.IWorld;
-import ink.flybird.quantum3d.Camera;
-import ink.flybird.quantum3d.GLUtil;
+import ink.flybird.cubecraft.internal.entity.EntityPlayer;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.quantum3d_legacy.Camera;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.fcommon.ColorUtil;
 import ink.flybird.fcommon.GameSetting;
 import ink.flybird.fcommon.container.MultiMap;
@@ -36,7 +37,7 @@ public final class LevelRenderer {
         this.world = w;
         this.player = p;
         this.renderers.clear();
-        String str = ClientRenderContext.RESOURCE_MANAGER.getResource(cfgLoc).getAsText();
+        String str = ClientSharedContext.RESOURCE_MANAGER.getResource(cfgLoc).getAsText();
         JsonArray obj = JsonParser.parseString(str).getAsJsonObject().get("renderers").getAsJsonArray();
         JsonObject global = JsonParser.parseString(str).getAsJsonObject().get("global").getAsJsonObject();
         this.config = GlobalRendererConfig.from(global);
@@ -152,6 +153,12 @@ public final class LevelRenderer {
     public void refresh(){
         for (IWorldRenderer renderer : this.renderers.values()) {
             renderer.refresh();
+        }
+    }
+
+    public void tick(){
+        for (IWorldRenderer renderer : this.renderers.values()) {
+            renderer.tick();
         }
     }
 

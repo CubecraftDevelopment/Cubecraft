@@ -6,7 +6,7 @@
         "type": "image_all_boarder",
         "boarderH": 1,
         "boarderV": 1,
-        "loc": "cubecraft:controls/button.png",
+        "loc": "cubecraft:/texture/gui/controls/button.png",
         "pos": [0,1,0,1]
       }
     ]
@@ -18,7 +18,7 @@
         "type": "image_all_boarder",
         "boarderH":1,
         "boarderV":1,
-        "loc": "cubecraft:controls/button_selected.png",
+        "loc": "cubecraft:/texture/gui/controls/button_selected.png",
         "pos": [0,1,0,1]
       }
     ]
@@ -30,7 +30,7 @@
         "type": "image_all_boarder",
         "boarderH":1,
         "boarderV":1,
-        "loc": "cubecraft:controls/button_disabled.png",
+        "loc": "cubecraft:/texture/gui/controls/button_disabled.png",
         "pos": [0,1,0,1]
       }
     ]
@@ -43,7 +43,7 @@
         "type": "image_all_boarder",
         "boarderH":1,
         "boarderV": 1,
-        "loc": "cubecraft:controls/button_ore_ui.png",
+        "loc": "cubecraft:/texture/gui/controls/button_ore_ui.png",
         "pos": [0,1,0,1]
       }
     ]
@@ -55,7 +55,7 @@
         "type": "image_all_boarder",
         "boarderH":8,
         "boarderV": 8,
-        "loc": "cubecraft:controls/button_selected_ore_ui.png",
+        "loc": "cubecraft:/texture/gui/controls/button_selected_ore_ui.png",
         "pos": [0,1,0,1]
       }
     ]
@@ -67,7 +67,7 @@
         "type": "image_all_boarder",
         "boarderH":8,
         "boarderV": 8,
-        "loc": "cubecraft:controls/button_disabled_ore_ui.png",
+        "loc": "cubecraft:/texture/gui/controls/button_disabled_ore_ui.png",
         "pos": [0,1,0,1]
       }
     ]

@@ -9,15 +9,14 @@ import ink.flybird.cubecraft.client.render.renderer.IBlockRenderer;
 import ink.flybird.cubecraft.client.render.renderer.IEntityRenderer;
 import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import ink.flybird.cubecraft.client.resources.ResourceManager;
 import ink.flybird.fcommon.GameSetting;
 import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.fcommon.registry.RegisterMap;
-import ink.flybird.quantum3d.Camera;
+import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d.device.Window;
-import ink.flybird.quantum3d.textures.TextureManager;
-import io.flybird.cubecraft.internal.entity.EntityPlayer;
-import io.flybird.cubecraft.world.IWorld;
+import ink.flybird.quantum3d_legacy.textures.TextureManager;
+import ink.flybird.cubecraft.internal.entity.EntityPlayer;
+import ink.flybird.cubecraft.world.IWorld;
 
 public interface ClientRenderContext {
     RegisterMap<IBlockRenderer, ?> BLOCK_RENDERER = new RegisterMap<>();
@@ -30,5 +29,6 @@ public interface ClientRenderContext {
 
     TextureManager TEXTURE = new TextureManager();
     RegisterMap<IColorMap, ?> COLOR_MAP = new RegisterMap<>();
-    ResourceManager RESOURCE_MANAGER = new ResourceManager();
 }
+
+//todo fix:重载区块假死问题

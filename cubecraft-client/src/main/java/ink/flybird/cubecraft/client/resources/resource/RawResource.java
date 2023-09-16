@@ -19,11 +19,6 @@ public final class RawResource extends IResource {
         this.data = stream.readAllBytes();
     }
 
-    @Override
-    public String getPathPrefix() {
-        return "/resource/" + this.getNamespace() + "/text";
-    }
-
     public byte[] getData() {
         return data;
     }

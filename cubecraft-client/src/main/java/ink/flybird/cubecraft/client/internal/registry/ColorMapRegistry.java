@@ -2,8 +2,8 @@ package ink.flybird.cubecraft.client.internal.registry;
 
 import ink.flybird.cubecraft.client.render.model.block.IColorMap;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import io.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.fcommon.registry.ItemGetter;
 
 public class ColorMapRegistry {

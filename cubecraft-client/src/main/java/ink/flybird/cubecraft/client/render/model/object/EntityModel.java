@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.client.render.model.object;
 
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
-import io.flybird.cubecraft.world.entity.Entity;
+import ink.flybird.cubecraft.world.entity.Entity;
 
 import java.util.Set;
 

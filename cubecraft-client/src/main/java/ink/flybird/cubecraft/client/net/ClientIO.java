@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.net;
 
-import io.flybird.cubecraft.net.packet.Packet;
+import ink.flybird.cubecraft.net.packet.Packet;
 
 import java.net.InetSocketAddress;
 

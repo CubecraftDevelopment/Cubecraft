@@ -2,11 +2,11 @@ package ink.flybird.cubecraft.client.internal.renderer.font;
 
 
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
-import ink.flybird.quantum3d.GLUtil;
-import ink.flybird.quantum3d.ShapeRenderer;
-import ink.flybird.quantum3d.draw.VertexBuilder;
-import ink.flybird.quantum3d.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d.textures.Texture2D;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import ink.flybird.fcommon.math.MathHelper;
 
 import java.util.List;

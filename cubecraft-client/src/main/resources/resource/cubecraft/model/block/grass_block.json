@@ -1,6 +1,6 @@
 {
   "type": "free",
-  "particle_texture": "cubecraft:/block/dirt.png",
+  "particle_texture": "cubecraft:/texture/block/dirt.png",
   "models": [
     {
       "statement": "default",
@@ -14,38 +14,38 @@
           "faces": {
             "top": {
               "id": "cubecraft:cube_0",
-              "texture": "cubecraft:/block/grass_block_top.png",
+              "texture": "cubecraft:/texture/block/grass_block_top.png",
               "culling": "solid",
               "color": "cubecraft:grass",
               "uv": [0, 1, 0, 1]
             },
             "bottom": {
               "id": "cubecraft:cube_1",
-              "texture": "cubecraft:/block/dirt.png",
+              "texture": "cubecraft:/texture/block/dirt.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "left": {
               "id": "cubecraft:cube_2",
-              "texture": "cubecraft:/block/grass_block_side.png",
+              "texture": "cubecraft:/texture/block/grass_block_side.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "right": {
               "id": "cubecraft:cube_3",
-              "texture": "cubecraft:/block/grass_block_side.png",
+              "texture": "cubecraft:/texture/block/grass_block_side.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "front": {
               "id": "cubecraft:cube_4",
-              "texture": "cubecraft:/block/grass_block_side.png",
+              "texture": "cubecraft:/texture/block/grass_block_side.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "back": {
               "id": "cubecraft:cube_5",
-              "texture": "cubecraft:/block/grass_block_side.png",
+              "texture": "cubecraft:/texture/block/grass_block_side.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             }
@@ -60,20 +60,20 @@
           "faces": {
             "top": {
               "id": "cubecraft:cube_0",
-              "texture": "cubecraft:/block/empty.png",
+              "texture": "cubecraft:/texture/block/empty.png",
               "culling": "solid",
               "color": "cubecraft:grass",
               "uv": [0, 1, 0, 1]
             },
             "bottom": {
               "id": "cubecraft:cube_1",
-              "texture": "cubecraft:/block/empty.png",
+              "texture": "cubecraft:/texture/block/empty.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "left": {
               "id": "cubecraft:cube_2",
-              "texture": "cubecraft:/block/grass_block_side_overlay.png",
+              "texture": "cubecraft:/texture/block/grass_block_side_overlay.png",
               "color": "cubecraft:grass",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
@@ -81,21 +81,21 @@
             "right": {
               "id": "cubecraft:cube_3",
               "color": "cubecraft:grass",
-              "texture": "cubecraft:/block/grass_block_side_overlay.png",
+              "texture": "cubecraft:/texture/block/grass_block_side_overlay.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "front": {
               "id": "cubecraft:cube_4",
               "color": "cubecraft:grass",
-              "texture": "cubecraft:/block/grass_block_side_overlay.png",
+              "texture": "cubecraft:/texture/block/grass_block_side_overlay.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "back": {
               "id": "cubecraft:cube_5",
               "color": "cubecraft:grass",
-              "texture": "cubecraft:/block/grass_block_side_overlay.png",
+              "texture": "cubecraft:/texture/block/grass_block_side_overlay.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             }

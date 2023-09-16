@@ -1,7 +1,6 @@
 package ink.flybird.cubecraft.client.internal.gui.component;
 
 import com.google.gson.Gson;
-import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.node.Component;
@@ -22,7 +21,7 @@ public class SplashText extends Component {
     public void init(Element element) {
         super.init(element);
         String[] splash;
-        splash = new Gson().fromJson(ClientRenderContext.RESOURCE_MANAGER.getResource(element.getTextContent().trim()).getAsText(), String[].class);
+        splash = new Gson().fromJson(ClientSharedContext.RESOURCE_MANAGER.getResource(element.getTextContent().trim()).getAsText(), String[].class);
         this.text = splash[new Random().nextInt(splash.length)];
         this.bobbing = DocumentUtil.getAttributeB(element, "bobbing", false);
         this.rotation = DocumentUtil.getAttributeI(element, "rotation", 0);

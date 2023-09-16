@@ -2,10 +2,10 @@ package ink.flybird.cubecraft.client;
 
 import ink.flybird.cubecraft.client.internal.renderer.font.SmoothedFontRenderer;
 import ink.flybird.cubecraft.client.net.ClientNetHandler;
+import ink.flybird.cubecraft.client.resources.ResourceManager;
 import ink.flybird.fcommon.query.SimpleQueryHandler;
 import ink.flybird.fcommon.registry.ConstructingMap;
-import io.flybird.cubecraft.register.EnvironmentPath;
-import io.flybird.cubecraft.util.GameSetting;
+import ink.flybird.cubecraft.util.setting.GameSetting;
 
 public interface ClientSharedContext {
     SmoothedFontRenderer SMOOTH_FONT_RENDERER = new SmoothedFontRenderer();
@@ -17,6 +17,7 @@ public interface ClientSharedContext {
     KeyBindingController KEY_BINDING_CONTROLLER = new KeyBindingController(null,null);
 
 
-    GameSetting KEY_BIND_SETTING = new GameSetting("/keybinding-setting.toml");
+    GameSetting CLIENT_CONTROL_SETTING = new GameSetting("/client-control-setting.toml");
     GameSetting CLIENT_SETTING=new GameSetting("/client-setting.toml");
+    ResourceManager RESOURCE_MANAGER = new ResourceManager();
 }

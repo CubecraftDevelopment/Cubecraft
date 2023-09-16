@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.internal.gui.screen;
 
-import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.screen.Screen;
@@ -11,13 +11,12 @@ import ink.flybird.quantum3d.device.MouseButton;
 import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
 import ink.flybird.quantum3d.device.event.MouseClickEvent;
 import ink.flybird.quantum3d.device.event.MouseScrollEvent;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.entity.Entity;
-import io.flybird.cubecraft.world.item.Inventory;
-import ink.flybird.quantum3d.GLUtil;
-import ink.flybird.quantum3d.ShapeRenderer;;
-import ink.flybird.quantum3d.platform.Keyboard;
-import ink.flybird.quantum3d.textures.Texture2D;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.entity.Entity;
+import ink.flybird.cubecraft.world.item.Inventory;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.math.HitResult;
 import ink.flybird.fcommon.math.HittableObject;
@@ -34,9 +33,9 @@ public final class HUDScreen extends Screen {
     public HUDScreen() {
         super(true, "cubecraft:hud_screen", ScreenBackgroundType.IN_GAME);
         this.actionBar.generateTexture();
-        this.actionBar.load(ClientRenderContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiTexture("cubecraft", "containers/actionbar.png")));
+        this.actionBar.load(ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiTexture("cubecraft", "containers/actionbar.png")));
         this.pointer.generateTexture();
-        this.pointer.load(ClientRenderContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiTexture("cubecraft", "icons/pointer.png")));
+        this.pointer.load(ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiTexture("cubecraft", "icons/pointer.png")));
     }
 
     @Override

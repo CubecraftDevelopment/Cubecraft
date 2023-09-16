@@ -1,8 +1,8 @@
 package ink.flybird.cubecraft.client.internal.renderer.world.chunk;
 
-import ink.flybird.quantum3d.Camera;
-import ink.flybird.quantum3d.culling.FrustumCuller;
-import io.flybird.cubecraft.internal.entity.EntityPlayer;
+import ink.flybird.quantum3d_legacy.Camera;
+import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
+import ink.flybird.cubecraft.internal.entity.EntityPlayer;
 
 import java.util.Comparator;
 

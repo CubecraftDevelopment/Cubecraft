@@ -14,7 +14,7 @@ import ink.flybird.cubecraft.client.internal.gui.event.ComponentInitializeEvent;
 import ink.flybird.cubecraft.client.internal.gui.screen.HUDScreen;
 import ink.flybird.cubecraft.client.internal.gui.screen.ScreenLocation;
 import ink.flybird.cubecraft.client.internal.gui.screen.ScreenType;
-import io.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.register.SharedContext;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.fcommon.event.SubscribedEvent;

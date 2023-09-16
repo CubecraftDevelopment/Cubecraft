@@ -6,10 +6,10 @@ import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.fcommon.container.Vector3;
 import ink.flybird.fcommon.registry.RegisteredConstructor;
 import ink.flybird.fcommon.registry.TypeItem;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.block.EnumFacing;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import ink.flybird.quantum3d.draw.VertexBuilder;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.EnumFacing;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 
 import java.util.Objects;
 import java.util.Set;

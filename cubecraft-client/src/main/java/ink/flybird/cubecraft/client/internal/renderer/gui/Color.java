@@ -3,12 +3,12 @@ package ink.flybird.cubecraft.client.internal.renderer.gui;
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import ink.flybird.quantum3d.GLUtil;
-import ink.flybird.quantum3d.ShapeRenderer;
+import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Set;
 
 public record Color(double x0, double x1, double y0, double y1, int r, int g, int b, int a)implements IComponentPartRenderer {
     @Override
@@ -29,8 +29,8 @@ public record Color(double x0, double x1, double y0, double y1, int r, int g, in
     }
 
     @Override
-    public void initializeRenderer(List<ResourceLocation> loc) {
-        //nope
+    public void initializeRenderer(Set<ImageResource> loc) {
+
     }
 
     public static class JDeserializer implements JsonDeserializer<Color>{

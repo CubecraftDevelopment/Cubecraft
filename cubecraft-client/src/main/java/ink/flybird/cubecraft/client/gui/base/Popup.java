@@ -3,8 +3,8 @@ package ink.flybird.cubecraft.client.gui.base;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.internal.registry.TextureRegistry;
-import ink.flybird.quantum3d.GLUtil;
-import ink.flybird.quantum3d.ShapeRenderer;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.fcommon.math.MathHelper;
 
 public class Popup {

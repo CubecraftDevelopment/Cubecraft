@@ -4,10 +4,10 @@ import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.render.model.object.Vertex;
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.cubecraft.client.render.BlockRenderUtil;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import ink.flybird.quantum3d.draw.VertexBuilder;
-import ink.flybird.quantum3d.textures.Texture2DTileMap;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 

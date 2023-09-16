@@ -6,13 +6,12 @@ import ink.flybird.fcommon.container.StartArguments;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.timer.Timer;
-import ink.flybird.quantum3d.ContextManager;
 import ink.flybird.quantum3d.device.DeviceContext;
 import ink.flybird.quantum3d.lwjgl.context.CompactOGLRenderContext;
 import ink.flybird.quantum3d.lwjgl.device.GLFWDeviceContext;
 import ink.flybird.quantum3d.render.RenderContext;
-import io.flybird.cubecraft.register.EnvironmentPath;
-import io.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.register.EnvironmentPath;
+import ink.flybird.cubecraft.register.SharedContext;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
@@ -40,8 +39,6 @@ public final class ClientMain {
         logger.info("runtime path: " + EnvironmentPath.GAME_FOLDER);
         logger.info("native:" + System.getProperty("java.library.path"));
 
-        ContextManager.initGLFW();
-
         DeviceContext deviceContext;
         RenderContext renderContext;
 
@@ -61,6 +58,8 @@ public final class ClientMain {
         logger.info("starting client thread");
         Thread.currentThread().setContextClassLoader(SharedContext.CLASS_LOADER);
         client.run();
+
+        System.exit(0);
     }
 
     public static void releaseNativeLibraries(Platform plat) {
@@ -69,11 +68,10 @@ public final class ClientMain {
             InputStream stream = ClientMain.class.getResourceAsStream("/native/native_index.json");
             object = JsonParser.parseString(new String(stream.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
             stream.close();
-
         } catch (Exception e) {
             logger.exception(e);
-            logger.error("could not load native library. system will exit");
-            System.exit(0);
+            logger.error("could not read native file.");
+            return;
         }
 
         JsonObject repo = object.get("%s/%s".formatted(plat.getName(), plat.getArch())).getAsJsonObject();

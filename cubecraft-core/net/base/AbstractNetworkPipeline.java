@@ -1,7 +1,7 @@
-package io.flybird.cubecraft.net.base;
+package ink.flybird.cubecraft.net.base;
 
-import io.flybird.cubecraft.net.NetWorkEventBus;
-import io.flybird.cubecraft.net.INetHandler;
+import ink.flybird.cubecraft.net.NetWorkEventBus;
+import ink.flybird.cubecraft.net.INetHandler;
 import ink.flybird.fcommon.event.CachedEventBus;
 import ink.flybird.fcommon.event.EventBus;
 

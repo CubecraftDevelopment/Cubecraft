@@ -4,9 +4,9 @@ import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.render.renderer.IBlockRenderer;
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import ink.flybird.quantum3d.draw.VertexBuilder;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 
 import java.util.Set;
 

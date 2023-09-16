@@ -19,11 +19,6 @@ public final class TextResource extends IResource {
         this.string = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
     }
 
-    @Override
-    public String getPathPrefix() {
-        return "/resource/" + this.getNamespace() + "/text";
-    }
-
     public String getString() {
         return this.string;
     }

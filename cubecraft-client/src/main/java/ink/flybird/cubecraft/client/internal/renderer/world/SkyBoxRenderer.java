@@ -4,23 +4,17 @@ import ink.flybird.cubecraft.client.render.RenderType;
 import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
 import ink.flybird.fcommon.GameSetting;
 import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.quantum3d.Camera;
-import ink.flybird.quantum3d.ShapeRenderer;
-import ink.flybird.quantum3d.culling.FrustumCuller;
-import ink.flybird.quantum3d.draw.DrawMode;
-import ink.flybird.quantum3d.draw.VertexBuilder;
-import ink.flybird.quantum3d.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d.drawcall.IRenderCall;
-import ink.flybird.quantum3d.drawcall.VBORenderCall;
+import ink.flybird.quantum3d_legacy.Camera;
+import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
+import ink.flybird.quantum3d_legacy.draw.DrawMode;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
+import ink.flybird.quantum3d_legacy.drawcall.VBORenderCall;
 import ink.flybird.quantum3d.device.Window;
-import ink.flybird.quantum3d.textures.Texture2D;
-import io.flybird.cubecraft.internal.entity.EntityPlayer;
-import io.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.internal.entity.EntityPlayer;
+import ink.flybird.cubecraft.world.IWorld;
 import org.lwjgl.opengl.GL11;
-
-import javax.imageio.ImageIO;
-import java.io.IOException;
-import java.util.Objects;
 
 @TypeItem(WorldRendererType.SKY_BOX)
 public final class SkyBoxRenderer extends IWorldRenderer {

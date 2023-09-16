@@ -1,8 +1,8 @@
 package ink.flybird.cubecraft.client.gui.base;
 
-import ink.flybird.cubecraft.client.ClientRenderContext;
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
-import io.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.register.SharedContext;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
 import ink.flybird.fcommon.math.MathHelper;
@@ -71,7 +71,7 @@ public class Text {
             case "icon" -> String.valueOf(((char) MathHelper.hex2Int(src)));
             case "random" -> {
                 String[] splash;
-                splash = new Gson().fromJson(ClientRenderContext.RESOURCE_MANAGER.getResource(src).getAsText(), String[].class);
+                splash = new Gson().fromJson(ClientSharedContext.RESOURCE_MANAGER.getResource(src).getAsText(), String[].class);
                 yield splash[new Random().nextInt(splash.length)];
             }
             default -> throw new IllegalArgumentException("no matched constant named %s".formatted(type));

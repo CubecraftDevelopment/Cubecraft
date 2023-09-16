@@ -2,8 +2,8 @@ package ink.flybird.cubecraft.client.render;
 
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.render.model.object.Vertex;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.block.EnumFacing;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.EnumFacing;
 import ink.flybird.fcommon.container.Vector3;
 import org.joml.Vector3d;
 

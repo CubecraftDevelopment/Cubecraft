@@ -2,7 +2,7 @@
   "resource_pack": {
     "id": "cubecraft_internal_client",
     "mod_type": "integrated",
-    "main_class": "io.flybird.cubecraft.client.internal.ClientInternalMod",
+    "main_class": "ink.flybird.cubecraft.client.internal.ClientInternalMod",
     "auto_register_namespace": "cubecraft"
   },
   "desc": {

@@ -1,11 +1,13 @@
 package ink.flybird.cubecraft.client.internal.renderer.world.chunk;
 
 import ink.flybird.cubecraft.client.ClientRenderContext;
-import ink.flybird.quantum3d.Camera;
-import ink.flybird.quantum3d.compile.CompileCallable;
-import ink.flybird.quantum3d.draw.*;
-import ink.flybird.quantum3d.drawcall.IRenderCall;
-import ink.flybird.quantum3d.drawcall.ListRenderCall;
+import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.client.render.RenderType;
+import ink.flybird.quantum3d_legacy.Camera;
+import ink.flybird.quantum3d_legacy.compile.CompileCallable;
+import ink.flybird.quantum3d_legacy.draw.*;
+import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
+import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
 import ink.flybird.fcommon.container.KeyGetter;
 import ink.flybird.fcommon.context.LifetimeCounter;
 import ink.flybird.fcommon.math.AABB;
@@ -13,13 +15,13 @@ import ink.flybird.cubecraft.client.internal.renderer.world.TerrainRenderer;
 import ink.flybird.cubecraft.client.render.DistanceComparable;
 import ink.flybird.cubecraft.client.render.IRenderType;
 import ink.flybird.cubecraft.client.render.renderer.IBlockRenderer;
-import io.flybird.cubecraft.internal.block.BlockType;
-import io.flybird.cubecraft.world.IWorld;
-import io.flybird.cubecraft.world.access.ChunkLoadAccess;
-import io.flybird.cubecraft.world.block.IBlockAccess;
-import io.flybird.cubecraft.world.chunk.ChunkLoadTicket;
-import io.flybird.cubecraft.world.chunk.ChunkPos;
-import io.flybird.cubecraft.world.entity.Entity;
+import ink.flybird.cubecraft.internal.block.BlockType;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.access.ChunkLoadAccess;
+import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.chunk.ChunkLoadTicket;
+import ink.flybird.cubecraft.world.chunk.ChunkPos;
+import ink.flybird.cubecraft.world.entity.Entity;
 import org.joml.Vector3d;
 
 import java.util.HashSet;
@@ -28,8 +30,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-//todo:区域渲染（整体渲染，无矩阵变换）
 //todo:多个透明渲染层冲突
+//todo:区块数据通道化
+//todo:完善界面，完善组件
+
 public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceComparable, CompileCallable<RenderChunk> {
     public final RenderChunkPos pos;
     public final IWorld world;
@@ -38,15 +42,11 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
     private final IRenderCall visibleAreaRenderCall;
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
 
-    //todo:区块数据通道化
-    //todo:完善界面，完善组件
-    //
-    //todo:队列异常大小
+
 
     public RenderChunk(TerrainRenderer parent, IWorld world, RenderChunkPos pos) {
         this.parent = parent;
-        boolean vbo = false;
-        this.layers = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(vbo);
+        this.layers = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(ClientSettingRegistry.CHUNK_USE_VBO.getValue());
         this.world = world;
         this.pos = pos;
         this.visibleAreaRenderCall = new ListRenderCall();
@@ -64,6 +64,21 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
         for (ChunkLayerRenderer layer : this.layers.values()) {
             layer.render(type, this);
         }
+    }
+
+    public int getRenderLists(RenderType type){
+        try {
+            this.lifetimeCounter.check();
+        }catch (Exception e){
+            return -1;
+        }
+
+        for (ChunkLayerRenderer layer : this.layers.values()) {
+            if(layer.isFilled()&&layer.getRenderType()==type) {
+                return layer.getRenderCall().getHandle();
+            }
+        }
+        return -1;
     }
 
     public IRenderCall getVisibleAreaCall() {
@@ -168,7 +183,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
                     if (renderer == null) {
                         continue;
                     }
-                    if (TerrainRenderer.DISTANCE_FIX) {
+                    if (ClientSettingRegistry.CHUNK_FIX_DISTANCE.getValue()) {
                         renderer.renderBlock(blockAccess, layerID, this.world, cx, cy, cz, builder);
                         continue;
                     }

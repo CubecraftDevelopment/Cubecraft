@@ -13,4 +13,9 @@ public final class InternalResourceLoader extends ResourceLoader {
         }
         return inputStream;
     }
+
+    @Override
+    public int getPriority() {
+        return -2;
+    }
 }

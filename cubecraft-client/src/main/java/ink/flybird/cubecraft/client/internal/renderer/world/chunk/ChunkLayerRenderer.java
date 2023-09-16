@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.client.internal.renderer.world.chunk;
 
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.cubecraft.client.render.IRenderType;
-import ink.flybird.quantum3d.drawcall.IRenderCall;
+import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
 
 
 public abstract class ChunkLayerRenderer {

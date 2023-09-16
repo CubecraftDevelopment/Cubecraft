@@ -17,10 +17,11 @@ import ink.flybird.cubecraft.client.internal.renderer.font.LegacyFontRenderer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.flybird.cubecraft.register.SharedContext;
-import ink.flybird.quantum3d.textures.Texture2D;
-import ink.flybird.quantum3d.textures.Texture2DTileMap;
-import ink.flybird.quantum3d.textures.TextureStateManager;
+import ink.flybird.cubecraft.register.EnvironmentPath;
+import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
+import ink.flybird.quantum3d_legacy.textures.TextureStateManager;
 import ink.flybird.fcommon.I18nHelper;
 import ink.flybird.fcommon.container.NameSpaceMap;
 
@@ -29,6 +30,7 @@ import ink.flybird.fcommon.logging.SimpleLogger;
 
 
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 
 public class ResourceLoader {
@@ -55,29 +57,30 @@ public class ResourceLoader {
     @ResourceLoadHandler(stage = ResourceLoadStage.BLOCK_TEXTURE)
     public void loadBlockTexture(ClientResourceReloadEvent e) {
         try {
-            ImageResource[] f = new ImageResource[textureList.size()];
-            int i = 0;
-            for (ImageResource res : textureList) {
-                f[i] = ClientRenderContext.RESOURCE_MANAGER.registerResource(res.getName(),res);
-                i++;
-            }
-            Texture2DTileMap terrain = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().set("cubecraft:terrain", Texture2DTileMap.autoGenerate(f, false));
+            ImageResource[] f = textureList.toArray(new ImageResource[0]);
+
             for (ImageResource r : f) {
                 if(r==null){
-                    terrain.register(ClientRenderContext.RESOURCE_MANAGER.getResource("/resource/cubecraft/texture/block/fallback.png"));
                     continue;
                 }
-                terrain.register(r);
+                ClientSharedContext.RESOURCE_MANAGER.loadResource(r);
             }
+
+            Texture2DTileMap terrain = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().set("cubecraft:terrain", Texture2DTileMap.autoGenerate(f, false));
 
             terrain.generateTexture();
             terrain.completePlannedLoad(e.client(), 0, 100);
+
+            File f2 = new File(EnvironmentPath.CACHE_FOLDER+"/terrain.png");
+            terrain.export(f2);
+
             terrain.upload();
+
 
             /*
             if (ClientMain.getStartGameArguments().getValueAsBoolean("debug", true)) {
-                File f2 = new File(EnvironmentPath.CACHE_FOLDER+"/terrain.png");
-                terrain.export(f2);
+
+
             }
 
              */
@@ -153,7 +156,7 @@ public class ResourceLoader {
                     }
                     LegacyFontRenderer.textures[i] = new Texture2D(false, true);
                     LegacyFontRenderer.textures[i].generateTexture();
-                    LegacyFontRenderer.textures[i].load(ClientRenderContext.RESOURCE_MANAGER.getResource("/resource/cubecraft/texture/font/unicode_page_%s.png".formatted(s2)));
+                    LegacyFontRenderer.textures[i].load(ClientSharedContext.RESOURCE_MANAGER.getResource("/resource/cubecraft/texture/font/unicode_page_%s.png".formatted(s2)));
                     TextureStateManager.setTextureMipMap(LegacyFontRenderer.textures[i], true);
                     if (System.currentTimeMillis() - last > 16) {
                         System.gc();

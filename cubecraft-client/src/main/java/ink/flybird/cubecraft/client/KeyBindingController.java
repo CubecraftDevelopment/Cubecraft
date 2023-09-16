@@ -1,6 +1,7 @@
 package ink.flybird.cubecraft.client;
 
 import ink.flybird.cubecraft.client.event.ScopedKeypressEvent;
+import ink.flybird.cubecraft.event.SettingReloadEvent;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.event.SimpleEventBus;
@@ -8,7 +9,6 @@ import ink.flybird.quantum3d.device.Keyboard;
 import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.adapter.KeyboardEventAdapter;
 import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
-import io.flybird.cubecraft.event.SettingReloadEvent;
 
 import java.util.HashMap;
 import java.util.Map;

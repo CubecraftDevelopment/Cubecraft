@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.resources.resource;
 
-import ink.flybird.quantum3d.textures.ITextureImage;
+import ink.flybird.quantum3d_legacy.textures.ITextureImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,11 +20,6 @@ public final class ImageResource extends IResource implements ITextureImage {
     @Override
     public void load(InputStream stream) throws Exception {
         this.image = ImageIO.read(stream);
-    }
-
-    @Override
-    public String getPathPrefix() {
-        return "/resource/" + this.getNamespace() + "/texture";
     }
 
     @Override

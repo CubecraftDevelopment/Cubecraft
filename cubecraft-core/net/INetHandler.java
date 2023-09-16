@@ -1,4 +1,4 @@
-package io.flybird.cubecraft.net;
+package ink.flybird.cubecraft.net;
 
 
 public interface INetHandler {

@@ -6,7 +6,7 @@
         "type": "image_animation",
         "interval": 50,
         "frames": 20,
-        "loc": "cubecraft:controls/circle_wait_animation.png",
+        "loc": "cubecraft:/texture/gui/controls/circle_wait_animation.png",
         "pos": [0,1,0,1]
       }
     ]

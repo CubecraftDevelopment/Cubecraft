@@ -2,8 +2,8 @@ package ink.flybird.cubecraft.client.internal.registry;
 
 import ink.flybird.fcommon.registry.FieldRegistry;
 import ink.flybird.fcommon.registry.FieldRegistryHolder;
-import ink.flybird.quantum3d.textures.Texture;
-import ink.flybird.quantum3d.textures.Texture2D;
+import ink.flybird.quantum3d_legacy.textures.Texture;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 
 //todo:资源格式统一，UI动画
 @FieldRegistryHolder(value = "cubecraft")

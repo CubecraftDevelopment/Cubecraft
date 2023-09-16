@@ -1,8 +1,8 @@
 package ink.flybird.cubecraft.client.net;
 
 import ink.flybird.cubecraft.client.CubecraftClient;
-import io.flybird.cubecraft.net.INetHandler;
-import io.flybird.cubecraft.net.packet.Packet;
+import ink.flybird.cubecraft.net.INetHandler;
+import ink.flybird.cubecraft.net.packet.Packet;
 
 public abstract class ClientNetHandler implements INetHandler {
 
