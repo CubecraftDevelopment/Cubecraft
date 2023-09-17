@@ -20,7 +20,7 @@ public interface ResourceRegistry {
 
     @Load("client:startup")
     @FieldRegistry("game_icon")
-    RawResource GAME_ICON = new RawResource("cubecraft:/texture/texture/gui/logo/game_icon.png");
+    RawResource GAME_ICON = new RawResource("cubecraft:/texture/gui/logo/game_icon.png");
 
     @FieldRegistry("image_bg")
     ImageResource IMAGE_BG = new ImageResource("cubecraft:/texture/gui/bg.png");

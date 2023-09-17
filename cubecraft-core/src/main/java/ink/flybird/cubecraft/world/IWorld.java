@@ -1,14 +1,7 @@
 package ink.flybird.cubecraft.world;
 
-import ink.flybird.cubecraft.register.ContentRegistries;
-import ink.flybird.fcommon.container.KeyMap;
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.HitBox;
-import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.cubecraft.level.Level;
+import ink.flybird.cubecraft.register.ContentRegistries;
 import ink.flybird.cubecraft.world.block.BlockState;
 import ink.flybird.cubecraft.world.block.ChunkBlockAccess;
 import ink.flybird.cubecraft.world.block.IBlockAccess;
@@ -17,6 +10,13 @@ import ink.flybird.cubecraft.world.chunk.*;
 import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.cubecraft.world.entity.EntityLiving;
 import ink.flybird.cubecraft.world.event.block.BlockChangeEvent;
+import ink.flybird.fcommon.container.KeyMap;
+import ink.flybird.fcommon.container.Vector3;
+import ink.flybird.fcommon.event.EventBus;
+import ink.flybird.fcommon.event.SimpleEventBus;
+import ink.flybird.fcommon.math.AABB;
+import ink.flybird.fcommon.math.HitBox;
+import ink.flybird.fcommon.math.MathHelper;
 import org.joml.Vector3d;
 
 import java.util.*;
@@ -57,9 +57,6 @@ public abstract class IWorld {
             }
         }
 
-        for (Entity e : this.entities.values()) {
-            result.add(e.collisionBox);
-        }
         result.remove(box);
         return result;
     }
@@ -114,7 +111,7 @@ public abstract class IWorld {
                     && entity != e)) {
                 continue;
             }
-            if(e.getSelectionBoxes()==null){
+            if (e.getSelectionBoxes() == null) {
                 continue;
             }
             result.addAll(List.of(e.getSelectionBoxes()));
@@ -333,5 +330,28 @@ public abstract class IWorld {
                 && this.getAllBlockInRange(x1 + 1, y0, z0, x1 + 1, y1, z1).stream().allMatch(block -> block.getBlock().isSolid())
                 && this.getAllBlockInRange(x0, y0, z0 - 1, x1, y1, z0 - 1).stream().allMatch(block -> block.getBlock().isSolid())
                 && this.getAllBlockInRange(x0, y0, z1 + 1, x1, y1, z1 + 1).stream().allMatch(block -> block.getBlock().isSolid());
+    }
+
+    public IBlockAccess[] getBlockAndNeighbor(long x, long y, long z) {
+        return new IBlockAccess[]{
+                getBlockAccess(x, y, z),
+                getBlockAccess(x - 1, y, z),
+                getBlockAccess(x + 1, y, z),
+                getBlockAccess(x, y - 1, z),
+                getBlockAccess(x, y + 1, z),
+                getBlockAccess(x, y, z - 1),
+                getBlockAccess(x, y, z + 1)
+        };
+    }
+
+    public IBlockAccess[] getBlockNeighbor(long x, long y, long z) {
+        return new IBlockAccess[]{
+                getBlockAccess(x - 1, y, z),
+                getBlockAccess(x + 1, y, z),
+                getBlockAccess(x, y - 1, z),
+                getBlockAccess(x, y + 1, z),
+                getBlockAccess(x, y, z - 1),
+                getBlockAccess(x, y, z + 1)
+        };
     }
 }

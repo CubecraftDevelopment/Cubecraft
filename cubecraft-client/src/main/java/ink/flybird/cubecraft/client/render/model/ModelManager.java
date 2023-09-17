@@ -27,8 +27,8 @@ public class ModelManager<I extends Model> {
     }
 
     public void load(String file) {
-        TextResource resource = new TextResource(file);
-        ClientSharedContext.RESOURCE_MANAGER.registerResource("default", file, resource);
+        //TextResource resource = new TextResource(file);
+        //ClientSharedContext.RESOURCE_MANAGER.registerResource("default", file, resource);
 
         Resource res;
         try {

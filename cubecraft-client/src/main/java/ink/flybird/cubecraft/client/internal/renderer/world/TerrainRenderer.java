@@ -60,7 +60,7 @@ public class TerrainRenderer extends IWorldRenderer {
     public TerrainRenderer(Window window, IWorld world, EntityPlayer player, Camera cam, GameSetting setting) {
         super(window, world, player, cam, setting);
         world.getEventBus().registerEventListener(this);
-        this.updateService = new MultiRenderCompileService<>(setting.getValueAsInt("client.render.terrain.draw_thread", 1));
+        this.updateService = new MultiRenderCompileService<>(ClientSettingRegistry.CHUNK_UPDATE_THREAD.getValue());
         this.chunkSorterAndRemover = new ChunkSorter(this.frustum, this.camera, this.player);
     }
 

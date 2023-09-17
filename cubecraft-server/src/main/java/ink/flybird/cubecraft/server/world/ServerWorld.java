@@ -77,9 +77,12 @@ public class ServerWorld extends IWorld {
             Entity e = it2.next();
             if (e instanceof EntityPlayer) {
                 //this.server.getSetting().getValueAsInt("server.world.simulation_distance", 3)
-                ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) e.x, (long) e.z), 4, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10));
+                ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) e.x, (long) e.z), 1, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10));
             } else {
                 WorldChunk c = this.getChunk(new ChunkPos((long) (e.x) / 16, (long) (e.z) / 16));
+                if(c.task==null){
+                    continue;
+                }
                 if (c.task.shouldProcess(ChunkLoadTaskType.BLOCK_ENTITY_TICK)) {
                     e.tick();
                 } else {
@@ -96,9 +99,11 @@ public class ServerWorld extends IWorld {
             if (item > 0 || c == null || !c.task.shouldProcess(ChunkLoadTaskType.BLOCK_TICK)) {
                 this.scheduledTickEvents.put(key, item - 1);
             } else {
-                getBlockState(key.x(), key.y(), key.z()).getBlock().onBlockUpdate(this, key.x(), key.y(), key.z());
+                //getBlockState(key.x(), key.y(), key.z()).getBlock().onBlockUpdate(this, key.x(), key.y(), key.z());
                 this.scheduledTickEvents.remove(key);
             }
         });
     }
 }
+
+//todo:计划刻，方块更新调度

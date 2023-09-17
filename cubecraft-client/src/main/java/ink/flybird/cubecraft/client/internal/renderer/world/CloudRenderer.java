@@ -1,6 +1,7 @@
 package ink.flybird.cubecraft.client.internal.renderer.world;
 
 import com.google.gson.JsonElement;
+import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
@@ -102,10 +103,10 @@ public class CloudRenderer extends IWorldRenderer {
         }
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_FOG);
-        GLUtil.setupFog(this.setting.getValueAsInt("client.render.terrain.render_distance", 4) * 16 * 8 * this.setting.getValueAsInt("client.render.terrain.render_distance", 4) * 16 * 8, ColorUtil.int1Float1ToFloat4(0, 1));
+        int d2 = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16 * 2;
+        GLUtil.setupFog(d2, ColorUtil.int1Float1ToFloat4(this.cfg.cloudColor, 1));
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_CULL_FACE);
-        int d2 = this.setting.getValueAsInt("client.render.terrain.render_distance", 4) * 16 * 8;
         int cloudQuality = this.setting.getValueAsInt("client.render.environment.cloud.quality", FLAT_CLOUD_RENDER);
         if (cloudQuality <= NO_CLOUD_RENDER) {
             return;

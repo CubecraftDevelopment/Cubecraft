@@ -13,4 +13,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface CubecraftExtension {}
+public @interface CubecraftExtension {
+    ExtensionSide side();
+    int apiVersion() default 1;
+}

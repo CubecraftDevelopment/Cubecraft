@@ -96,7 +96,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
     }
 
     @Override
-    public void initDevice(ink.flybird.quantum3d.device.Window window) {
+    public void initDevice(Window window) {
         this.logger.info("load config");
         ClientSharedContext.CLIENT_SETTING.load();
         ClientSharedContext.CLIENT_SETTING.register(ClientSettingRegistry.class);
@@ -121,7 +121,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         window.setFullscreen(ClientSettingRegistry.FULL_SCREEN.getValue());
         window.setResizeable(true);
         window.setVsync(ClientSettingRegistry.V_SYNC.getValue());
-        //window.setIcon(ResourceRegistry.GAME_ICON.getStream());
+        window.setIcon(ResourceRegistry.GAME_ICON.getStream());
     }
 
     @Override

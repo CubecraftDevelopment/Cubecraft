@@ -24,7 +24,7 @@ public class DimensionOverworld implements IDimension {
 
     @Override
     public byte predictLightAt(IWorld world, long x, long y, long z) {
-        return 127;
+        return -1;
     }
 
     @Override

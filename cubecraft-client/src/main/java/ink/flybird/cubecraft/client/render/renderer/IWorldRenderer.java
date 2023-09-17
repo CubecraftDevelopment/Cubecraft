@@ -1,14 +1,14 @@
 package ink.flybird.cubecraft.client.render.renderer;
 
 import com.google.gson.JsonElement;
-import ink.flybird.cubecraft.client.render.RenderType;
-import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.cubecraft.client.render.LevelRenderer;
+import ink.flybird.cubecraft.client.render.RenderType;
 import ink.flybird.cubecraft.internal.entity.EntityPlayer;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.quantum3d_legacy.Camera;
-import ink.flybird.quantum3d.device.Window;
 import ink.flybird.fcommon.GameSetting;
+import ink.flybird.fcommon.registry.TypeItem;
+import ink.flybird.quantum3d.device.Window;
+import ink.flybird.quantum3d_legacy.Camera;
 
 
 public abstract class IWorldRenderer {
@@ -32,10 +32,6 @@ public abstract class IWorldRenderer {
         return this.getClass().getAnnotation(TypeItem.class).value();
     }
 
-    public void setParent(LevelRenderer parent) {
-        this.parent = parent;
-    }
-
     public GameSetting getSetting() {
         return setting;
     }
@@ -56,14 +52,15 @@ public abstract class IWorldRenderer {
         return parent;
     }
 
+    public void setParent(LevelRenderer parent) {
+        this.parent = parent;
+    }
 
     //lifetime
-    public void init(){}
+    public void init() {
+    }
 
-    @Deprecated
-    public void render(float interpolationTime){}
-
-    public void stop(){
+    public void stop() {
     }
 
     public void refresh() {
@@ -74,7 +71,7 @@ public abstract class IWorldRenderer {
 
 
     //world renderer
-    public void tick(){
+    public void tick() {
     }
 
     //render

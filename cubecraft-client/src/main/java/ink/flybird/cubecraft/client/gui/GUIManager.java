@@ -13,7 +13,7 @@ import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.client.internal.gui.event.ComponentInitializeEvent;
+import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.quantum3d.device.Window;

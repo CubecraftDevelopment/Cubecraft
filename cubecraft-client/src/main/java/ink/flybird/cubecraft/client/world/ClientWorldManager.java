@@ -9,7 +9,7 @@ import ink.flybird.cubecraft.client.internal.gui.component.CardPanel;
 import ink.flybird.cubecraft.client.internal.gui.component.Label;
 import ink.flybird.cubecraft.client.internal.gui.container.ScrollPanel;
 import ink.flybird.cubecraft.client.internal.gui.event.ButtonClickedEvent;
-import ink.flybird.cubecraft.client.internal.gui.event.ComponentInitializeEvent;
+import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
 import ink.flybird.cubecraft.client.internal.gui.event.TextBarSubmitEvent;
 import ink.flybird.cubecraft.client.internal.gui.layout.OriginLayout;
 import ink.flybird.cubecraft.client.internal.gui.screen.ScreenType;

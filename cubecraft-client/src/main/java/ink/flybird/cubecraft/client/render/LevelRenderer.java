@@ -8,6 +8,7 @@ import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.event.ClientRendererInitializeEvent;
+import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.quantum3d.device.KeyboardButton;
@@ -23,7 +24,10 @@ import ink.flybird.fcommon.container.MultiMap;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.fcommon.math.MathHelper;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
+
+import java.util.Objects;
 
 public final class LevelRenderer {
     public final MultiMap<String, IWorldRenderer> renderers = new MultiMap<>();
@@ -59,9 +63,16 @@ public final class LevelRenderer {
     }
 
     public void setRenderState(GameSetting setting) {
-        int d = setting.getValueAsInt("client.render.terrain.render_distance", 4);
+        int d = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue();
         if (setting.getValueAsBoolean("client.render.fog", true)) {
             GL11.glEnable(GL11.GL_FOG);
+
+
+            Vector3d vec=this.player.getCameraPosition().add(this.player.getPosition());
+            if(Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")){
+                GLUtil.setupFog((int) (d * 0.5f), ColorUtil.int1Float1ToFloat4(0x050533,1));
+                return;
+            }
             GLUtil.setupFog(d * d, ColorUtil.int1Float1ToFloat4(this.getConfig().fogColor(), 1));
         }else{
             GL11.glDisable(GL11.GL_FOG);

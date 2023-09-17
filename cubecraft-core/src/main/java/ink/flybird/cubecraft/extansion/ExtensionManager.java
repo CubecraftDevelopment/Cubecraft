@@ -28,6 +28,22 @@ public class ExtensionManager {
     private final HashMap<String, Object> mods = new HashMap<>();
     private final ExtensionInfoMapping modMap = new ExtensionInfoMapping();
 
+    public static ExtensionSide getExtensionSide(Class<?> clazz){
+        CubecraftExtension extension=clazz.getAnnotation(CubecraftExtension.class);
+        if(extension==null){
+            return null;
+        }
+        return extension.side();
+    }
+
+    public static int getExtensionAPIVersion(Class<?> clazz){
+        CubecraftExtension extension=clazz.getAnnotation(CubecraftExtension.class);
+        if(extension==null){
+            return 0;
+        }
+        return extension.apiVersion();
+    }
+
     public Object getModByID(String modID) {
         return this.mods.get(modID);
     }
@@ -252,4 +268,8 @@ public class ExtensionManager {
             this.logger.info("%s mods finished,in %d ms".formatted(operation.getName(), System.currentTimeMillis() - last));
         }
     }
+
+    public void initializeClientSide(){}
+
+
 }

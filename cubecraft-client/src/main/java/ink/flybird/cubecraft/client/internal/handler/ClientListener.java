@@ -18,7 +18,7 @@ public class ClientListener {
     @EventHandler
     public void onBlockRegister(BlockRegisterEvent e) {
         String id = e.id();
-        ClientRenderContext.BLOCK_RENDERER.registerItem(id, new ModelRenderer("/resource/cubecraft/model/block/"+id + ".json"));
+        ClientRenderContext.BLOCK_RENDERER.registerItem(id, new ModelRenderer("/resource/"+e.id().split(":")[0]+"/model/block/"+e.id().split(":")[1] + ".json"));
     }
 
     @EventHandler

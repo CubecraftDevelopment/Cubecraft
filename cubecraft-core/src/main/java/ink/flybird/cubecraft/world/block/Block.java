@@ -1,16 +1,17 @@
 package ink.flybird.cubecraft.world.block;
 
 
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.HitBox;
-import ink.flybird.fcommon.math.HittableObject;
 import ink.flybird.cubecraft.event.BlockRegisterEvent;
+import ink.flybird.cubecraft.internal.entity.EntityFallingBlock;
 import ink.flybird.cubecraft.register.ContentRegistries;
 import ink.flybird.cubecraft.register.SharedContext;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.cubecraft.world.entity.item.Item;
+import ink.flybird.fcommon.container.Vector3;
+import ink.flybird.fcommon.math.AABB;
+import ink.flybird.fcommon.math.HitBox;
+import ink.flybird.fcommon.math.HittableObject;
 import org.joml.Vector3d;
 
 import java.util.Arrays;
@@ -84,7 +85,6 @@ public abstract class Block {
      * @param z     happened position
      */
     public void onBlockUpdate(IWorld world, long x, long y, long z) {
-        //do nth
     }
 
     //this part is about attributes :)
@@ -101,8 +101,8 @@ public abstract class Block {
     public AABB[] getCollisionBox(long x, long y, long z) {
         AABB[] aabbs = new AABB[getCollisionBoxSizes().length];
         for (int i = 0; i < getCollisionBoxSizes().length; i++) {
-            AABB aabb = getCollisionBoxSizes()[i];
-            aabbs[i] = new AABB(x + aabb.x0, y + aabb.y0, z + aabb.z0, x + aabb.x1, y + aabb.y1, z + aabb.z1);
+            aabbs[i]=new AABB(getCollisionBoxSizes()[i]);
+            aabbs[i].move(x,y,z);
         }
         return aabbs;
     }
@@ -147,7 +147,7 @@ public abstract class Block {
         };
     }
 
-    public boolean isLiquid(){
+    public boolean isLiquid() {
         return Arrays.asList(this.getTags()).contains("cubecraft:liquid");
     }
 }

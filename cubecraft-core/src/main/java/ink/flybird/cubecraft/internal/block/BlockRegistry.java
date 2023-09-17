@@ -1,5 +1,6 @@
 package ink.flybird.cubecraft.internal.block;
 
+import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.registry.FieldRegistry;
 import ink.flybird.fcommon.registry.FieldRegistryHolder;
 import ink.flybird.cubecraft.world.block.Block;
@@ -19,7 +20,12 @@ public class BlockRegistry {
 
     //<editor-fold> stone
     @FieldRegistry(value = "stone")
-    public static final Block STONE = new OverwrittenBlock(BlockType.STONE, BlockBehaviorRegistry.STONE);
+    public static final Block STONE = new OverwrittenBlock(BlockType.STONE, BlockBehaviorRegistry.STONE){
+        @Override
+        public AABB[] getCollisionBoxSizes() {
+            return new AABB[]{new AABB(0, 0, 0, 1, 1, 1)};
+        }
+    };
 
     @FieldRegistry(value = "andesite")
     public static final Block ANDESITE = new OverwrittenBlock(BlockType.ANDESITE, BlockBehaviorRegistry.STONE);

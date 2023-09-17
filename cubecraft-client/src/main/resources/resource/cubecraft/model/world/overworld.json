@@ -30,7 +30,7 @@
         "use_classic_lighting": true,
         "effect_by_world_light": true,
         "height": 256,
-        "motion_x": 0.05,
+        "motion_x": 0,
         "motion_z": 0
       }
     }

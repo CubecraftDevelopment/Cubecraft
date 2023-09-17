@@ -10,6 +10,7 @@ import ink.flybird.cubecraft.world.event.BlockIDChangedEvent;
 import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.HitBox;
 import ink.flybird.fcommon.math.HitResult;
+import ink.flybird.fcommon.math.MathHelper;
 
 public class ChunkBlockAccess extends IBlockAccess {
     private final WorldChunk chunk;
@@ -39,10 +40,17 @@ public class ChunkBlockAccess extends IBlockAccess {
         if (this.chunk == null) {
             return;
         }
-        if (sendUpdateEvent) {
-            this.world.getEventBus().callEvent(new BlockIDChangedEvent(this.world, this.x, this.y, this.z, getBlockID(), id));
-        }
         this.chunk.setBlockID(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z), id);
+        if (!sendUpdateEvent) {
+            return;
+        }
+
+        for (IBlockAccess blockAccess: this.world.getBlockNeighbor(this.x, this.y, this.z)){
+           // blockAccess.getBlock().onBlockUpdate(blockAccess.world,blockAccess.x,blockAccess.y,blockAccess.z);
+        }
+        this.getBlock().onBlockUpdate(this.world,this.x,this.y,this.z);
+        this.world.getEventBus().callEvent(new BlockIDChangedEvent(this.world, this.x, this.y, this.z, getBlockID(), id));
+
     }
 
     @Override
@@ -97,8 +105,13 @@ public class ChunkBlockAccess extends IBlockAccess {
         if (predictedLight != -1) {
             return predictedLight;
         } else {
-            ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-            return this.chunk.getBlockLight(pos.getRelativePosX(this.x), (int) this.y, pos.getRelativePosZ(this.z));
+            if(this.y>=128){
+                return (byte) (getBlock().isSolid()?0:127);
+            }
+            return (byte) (Math.max(128-(128-this.y)*4,8));
+
+            //ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
+            //return this.chunk.getBlockLight(pos.getRelativePosX(this.x), (int) this.y, pos.getRelativePosZ(this.z));
         }
     }
 

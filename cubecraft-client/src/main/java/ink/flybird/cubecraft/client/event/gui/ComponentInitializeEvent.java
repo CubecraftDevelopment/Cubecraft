@@ -1,4 +1,4 @@
-package ink.flybird.cubecraft.client.internal.gui.event;
+package ink.flybird.cubecraft.client.event.gui;
 
 import ink.flybird.cubecraft.client.gui.GUIManager;
 import ink.flybird.cubecraft.client.gui.event.ComponentEvent;

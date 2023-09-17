@@ -1,5 +1,6 @@
 package ink.flybird.cubecraft.client.internal.renderer.world;
 
+import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.cubecraft.client.render.RenderType;
 import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
 import ink.flybird.fcommon.GameSetting;
@@ -19,7 +20,6 @@ import org.lwjgl.opengl.GL11;
 @TypeItem(WorldRendererType.SKY_BOX)
 public final class SkyBoxRenderer extends IWorldRenderer {
     private final IRenderCall sky = new VBORenderCall();
-    private final FrustumCuller frustum = new FrustumCuller(this.camera);
     float MOD = 1;
 
     public SkyBoxRenderer(Window window, IWorld world, EntityPlayer player, Camera cam, GameSetting setting) {
@@ -33,9 +33,7 @@ public final class SkyBoxRenderer extends IWorldRenderer {
             return;
         }
 
-
         this.camera.setUpGlobalCamera(this.window);
-        this.frustum.calculateFrustum();
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_CULL_FACE);
@@ -45,9 +43,11 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         GL11.glEnable(GL11.GL_CULL_FACE);
     }
 
+
+
     @Override
     public void refresh() {
-        int d2 = this.setting.getValueAsInt("client.render.terrain.render_distance", 4);
+        int d2 = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue();
         VertexBuilder builder = VertexBuilderAllocator.createByPrefer(4096, DrawMode.TRIANGLES);
         builder.begin();
 

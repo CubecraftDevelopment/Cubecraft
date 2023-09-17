@@ -28,6 +28,7 @@ import ink.flybird.cubecraft.client.internal.gui.layout.OriginLayout;
 import ink.flybird.cubecraft.client.internal.gui.layout.ViewportLayout;
 import ink.flybird.cubecraft.client.resources.resource.ImageResource;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.extansion.ExtensionSide;
 import ink.flybird.cubecraft.mod.ClientSideInitializeEvent;
 import ink.flybird.cubecraft.mod.ModPreInitializeEvent;
 import ink.flybird.cubecraft.extansion.CubecraftExtension;
@@ -40,8 +41,8 @@ import ink.flybird.fcommon.logging.SimpleLogger;
 
 import static ink.flybird.cubecraft.client.gui.GUIRegistry.*;
 
-@CubecraftExtension
-public class ClientInternalMod {
+@CubecraftExtension(side= ExtensionSide.CLIENT)
+public final class ClientInternalMod {
     private final Logger logger = new SimpleLogger("ClientInternalMod");
 
     @EventHandler
