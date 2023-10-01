@@ -1,12 +1,12 @@
 package ink.flybird.cubecraft.world.worldGen.templete;
 
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 
 public class Emboss
-extends Synth {
-    private final Synth synth;
+extends Noise {
+    private final Noise synth;
 
-    public Emboss(Synth synth) {
+    public Emboss(Noise synth) {
         this.synth = synth;
     }
 

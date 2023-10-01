@@ -1,8 +1,8 @@
 package ink.flybird.cubecraft.client.internal.registry;
 
-import ink.flybird.cubecraft.client.control.InputSettingItem;
 import ink.flybird.cubecraft.util.setting.SettingItemRegistry;
 import ink.flybird.cubecraft.util.setting.item.BooleanSettingItem;
+import ink.flybird.cubecraft.util.setting.item.DoubleSettingItem;
 import ink.flybird.cubecraft.util.setting.item.IntegerSettingItem;
 
 public interface ClientSettingRegistry {
@@ -18,22 +18,15 @@ public interface ClientSettingRegistry {
     @SettingItemRegistry
     IntegerSettingItem FXAA = new IntegerSettingItem("render", "fxaa", 0);
 
+    @SettingItemRegistry
+    DoubleSettingItem GUI_SCALE = new DoubleSettingItem("gui","scale",2.0);
 
     @SettingItemRegistry
-    BooleanSettingItem CHUNK_USE_AO = new BooleanSettingItem("terrain_renderer", "use_ao", true);
+    BooleanSettingItem SKIP_STUDIO_LOGO = new BooleanSettingItem("gui","skip_studio_logo",false);
 
     @SettingItemRegistry
-    BooleanSettingItem CHUNK_CLASSIC_LIGHTING = new BooleanSettingItem("terrain_renderer", "classic_lighting", true);
+    BooleanSettingItem DISABLE_CONSTANT_POOL = new BooleanSettingItem("performance","disable_constant_pool",true);
 
     @SettingItemRegistry
-    IntegerSettingItem CHUNK_RENDER_DISTANCE = new IntegerSettingItem("terrain_renderer", "distance", 12);
-
-    @SettingItemRegistry
-    BooleanSettingItem CHUNK_USE_VBO = new BooleanSettingItem("terrain_renderer", "use_vbo", true);
-
-    @SettingItemRegistry
-    BooleanSettingItem CHUNK_FIX_DISTANCE = new BooleanSettingItem("terrain_renderer", "distance_fix", true);
-
-    @SettingItemRegistry
-    IntegerSettingItem CHUNK_UPDATE_THREAD = new IntegerSettingItem("terrain_renderer","update_thread",1);
+    IntegerSettingItem TICK_GC = new IntegerSettingItem("performance","gc_frequency",100);
 }

@@ -1,5 +1,6 @@
 package ink.flybird.cubecraft.client;
 
+import ink.flybird.cubecraft.auth.Session;
 import ink.flybird.cubecraft.client.event.ClientInitializeEvent;
 import ink.flybird.cubecraft.client.event.ClientShutdownEvent;
 import ink.flybird.cubecraft.client.gui.GUIManager;
@@ -13,12 +14,21 @@ import ink.flybird.cubecraft.client.internal.gui.screen.StudioLoadingScreen;
 import ink.flybird.cubecraft.client.internal.handler.PlayerController;
 import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.cubecraft.client.internal.registry.ResourceRegistry;
+import ink.flybird.cubecraft.client.internal.registry.TextureRegistry;
 import ink.flybird.cubecraft.client.net.ClientIO;
 import ink.flybird.cubecraft.client.net.RakNetClientIO;
 import ink.flybird.cubecraft.client.render.LevelRenderer;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.cubecraft.client.world.ClientChunkProvider;
 import ink.flybird.cubecraft.client.world.ClientWorldManager;
+import ink.flybird.cubecraft.extansion.ExtensionInitializationOperation;
+import ink.flybird.cubecraft.internal.entity.EntityPlayer;
+import ink.flybird.cubecraft.level.Level;
+import ink.flybird.cubecraft.level.LevelInfo;
+import ink.flybird.cubecraft.EnvironmentPath;
+import ink.flybird.cubecraft.SharedContext;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.entity.particle.ParticleEngine;
 import ink.flybird.fcommon.GameSetting;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.SimpleEventBus;
@@ -26,8 +36,6 @@ import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.LoggerContext;
 import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
 import ink.flybird.fcommon.timer.Timer;
-import ink.flybird.quantum3d_legacy.ContextManager;
-import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d.GameApplication;
 import ink.flybird.quantum3d.device.DeviceContext;
 import ink.flybird.quantum3d.device.Keyboard;
@@ -35,18 +43,11 @@ import ink.flybird.quantum3d.device.Mouse;
 import ink.flybird.quantum3d.device.Window;
 import ink.flybird.quantum3d.device.adapter.KeyboardEventAdapter;
 import ink.flybird.quantum3d.device.adapter.MouseEventAdapter;
+import ink.flybird.quantum3d.render.RenderContext;
+import ink.flybird.quantum3d_legacy.ContextManager;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.platform.Sync;
-import ink.flybird.quantum3d.render.RenderContext;
-import ink.flybird.cubecraft.auth.Session;
-import ink.flybird.cubecraft.extansion.ExtensionInitializationOperation;
-import ink.flybird.cubecraft.internal.entity.EntityPlayer;
-import ink.flybird.cubecraft.level.Level;
-import ink.flybird.cubecraft.level.LevelInfo;
-import ink.flybird.cubecraft.register.EnvironmentPath;
-import ink.flybird.cubecraft.register.SharedContext;
-import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.cubecraft.world.entity.particle.ParticleEngine;
 
 //todo:add net support
 //todo:add inventory support
@@ -60,7 +61,6 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
     public static CubecraftClient CLIENT;
 
     private final EventBus deviceEventBus = new SimpleEventBus();
-
 
     private final Logger logger = SharedContext.LOG_CONTEXT.createLogger("client_main");
     private final EventBus clientEventBus = new SimpleEventBus();
@@ -88,6 +88,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
 
     private int frameTime, tickTime;
+    private long lastGCTime;
 
 
     public CubecraftClient(DeviceContext deviceContext, RenderContext renderContext, Timer timer) {
@@ -126,6 +127,8 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
     @Override
     public void initialize() {
+        ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(TextureRegistry.class);
+
         long last = System.currentTimeMillis();
         this.logger.info("initializing client");
         CLIENT = this;
@@ -137,7 +140,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         ContextManager.setGLContextVersion(4, 6);
         VertexBuilderAllocator.PREFER_MODE.set(0);
 
-        if (!this.setting.getValueAsBoolean("client.boot.skip_studio_logo", true)) {
+        if (!ClientSettingRegistry.SKIP_STUDIO_LOGO.getValue()) {
             StudioLoadingScreen scr = new StudioLoadingScreen(false, "_", ScreenBackgroundType.EMPTY, null);
             this.guiManager.setScreen(scr);
             while (!scr.isAnimationCompleted()) {
@@ -196,13 +199,9 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         if (this.getClientWorld() != null) {
             this.getClientWorld().tick();
         }
-        if (this.getGameSetting().getValueAsBoolean("client.tick_gc", false)) {
-            System.gc();
-        }
         this.tickTime = (int) (System.currentTimeMillis() - last);
     }
 
-    //todo:资源加载崩溃问题
     @Override
     public void quit() {
         this.clientEventBus.callEvent(new ClientShutdownEvent(this));
@@ -235,6 +234,11 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         GLUtil.disableBlend();
         this.frameTime = (int) (System.currentTimeMillis() - last);
         Sync.sync(ClientSettingRegistry.MAX_FPS.getValue());
+
+        if (System.currentTimeMillis()- this.lastGCTime >ClientSettingRegistry.TICK_GC.getValue()) {
+            System.gc();
+            this.lastGCTime=System.currentTimeMillis();
+        }
     }
 
 
@@ -259,28 +263,26 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
     @Override
     public void onException(Exception exception) {
-        exception.printStackTrace();
         this.logger.exception(exception);
         this.stop();
     }
 
     @Override
     public void onError(Error error) {
-        error.printStackTrace();
         this.logger.error(error);
         this.stop();
     }
 
     //access
     public DisplayScreenInfo getDisplaySize() {
-        ink.flybird.quantum3d.device.Window window = this.getWindow();
-        int scale = this.setting.getValueAsInt("client.render.gui_scale", 2);
+        Window window = this.getWindow();
+        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
         return new DisplayScreenInfo(
-                scale,
-                Math.max(window.getWidth() / scale, 1),
-                Math.max(window.getHeight() / scale, 1),
-                Math.max(window.getWidth() / scale, 1) / 2,
-                Math.max(window.getHeight() / scale, 1) / 2
+                (int) scale,
+                (int) Math.max(window.getWidth() / scale, 1),
+                (int) Math.max(window.getHeight() / scale, 1),
+                (int) (Math.max(window.getWidth() / scale, 1) / 2),
+                (int) (Math.max(window.getHeight() / scale, 1) / 2)
         );
     }
 
@@ -326,7 +328,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         this.particleEngine = new ParticleEngine(this.clientWorld);
         this.levelRenderer = new LevelRenderer(this.getClientWorld(), this.player, this, ResourceLocation.worldRendererSetting(this.clientWorld.getID() + ".json"));
         CLIENT.getGuiManager().setScreen(new HUDScreen());
-        this.player.setPos(0, 128, 0);
+        this.player.setPos(0, 140, 0);
         this.getClientWorld().addEntity(this.player);
         this.controller = new PlayerController(this, this.player);
     }

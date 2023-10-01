@@ -3,13 +3,14 @@ package ink.flybird.cubecraft.client.internal.registry;
 import ink.flybird.cubecraft.client.internal.renderer.block.BlockRenderer;
 import ink.flybird.cubecraft.client.internal.renderer.block.LiquidRenderer;
 import ink.flybird.cubecraft.client.internal.renderer.block.ModelRenderer;
-import ink.flybird.cubecraft.client.internal.renderer.chunklayer.AlphaBlockLayerRenderer;
-import ink.flybird.cubecraft.client.internal.renderer.chunklayer.LiquidLayerRenderer;
-import ink.flybird.cubecraft.client.internal.renderer.chunklayer.TransparentBlockLayerRenderer;
-import ink.flybird.cubecraft.client.internal.renderer.world.*;
-import ink.flybird.cubecraft.client.internal.renderer.world.chunk.ChunkLayerRenderer;
-import ink.flybird.cubecraft.client.render.renderer.IBlockRenderer;
-import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
+import ink.flybird.cubecraft.client.render.chunk.ChunkRenderer;
+import ink.flybird.cubecraft.client.render.chunk.layer.LiquidLayerRenderer;
+import ink.flybird.cubecraft.client.render.world.*;
+import ink.flybird.cubecraft.client.render.chunk.layer.AlphaBlockLayerRenderer;
+import ink.flybird.cubecraft.client.render.chunk.layer.TransparentBlockLayerRenderer;
+import ink.flybird.cubecraft.client.render.chunk.layer.ChunkLayer;
+import ink.flybird.cubecraft.client.render.block.IBlockRenderer;
+import ink.flybird.cubecraft.client.render.world.IWorldRenderer;
 
 import ink.flybird.fcommon.registry.ItemRegisterFunc;
 import ink.flybird.fcommon.registry.ConstructingMap;
@@ -17,7 +18,7 @@ import ink.flybird.fcommon.registry.ConstructingMap;
 public class RenderRegistry {
     @ItemRegisterFunc(IWorldRenderer.class)
     public void registerWorldRenderer(ConstructingMap<IWorldRenderer> renderers) {
-        renderers.registerItem(TerrainRenderer.class);
+        renderers.registerItem(ChunkRenderer.class);
         renderers.registerItem(EntityRenderer.class);
         renderers.registerItem(HUDRenderer.class);
         renderers.registerItem(ParticleRenderer.class);
@@ -32,10 +33,9 @@ public class RenderRegistry {
         renderers.registerItem(ModelRenderer.class);
     }
 
-    @ItemRegisterFunc(ChunkLayerRenderer.class)
-    public void registerRenderChunkContainer(ConstructingMap<ChunkLayerRenderer> renderers) {
+    @ItemRegisterFunc(ChunkLayer.class)
+    public void registerRenderChunkContainer(ConstructingMap<ChunkLayer> renderers) {
         renderers.registerItem(AlphaBlockLayerRenderer.class);
         renderers.registerItem(TransparentBlockLayerRenderer.class);
-        renderers.registerItem(LiquidLayerRenderer.class);
     }
 }

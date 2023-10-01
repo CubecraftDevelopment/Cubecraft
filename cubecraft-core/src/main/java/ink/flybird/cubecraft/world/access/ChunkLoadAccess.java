@@ -7,11 +7,11 @@ import ink.flybird.cubecraft.world.chunk.ChunkPos;
 public interface ChunkLoadAccess {
     //load
     static void loadChunkRange(IWorld world, ChunkPos pos, int range, ChunkLoadTicket ticket) {
-        long centerCX = pos.x();
-        long centerCZ = pos.z();
+        long centerCX = pos.getX();
+        long centerCZ = pos.getZ();
         for (long x = centerCX - range; x <= centerCX + range; x++) {
             for (long z = centerCZ - range; z <= centerCZ + range; z++) {
-                world.loadChunk(new ChunkPos(x, z), ticket);
+                world.loadChunk(ChunkPos.create(x, z), ticket);
             }
         }
     }
@@ -60,21 +60,21 @@ public interface ChunkLoadAccess {
     }
 
     static void addChunkLockRange(IWorld world, ChunkPos pos, int range,Object caller) {
-        long centerCX = pos.x();
-        long centerCZ = pos.z();
+        long centerCX = pos.getX();
+        long centerCZ = pos.getZ();
         for (long x = centerCX - range; x <= centerCX + range; x++) {
             for (long z = centerCZ - range; z <= centerCZ + range; z++) {
-                world.addChunkLock(new ChunkPos(x, z),caller);
+                world.addChunkLock(ChunkPos.create(x, z),caller);
             }
         }
     }
 
     static void removeChunkLockRange(IWorld world, ChunkPos pos, int range,Object caller) {
-        long centerCX = pos.x();
-        long centerCZ = pos.z();
+        long centerCX = pos.getX();
+        long centerCZ = pos.getZ();
         for (long x = centerCX - range; x <= centerCX + range; x++) {
             for (long z = centerCZ - range; z <= centerCZ + range; z++) {
-                world.removeChunkLock(new ChunkPos(x, z),caller);
+                world.removeChunkLock(ChunkPos.create(x, z),caller);
             }
         }
     }

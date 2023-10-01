@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'ink.flybird:fcommon-main:1.0.3-6'
+    implementation 'ink.flybird:fcommon-main:1.0.3-7'
     implementation 'io.netty:netty-handler:4.1.90.Final'
     implementation 'io.netty:netty-buffer:4.1.90.Final'
     implementation 'io.netty:netty-transport:4.1.90.Final'

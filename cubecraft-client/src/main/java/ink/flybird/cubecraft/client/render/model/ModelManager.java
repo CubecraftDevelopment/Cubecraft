@@ -4,10 +4,9 @@ import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.render.model.object.Model;
 import ink.flybird.cubecraft.client.resources.Resource;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import ink.flybird.cubecraft.client.resources.resource.TextResource;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 
 import java.util.HashMap;
 

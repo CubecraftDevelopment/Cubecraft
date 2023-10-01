@@ -1,9 +1,11 @@
 package ink.flybird.cubecraft.client.gui;
 
+import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.base.Popup;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
+import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
@@ -28,7 +30,7 @@ public class ScreenUtil {
     }
 
     public static void renderPictureBackground(Window window){
-        float scale= gameSetting.getValueAsInt("client.render.gui_scale",2);
+        double scale= ClientSettingRegistry.GUI_SCALE.getValue();
         TextureRegistry.IMAGE_BG.bind();
         ShapeRenderer.begin();
         ShapeRenderer.drawRectUV(0, window.getWidth()/ scale,0,window.getHeight()/scale,-1, 0,1,0,1);
@@ -38,7 +40,7 @@ public class ScreenUtil {
 
     public static void renderMask(Window window){
         GLUtil.enableBlend();
-        float scale= gameSetting.getValueAsInt("client.render.gui_scale",2);
+        double scale= ClientSettingRegistry.GUI_SCALE.getValue();
         ShapeRenderer.setColor(0,0,0,127);
         ShapeRenderer.drawRect(0,window.getWidth()/ scale,0,window.getHeight()/scale,-1,-1);
     }
@@ -129,7 +131,7 @@ public class ScreenUtil {
     }
 
     public static void renderPictureBackgroundBlur(Window window) {
-        float scale= gameSetting.getValueAsInt("client.render.gui_scale",2);
+        double scale= ClientSettingRegistry.GUI_SCALE.getValue();
         Texture2D tex= TextureRegistry.IMAGE_BG;
         TextureStateManager.setTextureBlur(tex,true,3);
         tex.bind();

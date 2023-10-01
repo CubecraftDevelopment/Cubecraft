@@ -1,24 +1,13 @@
-import java.nio.charset.StandardCharsets
-
 plugins {
     id 'java'
     id 'application'
     id 'org.beryx.jlink' version '2.25.0'
 }
 
-[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+version '0.3.2'
 
-group 'ink.flybird'
-version '1.0.0'
-apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
-
-repositories {
-    mavenCentral()
-}
-
-test {
-    useJUnitPlatform()
-}
+apply from: rootDir.getAbsolutePath()+"/script/jar.gradle"
+apply from: rootDir.getAbsolutePath()+"/script/shared.gradle"
 
 dependencies {
     implementation project(":cubecraft-core")
@@ -26,45 +15,22 @@ dependencies {
     implementation project(":Quantum3D")
     implementation project(":JRakNet")
 
-
-    implementation 'org.joml:joml:1.10.5'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'org.iq80.leveldb:leveldb:0.12'
-    implementation 'io.netty:netty-buffer:4.1.90.Final'
-    implementation 'io.netty:netty-transport:4.1.90.Final'
-
-    implementation 'org.jetbrains:annotations:24.0.1'
-
     implementation "org.lwjgl:lwjgl:3.3.1"
     implementation "org.lwjgl:lwjgl-glfw:3.3.1"
     implementation "org.lwjgl:lwjgl-openal:3.3.1"
     implementation "org.lwjgl:lwjgl-opengl:3.3.1"
 
-    implementation 'ink.flybird:fcommon-main:1.0.3-6'
     implementation "ink.flybird:quantum3d-std:0.0.2-1"
     implementation "ink.flybird:quantum3d-lwjgl:0.0.2-1"
-
-}
-
-test {
-    useJUnitPlatform()
 }
 
 jar {
-    duplicatesStrategy = 'warn'
-    archivesBaseName = 'Cubecraft-client'
-    archiveVersion = '0.3.2' //版本
-   // destinationDir(file("../run"))
-    manifest { //配置jar文件的manifest
+    archivesBaseName = 'cubecraft-client'
+    destinationDirectory=file('../run/client')
+    manifest {
         attributes(
                 "Manifest-Version": 1.0,
-                'Main-Class': 'ink.flybird.cubecraft.client.ClientMain' //指定main方法所在的文件
+                'Main-Class': 'ink.flybird.cubecraft.client.ClientMain'
         )
-    }
-    //打包依赖包
-    from {
-        (configurations.runtimeClasspath).collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
     }
 }

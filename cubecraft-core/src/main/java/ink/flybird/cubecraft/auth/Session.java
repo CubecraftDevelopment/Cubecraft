@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.auth;
 
-public class Session {
+public final class Session {
     private String name;
     private final String type;
 
@@ -8,7 +8,6 @@ public class Session {
         this.name = name;
         this.type = type;
     }
-
 
     public String getName() {
         return this.name;

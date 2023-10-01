@@ -3,7 +3,7 @@ package ink.flybird.cubecraft.world.worldGen.noiseGenerator;
 import java.util.Random;
 
 public class ImprovedNoise
-extends Synth {
+extends Noise {
     private final int[] p = new int[512];
     public double scale;
 

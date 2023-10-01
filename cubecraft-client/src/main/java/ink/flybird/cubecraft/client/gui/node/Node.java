@@ -170,4 +170,14 @@ public abstract class Node {
     public MultiMap<String, Node> getNodes() {
         return this.nodes;
     }
+
+    public boolean isMouseInbound(){
+        int xm = this.context.getFixedMouseX();
+        int ym = this.context.getFixedMouseY();
+        int x0 = this.getLayout().getAbsoluteX();
+        int x1 = x0 + this.getLayout().getAbsoluteWidth();
+        int y0 = this.getLayout().getAbsoluteY();
+        int y1 = y0 + this.getLayout().getAbsoluteHeight();
+        return xm > x0 && xm < x1 && ym > y0 && ym < y1;
+    }
 }

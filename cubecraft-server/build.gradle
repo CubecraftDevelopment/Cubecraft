@@ -21,7 +21,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.iq80.leveldb:leveldb:0.12'
     implementation 'io.netty:netty-buffer:4.1.90.Final'
-    implementation 'ink.flybird:fcommon-main:1.0.3-6'
+    implementation 'ink.flybird:fcommon-main:1.0.3-7'
 
     implementation project(":cubecraft-core")
     implementation project(":JRakNet")

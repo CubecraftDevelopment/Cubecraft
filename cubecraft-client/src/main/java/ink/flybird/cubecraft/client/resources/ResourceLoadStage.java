@@ -1,5 +1,6 @@
 package ink.flybird.cubecraft.client.resources;
 
+@Deprecated
 public enum ResourceLoadStage {
     DETECT,
     BLOCK_MODEL,

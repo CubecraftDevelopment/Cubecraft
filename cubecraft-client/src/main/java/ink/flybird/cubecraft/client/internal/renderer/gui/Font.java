@@ -8,7 +8,7 @@ import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 
 import java.lang.reflect.Type;
 import java.util.Set;

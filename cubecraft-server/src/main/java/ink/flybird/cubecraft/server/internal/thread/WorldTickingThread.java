@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.server.internal.thread;
 
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.threading.LoopTickingThread;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.server.CubecraftServer;
 import ink.flybird.cubecraft.server.world.ServerWorld;
 

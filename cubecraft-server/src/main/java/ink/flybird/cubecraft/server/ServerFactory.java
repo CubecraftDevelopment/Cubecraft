@@ -1,7 +1,6 @@
 package ink.flybird.cubecraft.server;
 
-import ink.flybird.cubecraft.register.EnvironmentPath;
-import ink.flybird.cubecraft.server.CubecraftServer;
+import ink.flybird.cubecraft.EnvironmentPath;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,11 +8,11 @@ import java.net.InetSocketAddress;
 import java.util.Properties;
 
 public interface ServerFactory {
-    static ink.flybird.cubecraft.server.CubecraftServer createIntegratedServer(InetSocketAddress address, String levelName) {
-        return new ink.flybird.cubecraft.server.CubecraftServer(address, levelName);
+    static CubecraftServer createIntegratedServer(InetSocketAddress address, String levelName) {
+        return new CubecraftServer(address, levelName);
     }
 
-    static ink.flybird.cubecraft.server.CubecraftServer createExternalServer() {
+    static CubecraftServer createExternalServer() {
         Properties properties = new Properties();
         try {
             properties.load(new FileInputStream(EnvironmentPath.CONFIG_FOLDER + "/server_setting.properties"));

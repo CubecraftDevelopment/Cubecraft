@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataIO {
     public static final String AUTO_REGISTER_SPAWN_EGG_ID = "_spawn_egg";
-    public IWorld world;
+    private final AABB lastCollisionBox = new AABB(0, 0, 0, 0, 0, 0);
     //position
     public double xo;
     public double yo;
@@ -33,12 +33,14 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
     public float yRot;
     public float xRot;
     public float zRot;
-    //physic
-    public AABB collisionBox;
-    public boolean onGround = false;
     public boolean horizontalCollision = false;
     public String selectedBlockID = "cubecraft:air";
-    protected String uuid;
+    protected boolean flying;
+    private IWorld world;
+    //physic
+    private AABB collisionBox = new AABB(0, 0, 0, 0, 0, 0);
+    private boolean onGround = false;
+    private String uuid;
 
     public Entity(IWorld world) {
         this.world = world;
@@ -113,21 +115,18 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
         double zaOrg = za;
         ArrayList<AABB> aABBs = this.world.getCollisionBox(this.collisionBox.expand(xa, ya, za));
         for (i = 0; i < aABBs.size(); ++i) {
-            if (aABBs.get(i) != null)
-                ya = aABBs.get(i).clipYCollide(this.collisionBox, ya);
+            if (aABBs.get(i) != null) ya = aABBs.get(i).clipYCollide(this.collisionBox, ya);
         }
         this.collisionBox.move(0.0f, ya, 0.0f);
         for (i = 0; i < aABBs.size(); ++i) {
-            if (aABBs.get(i) != null)
-                xa = aABBs.get(i).clipXCollide(this.collisionBox, xa);
+            if (aABBs.get(i) != null) xa = aABBs.get(i).clipXCollide(this.collisionBox, xa);
         }
         this.collisionBox.move(xa, 0.0f, 0.0f);
         for (i = 0; i < aABBs.size(); ++i) {
-            if (aABBs.get(i) != null)
-                za = aABBs.get(i).clipZCollide(this.collisionBox, za);
+            if (aABBs.get(i) != null) za = aABBs.get(i).clipZCollide(this.collisionBox, za);
         }
         this.collisionBox.move(0.0f, 0.0f, za);
-        this.horizontalCollision = xaOrg != xa || zaOrg != za;
+        //this.horizontalCollision = xaOrg != xa || zaOrg != za;
         this.onGround = yaOrg != ya && yaOrg < 0.0f;
         if (xaOrg != xa) {
             this.xd = 0.0f;
@@ -173,7 +172,7 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
     public abstract AABB getCollisionBoxSize();
 
     /**
-     * get All hit able boxes
+     * getChunk All hit able boxes
      *
      * @return boxes
      */
@@ -197,11 +196,15 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
         this.xo = this.x;
         this.yo = this.y;
         this.zo = this.z;
-        if (this.inLiquid()) {//water
+
+        if (this.inLiquid()) {
             this.move(this.xd, this.yd, this.zd);
             this.xd *= 0.8f;
             this.yd *= 0.8f;
             this.zd *= 0.8f;
+            if (!flying) {
+                this.yd -= 0.08;
+            }
             if (this.horizontalCollision && this.isFree(this.xd, this.yd + 0.6f - this.y + yo, this.zd)) {
                 this.yd = 0.3f;
             }
@@ -210,12 +213,29 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
             this.xd *= 0.91f;
             this.yd *= 0.98f;
             this.zd *= 0.91f;
-            this.yd -= 0.08;
+            if (!flying) {
+                this.yd -= 0.08;
+            } else {
+                this.yd *= 0.5f;
+            }
+            if (this.onGround) {
+                this.xd *= 0.6f;
+                this.zd *= 0.6f;
+            }
         }
-        if (this.onGround) {
-            this.xd *= 0.6f;
-            this.zd *= 0.6f;
+        if (this.world != null) {
+            this.world.getEntityMap().update(this);
         }
+        this.syncCollisionPosition();
+    }
+
+    private void syncCollisionPosition() {
+        this.lastCollisionBox.x0 = this.collisionBox.x0;
+        this.lastCollisionBox.x1 = this.collisionBox.x1;
+        this.lastCollisionBox.y0 = this.collisionBox.y0;
+        this.lastCollisionBox.y1 = this.collisionBox.y1;
+        this.lastCollisionBox.z0 = this.collisionBox.z0;
+        this.lastCollisionBox.z1 = this.collisionBox.z1;
     }
 
     public boolean inLiquid() {
@@ -236,10 +256,6 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
 //  ------ data ------
     public boolean shouldSave() {
         return true;
-    }
-
-    public String getUID() {
-        return uuid;
     }
 
     @Override
@@ -283,17 +299,9 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
         this.zRot = physics.getFloat("roll");
     }
 
-    public void setWorld(IWorld world) {
-        if (this.world != null) {
-            this.world.removeEntity(this);
-        }
-        this.world = world;
-    }
-
     //event
     public void onInteract(Entity from) {
     }
-
 
     @Deprecated
     public String getSelectBlock() {
@@ -322,5 +330,52 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
 
     public Vector3d getPosition() {
         return new Vector3d(this.x, this.y, this.z);
+    }
+
+    public IWorld getWorld() {
+        return world;
+    }
+
+    public void setWorld(IWorld world) {
+        if (this.world != null) {
+            this.world.removeEntity(this);
+        }
+        this.world = world;
+    }
+
+    public AABB getCollisionBox() {
+        return collisionBox;
+    }
+
+    public void setCollisionBox(AABB collisionBox) {
+        this.collisionBox = collisionBox;
+    }
+
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public AABB getLastCollisionBox() {
+        return this.lastCollisionBox;
+    }
+
+    public boolean isFlying() {
+        return this.flying;
+    }
+
+    public void setFlying(boolean b) {
+        this.flying = b;
     }
 }

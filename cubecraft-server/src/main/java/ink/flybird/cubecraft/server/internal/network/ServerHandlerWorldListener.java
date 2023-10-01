@@ -20,6 +20,6 @@ public class ServerHandlerWorldListener extends ServerNetHandler {
 
     @EventHandler
     public void onEntityMove(EntityMoveEvent e) {
-        this.broadcastPacket(new PacketEntityPosition(e.e().getUID(),e.newLocation()));
+        this.broadcastPacket(new PacketEntityPosition(e.e().getUuid(),e.newLocation()));
     }
 }

@@ -4,6 +4,7 @@ import ink.flybird.quantum3d_legacy.draw.VertexUploader;
 import org.joml.Matrix4d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14;
 
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
@@ -129,9 +130,9 @@ public interface GLUtil {
     static void enableBlend() {
         GLUtil.assertRenderThread();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.0f);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f);
         GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA,1,0);
     }
 
     static void disableBlend() {

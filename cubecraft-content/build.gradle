@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+version '0.0.1'
+
+apply from: rootDir.getAbsolutePath()+"/script/jar.gradle"
+apply from: rootDir.getAbsolutePath()+"/script/shared.gradle"
+
+dependencies {
+    compileOnly project(":cubecraft-client")
+    compileOnly project(":cubecraft-core")
+    compileOnly project(":cubecraft-server")
+}
+
+jar {
+    archivesBaseName = 'cubecraft-content'
+    destinationDirectory=file('../run/client/mod')
+}

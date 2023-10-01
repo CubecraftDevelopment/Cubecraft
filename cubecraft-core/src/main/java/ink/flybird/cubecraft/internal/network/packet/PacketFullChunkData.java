@@ -34,8 +34,8 @@ public class PacketFullChunkData implements Packet {
 
     @Override
     public void writePacketData(ByteBuf buffer) throws Exception {
-        buffer.writeLong(this.chunk.getKey().x());
-        buffer.writeLong(this.chunk.getKey().z());
+        buffer.writeLong(this.chunk.getKey().getX());
+        buffer.writeLong(this.chunk.getKey().getZ());
         ByteBufUtil.writeString(this.world, buffer);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         GZIPOutputStream g = new GZIPOutputStream(out);
@@ -46,7 +46,7 @@ public class PacketFullChunkData implements Packet {
 
     @Override
     public void readPacketData(ByteBuf buffer) throws Exception {
-        this.chunk = new WorldChunk(null, new ChunkPos(buffer.readLong(), buffer.readLong()));
+        this.chunk = new WorldChunk(null, ChunkPos.create(buffer.readLong(), buffer.readLong()));
         this.world = ByteBufUtil.readString(buffer);
         byte[] arr = new byte[buffer.readInt()];
         buffer.readBytes(arr);

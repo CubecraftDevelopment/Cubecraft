@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.level;
 
-import ink.flybird.cubecraft.register.EnvironmentPath;
+import ink.flybird.cubecraft.EnvironmentPath;
 import ink.flybird.fcommon.file.NBTBuilder;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
 

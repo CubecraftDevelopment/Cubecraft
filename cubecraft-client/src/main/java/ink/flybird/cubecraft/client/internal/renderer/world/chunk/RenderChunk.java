@@ -1,8 +1,10 @@
 package ink.flybird.cubecraft.client.internal.renderer.world.chunk;
 
 import ink.flybird.cubecraft.client.ClientRenderContext;
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.client.render.LevelRenderer;
 import ink.flybird.cubecraft.client.render.RenderType;
+import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
+import ink.flybird.cubecraft.client.render.chunk.layer.ChunkLayer;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.compile.CompileCallable;
 import ink.flybird.quantum3d_legacy.draw.*;
@@ -11,14 +13,14 @@ import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
 import ink.flybird.fcommon.container.KeyGetter;
 import ink.flybird.fcommon.context.LifetimeCounter;
 import ink.flybird.fcommon.math.AABB;
-import ink.flybird.cubecraft.client.internal.renderer.world.TerrainRenderer;
+import ink.flybird.cubecraft.client.render.chunk.ChunkRenderer;
 import ink.flybird.cubecraft.client.render.DistanceComparable;
 import ink.flybird.cubecraft.client.render.IRenderType;
-import ink.flybird.cubecraft.client.render.renderer.IBlockRenderer;
+import ink.flybird.cubecraft.client.render.block.IBlockRenderer;
 import ink.flybird.cubecraft.internal.block.BlockType;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.access.ChunkLoadAccess;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.cubecraft.world.chunk.ChunkLoadTicket;
 import ink.flybird.cubecraft.world.chunk.ChunkPos;
 import ink.flybird.cubecraft.world.entity.Entity;
@@ -37,16 +39,16 @@ import java.util.stream.Stream;
 public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceComparable, CompileCallable<RenderChunk> {
     public final RenderChunkPos pos;
     public final IWorld world;
-    private final TerrainRenderer parent;
-    private final Map<String, ChunkLayerRenderer> layers;
+    private final ChunkRenderer parent;
+    private final Map<String, ChunkLayer> layers;
     private final IRenderCall visibleAreaRenderCall;
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
 
 
 
-    public RenderChunk(TerrainRenderer parent, IWorld world, RenderChunkPos pos) {
+    public RenderChunk(ChunkRenderer parent, IWorld world, RenderChunkPos pos) {
         this.parent = parent;
-        this.layers = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(ClientSettingRegistry.CHUNK_USE_VBO.getValue());
+        this.layers = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(LevelRenderer.SettingHolder.CHUNK_USE_VBO.getValue());
         this.world = world;
         this.pos = pos;
         this.visibleAreaRenderCall = new ListRenderCall();
@@ -61,8 +63,8 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
             return;
         }
 
-        for (ChunkLayerRenderer layer : this.layers.values()) {
-            layer.render(type, this);
+        for (ChunkLayer layer : this.layers.values()) {
+            layer.render();
         }
     }
 
@@ -73,7 +75,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
             return -1;
         }
 
-        for (ChunkLayerRenderer layer : this.layers.values()) {
+        for (ChunkLayer layer : this.layers.values()) {
             if(layer.isFilled()&&layer.getRenderType()==type) {
                 return layer.getRenderCall().getHandle();
             }
@@ -86,7 +88,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
     }
 
     public boolean anyLayerFilled(IRenderType type) {
-        for (ChunkLayerRenderer container : this.layers.values()) {
+        for (ChunkLayer container : this.layers.values()) {
             if (container.getRenderType() != type) {
                 continue;
             }
@@ -106,7 +108,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
         long y = this.pos.getY();
         long z = this.pos.getZ();
 
-        ChunkPos pos = new ChunkPos(x, z);
+        ChunkPos pos = ChunkPos.create(x, z);
         ChunkLoadAccess.loadChunkRange(this.world, pos, 1, ChunkLoadTicket.LOAD_DATA);
         ChunkLoadAccess.addChunkLockRange(this.world, pos, 1, this);
 
@@ -125,7 +127,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
         }
 
 
-        for (ChunkLayerRenderer layer : this.layers.values()) {
+        for (ChunkLayer layer : this.layers.values()) {
             IDrawCompile<RenderChunk> cResult = this.compile(layer);
             if (cResult == null) {
                 continue;
@@ -143,7 +145,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
         return result;
     }
 
-    private IDrawCompile<RenderChunk> compile(ChunkLayerRenderer layer) {
+    private IDrawCompile<RenderChunk> compile(ChunkLayer layer) {
         VertexBuilder builder = VertexBuilderAllocator.createByPrefer(32768);
         try {
             builder.begin();
@@ -183,7 +185,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
                     if (renderer == null) {
                         continue;
                     }
-                    if (ClientSettingRegistry.CHUNK_FIX_DISTANCE.getValue()) {
+                    if (LevelRenderer.SettingHolder.CHUNK_FIX_DISTANCE.getValue()) {
                         renderer.renderBlock(blockAccess, layerID, this.world, cx, cy, cz, builder);
                         continue;
                     }
@@ -213,7 +215,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
     public void allocate() {
         this.lifetimeCounter.allocate();
         this.visibleAreaRenderCall.allocate();
-        for (ChunkLayerRenderer container : this.layers.values()) {
+        for (ChunkLayer container : this.layers.values()) {
             container.allocate();
         }
     }
@@ -223,7 +225,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
             return;
         }
         this.visibleAreaRenderCall.free();
-        for (ChunkLayerRenderer container : this.layers.values()) {
+        for (ChunkLayer container : this.layers.values()) {
             container.destroy();
         }
         this.lifetimeCounter.release();
@@ -231,7 +233,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
 
     @Override
     public boolean shouldCompile() {
-        return this.parent.chunkInDistance(this);
+        return true;
     }
 
     public AABB getVisibleArea(Camera camera) {

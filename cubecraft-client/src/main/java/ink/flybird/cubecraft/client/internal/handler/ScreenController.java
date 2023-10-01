@@ -8,13 +8,13 @@ import ink.flybird.cubecraft.client.gui.base.Popup;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import ink.flybird.cubecraft.client.internal.gui.component.Label;
+import ink.flybird.cubecraft.client.internal.gui.node.Label;
 import ink.flybird.cubecraft.client.internal.gui.event.ButtonClickedEvent;
 import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
 import ink.flybird.cubecraft.client.internal.gui.screen.HUDScreen;
 import ink.flybird.cubecraft.client.internal.gui.screen.ScreenLocation;
 import ink.flybird.cubecraft.client.internal.gui.screen.ScreenType;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.fcommon.event.SubscribedEvent;

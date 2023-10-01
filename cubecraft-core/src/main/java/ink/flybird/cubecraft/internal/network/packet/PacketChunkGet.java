@@ -14,8 +14,8 @@ public class PacketChunkGet implements Packet {
     private String world="cubecraft:overworld";
 
     public PacketChunkGet(ChunkPos pos, String world){
-        this.chunkX=pos.x();
-        this.chunkZ=pos.z();
+        this.chunkX=pos.getX();
+        this.chunkZ=pos.getZ();
         this.world=world;
     }
 

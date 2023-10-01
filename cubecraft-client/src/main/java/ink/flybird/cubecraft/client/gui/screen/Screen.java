@@ -5,6 +5,7 @@ import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.node.Container;
+import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.fcommon.JVMInfo;
 import ink.flybird.fcommon.container.OrderedHashMap;
 import ink.flybird.fcommon.file.FAMLDeserializer;
@@ -41,11 +42,7 @@ public class Screen extends Container {
     }
 
     public void init() {
-    }
-
-    public void init(CubecraftClient client) {
         this.client = CubecraftClient.CLIENT;
-        this.init();
         this.client.getDeviceEventBus().registerEventListener(this);
         this.client.getMouse().setMouseGrabbed(this.grabMouse);
     }
@@ -125,8 +122,8 @@ public class Screen extends Container {
 
     public void tick() {
         super.tick();
-        int scale = this.context.getScale();
-        this.onResize(0, 0, this.context.getWindow().getWidth() / scale, this.context.getWindow().getHeight() / scale);
+        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
+        this.onResize(0, 0, (int) (this.context.getWindow().getWidth() / scale), (int) (this.context.getWindow().getHeight() / scale));
     }
 
 

@@ -4,13 +4,13 @@ import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.GUIManager;
-import ink.flybird.cubecraft.client.internal.gui.component.Button;
-import ink.flybird.cubecraft.client.internal.gui.component.CardPanel;
-import ink.flybird.cubecraft.client.internal.gui.component.TextBar;
-import ink.flybird.cubecraft.client.internal.gui.component.WaitingAnimation;
-import ink.flybird.cubecraft.client.internal.gui.container.Panel;
-import ink.flybird.cubecraft.client.internal.gui.container.ScrollPanel;
-import ink.flybird.cubecraft.client.internal.gui.container.TopBar;
+import ink.flybird.cubecraft.client.internal.gui.node.Button;
+import ink.flybird.cubecraft.client.internal.gui.node.CardPanel;
+import ink.flybird.cubecraft.client.internal.gui.node.TextBar;
+import ink.flybird.cubecraft.client.internal.gui.node.WaitingAnimation;
+import ink.flybird.cubecraft.client.internal.gui.node.Panel;
+import ink.flybird.cubecraft.client.internal.gui.node.ScrollPanel;
+import ink.flybird.cubecraft.client.internal.gui.node.TopBar;
 import ink.flybird.cubecraft.client.internal.renderer.gui.*;
 import ink.flybird.cubecraft.client.internal.entity.BlockBrakeParticle;
 import ink.flybird.cubecraft.client.internal.handler.ClientListener;
@@ -26,14 +26,14 @@ import ink.flybird.cubecraft.client.internal.renderer.block.LiquidRenderer;
 import ink.flybird.cubecraft.client.internal.gui.layout.FlowLayout;
 import ink.flybird.cubecraft.client.internal.gui.layout.OriginLayout;
 import ink.flybird.cubecraft.client.internal.gui.layout.ViewportLayout;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.cubecraft.extansion.ExtensionSide;
 import ink.flybird.cubecraft.mod.ClientSideInitializeEvent;
 import ink.flybird.cubecraft.mod.ModPreInitializeEvent;
 import ink.flybird.cubecraft.extansion.CubecraftExtension;
-import ink.flybird.cubecraft.register.ContentRegistries;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.ContentRegistries;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.fcommon.logging.Logger;
@@ -49,7 +49,6 @@ public final class ClientInternalMod {
     public void preInit(ModPreInitializeEvent e) {
         this.logger.info("initializing client internal mod...");
     }
-
 
 
     @EventHandler

@@ -41,8 +41,8 @@ public class PacketChunkFragment implements DataFragmentPacket<Chunk> {
 
     public PacketChunkFragment(String world, int layer, Chunk c) {
         this.layer = layer;
-        this.x = c.getKey().x();
-        this.z = c.getKey().z();
+        this.x = c.getKey().getX();
+        this.z = c.getKey().getZ();
         this.world = world;
         this.fetchData(c);
     }
@@ -146,7 +146,7 @@ public class PacketChunkFragment implements DataFragmentPacket<Chunk> {
                     int absY = y + this.layer * 16;
 
                     if (this.blockEntities.containsKey("%s/%s/%s".formatted(x, absY, z))) {
-                        //c.setBlockState(this.blockEntities.get("%s/%s/%s".formatted(x, absY, z)));
+                        //c.setBlockState(this.blockEntities.getChunk("%s/%s/%s".formatted(x, absY, z)));
                     }
                     c.setBlockID(x, absY, z, this.id.get(pos));
                     c.setBlockFacing(x, absY, z, EnumFacing.fromId(this.facing[pos]));

@@ -1,13 +1,13 @@
 package ink.flybird.cubecraft.world.worldGen.templete;
 
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 
 public class Distort
-extends Synth {
-    private final Synth source;
-    private final Synth distort;
+extends Noise {
+    private final Noise source;
+    private final Noise distort;
 
-    public Distort(Synth source, Synth distort) {
+    public Distort(Noise source, Noise distort) {
         this.source = source;
         this.distort = distort;
     }

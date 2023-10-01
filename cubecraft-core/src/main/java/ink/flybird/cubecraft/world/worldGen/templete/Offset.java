@@ -1,12 +1,12 @@
 package ink.flybird.cubecraft.world.worldGen.templete;
 
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 
-public class Offset extends Synth {
+public class Offset extends Noise {
     private final double xo,yo,ho;
-    private final Synth synth;
+    private final Noise synth;
 
-    public Offset(double xo, double yo, double ho, Synth synth) {
+    public Offset(double xo, double yo, double ho, Noise synth) {
         this.xo = xo;
         this.yo = yo;
         this.ho = ho;

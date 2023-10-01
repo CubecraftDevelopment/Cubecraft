@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.client.internal.registry;
 
 import ink.flybird.cubecraft.client.render.model.block.IColorMap;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.fcommon.registry.ItemGetter;
 

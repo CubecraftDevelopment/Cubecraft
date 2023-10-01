@@ -17,7 +17,7 @@ public class ClientHandlerWorldListener extends ClientNetHandler {
 
     @EventHandler
     public void onPlayerAttack(EntityAttackEvent e) {
-        this.sendPacket(new PacketAttack(e.from().getUID(), e.target().getUID()));
+        this.sendPacket(new PacketAttack(e.from().getUuid(), e.target().getUuid()));
     }
 
     @EventHandler
@@ -33,6 +33,6 @@ public class ClientHandlerWorldListener extends ClientNetHandler {
 
     @EventHandler
     public void onPlayerMove(EntityMoveEvent e) {
-        this.sendPacket(new PacketEntityPosition(e.e().getUID(), e.oldLocation()));
+        this.sendPacket(new PacketEntityPosition(e.e().getUuid(), e.oldLocation()));
     }
 }

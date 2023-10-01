@@ -1,14 +1,14 @@
 package ink.flybird.cubecraft.client.internal.renderer.block;
 
 import com.google.gson.JsonObject;
-import ink.flybird.cubecraft.client.render.renderer.IBlockRenderer;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.render.block.IBlockRenderer;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 import ink.flybird.fcommon.container.Vector3;
 import ink.flybird.fcommon.registry.RegisteredConstructor;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.block.EnumFacing;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 
 import java.util.Objects;

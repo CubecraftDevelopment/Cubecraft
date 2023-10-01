@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.world.item;
 
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.fcommon.file.NBTDataIO;
 import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.fcommon.nbt.NBTTagCompound;

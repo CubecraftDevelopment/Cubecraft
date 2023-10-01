@@ -1,9 +1,9 @@
 package ink.flybird.cubecraft.internal.entity;
 
 import ink.flybird.cubecraft.auth.Session;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.cubecraft.world.entity.item.Item;
+import ink.flybird.cubecraft.world.entity.EntityItem;
 import ink.flybird.cubecraft.world.entity.EntityLiving;
 import ink.flybird.fcommon.registry.TypeItem;
 import org.joml.Vector3d;
@@ -15,13 +15,13 @@ public class EntityPlayer extends EntityLiving {
     public EntityPlayer(IWorld world, Session session) {
         super(world);
         this.session = session;
-        this.uuid= SharedContext.SESSION_SERVICE.get(session.getType()).genUUID(session);
+        this.setUuid(SharedContext.SESSION_SERVICE.get(session.getType()).genUUID(session));
         this.flying =true;
     }
 
     @Override
-    public Item[] getDrop() {
-        return new Item[0];
+    public EntityItem[] getDrop() {
+        return new EntityItem[0];
     }
 
     @Override

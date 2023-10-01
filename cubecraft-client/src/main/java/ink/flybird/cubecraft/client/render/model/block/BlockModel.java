@@ -2,12 +2,12 @@ package ink.flybird.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.ClientSharedContext;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.fcommon.container.Pair;
 import ink.flybird.cubecraft.client.render.model.object.Model;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 
 import java.lang.reflect.Type;

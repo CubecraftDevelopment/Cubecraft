@@ -2,12 +2,13 @@ package ink.flybird.cubecraft.world.block;
 
 
 import ink.flybird.cubecraft.event.BlockRegisterEvent;
-import ink.flybird.cubecraft.internal.entity.EntityFallingBlock;
-import ink.flybird.cubecraft.register.ContentRegistries;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.ContentRegistries;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
+import ink.flybird.cubecraft.world.block.controller.BlockController;
 import ink.flybird.cubecraft.world.entity.Entity;
-import ink.flybird.cubecraft.world.entity.item.Item;
+import ink.flybird.cubecraft.world.entity.EntityItem;
 import ink.flybird.fcommon.container.Vector3;
 import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.HitBox;
@@ -15,17 +16,26 @@ import ink.flybird.fcommon.math.HittableObject;
 import org.joml.Vector3d;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * defines all data for a block.
  * STRUCTURE FINISHED-2022-6-14
  */
 public abstract class Block {
+    private final HashMap<String, Object> properties = new HashMap<>(64);
+    private final HashMap<String, BlockController> controllers = new HashMap<>(64);
+
     public Block(String defaultRegisterId) {
         SharedContext.MOD.getModLoaderEventBus().callEvent(new BlockRegisterEvent(defaultRegisterId, this));
     }
 
+
     public Block() {
+    }
+
+    public <T> T getBlockProperty(String id, Class<T> type) {
+        return type.cast(this.properties.get(id));
     }
 //  ------ physic ------
 
@@ -92,8 +102,8 @@ public abstract class Block {
 
     public abstract String[] getTags();
 
-    public Item[] getDrop(IWorld world, long x, long y, long z, Entity from) {
-        return new Item[0];
+    public EntityItem[] getDrop(IWorld world, long x, long y, long z, Entity from) {
+        return new EntityItem[0];
     }
 
 //  ------ general getter ------
@@ -101,8 +111,8 @@ public abstract class Block {
     public AABB[] getCollisionBox(long x, long y, long z) {
         AABB[] aabbs = new AABB[getCollisionBoxSizes().length];
         for (int i = 0; i < getCollisionBoxSizes().length; i++) {
-            aabbs[i]=new AABB(getCollisionBoxSizes()[i]);
-            aabbs[i].move(x,y,z);
+            aabbs[i] = new AABB(getCollisionBoxSizes()[i]);
+            aabbs[i].move(x, y, z);
         }
         return aabbs;
     }

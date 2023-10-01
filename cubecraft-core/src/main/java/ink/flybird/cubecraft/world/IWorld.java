@@ -1,14 +1,15 @@
 package ink.flybird.cubecraft.world;
 
 import ink.flybird.cubecraft.level.Level;
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.cubecraft.world.block.BlockState;
-import ink.flybird.cubecraft.world.block.ChunkBlockAccess;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
-import ink.flybird.cubecraft.world.block.NonLoadedBlockAccess;
+import ink.flybird.cubecraft.world.block.access.ChunkBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.NonLoadedBlockAccess;
 import ink.flybird.cubecraft.world.chunk.*;
 import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.cubecraft.world.entity.EntityLiving;
+import ink.flybird.cubecraft.world.entity.EntityMap;
 import ink.flybird.cubecraft.world.event.block.BlockChangeEvent;
 import ink.flybird.fcommon.container.KeyMap;
 import ink.flybird.fcommon.container.Vector3;
@@ -27,12 +28,21 @@ public abstract class IWorld {
     public final HashMap<Vector3<Long>, Integer> scheduledTickEvents = new HashMap<>();
     public final KeyMap<ChunkPos, WorldChunk> chunks = new KeyMap<>();
     public final HashMap<String, Entity> entities = new HashMap<>();
+    protected final EntityMap entityMap=new EntityMap(this);
     protected final IDimension dimension;
     protected final EventBus eventBus = new SimpleEventBus();
     protected final Level level;
     protected final String id;
     protected long time;
     protected ChunkProvider provider;
+
+    public EntityMap getEntityMap() {
+        return entityMap;
+    }
+
+    public HashMap<String, Entity> getEntities() {
+        return entities;
+    }
 
     public IWorld(String id, Level level) {
         this.id = id;
@@ -54,6 +64,28 @@ public abstract class IWorld {
             AABB[] collisionBoxes = access.getCollisionBox();
             if (collisionBoxes != null) {
                 result.addAll(List.of(collisionBoxes));
+            }
+        }
+
+        long xx0 = (long) Math.floor(box.x0);
+        long yy0 = (long) Math.floor(box.y0);
+        long zz0 = (long) Math.floor(box.z0);
+        long xx1 = (long) Math.ceil(box.x1);
+        long yy1 = (long) Math.ceil(box.y1);
+        long zz1 = (long) Math.ceil(box.z1);
+
+
+        for (long i = xx0; i <= xx1; i++) {
+            for (long j = yy0; j <= yy1; j++) {
+                for (long k = zz0; k <= zz1; k++) {
+                    for (Entity e:this.getEntityMap().getEntitiesByBlock(i,j,k)){
+                        AABB aabb=e.getCollisionBox();
+                        if(result.contains(aabb)){
+                           continue;
+                        }
+                        result.add(aabb);
+                    }
+                }
             }
         }
 
@@ -147,8 +179,8 @@ public abstract class IWorld {
 
     public void addEntity(Entity e) {
         e.setWorld(IWorld.this);
-        this.entities.put(e.getUID(), e);
-        this.loadChunk(new ChunkPos((long) e.x / Chunk.WIDTH, (long) (e.z / Chunk.WIDTH)), new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 256));
+        this.entities.put(e.getUuid(), e);
+        this.loadChunk(ChunkPos.create((long) e.x / Chunk.WIDTH, (long) (e.z / Chunk.WIDTH)), new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 256));
     }
 
     public Collection<Entity> getAllEntities() {
@@ -164,7 +196,7 @@ public abstract class IWorld {
     }
 
     public void removeEntity(Entity e) {
-        this.entities.remove(e.getUID());
+        this.entities.remove(e.getUuid());
     }
 
 
@@ -174,7 +206,7 @@ public abstract class IWorld {
     }
 
     public WorldChunk getChunk(long cx, long cz) {
-        return this.getChunk(new ChunkPos(cx, cz));
+        return this.getChunk(ChunkPos.create(cx, cz));
     }
 
     public void loadChunk(ChunkPos p, ChunkLoadTicket ticket) {

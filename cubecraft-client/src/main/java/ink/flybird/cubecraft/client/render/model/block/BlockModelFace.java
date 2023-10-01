@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 
 import java.lang.reflect.Type;
 

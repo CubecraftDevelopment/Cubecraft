@@ -23,15 +23,6 @@ public record ResourceLocation(ResourceType type, String namespace, ResourceLocT
         return new ResourceLocation(ResourceType.RESOURCE, all.split(":")[0], ResourceLocType.BLOCK_MODEL, all.split(":")[1]);
     }
 
-    //entity
-    public static ResourceLocation entityTexture(String namespace, String relativePos) {
-        return new ResourceLocation(ResourceType.RESOURCE, namespace, ResourceLocType.ENTITY_TEXTURE, relativePos);
-    }
-
-    public static ResourceLocation entityModel(String namespace, String relativePos) {
-        return new ResourceLocation(ResourceType.RESOURCE, namespace, ResourceLocType.ENTITY_MODEL, relativePos);
-    }
-
     //ui
     public static ResourceLocation uiScreen(String location) {
         String namespace = location.split(":")[0];

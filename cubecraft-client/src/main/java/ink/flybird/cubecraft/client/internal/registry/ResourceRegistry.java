@@ -1,9 +1,9 @@
 package ink.flybird.cubecraft.client.internal.registry;
 
 import ink.flybird.cubecraft.client.resources.Load;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
-import ink.flybird.cubecraft.client.resources.resource.RawResource;
-import ink.flybird.cubecraft.client.resources.resource.TextResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.RawResource;
+import ink.flybird.cubecraft.client.resources.item.TextResource;
 import ink.flybird.fcommon.registry.FieldRegistry;
 import ink.flybird.fcommon.registry.FieldRegistryHolder;
 import ink.flybird.quantum3d_legacy.textures.ITextureImage;

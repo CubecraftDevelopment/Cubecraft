@@ -14,7 +14,7 @@ import ink.flybird.cubecraft.net.packet.ConnectPacket;
 import ink.flybird.cubecraft.net.packet.ConnectSuccessPacket;
 import ink.flybird.cubecraft.net.packet.DisconnectPacket;
 import ink.flybird.cubecraft.net.packet.Packet;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.registry.ConstructingMap;

@@ -38,7 +38,7 @@ public class ClientChunkProvider extends ChunkProvider {
             return;
         }
 
-        ChunkPos pos = new ChunkPos(x, z);
+        ChunkPos pos = ChunkPos.create(x, z);
         ProviderChunk chunk = this.chunkCache.get(pos);
         if (chunk == null) {
             chunk = this.chunkCache.add(new ProviderChunk(pos));
@@ -55,7 +55,7 @@ public class ClientChunkProvider extends ChunkProvider {
             return;
         }
 
-        ChunkPos pos = new ChunkPos(x, z);
+        ChunkPos pos = ChunkPos.create(x, z);
         ProviderChunk chunk = this.chunkCache.get(pos);
         if (chunk == null) {
             chunk = this.chunkCache.add(new ProviderChunk(pos));

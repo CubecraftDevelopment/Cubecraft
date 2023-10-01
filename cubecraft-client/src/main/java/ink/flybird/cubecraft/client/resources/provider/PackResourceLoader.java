@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.client.resources.provider;
 
 import ink.flybird.cubecraft.client.resources.ResourcePack;
-import ink.flybird.cubecraft.client.resources.resource.IResource;
+import ink.flybird.cubecraft.client.resources.item.IResource;
 
 import java.io.InputStream;
 

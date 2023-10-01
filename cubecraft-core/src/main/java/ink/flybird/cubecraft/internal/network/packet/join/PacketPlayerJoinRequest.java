@@ -3,7 +3,7 @@ package ink.flybird.cubecraft.internal.network.packet.join;
 import ink.flybird.cubecraft.auth.Session;
 import ink.flybird.cubecraft.net.packet.Packet;
 import ink.flybird.cubecraft.net.packet.PacketConstructor;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.fcommon.file.NBTBuilder;
 import ink.flybird.fcommon.nbt.NBTTagCompound;

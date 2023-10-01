@@ -32,8 +32,8 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
     protected HashMap<String, BlockState> blockEntities = new HashMap<>();
 
     public Chunk(ChunkPos p) {
-        this.x = p.x();
-        this.z = p.z();
+        this.x = p.getX();
+        this.z = p.getZ();
         for (int i = 0; i < SECTION_SIZE; i++) {
             this.blockIdSections[i] = new StringDataSection();
             this.blockFacingSections[i] = new ByteDataSection();
@@ -143,7 +143,7 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
 
     @Override
     public ChunkPos getKey() {
-        return new ChunkPos(x, z);
+        return ChunkPos.create(x, z);
     }
 
 

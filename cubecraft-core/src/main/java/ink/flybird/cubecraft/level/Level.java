@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.level;
 
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.WorldFactory;
 import ink.flybird.fcommon.file.FileUtil;

@@ -4,7 +4,7 @@ import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.cubecraft.event.SettingReloadEvent;
-import ink.flybird.cubecraft.register.EnvironmentPath;
+import ink.flybird.cubecraft.EnvironmentPath;
 import ink.flybird.cubecraft.util.setting.item.SettingItem;
 
 import java.io.File;

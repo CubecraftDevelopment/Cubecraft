@@ -8,6 +8,8 @@ version '1.0-SNAPSHOT'
 
 apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
 
+apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
+
 repositories {
     mavenCentral()
 }
@@ -20,7 +22,7 @@ dependencies {
     implementation 'io.netty:netty-transport:4.1.90.Final'
     implementation 'org.iq80.leveldb:leveldb:0.12'
     implementation 'com.moandjiezana.toml:toml4j:0.7.2'
-    implementation 'ink.flybird:fcommon-main:1.0.3-6'
+    implementation 'ink.flybird:fcommon-main:1.0.3-7'
 
     implementation project(":JRakNet")
     implementation 'org.jetbrains:annotations:24.0.0'

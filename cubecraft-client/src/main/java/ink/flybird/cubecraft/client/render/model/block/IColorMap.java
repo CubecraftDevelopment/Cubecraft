@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.client.render.model.block;
 
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.cubecraft.world.IWorld;
 
 import java.awt.image.BufferedImage;

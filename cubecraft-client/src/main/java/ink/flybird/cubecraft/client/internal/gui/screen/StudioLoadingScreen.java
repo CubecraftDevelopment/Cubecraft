@@ -21,6 +21,7 @@ public class StudioLoadingScreen extends Screen {
 
     @Override
     public void init() {
+        super.init();
         STUDIO_LOGO.load(ResourceRegistry.STUDIO_LOGO);
     }
 

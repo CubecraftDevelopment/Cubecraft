@@ -6,7 +6,7 @@ import ink.flybird.fcommon.math.HitBox;
 import ink.flybird.fcommon.math.HitResult;
 import ink.flybird.fcommon.math.HittableObject;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.entity.Entity;
 

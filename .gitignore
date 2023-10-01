@@ -5,25 +5,29 @@
 /cubecraft-server/build/
 /Quantum3D/build/
 /JRakNet/build/
+/cubecraft-content/build/
 
 /cubecraft-client/.gradle/
 /cubecraft-core/.gradle/
 /cubecraft-server/.gradle/
 /Quantum3D/.gradle/
 /JRakNet/.gradle/
+/cubecraft-content/.gradle/
 
 /cubecraft-client/gradle/
 /cubecraft-core/gradle/
 /cubecraft-server/gradle/
-/Quantum3D/gradle/git
+/Quantum3D/gradle/
 /JRakNet/gradle/
+/cubecraft-content/gradle/
 
 /cubecraft-client/out/
 /cubecraft-core/out/
 /cubecraft-server/out/
 /Quantum3D/out/
 /JRakNet/out/
+/cubecraft-content/out/
 
 /run
 /out
-/render_debug.cap
+

@@ -10,8 +10,8 @@ import ink.flybird.quantum3d.device.DeviceContext;
 import ink.flybird.quantum3d.lwjgl.context.CompactOGLRenderContext;
 import ink.flybird.quantum3d.lwjgl.device.GLFWDeviceContext;
 import ink.flybird.quantum3d.render.RenderContext;
-import ink.flybird.cubecraft.register.EnvironmentPath;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.EnvironmentPath;
+import ink.flybird.cubecraft.SharedContext;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;

@@ -2,14 +2,14 @@ package ink.flybird.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.ClientRenderContext;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 import ink.flybird.fcommon.ColorUtil;
 import ink.flybird.fcommon.container.Vector3;
 import ink.flybird.cubecraft.client.render.BlockBakery;
 import ink.flybird.cubecraft.client.render.model.object.Vertex;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.block.EnumFacing;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import org.joml.Vector2d;

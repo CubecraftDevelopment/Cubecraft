@@ -28,7 +28,7 @@ public class ServerHandlerDataFetch extends ServerNetHandler {
                 }
                 long x = packet.getChunkX();
                 long z = packet.getChunkZ();
-                ChunkPos pos = new ChunkPos(x, z);
+                ChunkPos pos = ChunkPos.create(x, z);
 
                 dim.loadChunk(pos, new ChunkLoadTicket(ChunkLoadLevel.None_TICKING, 1000));
                 if (dim.getChunk(pos) == null) {
@@ -49,7 +49,7 @@ public class ServerHandlerDataFetch extends ServerNetHandler {
         if (dim == null) {
             return;
         }
-        dim.loadChunk(new ChunkPos(packet.getChunkX(), packet.getChunkZ()), packet.getTicket());
+        dim.loadChunk(ChunkPos.create(packet.getChunkX(), packet.getChunkZ()), packet.getTicket());
     }
 
     @PacketListener

@@ -1,5 +1,6 @@
 package ink.flybird.cubecraft.server.internal;
 
+import ink.flybird.cubecraft.extansion.ExtensionSide;
 import ink.flybird.cubecraft.mod.ServerSideInitializeEvent;
 import ink.flybird.cubecraft.extansion.CubecraftExtension;
 import ink.flybird.cubecraft.server.ServerRegistries;
@@ -10,7 +11,7 @@ import ink.flybird.cubecraft.server.internal.network.ServerHandlerWorldListener;
 import ink.flybird.fcommon.event.EventHandler;
 
 
-@CubecraftExtension
+@CubecraftExtension(side = ExtensionSide.SERVER)
 public class ServerInternalMod {
     @EventHandler
     public void registerNetworkHandler(ServerSideInitializeEvent e){

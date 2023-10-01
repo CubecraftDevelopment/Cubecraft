@@ -79,7 +79,7 @@ public class ServerWorld extends IWorld {
                 //this.server.getSetting().getValueAsInt("server.world.simulation_distance", 3)
                 ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) e.x, (long) e.z), 4, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10));
             } else {
-                WorldChunk c = this.getChunk(new ChunkPos((long) (e.x) / 16, (long) (e.z) / 16));
+                WorldChunk c = this.getChunk(ChunkPos.create((long) (e.x) / 16, (long) (e.z) / 16));
                 if (c.task.shouldProcess(ChunkLoadTaskType.BLOCK_ENTITY_TICK)) {
                     e.tick();
                 } else {

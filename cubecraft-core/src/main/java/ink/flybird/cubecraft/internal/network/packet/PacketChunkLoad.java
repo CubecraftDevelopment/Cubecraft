@@ -19,8 +19,8 @@ public class PacketChunkLoad implements Packet {
 
     public PacketChunkLoad(String world, ChunkPos pos, ChunkLoadTicket ticket) {
         this.world = world;
-        this.chunkX = pos.x();
-        this.chunkZ = pos.z();
+        this.chunkX = pos.getX();
+        this.chunkZ = pos.getZ();
         this.ticket = ticket;
     }
 

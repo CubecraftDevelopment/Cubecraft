@@ -1,6 +1,7 @@
 include 'cubecraft-client'
 include 'cubecraft-core'
 include 'cubecraft-server'
+include 'cubecraft-content'
 
 include 'Quantum3D'
 include 'JRakNet'

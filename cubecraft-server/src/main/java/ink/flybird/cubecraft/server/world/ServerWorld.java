@@ -1,5 +1,6 @@
 package ink.flybird.cubecraft.server.world;
 
+import ink.flybird.cubecraft.event.chunk.ChunkUnloadEvent;
 import ink.flybird.cubecraft.internal.entity.EntityPlayer;
 import ink.flybird.cubecraft.level.Level;
 import ink.flybird.cubecraft.server.CubecraftServer;
@@ -29,8 +30,9 @@ public class ServerWorld extends IWorld {
     //load chunk
     @Override
     public void loadChunk(ChunkPos p, ChunkLoadTicket ticket) {
+        //todo:load chunks
         if (getChunk(p) == null) {
-            this.chunks.add(new ChunkProvider(ink.flybird.cubecraft.server.world.ServerWorld.this).loadChunk(p));
+            this.chunks.add(new ChunkProvider(this).loadChunk(p));
         } else {
             getChunk(p).addTicket(ticket);
         }
@@ -51,10 +53,9 @@ public class ServerWorld extends IWorld {
     @Override
     public void tick() {
         super.tick();
-        //keep spawn location
         EntityLocation loc = this.level.getSpawnPoint("__LOAD");
         if (Objects.equals(loc.getDim(), this.getID())) {
-          //  ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) loc.getX(), (long) loc.getZ()), 2, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 20));
+           ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) loc.getX(), (long) loc.getZ()), 4, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 20));
         }
 
         Iterator<WorldChunk> it = this.chunks.map.values().iterator();
@@ -68,18 +69,22 @@ public class ServerWorld extends IWorld {
                 if (chunk.getTask().shouldLoad()) {
                     continue;
                 }
+                ChunkPos p=chunk.getKey();
+                this.getEventBus().callEvent(new ChunkUnloadEvent(chunk,chunk.getWorld(),p.getX(),p.getZ()));
                 it.remove();
             }
         } catch (ConcurrentModificationException ignored) {
         }
+
+
+
         Iterator<Entity> it2 = this.entities.values().iterator();
         while (it2.hasNext()) {
             Entity e = it2.next();
             if (e instanceof EntityPlayer) {
-                //this.server.getSetting().getValueAsInt("server.world.simulation_distance", 3)
                 ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) e.x, (long) e.z), 1, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10));
             } else {
-                WorldChunk c = this.getChunk(new ChunkPos((long) (e.x) / 16, (long) (e.z) / 16));
+                WorldChunk c = this.getChunk(ChunkPos.create((long) (e.x) / 16, (long) (e.z) / 16));
                 if(c.task==null){
                     continue;
                 }

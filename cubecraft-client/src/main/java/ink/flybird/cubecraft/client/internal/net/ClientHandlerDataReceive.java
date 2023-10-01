@@ -37,7 +37,7 @@ public class ClientHandlerDataReceive extends ClientNetHandler {
     @PacketListener
     public void clientLocationUpdate(PacketEntityPosition loc, NetHandlerContext ctx) {
         Entity e = this.client.getClientWorld().getEntity(loc.getUuid());
-        if (Objects.equals(loc.getUuid(), this.client.getPlayer().getUID())) {
+        if (Objects.equals(loc.getUuid(), this.client.getPlayer().getUuid())) {
 
         } else {
             if (e != null && Objects.equals(loc.getNewLoc().getDim(), this.client.getClientWorld().getID())) {

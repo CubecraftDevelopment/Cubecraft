@@ -1,14 +1,16 @@
 package ink.flybird.cubecraft.server.internal.service;
 
-import ink.flybird.cubecraft.register.EnvironmentPath;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.EnvironmentPath;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.server.CubecraftServer;
+import ink.flybird.cubecraft.server.internal.registries.ServerSettingRegistries;
 import ink.flybird.cubecraft.server.service.AbstractService;
+import ink.flybird.cubecraft.world.ChunkProvider;
+import ink.flybird.cubecraft.world.ChunkStorage;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.chunk.ChunkCodec;
 import ink.flybird.cubecraft.world.chunk.ChunkPos;
 import ink.flybird.cubecraft.world.chunk.WorldChunk;
-import ink.flybird.fcommon.GameSetting;
 import ink.flybird.fcommon.file.NBTBuilder;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
@@ -24,11 +26,9 @@ import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-//todo:impl
-//todo:改你的GameSetting
 
 @TypeItem("cubecraft:chunk_io")
-public class ChunkIOService extends AbstractService {
+public class ChunkIOService extends AbstractService implements ChunkProvider, ChunkStorage {
     public static final Options DEFAULT_LEVELDB_OPTIONS = new Options().createIfMissing(true).blockSize(1024);
     public static final int DEFAULT_DB_LIFETIME = 150;
 
@@ -37,10 +37,51 @@ public class ChunkIOService extends AbstractService {
     private final HashMap<String, DB> cachedDatabase = new HashMap<>(16);
     private final HashMap<String, Integer> lifetime = new HashMap<>(16);
 
-    public ChunkIOService(CubecraftServer server, GameSetting setting) {
+    public ChunkIOService(CubecraftServer server) {
         super(server);
-        this.taskPool = Executors.newFixedThreadPool(setting.getValue("service.io.threads"));
+        this.taskPool = Executors.newFixedThreadPool(ServerSettingRegistries.CHUNK_IO_THREAD.getValue());
     }
+
+    @Override
+    public WorldChunk getChunk(IWorld world, ChunkPos pos) {
+        WorldChunk chunk = new WorldChunk(world, pos);
+
+        if (loadChunkFromDB(chunk)) {
+            return chunk;
+        }
+
+        //todo:generate_chunk
+
+        return chunk;
+    }
+
+
+    @Override
+    public void save(WorldChunk chunk) {
+        try {
+            NBTTagCompound tag = ChunkCodec.getWorldChunkData(chunk);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream(4096);
+            GZIPOutputStream zipOutput = new GZIPOutputStream(stream);
+            NBTBuilder.write(tag, new DataOutputStream(zipOutput));
+            zipOutput.close();
+            stream.close();
+
+            byte[] data = stream.toByteArray();
+            byte[] key = chunk.getKey().toString().getBytes(StandardCharsets.UTF_8);
+
+            this.getDataBase(chunk.getWorld().getID()).put(key, data);
+        } catch (Exception exception) {
+            this.logger.exception(exception);
+        }
+    }
+
+    @Override
+    public ExecutorService getAsyncService() {
+        return this.taskPool;
+    }
+
+
 
     @Override
     public void start() {
@@ -58,42 +99,19 @@ public class ChunkIOService extends AbstractService {
     }
 
 
-    public void loadChunk(IWorld world, ChunkPos pos){
-        this.taskPool.submit(() -> {
-            WorldChunk chunk=new WorldChunk(world,pos);
-
-            if(loadChunkFromDB(chunk)){
-                world.setChunk(chunk);
-                return;
-            }
-
-            //generate chunk
-        });
-    }
-
-
-    //database
-    public void tickDataBase(){
+    public void tickDataBase() {
         for (String db : this.lifetime.keySet()) {
             int i = this.lifetime.get(db);
             if (i <= 0) {
-                this.updateDataBase(db);
+                try {
+                    this.getDataBase(db).close();
+                } catch (IOException exception) {
+                    this.logger.exception(exception);
+                }
+                this.getDataBase(db);
                 continue;
             }
             this.lifetime.put(db, i - 1);
-        }
-    }
-
-    public void updateDataBase(String worldID){
-        this.closeDataBase(worldID);
-        this.getDataBase(worldID);
-    }
-
-    public void closeDataBase(String worldID){
-        try {
-            this.getDataBase(worldID).close();
-        } catch (IOException exception) {
-            this.logger.exception(exception);
         }
     }
 
@@ -114,25 +132,6 @@ public class ChunkIOService extends AbstractService {
             this.logger.exception(e);
         }
         return null;
-    }
-
-    public void saveChunkToDB(WorldChunk chunk) {
-        try {
-            NBTTagCompound tag = ChunkCodec.getWorldChunkData(chunk);
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream(4096);
-            GZIPOutputStream zipOutput = new GZIPOutputStream(stream);
-            NBTBuilder.write(tag, new DataOutputStream(zipOutput));
-            zipOutput.close();
-            stream.close();
-
-            byte[] data = stream.toByteArray();
-            byte[] key = chunk.getKey().toString().getBytes(StandardCharsets.UTF_8);
-
-            this.getDataBase(chunk.getWorld().getID()).put(key, data);
-        } catch (Exception exception) {
-            this.logger.exception(exception);
-        }
     }
 
     public boolean loadChunkFromDB(WorldChunk chunk) {

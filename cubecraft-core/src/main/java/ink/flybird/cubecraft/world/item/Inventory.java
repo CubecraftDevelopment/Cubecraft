@@ -4,7 +4,7 @@ import ink.flybird.fcommon.file.NBTDataIO;
 import ink.flybird.fcommon.math.HittableObject;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.cubecraft.world.entity.Entity;
 
 import java.util.Objects;

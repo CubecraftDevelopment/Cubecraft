@@ -1,14 +1,14 @@
 package ink.flybird.cubecraft.world.worldGen.templete;
 
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 
 public class Rotate
-extends Synth {
-    private final Synth synth;
+extends Noise {
+    private final Noise synth;
     private final double sin;
     private final double cos;
 
-    public Rotate(Synth synth, double angle) {
+    public Rotate(Noise synth, double angle) {
         this.synth = synth;
         this.sin = Math.sin(angle);
         this.cos = Math.cos(angle);

@@ -23,8 +23,8 @@ public class PacketChunk2DData implements DataFragmentPacket<Chunk> {
     private long x, z;
 
     public PacketChunk2DData(String world, Chunk c) {
-        this.x = c.getKey().x();
-        this.z = c.getKey().z();
+        this.x = c.getKey().getX();
+        this.z = c.getKey().getZ();
         this.world = world;
         this.fetchData(c);
     }

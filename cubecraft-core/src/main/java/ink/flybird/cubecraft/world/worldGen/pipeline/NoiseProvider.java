@@ -1,10 +1,11 @@
 package ink.flybird.cubecraft.world.worldGen.pipeline;
 
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.context.NoiseProviderContext;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 
 import java.util.Map;
 
-
+//todo: pipeline and calling
 public interface NoiseProvider {
-    void getNoise(long seed, Map<String, Synth> noises);
+    void generateNoise(NoiseProviderContext context);
 }

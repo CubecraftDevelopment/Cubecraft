@@ -1,14 +1,14 @@
 package ink.flybird.cubecraft.world.worldGen.templete;
 
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 
 public class Scale
-extends Synth {
-    private final Synth synth;
+extends Noise {
+    private final Noise synth;
     private final double xScale;
     private final double yScale;
 
-    public Scale(Synth synth, double xScale, double yScale) {
+    public Scale(Noise synth, double xScale, double yScale) {
         this.synth = synth;
         this.xScale = 1.0 / xScale;
         this.yScale = 1.0 / yScale;

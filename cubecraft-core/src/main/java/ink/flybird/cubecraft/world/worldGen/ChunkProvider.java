@@ -1,11 +1,11 @@
 package ink.flybird.cubecraft.world.worldGen;
 
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.chunk.WorldChunk;
 import ink.flybird.cubecraft.world.chunk.ChunkPos;
 import ink.flybird.cubecraft.world.worldGen.noiseGenerator.PerlinNoise;
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 import ink.flybird.cubecraft.world.worldGen.templete.Scale;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class ChunkProvider implements IChunkProvider{
 
     public final IWorld world;
 
-    final Synth test;
+    final Noise test;
 
     public ChunkProvider(IWorld world) {
         this.world = world;
@@ -39,8 +39,8 @@ public class ChunkProvider implements IChunkProvider{
      */
     @Override
     public WorldChunk loadChunk(ChunkPos pos) {
-        long regionX = pos.x() / REGION_GRID_SIZE;
-        long regionZ = pos.z() / REGION_GRID_SIZE;
+        long regionX = pos.getX() / REGION_GRID_SIZE;
+        long regionZ = pos.getZ() / REGION_GRID_SIZE;
         WorldChunk c=new WorldChunk(ChunkProvider.this.world, pos);
 
 

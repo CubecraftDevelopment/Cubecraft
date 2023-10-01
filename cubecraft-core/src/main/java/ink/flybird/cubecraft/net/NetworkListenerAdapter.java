@@ -82,7 +82,7 @@ public abstract class NetworkListenerAdapter extends NetWorkEventBus {
         //but don`t confuse me
         buffer.readByte();
 
-        //get type
+        //getChunk type
         byte type_l = buffer.readByte();
         byte[] type_raw = new byte[type_l];
         buffer.readBytes(type_raw);

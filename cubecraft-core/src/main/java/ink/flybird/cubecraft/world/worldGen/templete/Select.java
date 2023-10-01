@@ -1,12 +1,12 @@
 package ink.flybird.cubecraft.world.worldGen.templete;
 
-import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Synth;
+import ink.flybird.cubecraft.world.worldGen.noiseGenerator.Noise;
 import ink.flybird.fcommon.math.MathHelper;
 
-public class Select extends Synth {
-    private final Synth high,low,select;
+public class Select extends Noise {
+    private final Noise high,low,select;
 
-    public Select(Synth high, Synth low, Synth select) {
+    public Select(Noise high, Noise low, Noise select) {
         this.high = high;
         this.low = low;
         this.select = select;

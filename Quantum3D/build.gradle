@@ -21,7 +21,7 @@ dependencies {
     implementation 'org.lwjgl:lwjgl-glfw:3.3.1'
     implementation 'org.jetbrains:annotations:24.0.1'
 
-    implementation 'ink.flybird:fcommon-main:1.0.3-6'
+    implementation 'ink.flybird:fcommon-main:1.0.3-7'
 }
 
 test {

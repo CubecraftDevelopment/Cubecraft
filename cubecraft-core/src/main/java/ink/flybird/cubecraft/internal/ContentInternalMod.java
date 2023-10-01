@@ -10,14 +10,13 @@ import ink.flybird.cubecraft.internal.network.PacketRegistry;
 import ink.flybird.cubecraft.internal.world.DimensionOverworld;
 import ink.flybird.cubecraft.internal.world.WorldType;
 import ink.flybird.cubecraft.internal.world.biome.BiomesRegistry;
-import ink.flybird.cubecraft.internal.world.worldGen.WorldGeneratorFlat;
 import ink.flybird.cubecraft.internal.world.worldGen.WorldGeneratorOverworld;
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.cubecraft.mod.ContentInitializeEvent;
 import ink.flybird.cubecraft.extansion.CubecraftExtension;
 
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.world.worldGen.ChunkGeneratorPipeline;
 
 @CubecraftExtension(side = ExtensionSide.BOTH)

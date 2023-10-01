@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.internal.entity;
 
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.fcommon.math.AABB;
@@ -32,7 +32,7 @@ public class EntityFallingBlock extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (this.onGround) {
+        if (this.isOnGround()) {
             //this.world.removeEntity(this);
             //this.world.getBlockAccess((long) this.x, (long) this.y, (long) this.z).setBlockID(this.fallingID, false);
         }

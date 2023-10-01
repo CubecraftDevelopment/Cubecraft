@@ -8,9 +8,11 @@ import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.event.ClientRendererInitializeEvent;
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
-import ink.flybird.cubecraft.client.render.renderer.IWorldRenderer;
+import ink.flybird.cubecraft.client.render.world.IWorldRenderer;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.util.setting.SettingItemRegistry;
+import ink.flybird.cubecraft.util.setting.item.BooleanSettingItem;
+import ink.flybird.cubecraft.util.setting.item.IntegerSettingItem;
 import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
 import ink.flybird.quantum3d.device.event.KeyboardReleaseEvent;
@@ -58,12 +60,13 @@ public final class LevelRenderer {
         client.getClientEventBus().callEvent(new ClientRendererInitializeEvent(client, this));
 
         for (IWorldRenderer renderer : this.renderers.values()) {
+            renderer.init();
             renderer.refresh();
         }
     }
 
     public void setRenderState(GameSetting setting) {
-        int d = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue();
+        int d = SettingHolder.CHUNK_RENDER_DISTANCE.getValue();
         if (setting.getValueAsBoolean("client.render.fog", true)) {
             GL11.glEnable(GL11.GL_FOG);
 
@@ -100,9 +103,11 @@ public final class LevelRenderer {
             renderer.preRender();
         }
 
+        GL11.glShadeModel(GL11.GL_SMOOTH);
         GL11.glEnable(GL11.GL_CULL_FACE);
         render(RenderType.ALPHA, interpolationTime);
         GL11.glDepthMask(false);
+        GLUtil.enableBlend();
         render(RenderType.TRANSPARENT, interpolationTime);
         GL11.glDepthMask(true);
         GL11.glDisable(GL11.GL_CULL_FACE);
@@ -117,9 +122,6 @@ public final class LevelRenderer {
     }
 
     public void render(RenderType type, float delta) {
-        if(type==RenderType.TRANSPARENT){
-            GLUtil.enableBlend();
-        }
         for (IWorldRenderer renderer : this.renderers.values()) {
             GL11.glPushMatrix();
             String rendererName = this.renderers.of(renderer);
@@ -132,9 +134,6 @@ public final class LevelRenderer {
             renderer.postRender(type, delta);
             GLUtil.checkError("pre_render" + postFix);
             GL11.glPopMatrix();
-        }
-        if(type==RenderType.TRANSPARENT){
-            GLUtil.disableBlend();
         }
     }
 
@@ -175,5 +174,32 @@ public final class LevelRenderer {
 
     public GlobalRendererConfig getConfig() {
         return config;
+    }
+
+    public interface SettingHolder {
+        @SettingItemRegistry
+        BooleanSettingItem CHUNK_USE_AO = new BooleanSettingItem("terrain_renderer", "use_ao", true);
+
+        @SettingItemRegistry
+        BooleanSettingItem CHUNK_CLASSIC_LIGHTING = new BooleanSettingItem("terrain_renderer", "classic_lighting", true);
+
+        @SettingItemRegistry
+        IntegerSettingItem CHUNK_RENDER_DISTANCE = new IntegerSettingItem("terrain_renderer", "distance", 12);
+
+        @SettingItemRegistry
+        BooleanSettingItem CHUNK_USE_VBO = new BooleanSettingItem("terrain_renderer", "use_vbo", true);
+
+        @SettingItemRegistry
+        BooleanSettingItem CHUNK_FIX_DISTANCE = new BooleanSettingItem("terrain_renderer", "distance_fix", true);
+
+        @SettingItemRegistry
+        IntegerSettingItem CHUNK_UPDATE_THREAD = new IntegerSettingItem("terrain_renderer", "update_thread", 1);
+
+        @SettingItemRegistry
+        IntegerSettingItem MAX_UPLOAD_COUNT = new IntegerSettingItem("terrain_renderer", "max_upload_count", 16);
+    }
+
+    static {
+        ClientSharedContext.CLIENT_SETTING.register(SettingHolder.class);
     }
 }

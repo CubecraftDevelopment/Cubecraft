@@ -23,6 +23,7 @@ public final class LogoLoadingScreen extends Screen {
 
     @Override
     public void init() {
+        super.init();
         GAME_LOGO.load(ResourceRegistry.GAME_LOGO);
         STUDIO_LOGO.load(ResourceRegistry.STUDIO_LOGO);
     }

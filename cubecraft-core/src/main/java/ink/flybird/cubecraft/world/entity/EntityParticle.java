@@ -1,6 +1,7 @@
 package ink.flybird.cubecraft.world.entity;
 
 import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.HitBox;
 
@@ -52,7 +53,7 @@ public abstract class EntityParticle extends Entity {
         this.xd *= 0.98f;
         this.yd *= 0.98f;
         this.zd *= 0.98f;
-        if (this.onGround) {
+        if (this.isOnGround()) {
             this.xd *= 0.7f;
             this.zd *= 0.7f;
         }

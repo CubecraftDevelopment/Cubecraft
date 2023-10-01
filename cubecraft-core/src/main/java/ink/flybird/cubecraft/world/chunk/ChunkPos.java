@@ -1,13 +1,24 @@
 package ink.flybird.cubecraft.world.chunk;
 
+import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.fcommon.container.Key;
 import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.cubecraft.world.entity.Entity;
 
-public record ChunkPos(long x, long z) implements Key {
+import java.util.concurrent.ConcurrentHashMap;
+
+@SuppressWarnings("ClassCanBeRecord")
+public final class ChunkPos implements Key {
+    public static final ConcurrentHashMap<String, ChunkPos> CONSTANT_POOL = new ConcurrentHashMap<>(1024);
     public static final int DATA_ARRAY_SIZE_2D = Chunk.WIDTH * Chunk.WIDTH;
     public static final int DATA_ARRAY_SIZE_3D = Chunk.WIDTH * Chunk.WIDTH * Chunk.HEIGHT;
     public static final int DATA_FRAGMENT_ARRAY_SIZE = Chunk.WIDTH * Chunk.WIDTH * Chunk.WIDTH;
+    private final long x;
+    private final long z;
+
+    public ChunkPos(long x, long z) {
+        this.x = x;
+        this.z = z;
+    }
 
     public static void checkChunkRelativePosition(int x, int y, int z) {
         if (x >= 0 && y >= 0 && z >= 0 && x < Chunk.WIDTH && y < Chunk.HEIGHT && z < Chunk.WIDTH) {
@@ -23,7 +34,7 @@ public record ChunkPos(long x, long z) implements Key {
     }
 
     public static ChunkPos fromWorldPos(long x, long z) {
-        return new ChunkPos(
+        return ChunkPos.create(
                 MathHelper.getChunkPos(x, Chunk.WIDTH),
                 MathHelper.getChunkPos(z, Chunk.WIDTH)
         );
@@ -42,10 +53,30 @@ public record ChunkPos(long x, long z) implements Key {
         throw new IllegalArgumentException("position out of range:Z");
     }
 
+    //todo:常量池回收问题
+    public static ChunkPos create(long x, long z) {
+        String k = encode(x, z);
+        if (!CONSTANT_POOL.containsKey(k)) {
+            CONSTANT_POOL.put(k, new ChunkPos(x, z));
+        }
+        return CONSTANT_POOL.get(k);
+    }
+
+    public static String encode(long x, long z) {
+        return x + "/" + z;
+    }
+
+    public long getX() {
+        return this.x;
+    }
+
+    public long getZ() {
+        return this.z;
+    }
 
     @Override
     public String toString() {
-        return x + "/" + z;
+        return encode(this.getX(), this.getZ());
     }
 
     @Override
@@ -75,10 +106,10 @@ public record ChunkPos(long x, long z) implements Key {
 
     public ChunkPos[] getAllNear() {
         return new ChunkPos[]{
-                new ChunkPos(this.x - 1, this.z),
-                new ChunkPos(this.x - 1, this.z),
-                new ChunkPos(this.x, this.z - 1),
-                new ChunkPos(this.x, this.z + 1),
+                ChunkPos.create(this.x - 1, this.z),
+                ChunkPos.create(this.x - 1, this.z),
+                ChunkPos.create(this.x, this.z - 1),
+                ChunkPos.create(this.x, this.z + 1),
         };
     }
 }

@@ -29,7 +29,7 @@
         "dense": 0.25,
         "use_classic_lighting": true,
         "effect_by_world_light": true,
-        "height": 256,
+        "height": 256.1,
         "motion_x": 0,
         "motion_z": 0
       }

@@ -1,13 +1,13 @@
 package ink.flybird.cubecraft.extansion;
 
-import ink.flybird.cubecraft.register.EnvironmentPath;
+import ink.flybird.cubecraft.EnvironmentPath;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.threading.TaskProgressCallback;
 import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 
 
 import java.io.File;

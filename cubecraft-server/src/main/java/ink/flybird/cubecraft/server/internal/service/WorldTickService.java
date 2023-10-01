@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.server.internal.service;
 
 import ink.flybird.cubecraft.level.Level;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.server.service.AbstractService;
 import ink.flybird.cubecraft.server.CubecraftServer;
 import ink.flybird.cubecraft.server.internal.thread.WorldTickingThread;

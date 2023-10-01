@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.internal.network.packet;
 
-import ink.flybird.cubecraft.register.ContentRegistries;
+import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.cubecraft.net.ByteBufUtil;
 import ink.flybird.cubecraft.net.packet.Packet;
 import ink.flybird.cubecraft.world.entity.Entity;

@@ -3,7 +3,7 @@ package ink.flybird.cubecraft.client.gui;
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 import ink.flybird.fcommon.container.CollectionUtil;
 
 import java.lang.reflect.Type;

@@ -6,21 +6,23 @@ import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.cubecraft.client.gui.screen.ScreenBackgroundType;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.world.IWorld;
+import ink.flybird.cubecraft.world.entity.Entity;
+import ink.flybird.cubecraft.world.item.Inventory;
+import ink.flybird.fcommon.event.EventHandler;
+import ink.flybird.fcommon.math.HitResult;
+import ink.flybird.fcommon.math.HittableObject;
 import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.MouseButton;
 import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
 import ink.flybird.quantum3d.device.event.MouseClickEvent;
 import ink.flybird.quantum3d.device.event.MouseScrollEvent;
-import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.cubecraft.world.entity.Entity;
-import ink.flybird.cubecraft.world.item.Inventory;
 import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.ShapeRenderer;;
+import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.math.HitResult;
-import ink.flybird.fcommon.math.HittableObject;
 import org.lwjgl.opengl.GL11;
+
+;
 
 public final class HUDScreen extends Screen {
     private final Texture2D actionBar = new Texture2D(false, false);
@@ -125,5 +127,28 @@ public final class HUDScreen extends Screen {
         float slotBase = slot * 20 * scale;
         ShapeRenderer.drawRectUV(slotBase - 1 * scale, slotBase + 23 * scale, -1 * scale, 23 * scale, 0, 232 / 256f, 1, 0, 24 / 32f);
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public void getDebug() {
+        super.getDebug();
+        this.debugInfoLeft.put("chunk_renderer", "C: pc=%d req=%d res=%d, a=%s/%s t=%s/%s".formatted(
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:terrain_renderer", "pos_cache_size", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:terrain_renderer", "compile_request_size", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:terrain_renderer", "compile_result_size", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:terrain_renderer", "draw_success_size_alpha", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:terrain_renderer", "draw_size_alpha", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:terrain_renderer", "draw_success_size_transparent", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:terrain_renderer", "draw_size_transparent", int.class)
+        ));
+        this.debugInfoLeft.put("entity_renderer", "E: %d/%d".formatted(
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "success_size", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "all_size", int.class)
+        ));
+
+        this.debugInfoLeft.put("particle_renderer", "P: %d/%d".formatted(
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:particle_renderer", "success_size", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:particle_renderer", "all_size", int.class)
+        ));
     }
 }

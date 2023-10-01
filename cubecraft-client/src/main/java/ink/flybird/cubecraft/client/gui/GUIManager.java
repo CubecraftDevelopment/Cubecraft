@@ -11,14 +11,15 @@ import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.layout.Layout;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.gui.screen.Screen;
+import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.cubecraft.client.resources.ResourceLocation;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
 import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
-import ink.flybird.cubecraft.client.resources.resource.ImageResource;
+import ink.flybird.cubecraft.client.resources.item.ImageResource;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.quantum3d.device.Window;
 import ink.flybird.quantum3d.device.event.MousePosEvent;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.fcommon.container.CollectionUtil;
 import ink.flybird.fcommon.event.EventBus;
@@ -215,7 +216,7 @@ public final class GUIManager{
             this.screen.release();
         }
         this.screen = screen;
-        this.screen.init(this.client);
+        this.screen.init();
         this.broadCastInitializeEvent(this.screen);
     }
 
@@ -241,7 +242,7 @@ public final class GUIManager{
             this.hoverScreen.release();
         }
         this.hoverScreen = screen;
-        this.hoverScreen.init(this.client);
+        this.hoverScreen.init();
         String s = screen.getID();
         this.broadCastInitializeEvent(this.hoverScreen);
     }
@@ -254,10 +255,6 @@ public final class GUIManager{
         return window;
     }
 
-    public int getScale() {
-        return CubecraftClient.CLIENT.getGameSetting().getValueAsInt("client.render.gui_scale", 2);
-    }
-
     public int getFixedMouseX() {
         return fixedMouseX;
     }
@@ -268,7 +265,7 @@ public final class GUIManager{
 
     @EventHandler
     public void onMousePos(MousePosEvent e) {
-        int scale = this.getScale();
+        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
         this.fixedMouseX = (int) (e.getX() / scale);
         this.fixedMouseY = (int) (e.getY() / scale);
     }

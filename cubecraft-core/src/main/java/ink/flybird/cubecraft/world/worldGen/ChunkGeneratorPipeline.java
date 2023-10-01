@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+@Deprecated
 public class ChunkGeneratorPipeline {
     private final Logger logger;
     private final ArrayList<IChunkGenerator> handlers =new ArrayList<>();

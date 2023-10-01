@@ -2,13 +2,13 @@ package ink.flybird.cubecraft.client.resources;
 
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.event.ClientResourceReloadEvent;
-import ink.flybird.cubecraft.client.resources.event.ResourceLoadFinishEvent;
-import ink.flybird.cubecraft.client.resources.event.ResourceLoadItemEvent;
-import ink.flybird.cubecraft.client.resources.event.ResourceLoadStartEvent;
+import ink.flybird.cubecraft.client.event.resource.ResourceLoadFinishEvent;
+import ink.flybird.cubecraft.client.event.resource.ResourceLoadItemEvent;
+import ink.flybird.cubecraft.client.event.resource.ResourceLoadStartEvent;
 import ink.flybird.cubecraft.client.resources.provider.InternalResourceLoader;
 import ink.flybird.cubecraft.client.resources.provider.ModResourceLoader;
 import ink.flybird.cubecraft.client.resources.provider.ResourceLoader;
-import ink.flybird.cubecraft.client.resources.resource.IResource;
+import ink.flybird.cubecraft.client.resources.item.IResource;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.fcommon.logging.Logger;
@@ -16,11 +16,10 @@ import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.registry.FieldRegistry;
 import ink.flybird.fcommon.registry.FieldRegistryHolder;
 import ink.flybird.fcommon.registry.RegisterMap;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,6 +45,10 @@ public class ResourceManager {
         this.loaders.put("cubecraft:mod", new ModResourceLoader());
     }
 
+
+    public EventBus getEventBus() {
+        return this.eventBus;
+    }
 
     public void registerResources(Class<?> clazz) {
         for (Field f : clazz.getDeclaredFields()) {
@@ -137,7 +140,7 @@ public class ResourceManager {
         while (counter.get() > 0) {
             Thread.yield();
         }
-        this.eventBus.callEvent(new ResourceLoadFinishEvent(stage));
+        this.eventBus.callEvent(new ResourceLoadFinishEvent(stage),stage);
     }
 
     public void load(String stage) {
@@ -150,7 +153,7 @@ public class ResourceManager {
         for (String id : list) {
             this.loadResource(loaders, stage, this.resourceObjectCache.get(stage).get(id), id);
         }
-        this.eventBus.callEvent(new ResourceLoadFinishEvent(stage));
+        this.eventBus.callEvent(new ResourceLoadFinishEvent(stage),stage);
     }
 
     @Deprecated

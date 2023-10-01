@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.client.gui.layout;
 
 import com.google.gson.Gson;
 import ink.flybird.cubecraft.client.CubecraftClient;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
 import org.w3c.dom.Element;

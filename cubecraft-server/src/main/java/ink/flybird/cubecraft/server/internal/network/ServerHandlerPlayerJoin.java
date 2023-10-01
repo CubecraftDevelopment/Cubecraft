@@ -6,7 +6,7 @@ import ink.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinReques
 import ink.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinResponse;
 import ink.flybird.cubecraft.net.NetHandlerContext;
 import ink.flybird.cubecraft.net.packet.PacketListener;
-import ink.flybird.cubecraft.register.SharedContext;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.server.ServerRegistries;
 import ink.flybird.cubecraft.server.event.join.PlayerLoginEvent;
 import ink.flybird.cubecraft.server.net.ServerNetHandler;

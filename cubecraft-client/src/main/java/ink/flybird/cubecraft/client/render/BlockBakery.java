@@ -1,10 +1,9 @@
 package ink.flybird.cubecraft.client.render;
 
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
 import ink.flybird.cubecraft.client.render.model.object.Vertex;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.block.EnumFacing;
-import ink.flybird.cubecraft.world.block.IBlockAccess;
+import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.fcommon.container.Vector3;
 import ink.flybird.fcommon.math.MathHelper;
 import org.joml.Vector3d;
@@ -271,13 +270,13 @@ public interface BlockBakery {
 
 
     static Vertex bakeVertex(Vertex v, Vector3d pos, IWorld w, long x, long y, long z, int face) {
-        if (ClientSettingRegistry.CHUNK_USE_AO.getValue()) {
+        if (LevelRenderer.SettingHolder.CHUNK_USE_AO.getValue()) {
             v.multiplyColor(getSmoothedLight(w, x, y, z, pos) / 128d);
         } else {
             Vector3<Long> v2 = EnumFacing.fromId(face).findNear(x, y, z, 1);
             v.multiplyColor((int) w.getBlockAccess(v2.x(), v2.y(), v2.z()).getBlockLight() / 128d);
         }
-        if (ClientSettingRegistry.CHUNK_CLASSIC_LIGHTING.getValue()) {
+        if (LevelRenderer.SettingHolder.CHUNK_CLASSIC_LIGHTING.getValue()) {
             v.multiplyColor(getClassicLight(face));
         }
         return v;

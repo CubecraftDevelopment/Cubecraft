@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.world.worldGen.noiseGenerator;
 
 import java.util.Random;
 
-public class PerlinNoise extends Synth {
+public class PerlinNoise extends Noise {
     private final ImprovedNoise[] noiseLevels;
     private final int levels;
 

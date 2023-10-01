@@ -84,7 +84,7 @@ public enum EnumFacing {
 
 
     /**
-     * get axis aligned(world space facing)
+     * getChunk axis aligned(world space facing)
      *
      * @param facing block face
      * @param face   face to query(relative)
