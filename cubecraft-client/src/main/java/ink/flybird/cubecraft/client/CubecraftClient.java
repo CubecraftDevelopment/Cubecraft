@@ -6,19 +6,15 @@ import ink.flybird.cubecraft.client.event.ClientShutdownEvent;
 import ink.flybird.cubecraft.client.gui.GUIManager;
 import ink.flybird.cubecraft.client.gui.ScreenUtil;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
-import ink.flybird.cubecraft.client.gui.screen.Screen;
-import ink.flybird.cubecraft.client.gui.screen.ScreenBackgroundType;
-import ink.flybird.cubecraft.client.internal.gui.screen.HUDScreen;
-import ink.flybird.cubecraft.client.internal.gui.screen.LogoLoadingScreen;
-import ink.flybird.cubecraft.client.internal.gui.screen.StudioLoadingScreen;
+import ink.flybird.cubecraft.client.gui.screen.*;
 import ink.flybird.cubecraft.client.internal.handler.PlayerController;
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
-import ink.flybird.cubecraft.client.internal.registry.ResourceRegistry;
-import ink.flybird.cubecraft.client.internal.registry.TextureRegistry;
+import ink.flybird.cubecraft.client.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.client.registry.ResourceRegistry;
+import ink.flybird.cubecraft.client.registry.TextureRegistry;
 import ink.flybird.cubecraft.client.net.ClientIO;
 import ink.flybird.cubecraft.client.net.RakNetClientIO;
 import ink.flybird.cubecraft.client.render.LevelRenderer;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.cubecraft.client.world.ClientChunkProvider;
 import ink.flybird.cubecraft.client.world.ClientWorldManager;
 import ink.flybird.cubecraft.extansion.ExtensionInitializationOperation;
@@ -48,6 +44,7 @@ import ink.flybird.quantum3d_legacy.ContextManager;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.platform.Sync;
+import org.lwjgl.glfw.GLFW;
 
 //todo:add net support
 //todo:add inventory support
@@ -98,18 +95,15 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
     @Override
     public void initDevice(Window window) {
-        this.logger.info("load config");
         ClientSharedContext.CLIENT_SETTING.load();
         ClientSharedContext.CLIENT_SETTING.register(ClientSettingRegistry.class);
         ClientSharedContext.CLIENT_SETTING.setEventBus(this.getClientEventBus());
+        this.logger.info("config initialized.");
 
-
-        this.logger.info("pre-load resources");
         ClientSharedContext.RESOURCE_MANAGER.registerResources(ResourceRegistry.class);
         ClientSharedContext.RESOURCE_MANAGER.loadAsync("client:startup");
+        this.logger.info("pre-load resources loaded.");
 
-        this.logger.info("initialize window");
-        this.logger.info("creating device");
         this.keyboard = this.getDeviceContext().keyboard(window);
         this.keyboard.create();
         this.keyboard.addListener(new KeyboardEventAdapter(this.deviceEventBus));
@@ -123,11 +117,16 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         window.setResizeable(true);
         window.setVsync(ClientSettingRegistry.V_SYNC.getValue());
         window.setIcon(ResourceRegistry.GAME_ICON.getStream());
+
+        GLFW.glfwWindowHint(GLFW.GLFW_SCALE_TO_MONITOR, GLFW.GLFW_TRUE);
+
+        this.logger.info("window initialized.");
     }
 
     @Override
     public void initialize() {
         ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(TextureRegistry.class);
+        ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(ResourceRegistry.class);
 
         long last = System.currentTimeMillis();
         this.logger.info("initializing client");
@@ -141,13 +140,9 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         VertexBuilderAllocator.PREFER_MODE.set(0);
 
         if (!ClientSettingRegistry.SKIP_STUDIO_LOGO.getValue()) {
-            StudioLoadingScreen scr = new StudioLoadingScreen(false, "_", ScreenBackgroundType.EMPTY, null);
+            StudioLoadingScreen scr = new StudioLoadingScreen();
             this.guiManager.setScreen(scr);
-            while (!scr.isAnimationCompleted()) {
-                this.render();
-                this.getWindow().update();
-                Thread.yield();
-            }
+            this.renderAnimationScreen(scr);
         }
 
         this.clientEventBus.callEvent(new ClientInitializeEvent(this));
@@ -164,14 +159,24 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         SharedContext.MOD.loadMods(this);
         SharedContext.MOD.initialize(null, ExtensionInitializationOperation.getClientOperationList());
         this.logger.info("loading resources...");
-        ClientSharedContext.RESOURCE_MANAGER.reload(this);
+        ClientSharedContext.RESOURCE_MANAGER.reload();
         ClientSharedContext.RESOURCE_MANAGER.load("default");
+
+        this.renderAnimationScreen(this.logoLoadingScreen);
 
         this.logger.info("done,%dms", System.currentTimeMillis() - last);
         this.guiManager.setScreen("cubecraft:title_screen.xml");
         this.guiManager.disposeHoverScreen();
         if (this.setting.getValueAsBoolean("client.check_update", false)) {
             VersionCheck.check();
+        }
+    }
+
+    public void renderAnimationScreen(AnimationScreen screen){
+        while (screen.isAnimationNotCompleted()) {
+            this.render();
+            this.getWindow().update();
+            Thread.yield();
         }
     }
 
@@ -241,8 +246,6 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         }
     }
 
-
-    //progress
     @Override
     public void onProgressChange(int progress) {
         this.logoLoadingScreen.updateProgress(progress / 100f);
@@ -263,6 +266,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
     @Override
     public void onException(Exception exception) {
+        exception.printStackTrace();
         this.logger.exception(exception);
         this.stop();
     }
@@ -273,7 +277,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         this.stop();
     }
 
-    //access
+
     public DisplayScreenInfo getDisplaySize() {
         Window window = this.getWindow();
         double scale = ClientSettingRegistry.GUI_SCALE.getValue();

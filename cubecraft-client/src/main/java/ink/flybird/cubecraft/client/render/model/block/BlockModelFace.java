@@ -1,16 +1,16 @@
 package ink.flybird.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
 
 import java.lang.reflect.Type;
 
-public record BlockModelFace(ImageResource texture, float u0, float u1, float v0, float v1, String color,
+public record BlockModelFace(TextureAsset texture, float u0, float u1, float v0, float v1, String color,
                              CullingMethod culling) {
 
     public BlockModelFace(JsonObject json) {
         this(
-                new ImageResource(json.get("texture").getAsString()),
+                new TextureAsset(json.get("texture").getAsString()),
                 json.get("uv").getAsJsonArray().get(0).getAsFloat(),
                 json.get("uv").getAsJsonArray().get(1).getAsFloat(),
                 json.get("uv").getAsJsonArray().get(2).getAsFloat(),

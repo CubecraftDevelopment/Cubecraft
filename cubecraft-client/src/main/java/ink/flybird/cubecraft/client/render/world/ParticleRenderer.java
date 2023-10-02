@@ -30,7 +30,7 @@ public class ParticleRenderer extends IWorldRenderer {
 
     public ParticleRenderer(Window window, IWorld world, EntityPlayer player, Camera cam, GameSetting setting) {
         super(window, world, player, cam, setting);
-        this.frustum = new FrustumCuller(cam);
+        this.frustum = new FrustumCuller();
     }
 
     public void setParticleEngine(ParticleEngine particleEngine) {

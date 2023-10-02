@@ -40,32 +40,40 @@ public class CloudRenderer extends IWorldRenderer {
     public static final float CLASSIC_LIGHT_X = 0.6f;
 
     private final IRenderCall[] renderLists = new IRenderCall[5];
-    private final ByteBuffer cachedMapping;
+    private ByteBuffer cachedMapping;
 
     private Config cfg;
 
     public CloudRenderer(Window window, IWorld world, EntityPlayer player, Camera cam, GameSetting setting) {
         super(window, world, player, cam, setting);
-        for (int i = 0; i < 5; i++) {
-            this.renderLists[i] = new ListRenderCall();
-            this.renderLists[i].allocate();
-        }
-        this.cachedMapping = BufferAllocation.allocByteBuffer(512 * 512);
     }
 
     @Override
-    public void refresh() {
+    public void init() {
+        this.cachedMapping = BufferAllocation.allocByteBuffer(512 * 512);
         Noise synth = new PerlinNoise(new Random(world.getSeed()), 4);
         for (int x = 0; x < 512; x++) {
             for (int z = 0; z < 512; z++) {
                 this.cachedMapping.put(x * 512 + z, (byte) synth.getValue(x, z));
             }
         }
+        for (int i = 0; i < 5; i++) {
+            this.renderLists[i] = new ListRenderCall();
+            this.renderLists[i].allocate();
+        }
+        this.updateCloud();
     }
 
     @Override
     public void stop() {
-        BufferAllocation.free(this.cachedMapping);
+        if(this.renderLists[0]!=null){
+            for (int i = 0; i < 5; i++) {
+                this.renderLists[i].free();
+            }
+        }
+        if(this.cachedMapping!=null){
+            BufferAllocation.free(this.cachedMapping);
+        }
     }
 
     @Override
@@ -82,29 +90,25 @@ public class CloudRenderer extends IWorldRenderer {
                 json.getAsJsonObject().get("motion_x").getAsFloat(),
                 json.getAsJsonObject().get("motion_z").getAsFloat()
         );
-        this.updateCloud();
     }
 
     @Override
     public void preRender(RenderType type, float delta) {
-        if (type != RenderType.TRANSPARENT) {
+        if (type != RenderType.ALPHA) {
             return;
         }
         GLUtil.checkError("pre_cloud_render");
-        this.parent.setRenderState(this.setting);
         camera.setUpGlobalCamera(window);
         camera.updateFrustum();
     }
 
     @Override
     public void render(RenderType type, float delta) {
-        if (type != RenderType.TRANSPARENT) {
+        if (type != RenderType.ALPHA) {
             return;
         }
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_FOG);
         int d2 = LevelRenderer.SettingHolder.CHUNK_RENDER_DISTANCE.getValue() * 16 * 2;
-        GLUtil.setupFog(d2, ColorUtil.int1Float1ToFloat4(this.cfg.cloudColor, 1));
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_CULL_FACE);
         int cloudQuality = this.setting.getValueAsInt("client.render.environment.cloud.quality", FLAT_CLOUD_RENDER);
@@ -186,7 +190,6 @@ public class CloudRenderer extends IWorldRenderer {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-        this.parent.closeState(this.setting);
         GLUtil.checkError("post_cloud_render");
     }
 

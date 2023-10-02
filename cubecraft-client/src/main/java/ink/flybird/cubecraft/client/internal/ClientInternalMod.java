@@ -1,47 +1,41 @@
 package ink.flybird.cubecraft.client.internal;
 
+import ink.flybird.cubecraft.ContentRegistries;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.GUIManager;
-import ink.flybird.cubecraft.client.internal.gui.node.Button;
-import ink.flybird.cubecraft.client.internal.gui.node.CardPanel;
-import ink.flybird.cubecraft.client.internal.gui.node.TextBar;
-import ink.flybird.cubecraft.client.internal.gui.node.WaitingAnimation;
-import ink.flybird.cubecraft.client.internal.gui.node.Panel;
-import ink.flybird.cubecraft.client.internal.gui.node.ScrollPanel;
-import ink.flybird.cubecraft.client.internal.gui.node.TopBar;
-import ink.flybird.cubecraft.client.internal.renderer.gui.*;
+import ink.flybird.cubecraft.client.gui.layout.FlowLayout;
+import ink.flybird.cubecraft.client.gui.layout.OriginLayout;
+import ink.flybird.cubecraft.client.gui.layout.ViewportLayout;
+import ink.flybird.cubecraft.client.gui.node.*;
 import ink.flybird.cubecraft.client.internal.entity.BlockBrakeParticle;
+import ink.flybird.cubecraft.client.internal.handler.ClientAssetLoader;
 import ink.flybird.cubecraft.client.internal.handler.ClientListener;
 import ink.flybird.cubecraft.client.internal.handler.ParticleHandler;
-import ink.flybird.cubecraft.client.internal.handler.ResourceLoader;
 import ink.flybird.cubecraft.client.internal.handler.ScreenController;
-import ink.flybird.cubecraft.client.internal.registry.ClientNetworkHandlerRegistry;
-import ink.flybird.cubecraft.client.internal.registry.ColorMapRegistry;
-import ink.flybird.cubecraft.client.internal.registry.GUIRegistry;
-import ink.flybird.cubecraft.client.internal.registry.RenderRegistry;
-import ink.flybird.cubecraft.client.internal.renderer.block.BlockRenderer;
-import ink.flybird.cubecraft.client.internal.renderer.block.LiquidRenderer;
-import ink.flybird.cubecraft.client.internal.gui.layout.FlowLayout;
-import ink.flybird.cubecraft.client.internal.gui.layout.OriginLayout;
-import ink.flybird.cubecraft.client.internal.gui.layout.ViewportLayout;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.client.registry.ClientNetworkHandlerRegistry;
+import ink.flybird.cubecraft.client.registry.ColorMapRegistry;
+import ink.flybird.cubecraft.client.registry.GUIRegistry;
+import ink.flybird.cubecraft.client.registry.RenderRegistry;
+import ink.flybird.cubecraft.client.render.block.BlockRenderer;
+import ink.flybird.cubecraft.client.render.block.LiquidRenderer;
+import ink.flybird.cubecraft.client.render.gui.*;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
+import ink.flybird.cubecraft.extansion.CubecraftExtension;
 import ink.flybird.cubecraft.extansion.ExtensionSide;
 import ink.flybird.cubecraft.mod.ClientSideInitializeEvent;
 import ink.flybird.cubecraft.mod.ModPreInitializeEvent;
-import ink.flybird.cubecraft.extansion.CubecraftExtension;
-import ink.flybird.cubecraft.ContentRegistries;
-import ink.flybird.cubecraft.SharedContext;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.fcommon.event.EventHandler;
-
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 
-import static ink.flybird.cubecraft.client.gui.GUIRegistry.*;
+import static ink.flybird.cubecraft.client.gui.GUIRegistry.LAYOUT;
+import static ink.flybird.cubecraft.client.gui.GUIRegistry.NODE;
 
-@CubecraftExtension(side= ExtensionSide.CLIENT)
+@CubecraftExtension(side = ExtensionSide.CLIENT)
 public final class ClientInternalMod {
     private final Logger logger = new SimpleLogger("ClientInternalMod");
 
@@ -53,23 +47,10 @@ public final class ClientInternalMod {
 
     @EventHandler
     public void registerGUIComponents(ClientSideInitializeEvent e) {
-
-        this.logger.info("registering gui component...");
-
-
-        //guiManager.registerComponent("waiting", WaitingAnimation.class, new WaitingAnimation.XMLDeserializer());
-        //guiManager.registerComponent("textbar", TextBar.class, new TextBar.XMLDeserializer());
-        //guiManager.registerComponent("topbar", TopBar.class, new TopBar.XMLDeserializer());
-        //guiManager.registerComponent("icon", Icon.class, new Icon.XMLDeserializer());
-
-        //guiManager.registerComponent("panel", Panel.class, new Panel.XMLDeserializer());
-        //guiManager.registerComponent("scroll_panel", ScrollPanel.class, new ScrollPanel.XMLDeserializer());
-        //guiManager.registerComponent("card_panel", CardPanel.class, new CardPanel.XMLDeserializer());
     }
 
     @EventHandler
     public void registerGUILayout(ClientSideInitializeEvent e) {
-        this.logger.info("registering gui layout...");
         GUIManager guiManager = CubecraftClient.CLIENT.getGuiManager();
 
         guiManager.registerLayout("origin", OriginLayout.class, new OriginLayout.XMLDeserializer());
@@ -79,7 +60,6 @@ public final class ClientInternalMod {
 
     @EventHandler
     public void registerGUIRenderController(ClientSideInitializeEvent e) {
-        this.logger.info("registering gui shortTick controller...");
         GUIManager guiManager = CubecraftClient.CLIENT.getGuiManager();
 
         guiManager.registerRenderController(Button.class, ResourceLocation.uiRenderController("cubecraft", "button.json"));
@@ -104,13 +84,7 @@ public final class ClientInternalMod {
         guiManager.registerRendererPart("color", Color.class, new Color.JDeserializer());
 
 
-
     }
-
-
-
-
-
 
 
     @EventHandler
@@ -122,8 +96,7 @@ public final class ClientInternalMod {
         LAYOUT.registerGetFunctionProvider(GUIRegistry.class);
 
 
-
-        ClientSharedContext.RESOURCE_MANAGER.registerEventListener(new ResourceLoader());
+        ClientSharedContext.RESOURCE_MANAGER.registerEventListener(new ClientAssetLoader());
         ClientSharedContext.NET_HANDLER.registerGetFunctionProvider(ClientNetworkHandlerRegistry.class);
         ClientRenderContext.COLOR_MAP.registerGetter(ColorMapRegistry.class);
         CubecraftClient.CLIENT.getGuiManager().getEventBus().registerEventListener(new ScreenController());
@@ -137,11 +110,10 @@ public final class ClientInternalMod {
         ContentRegistries.ENTITY.registerItem(BlockBrakeParticle.class);
 
 
-
-        ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:calm_water",new LiquidRenderer(
-                new ImageResource("cubecraft:/texture/block/water_flow.png"),
-                new ImageResource("cubecraft:/texture/block/water_still.png")
+        ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:calm_water", new LiquidRenderer(
+                new TextureAsset("cubecraft:/block/water_still.png"),
+                new TextureAsset("cubecraft:/block/water_flow.png")
         ));
-        ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:stone",new BlockRenderer(new ImageResource("cubecraft","/texture/block/stone.png"), "cubecraft:alpha_block"));
+        ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:stone", new BlockRenderer(new TextureAsset("cubecraft", "/block/stone.png"), "cubecraft:alpha_block"));
     }
 }

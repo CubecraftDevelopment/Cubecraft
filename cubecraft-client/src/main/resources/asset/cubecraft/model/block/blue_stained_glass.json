@@ -1,0 +1,11 @@
+{
+	"cover_json": {
+		"import": "cubecraft:behavior/glass.json",
+		"replacement": [
+			{
+				"from": "#texture",
+				"to": "cubecraft:block/blue_stained_glass.png"
+			}
+		]
+	}
+}

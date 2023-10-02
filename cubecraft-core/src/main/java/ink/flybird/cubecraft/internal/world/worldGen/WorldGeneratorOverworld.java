@@ -42,8 +42,6 @@ public class WorldGeneratorOverworld implements IChunkGenerator {
                 double v =2* noise2.getValue(p.toWorldPosX(x) / 512f, chunk.getKey().toWorldPosZ(z) / 512f)/6f;
                 double vv = 242.41*v*v*v*v + 49.302*v*v*v - 137.228*v*v + 160.18*v + 137.35;
 
-
-
                 double h1 = noise.getValue(p.toWorldPosX(x) / 4f, chunk.getKey().toWorldPosZ(z) / 4f) * 4f;
 
                 double h = vv+(2*v*v)*h1;
@@ -53,7 +51,7 @@ public class WorldGeneratorOverworld implements IChunkGenerator {
                         chunk.setBlockID(x, y, z, BlockType.STONE);
                         continue;
                     }
-                    if (y <= 128.0) {
+                    if (y < 128.0) {
                         chunk.setBlockID(x, y, z, BlockRegistry.CALM_WATER.getID());
                     }
                 }

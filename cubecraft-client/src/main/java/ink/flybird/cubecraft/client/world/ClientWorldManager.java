@@ -4,15 +4,15 @@ import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.screen.Screen;
-import ink.flybird.cubecraft.client.internal.gui.node.Button;
-import ink.flybird.cubecraft.client.internal.gui.node.CardPanel;
-import ink.flybird.cubecraft.client.internal.gui.node.Label;
-import ink.flybird.cubecraft.client.internal.gui.node.ScrollPanel;
-import ink.flybird.cubecraft.client.internal.gui.event.ButtonClickedEvent;
+import ink.flybird.cubecraft.client.gui.node.Button;
+import ink.flybird.cubecraft.client.gui.node.CardPanel;
+import ink.flybird.cubecraft.client.gui.node.Label;
+import ink.flybird.cubecraft.client.gui.node.ScrollPanel;
+import ink.flybird.cubecraft.client.event.gui.ButtonClickedEvent;
 import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
-import ink.flybird.cubecraft.client.internal.gui.event.TextBarSubmitEvent;
-import ink.flybird.cubecraft.client.internal.gui.layout.OriginLayout;
-import ink.flybird.cubecraft.client.internal.gui.screen.ScreenType;
+import ink.flybird.cubecraft.client.event.gui.TextBarSubmitEvent;
+import ink.flybird.cubecraft.client.gui.layout.OriginLayout;
+import ink.flybird.cubecraft.client.internal.gui.ScreenType;
 import ink.flybird.cubecraft.client.net.ClientIO;
 import ink.flybird.cubecraft.client.net.ClientNetHandler;
 import ink.flybird.cubecraft.server.CubecraftServer;
@@ -230,6 +230,8 @@ public class ClientWorldManager extends ClientNetHandler {
     }
 
     public void updateShowedList(String s) {
+
+        /*
         int h = 0;
         this.showedInfoList.clear();
         this.panel.getNodes().clear();
@@ -251,6 +253,8 @@ public class ClientWorldManager extends ClientNetHandler {
                 }
             }
         }
+
+         */
     }
 
     public LevelInfo getSelectedLevel() {

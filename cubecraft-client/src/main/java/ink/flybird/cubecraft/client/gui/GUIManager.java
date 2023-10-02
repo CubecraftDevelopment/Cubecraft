@@ -11,11 +11,11 @@ import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.layout.Layout;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.gui.screen.Screen;
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.client.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
 import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.quantum3d.device.Window;
 import ink.flybird.quantum3d.device.event.MousePosEvent;
@@ -126,9 +126,9 @@ public final class GUIManager{
         CollectionUtil.iterateMap(this.renderControllerLocations, (key, item) -> this.renderers.put(key, gson.fromJson(
                 ClientSharedContext.RESOURCE_MANAGER.getResource(item).getAsText(), ComponentRenderer.class)
         ));
-        Set<ImageResource> locations = new HashSet<>();
+        Set<TextureAsset> locations = new HashSet<>();
         CollectionUtil.iterateMap(this.renderers, ((key, item) -> item.initializeModel(locations)));
-        for (ImageResource resource : locations) {
+        for (TextureAsset resource : locations) {
             //todo:delegate resource
             ClientSharedContext.RESOURCE_MANAGER.loadResource(resource);
             ClientRenderContext.TEXTURE.createTexture2D(resource, false, false);

@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.client.render.model.block;
 
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
@@ -38,5 +38,5 @@ public abstract class BlockModelComponent {
 
     public abstract void renderAsItem(VertexBuilder builder, double renderX, double renderY, double renderZ);
 
-    public abstract void initializeModel(Set<ImageResource> textureList);
+    public abstract void initializeModel(Set<TextureAsset> textureList);
 }

@@ -56,25 +56,24 @@ public abstract class IWorldRenderer {
         this.parent = parent;
     }
 
-    //lifetime
+    public void refresh() {
+        this.stop();
+        this.init();
+    }
+
+
+    public void config(JsonElement json) {
+    }
+
     public void init() {
     }
 
     public void stop() {
     }
 
-    public void refresh() {
-    }
-
-    public void config(JsonElement json) {
-    }
-
-
-    //world renderer
     public void tick() {
     }
 
-    //render
     public void preRender() {
     }
 

@@ -1,15 +1,13 @@
 package ink.flybird.quantum3d_legacy.culling;
 
 import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.fcommon.math.AABB;
-import org.joml.FrustumIntersection;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 
 
-public class FrustumCuller extends ICuller {
+public class FrustumCuller{
     public final float[][] m_Frustum = new float[6][4];
     final float[] proj = new float[16];
     final float[] modl = new float[16];
@@ -17,15 +15,8 @@ public class FrustumCuller extends ICuller {
     private final FloatBuffer _proj = BufferAllocation.allocFloatBuffer(16);
     private final FloatBuffer _modl = BufferAllocation.allocFloatBuffer(16);
     private final FloatBuffer _clip = BufferAllocation.allocFloatBuffer(16);
-    private final FrustumIntersection frustumIntersection = new FrustumIntersection();
 
-    public FrustumCuller(Camera camera) {
-        super(camera);
-    }
-
-    @Override
-    public void update() {
-        this.frustumIntersection.set(camera.getCurrentMatrix());
+    public FrustumCuller() {
     }
 
     private void normalizePlane(float[][] frustum, int side) {
@@ -146,7 +137,6 @@ public class FrustumCuller extends ICuller {
         return true;
     }
 
-    @Override
     public boolean aabbVisible(AABB aabb) {
         return this.cubeInFrustum((float) aabb.x0, (float) aabb.y0, (float) aabb.z0, (float) aabb.x1, (float) aabb.y1, aabb.z1);
     }

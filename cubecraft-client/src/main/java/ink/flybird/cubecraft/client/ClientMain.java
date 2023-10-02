@@ -2,6 +2,8 @@ package ink.flybird.cubecraft.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import ink.flybird.cubecraft.EnvironmentPath;
+import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.container.StartArguments;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
@@ -10,68 +12,63 @@ import ink.flybird.quantum3d.device.DeviceContext;
 import ink.flybird.quantum3d.lwjgl.context.CompactOGLRenderContext;
 import ink.flybird.quantum3d.lwjgl.device.GLFWDeviceContext;
 import ink.flybird.quantum3d.render.RenderContext;
-import ink.flybird.cubecraft.EnvironmentPath;
-import ink.flybird.cubecraft.SharedContext;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Objects;
 
 public final class ClientMain {
-    private static final Logger logger = new SimpleLogger("client_boot");
-    private static StartArguments startArguments;
+    private static final Logger LOGGER = new SimpleLogger("client_boot");
 
     public static void main(String[] args) {
         EnvironmentPath.allCreateFolder();
-
         Platform platform = Platform.current();
-        releaseNativeLibraries(platform);
         System.setProperty("java.library.path", EnvironmentPath.NATIVE_FOLDER);
 
+        LOGGER.info("system: %s", platform.toString());
+        LOGGER.info("start args: " + Arrays.toString(args));
+        LOGGER.info("runtime path: " + EnvironmentPath.GAME_FOLDER);
+        LOGGER.info("native: " + System.getProperty("java.library.path"));
+
         if (!Platform.is64Bit(platform)) {
-            logger.warn("32-bit system is not supported, game will exit.");
+            LOGGER.warn("32-bit platform is not supported.");
         }
-        logger.info("system: %s", platform.toString());
-        logger.info("start args: " + Arrays.toString(args));
-        logger.info("runtime path: " + EnvironmentPath.GAME_FOLDER);
-        logger.info("native:" + System.getProperty("java.library.path"));
+        if (!Objects.equals(System.getProperty("file.encoding"), "UTF-8")) {
+            LOGGER.warn("current platform is not using UTF-8 for standard I/O.");
+        }
+        if (!releaseNativeLibraries(platform)) {
+            LOGGER.warn("failed to exact native library.");
+        }
 
-        DeviceContext deviceContext;
-        RenderContext renderContext;
+        PlatformSolution solution=PlatformSolutionProvider.getPlatformSolution();
 
-        logger.info("contact with cobalt r2 failed");//todo
-        logger.info("contact with cobalt r1 failed");//todo
-        logger.info("using quantum3d-lwjgl as platform solution");
-        deviceContext = new GLFWDeviceContext();
-        GLFW.glfwWindowHint(GLFW.GLFW_SCALE_TO_MONITOR, GLFW.GLFW_TRUE);
-        renderContext = new CompactOGLRenderContext(3, 1);
-
+        Thread.currentThread().setContextClassLoader(SharedContext.CLASS_LOADER);
         CubecraftClient client = new CubecraftClient(
-                deviceContext,
-                renderContext,
+                solution.deviceContext(),
+                solution.renderContext(),
                 new Timer(20.0f)
         );
-
-        logger.info("starting client thread");
-        Thread.currentThread().setContextClassLoader(SharedContext.CLASS_LOADER);
+        LOGGER.info("starting client started.");
         client.run();
-
+        LOGGER.info("client thread stopped.");
         System.exit(0);
     }
 
-    public static void releaseNativeLibraries(Platform plat) {
-        JsonObject object = null;
+    public static boolean releaseNativeLibraries(Platform plat) {
+        JsonObject object;
         try {
             InputStream stream = ClientMain.class.getResourceAsStream("/native/native_index.json");
+            if (stream == null) {
+                return false;
+            }
             object = JsonParser.parseString(new String(stream.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
             stream.close();
         } catch (Exception e) {
-            logger.exception(e);
-            logger.error("could not read native file.");
-            return;
+            LOGGER.exception(e);
+            return false;
         }
 
         JsonObject repo = object.get("%s/%s".formatted(plat.getName(), plat.getArch())).getAsJsonObject();
@@ -105,12 +102,49 @@ public final class ClientMain {
                 outputStream.close();
                 stream.close();
             } catch (Exception e) {
-                logger.exception(e);
-                logger.error("could not load native library. system will exit");
+                LOGGER.exception(e);
+                LOGGER.error("could not load native library. system will exit");
                 System.exit(0);
             }
 
-            logger.info("releasing library:%s -> %s", localPath, targetPath);
+            LOGGER.info("releasing library:%s -> %s", localPath, targetPath);
         }
+        return true;
+    }
+
+    static class PlatformSolutionProvider {
+        public static PlatformSolution getPlatformSolution() {
+            PlatformSolution solution = getCobaltR2PlatformSolution();
+            if (solution != null) {
+                LOGGER.info("successfully loaded Cobalt-R2 as platform solution.");
+                return solution;
+            }
+            solution = getCobaltR1PlatformSolution();
+            if (solution != null) {
+                LOGGER.info("successfully loaded Cobalt-R1 as platform solution.");
+                return solution;
+            }
+            solution = getLWJGLPlatformSolution();
+            LOGGER.info("successfully loaded Quantum3D-LWJGL as platform solution.");
+            return solution;
+        }
+
+        static PlatformSolution getCobaltR2PlatformSolution() {
+            return null;
+        }
+
+        static PlatformSolution getCobaltR1PlatformSolution() {
+            return null;
+        }
+
+        static PlatformSolution getLWJGLPlatformSolution() {
+            return new PlatformSolution(
+                    new GLFWDeviceContext(),
+                    new CompactOGLRenderContext(3, 1)
+            );
+        }
+    }
+
+    public record PlatformSolution(DeviceContext deviceContext, RenderContext renderContext) {
     }
 }

@@ -5,7 +5,7 @@ import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.node.Container;
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.client.registry.ClientSettingRegistry;
 import ink.flybird.fcommon.JVMInfo;
 import ink.flybird.fcommon.container.OrderedHashMap;
 import ink.flybird.fcommon.file.FAMLDeserializer;
@@ -97,7 +97,7 @@ public class Screen extends Container {
     }
 
     //run
-    public void render(DisplayScreenInfo info, float interpolationTime) {
+    public void render(DisplayScreenInfo info, float deltaTime) {
         switch (this.backgroundType) {
             case IMAGE_BACKGROUND -> ScreenUtil.renderPictureBackground(this.client.getWindow());
             case TILE_BACKGROUND -> ScreenUtil.renderTileBackground();
@@ -111,7 +111,7 @@ public class Screen extends Container {
             }
             case IN_GAME_MASK -> ScreenUtil.renderMask(this.client.getWindow());
         }
-        super.render(interpolationTime);
+        super.render(deltaTime);
         if (CubecraftClient.CLIENT.isDebug) {
             this.debugInfoLeft.clear();
             this.debugInfoRight.clear();

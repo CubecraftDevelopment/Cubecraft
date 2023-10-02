@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public final class RenderList {
     private final Map<String, ChunkLayer> callList = new HashMap<>();
-    private final Map<RenderChunkPos, Boolean> visibilityList = new HashMap<>();
+    private final Map<String, ChunkLayer> visibleCallList = new HashMap<>();
     private final List<RenderChunkPos> orderList = new ArrayList<>();
     private final List<String> types = new ArrayList<>();
     private int successDrawCount = 0;
@@ -28,7 +28,11 @@ public final class RenderList {
     }
 
     public void sort(Comparator<RenderChunkPos> sorter) {
-        this.orderList.sort(sorter);
+        try {
+            this.orderList.sort(sorter);
+        }catch (IllegalArgumentException ignored){
+            //Comparison method violates its general contract,ignorable exception.
+        }
     }
 
     public void putLayer(ChunkLayer layer) {
@@ -40,7 +44,6 @@ public final class RenderList {
             return;
         }
         this.orderList.add(layer.getPos());
-        this.visibilityList.put(layer.getPos(), true);
     }
 
     public void removeLayer(ChunkLayer layer) {
@@ -51,7 +54,6 @@ public final class RenderList {
             }
         }
         this.orderList.remove(layer.getPos());
-        this.visibilityList.remove(layer.getPos());
     }
 
     public void removeLayer(String type, RenderChunkPos pos) {
@@ -62,7 +64,6 @@ public final class RenderList {
             }
         }
         this.orderList.remove(pos);
-        this.visibilityList.remove(pos);
     }
 
     public void removeAt(RenderChunkPos pos) {
@@ -70,7 +71,6 @@ public final class RenderList {
             this.callList.remove(ChunkLayer.encode(s, pos));
         }
         this.orderList.remove(pos);
-        this.visibilityList.remove(pos);
     }
 
     public void remove(Function<RenderChunkPos, Boolean> function) {
@@ -83,24 +83,28 @@ public final class RenderList {
     }
 
     public void setVisibilityAt(RenderChunkPos pos, Boolean b) {
-        this.visibilityList.put(pos, b);
+        for (String s : this.types) {
+            String k = ChunkLayer.encode(s, pos);
+            if(b){
+                this.visibleCallList.put(k,this.callList.get(k));
+            }else {
+                this.visibleCallList.remove(k,this.callList.get(k));
+            }
+        }
     }
 
     public void updateVisibility(Function<RenderChunkPos, Boolean> function) {
-        for (RenderChunkPos pos : this.visibilityList.keySet()) {
+        for (RenderChunkPos pos : this.orderList) {
             this.setVisibilityAt(pos, function.apply(pos));
         }
     }
 
     public int drawAt(RenderChunkPos pos, Vector3d viewBase) {
         int count = 0;
-        if (!this.visibilityList.getOrDefault(pos, true)) {
-            return count;
-        }
 
         for (String s : this.types) {
             String k = ChunkLayer.encode(s, pos);
-            ChunkLayer layer = this.callList.get(k);
+            ChunkLayer layer = this.visibleCallList.get(k);
             if (layer == null) {
                 continue;
             }
@@ -125,5 +129,20 @@ public final class RenderList {
 
     public int getSuccessDrawCount() {
         return this.successDrawCount;
+    }
+
+    public void clear() {
+        this.callList.clear();
+        this.orderList.clear();
+        this.visibleCallList.clear();
+        this.successDrawCount = 0;
+    }
+
+    public ChunkLayer getLayer(String k) {
+        return this.callList.get(k);
+    }
+
+    public boolean containsLayer(String k) {
+        return this.callList.containsKey(k);
     }
 }

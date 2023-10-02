@@ -1,8 +1,8 @@
 package ink.flybird.cubecraft.client;
 
-import ink.flybird.cubecraft.client.internal.renderer.font.SmoothedFontRenderer;
+import ink.flybird.cubecraft.client.gui.font.SmoothedFontRenderer;
 import ink.flybird.cubecraft.client.net.ClientNetHandler;
-import ink.flybird.cubecraft.client.resources.ResourceManager;
+import ink.flybird.cubecraft.resource.ResourceManager;
 import ink.flybird.fcommon.query.SimpleQueryHandler;
 import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.cubecraft.util.setting.GameSetting;

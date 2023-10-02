@@ -1,15 +1,14 @@
 package ink.flybird.cubecraft.client.gui;
 
-import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.base.Popup;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.client.registry.ClientSettingRegistry;
 import ink.flybird.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
-import ink.flybird.cubecraft.client.internal.registry.TextureRegistry;
+import ink.flybird.cubecraft.client.registry.TextureRegistry;
 import ink.flybird.fcommon.GameSetting;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;

@@ -29,8 +29,8 @@ public interface GUIRegistry {
         layout.setBorder(new Border(
                 Integer.parseInt(border.split(",")[0]),
                 Integer.parseInt(border.split(",")[1]),
-                Integer.parseInt(border.split(",")[2]),
-                Integer.parseInt(border.split(",")[3])
+                Integer.parseInt(border.split(",")[3]),
+                Integer.parseInt(border.split(",")[2])
         ));
         return layout;
     }

@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
 
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -14,7 +14,7 @@ import java.util.Set;
 public interface IComponentPartRenderer {
     void render(Node node);
 
-    void initializeRenderer(Set<ImageResource> loc);
+    void initializeRenderer(Set<TextureAsset> loc);
 
     class JDeserializer implements JsonDeserializer<IComponentPartRenderer>{
         @Override

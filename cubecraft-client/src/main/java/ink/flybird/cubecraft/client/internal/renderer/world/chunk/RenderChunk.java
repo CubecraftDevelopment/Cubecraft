@@ -5,28 +5,21 @@ import ink.flybird.cubecraft.client.render.LevelRenderer;
 import ink.flybird.cubecraft.client.render.RenderType;
 import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
 import ink.flybird.cubecraft.client.render.chunk.layer.ChunkLayer;
-import ink.flybird.quantum3d_legacy.Camera;
-import ink.flybird.quantum3d_legacy.compile.CompileCallable;
 import ink.flybird.quantum3d_legacy.draw.*;
 import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
 import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
 import ink.flybird.fcommon.container.KeyGetter;
 import ink.flybird.fcommon.context.LifetimeCounter;
-import ink.flybird.fcommon.math.AABB;
 import ink.flybird.cubecraft.client.render.chunk.ChunkRenderer;
 import ink.flybird.cubecraft.client.render.DistanceComparable;
 import ink.flybird.cubecraft.client.render.IRenderType;
 import ink.flybird.cubecraft.client.render.block.IBlockRenderer;
 import ink.flybird.cubecraft.internal.block.BlockType;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.cubecraft.world.access.ChunkLoadAccess;
 import ink.flybird.cubecraft.world.block.access.IBlockAccess;
-import ink.flybird.cubecraft.world.chunk.ChunkLoadTicket;
-import ink.flybird.cubecraft.world.chunk.ChunkPos;
 import ink.flybird.cubecraft.world.entity.Entity;
 import org.joml.Vector3d;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -36,7 +29,7 @@ import java.util.stream.Stream;
 //todo:区块数据通道化
 //todo:完善界面，完善组件
 
-public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceComparable, CompileCallable<RenderChunk> {
+public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceComparable{
     public final RenderChunkPos pos;
     public final IWorld world;
     private final ChunkRenderer parent;
@@ -99,7 +92,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
         return false;
     }
 
-
+/*
     @Override
     public Set<IDrawCompile<RenderChunk>> compile() {
         Set<IDrawCompile<RenderChunk>> result = new HashSet<>();
@@ -164,6 +157,8 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
         }
     }
 
+
+ */
     private boolean compileBlocks(String layerID, VertexBuilder builder) {
         builder.begin();
 
@@ -229,15 +224,6 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
             container.destroy();
         }
         this.lifetimeCounter.release();
-    }
-
-    @Override
-    public boolean shouldCompile() {
-        return true;
-    }
-
-    public AABB getVisibleArea(Camera camera) {
-        return RenderChunkPos.getAABBFromPos(this.getKey(), camera);
     }
 
     @Override

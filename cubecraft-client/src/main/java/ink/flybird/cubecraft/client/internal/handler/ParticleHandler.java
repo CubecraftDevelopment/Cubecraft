@@ -3,7 +3,7 @@ package ink.flybird.cubecraft.client.internal.handler;
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.render.model.block.BlockModel;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.cubecraft.client.internal.entity.BlockBrakeParticle;

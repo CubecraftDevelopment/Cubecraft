@@ -4,7 +4,7 @@ import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.event.ClientRendererInitializeEvent;
 import ink.flybird.cubecraft.client.gui.GUIManager;
-import ink.flybird.cubecraft.client.internal.renderer.block.ModelRenderer;
+import ink.flybird.cubecraft.client.render.block.ModelRenderer;
 import ink.flybird.cubecraft.client.render.world.ParticleRenderer;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.quantum3d.device.KeyboardButton;
@@ -17,7 +17,7 @@ public class ClientListener {
     @EventHandler
     public void onBlockRegister(BlockRegisterEvent e) {
         String id = e.id();
-        ClientRenderContext.BLOCK_RENDERER.registerItem(id, new ModelRenderer("/resource/"+e.id().split(":")[0]+"/model/block/"+e.id().split(":")[1] + ".json"));
+        ClientRenderContext.BLOCK_RENDERER.registerItem(id, new ModelRenderer("/asset/"+e.id().split(":")[0]+"/model/block/"+e.id().split(":")[1] + ".json"));
     }
 
     @EventHandler

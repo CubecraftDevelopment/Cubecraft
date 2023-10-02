@@ -119,7 +119,9 @@ these are the core technology that we used to uil the platform itself.
 
 ### Licence
 
-//todo
+this project is under our customized licence.
+
+[link](https://flybird.ink/licence/opensource.html)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

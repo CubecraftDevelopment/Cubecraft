@@ -15,7 +15,7 @@ public class Camera {
 
     private final Vector3d rotation = new Vector3d();
     private final Vector3d relativePosition = new Vector3d();
-    private final FrustumCuller frustum = new FrustumCuller(this);
+    private final FrustumCuller frustum = new FrustumCuller();
     private float fov = 70.0f;
     private Matrix4f proj = new Matrix4f();
     private long playerGridX, playerGridY, playerGridZ;

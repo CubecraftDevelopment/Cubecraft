@@ -1,0 +1,59 @@
+[
+  {
+    "state": "default:normal",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:gui/controls/button/button.png",
+        "pos": [0,1,0,1]
+      }
+    ]
+  },
+  {
+    "state": "default:selected",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:gui/controls/button/button_selected.png",
+        "pos": [0,1,0,1]
+      }
+    ]
+  },
+  {
+    "state": "default:disabled",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:gui/controls/button/button_disabled.png",
+        "pos": [0,1,0,1]
+      }
+    ]
+  },
+
+  {
+    "state": "invisible:normal",
+    "components": []
+  },
+  {
+    "state": "invisible:selected",
+    "components": [
+      {
+        "type": "image_all_boarder",
+        "boarderH":8,
+        "boarderV": 8,
+        "loc": "cubecraft:gui/controls/button/button_selected.png",
+        "pos": [0,1,0,1]
+      }
+    ]
+  },
+  {
+    "state": "invisible:disabled",
+    "components": []
+  }
+]

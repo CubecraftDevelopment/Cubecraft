@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.ClientRenderContext;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
 import ink.flybird.fcommon.ColorUtil;
 import ink.flybird.fcommon.container.Vector3;
 import ink.flybird.cubecraft.client.render.BlockBakery;
@@ -83,7 +83,7 @@ public class Cube extends BlockModelComponent {
     }
 
     @Override
-    public void initializeModel(Set<ImageResource> textureList) {
+    public void initializeModel(Set<TextureAsset> textureList) {
         textureList.add(this.top.texture());
         textureList.add(this.bottom.texture());
         textureList.add(this.left.texture());

@@ -124,4 +124,12 @@ public abstract class VertexBuilder {
     public final void color(Vector4d v) {
         this.color((float) v.x, (float) v.y, (float) v.z, (float) v.w);
     }
+
+    @Override
+    protected void finalize() {
+        if(!this.lifetimeCounter.isAllocated()){
+            return;
+        }
+        this.free();
+    }
 }

@@ -2,8 +2,8 @@ package ink.flybird.cubecraft.client.render.model;
 
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.render.model.object.Model;
-import ink.flybird.cubecraft.client.resources.Resource;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.resource.Resource;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.cubecraft.SharedContext;

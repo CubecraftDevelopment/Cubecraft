@@ -1,11 +1,10 @@
 package ink.flybird.cubecraft.client.render.chunk;
 
-import ink.flybird.cubecraft.client.internal.registry.ClientSettingRegistry;
+import ink.flybird.cubecraft.client.registry.ClientSettingRegistry;
 import ink.flybird.cubecraft.client.render.DistanceComparable;
 import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.fcommon.container.Key;
 import ink.flybird.fcommon.math.AABB;
-import ink.flybird.quantum3d_legacy.Camera;
 import org.joml.Vector3d;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +25,12 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         this.z = Long.parseLong(s.split("/")[2]);
     }
 
-    public static AABB getAABBFromPos(RenderChunkPos renderChunkPos, Camera camera) {
-        return new AABB((renderChunkPos.getX() * 16 - camera.getPosition().x), (renderChunkPos.getY() * 16 - camera.getPosition().y), (renderChunkPos.getZ() * 16 - camera.getPosition().z), (renderChunkPos.getX() * 16 + 16 - camera.getPosition().x), (renderChunkPos.getY() * 16 + 16 - camera.getPosition().y), (renderChunkPos.getZ() * 16 + 16 - camera.getPosition().z));
+    public static AABB getAABBFromPos(RenderChunkPos renderChunkPos, Vector3d viewOffset) {
+        double x = renderChunkPos.getWorldX() - viewOffset.x();
+        double y = renderChunkPos.getWorldY() - viewOffset.y();
+        double z = renderChunkPos.getWorldZ() - viewOffset.z();
+
+        return new AABB(x, y, z, x + 16, y + 16, z + 16);
     }
 
     //todo:常量池回收问题
@@ -46,9 +49,17 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         return x + "/" + y + "/" + z;
     }
 
+    public AABB getAABB(Vector3d viewOffset) {
+        return getAABBFromPos(this, viewOffset);
+    }
+
     @Override
     public double distanceTo(Entity target) {
         return this.getWorldPosition().add(8, 8, 8).distance(target.getPosition());
+    }
+
+    public double distanceTo(Vector3d pos) {
+        return this.getWorldPosition().add(8, 8, 8).distance(pos);
     }
 
     @Override

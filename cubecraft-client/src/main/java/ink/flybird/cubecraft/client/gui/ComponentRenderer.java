@@ -3,7 +3,7 @@ package ink.flybird.cubecraft.client.gui;
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
 import ink.flybird.fcommon.container.CollectionUtil;
 
 import java.lang.reflect.Type;
@@ -27,7 +27,7 @@ public final class ComponentRenderer{
         }
     }
 
-    public void initializeModel(Set<ImageResource> loc){
+    public void initializeModel(Set<TextureAsset> loc){
         CollectionUtil.iterateMap(this.renderers,((key, item) -> {
             for (IComponentPartRenderer renderer:item){
                 renderer.initializeRenderer(loc);

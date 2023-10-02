@@ -9,7 +9,7 @@ import ink.flybird.cubecraft.client.render.model.block.IColorMap;
 import ink.flybird.cubecraft.client.render.model.object.EntityModel;
 import ink.flybird.cubecraft.client.render.renderer.IEntityRenderer;
 import ink.flybird.cubecraft.client.render.world.IWorldRenderer;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.cubecraft.internal.entity.EntityPlayer;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.fcommon.GameSetting;

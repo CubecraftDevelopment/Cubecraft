@@ -1,7 +1,7 @@
 import java.nio.charset.StandardCharsets
 
 task syncGitIgnore {
-    FileInputStream stream = new FileInputStream(".gitignore")
+    FileInputStream stream = new FileInputStream(rootDir.getAbsolutePath()+"/.gitignore")
     String s = new String(stream.readAllBytes(), StandardCharsets.UTF_8)
     stream.close()
     for (String s2 : s.split("\n")) {

@@ -1,17 +1,17 @@
 package ink.flybird.cubecraft.client.gui.node;
 
-import ink.flybird.cubecraft.client.gui.base.Text;
+import ink.flybird.cubecraft.client.gui.ComponentRenderer;
 import ink.flybird.cubecraft.client.gui.GUIManager;
 import ink.flybird.cubecraft.client.gui.GUIRegistry;
-import ink.flybird.cubecraft.client.gui.screen.Screen;
-import ink.flybird.cubecraft.client.gui.ComponentRenderer;
+import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.layout.Layout;
-import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.cubecraft.client.gui.layout.Scale;
+import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.fcommon.container.MultiMap;
-
 import ink.flybird.fcommon.file.DocumentUtil;
 import ink.flybird.fcommon.file.XmlReader;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -35,6 +35,15 @@ public abstract class Node {
         this.style = DocumentUtil.getAttribute(element, "style", "default");
         this.id = DocumentUtil.getAttribute(element, "id", String.valueOf(element.hashCode()));
         this.layout = GUIRegistry.createLayout(element.getAttribute("layout"), element.getAttribute("border"));
+
+        if (element.hasAttribute("scale")) {
+            this.layout.setScale(new Scale(
+                    Boolean.parseBoolean(this.element.getAttribute("scale").split(",")[0]),
+                    Boolean.parseBoolean(this.element.getAttribute("scale").split(",")[1]),
+                    Boolean.parseBoolean(this.element.getAttribute("scale").split(",")[3]),
+                    Boolean.parseBoolean(this.element.getAttribute("scale").split(",")[2])
+            ));
+        }
 
         this.deserializeChild(element);
     }
@@ -171,7 +180,7 @@ public abstract class Node {
         return this.nodes;
     }
 
-    public boolean isMouseInbound(){
+    public boolean isMouseInbound() {
         int xm = this.context.getFixedMouseX();
         int ym = this.context.getFixedMouseY();
         int x0 = this.getLayout().getAbsoluteX();

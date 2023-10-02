@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.client.render.block;
 
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.render.model.object.Vertex;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
 import ink.flybird.cubecraft.client.render.BlockBakery;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.block.access.IBlockAccess;
@@ -86,6 +86,6 @@ public interface IBlockRenderer {
             double renderX, double renderY, double renderZ,
             VertexBuilder builder);
 
-    default void initializeRenderer(Set<ImageResource> textureList) {
+    default void initializeRenderer(Set<TextureAsset> textureList) {
     }
 }

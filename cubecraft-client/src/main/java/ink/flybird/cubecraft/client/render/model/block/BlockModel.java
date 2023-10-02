@@ -2,8 +2,8 @@ package ink.flybird.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.ClientSharedContext;
-import ink.flybird.cubecraft.client.resources.item.ImageResource;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.client.resource.TextureAsset;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.fcommon.container.Pair;
 import ink.flybird.cubecraft.client.render.model.object.Model;
 import ink.flybird.cubecraft.world.IWorld;
@@ -49,7 +49,7 @@ public final class BlockModel implements Model {
     }
 
     @Override
-    public void initializeModel(Set<ImageResource> textureList) {
+    public void initializeModel(Set<TextureAsset> textureList) {
         for (String state : this.statementModels.keySet()) {
             for (BlockModelComponent component : this.statementModels.get(state)) {
                 component.initializeModel(textureList);

@@ -7,9 +7,10 @@ import com.google.gson.JsonParser;
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
+import ink.flybird.cubecraft.client.control.InputSettingItem;
 import ink.flybird.cubecraft.client.event.ClientRendererInitializeEvent;
 import ink.flybird.cubecraft.client.render.world.IWorldRenderer;
-import ink.flybird.cubecraft.client.resources.ResourceLocation;
+import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.cubecraft.util.setting.SettingItemRegistry;
 import ink.flybird.cubecraft.util.setting.item.BooleanSettingItem;
 import ink.flybird.cubecraft.util.setting.item.IntegerSettingItem;
@@ -60,35 +61,21 @@ public final class LevelRenderer {
         client.getClientEventBus().callEvent(new ClientRendererInitializeEvent(client, this));
 
         for (IWorldRenderer renderer : this.renderers.values()) {
-            renderer.init();
             renderer.refresh();
         }
     }
 
-    public void setRenderState(GameSetting setting) {
-        int d = SettingHolder.CHUNK_RENDER_DISTANCE.getValue();
-        if (setting.getValueAsBoolean("client.render.fog", true)) {
-            GL11.glEnable(GL11.GL_FOG);
-
-
-            Vector3d vec=this.player.getCameraPosition().add(this.player.getPosition());
-            if(Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")){
-                GLUtil.setupFog((int) (d * 0.5f), ColorUtil.int1Float1ToFloat4(0x050533,1));
-                return;
-            }
-            GLUtil.setupFog(d * d, ColorUtil.int1Float1ToFloat4(this.getConfig().fogColor(), 1));
-        }else{
-            GL11.glDisable(GL11.GL_FOG);
-        }
-    }
-
-    public void closeState(GameSetting setting) {
-        if (setting.getValueAsBoolean("client.render.fog", true)) {
-            GL11.glDisable(GL11.GL_FOG);
-        }
-    }
-
     public void render(float interpolationTime) {
+
+        GL11.glDisable(GL11.GL_FOG);
+        int d = SettingHolder.CHUNK_RENDER_DISTANCE.getValue();
+        Vector3d vec=this.player.getCameraPosition().add(this.player.getPosition());
+        if(Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")){
+            GLUtil.setupFog((int) (d), ColorUtil.int1Float1ToFloat4(0x050533,1));
+        }else {
+            //GLUtil.setupFog(d * d, ColorUtil.int1Float1ToFloat4(this.getConfig().fogColor(), 1));
+        }
+
         float[] col = ColorUtil.int1Float1ToFloat4(this.getConfig().clearColor(), 1.0f);
         GL11.glClearColor(col[0], col[1], col[2], col[3]);
         //update camera position
@@ -178,25 +165,31 @@ public final class LevelRenderer {
 
     public interface SettingHolder {
         @SettingItemRegistry
-        BooleanSettingItem CHUNK_USE_AO = new BooleanSettingItem("terrain_renderer", "use_ao", true);
+        BooleanSettingItem CHUNK_USE_AO = new BooleanSettingItem("chunk_renderer", "use_ao", true);
 
         @SettingItemRegistry
-        BooleanSettingItem CHUNK_CLASSIC_LIGHTING = new BooleanSettingItem("terrain_renderer", "classic_lighting", true);
+        BooleanSettingItem CHUNK_CLASSIC_LIGHTING = new BooleanSettingItem("chunk_renderer", "classic_lighting", true);
 
         @SettingItemRegistry
-        IntegerSettingItem CHUNK_RENDER_DISTANCE = new IntegerSettingItem("terrain_renderer", "distance", 12);
+        IntegerSettingItem CHUNK_RENDER_DISTANCE = new IntegerSettingItem("chunk_renderer", "distance", 12);
 
         @SettingItemRegistry
-        BooleanSettingItem CHUNK_USE_VBO = new BooleanSettingItem("terrain_renderer", "use_vbo", true);
+        BooleanSettingItem CHUNK_USE_VBO = new BooleanSettingItem("chunk_renderer", "use_vbo", true);
 
         @SettingItemRegistry
-        BooleanSettingItem CHUNK_FIX_DISTANCE = new BooleanSettingItem("terrain_renderer", "distance_fix", true);
+        BooleanSettingItem CHUNK_FIX_DISTANCE = new BooleanSettingItem("chunk_renderer", "distance_fix", true);
 
         @SettingItemRegistry
-        IntegerSettingItem CHUNK_UPDATE_THREAD = new IntegerSettingItem("terrain_renderer", "update_thread", 1);
+        IntegerSettingItem CHUNK_UPDATE_THREAD = new IntegerSettingItem("chunk_renderer", "update_thread", 1);
 
         @SettingItemRegistry
-        IntegerSettingItem MAX_UPLOAD_COUNT = new IntegerSettingItem("terrain_renderer", "max_upload_count", 16);
+        IntegerSettingItem MAX_UPLOAD_COUNT = new IntegerSettingItem("chunk_renderer", "max_upload_count", 16);
+
+        @SettingItemRegistry
+        IntegerSettingItem MAX_RECEIVE_COUNT = new IntegerSettingItem("chunk_renderer","max_receive_count",512);
+
+        @SettingItemRegistry
+        BooleanSettingItem FORCE_REBUILD_NEAREST_CHUNK = new BooleanSettingItem("chunk_renderer", "force_rebuild_nearest_chunk", false);
     }
 
     static {

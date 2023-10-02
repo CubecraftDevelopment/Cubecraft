@@ -33,7 +33,6 @@ public class HUDRenderer extends IWorldRenderer {
         if (type == RenderType.TRANSPARENT) {
             return;
         }
-        this.parent.setRenderState(this.setting);
         this.camera.setUpGlobalCamera(this.window);
 
         GL11.glLineWidth(4.0f);
@@ -42,8 +41,6 @@ public class HUDRenderer extends IWorldRenderer {
             GL11.glLineWidth(1.0f);
             this.renderChunkBorder();
         }
-
-        this.parent.closeState(this.setting);
     }
 
     private void renderSelectionBox() {

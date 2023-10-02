@@ -4,6 +4,8 @@ import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
 import ink.flybird.cubecraft.client.render.chunk.layer.ChunkLayer;
 import ink.flybird.cubecraft.world.IWorld;
 
+import java.util.Objects;
+
 public final class ChunkCompileRequest {
     private final RenderChunkPos pos;
     private final ChunkLayer layer;
@@ -39,5 +41,16 @@ public final class ChunkCompileRequest {
 
     public String getLayerId() {
         return this.layerId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj==null){
+            return false;
+        }
+        if(!(obj instanceof ChunkCompileRequest req)){
+            return false;
+        }
+        return req.getPos().equals(this.getPos())&& Objects.equals(req.getLayerId(), this.layerId);
     }
 }

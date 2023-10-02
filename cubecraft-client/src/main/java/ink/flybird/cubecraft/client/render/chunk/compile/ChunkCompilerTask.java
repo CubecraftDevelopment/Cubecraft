@@ -1,27 +1,31 @@
 package ink.flybird.cubecraft.client.render.chunk.compile;
 
-import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
 import ink.flybird.cubecraft.SharedContext;
+import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.fcommon.container.ArrayQueue;
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 
-public abstract class ChunkCompilerTask implements Runnable{
-    private static final Logger LOGGER = SharedContext.LOG_CONTEXT.createLogger("chunk_compiler_task");
-    protected final ArrayQueue<ChunkCompileResult> resultQueue;
-    protected final ArrayQueue<ChunkCompileRequest> requestQueue;
+import java.util.PriorityQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-    protected ChunkCompilerTask(ArrayQueue<ChunkCompileRequest> request, ArrayQueue<ChunkCompileResult> result) {
+public abstract class ChunkCompilerTask implements Runnable {
+    private static final Logger LOGGER = SharedContext.LOG_CONTEXT.createLogger("chunk_compiler_task");
+    protected final PriorityQueue<ChunkCompileResult> resultQueue;
+    protected final PriorityQueue<ChunkCompileRequest> requestQueue;
+
+    private boolean running = true;
+
+    protected ChunkCompilerTask(PriorityQueue<ChunkCompileRequest> request, PriorityQueue<ChunkCompileResult> result) {
         this.resultQueue = result;
         this.requestQueue = request;
     }
 
-    public static ChunkCompilerTask daemon(ArrayQueue<ChunkCompileRequest> request, ArrayQueue<ChunkCompileResult> result) {
+    public static ChunkCompilerTask daemon(PriorityQueue<ChunkCompileRequest> request, PriorityQueue<ChunkCompileResult> result) {
         return new CompilerDaemon(request, result);
     }
 
-    public static ChunkCompilerTask task(ArrayQueue<ChunkCompileRequest> request, ArrayQueue<ChunkCompileResult> result) {
+    public static ChunkCompilerTask task(PriorityQueue<ChunkCompileRequest> request, PriorityQueue<ChunkCompileResult> result) {
         return new CompilerTask(request, result);
     }
 
@@ -29,59 +33,69 @@ public abstract class ChunkCompilerTask implements Runnable{
         while (BufferAllocation.getAllocSize() > 67108864 * 8) {
             Thread.yield();
         }
-        if (this.requestQueue.size() <= 0) {
-            return;
-        }
-
         try {
-            ChunkCompileRequest request = this.requestQueue.poll();
-            if(request==null){
+            ChunkCompileRequest request;
+            synchronized ("chunk_poll") {
+                if (this.requestQueue.isEmpty()) {
+                    return;
+                }
+                request = this.requestQueue.poll();
+            }
+
+            if (request == null) {
                 return;
             }
             IWorld world = request.getWorld();
             RenderChunkPos pos = request.getPos();
             String layerId = request.getLayerId();
+
+            ChunkCompileResult result;
+
             if (request.getLayer() == null) {
-                this.resultQueue.add(ChunkCompiler.build(layerId, world, pos));
+                result = ChunkCompiler.build(layerId, world, pos);
             } else {
-                this.resultQueue.add(ChunkCompiler.rebuild(layerId, world, pos, request.getLayer()));
+                result = ChunkCompiler.rebuild(layerId, world, pos, request.getLayer());
             }
+
+            if ((!this.running) && result.isSuccess()) {
+                result.getBuilder().free();
+                return;
+            }
+            this.resultQueue.add(result);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
     public void setRunning(boolean b) {
+        this.running = b;
     }
 
     private static class CompilerDaemon extends ChunkCompilerTask {
-        private boolean running = true;
-
-        protected CompilerDaemon(ArrayQueue<ChunkCompileRequest> requestQueue, ArrayQueue<ChunkCompileResult> resultQueue) {
-            super(requestQueue, resultQueue);
+        protected CompilerDaemon(PriorityQueue<ChunkCompileRequest> request, PriorityQueue<ChunkCompileResult> result) {
+            super(request, result);
         }
 
         @Override
         public void run() {
-            while (true) {
+            while (this.isRunning()) {
                 try {
                     this.process();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    System.exit(0);
+                } catch (Exception e) {
+                    LOGGER.exception(e);
                 }
                 Thread.yield();
             }
         }
-
-        public void setRunning(boolean running) {
-            this.running = running;
-        }
     }
 
     private static class CompilerTask extends ChunkCompilerTask {
-        protected CompilerTask(ArrayQueue<ChunkCompileRequest> requestQueue, ArrayQueue<ChunkCompileResult> resultQueue) {
-            super(requestQueue, resultQueue);
+        protected CompilerTask(PriorityQueue<ChunkCompileRequest> request, PriorityQueue<ChunkCompileResult> result) {
+            super(request, result);
         }
 
         @Override

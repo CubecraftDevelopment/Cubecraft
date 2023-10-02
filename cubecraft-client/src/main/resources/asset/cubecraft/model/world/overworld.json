@@ -1,0 +1,38 @@
+{
+  "global": {
+    "fog_color": "DCE9F5",
+    "clear_color": "DCE9F5"
+  },
+  "renderers": [
+    {
+      "type": "cubecraft:chunk_renderer"
+    },
+    {
+      "type": "cubecraft:particle_renderer"
+    },
+    {
+      "type": "cubecraft:hud_renderer"
+    },
+    {
+      "type": "cubecraft:entity_renderer"
+    },
+    {
+      "type": "cubecraft:sky_box_renderer"
+    },
+    {
+      "type": "cubecraft:cloud_renderer",
+      "config": {
+        "color": "FFFFFF",
+        "opacity": 0.95,
+        "thick": 8,
+        "size": 48,
+        "dense": 0.25,
+        "use_classic_lighting": true,
+        "effect_by_world_light": true,
+        "height": 256.1,
+        "motion_x": 0,
+        "motion_z": 0
+      }
+    }
+  ]
+}
