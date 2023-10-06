@@ -3,7 +3,7 @@
     "state": "default",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:gui/controls/textbar.png",
@@ -29,7 +29,7 @@
     "state": "default:ore_ui",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:gui/controls/textbar_ore_ui.png",

@@ -7,23 +7,13 @@ group 'io.flybirdStudio'
 version '1.0-SNAPSHOT'
 
 apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
-
-apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
+apply from: rootDir.getAbsolutePath()+"/script/shared.gradle"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:24.0.1'
-    implementation 'org.joml:joml:1.10.5'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'io.netty:netty-buffer:4.1.90.Final'
-    implementation 'io.netty:netty-transport:4.1.90.Final'
-    implementation 'org.iq80.leveldb:leveldb:0.12'
-    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
-    implementation 'ink.flybird:fcommon-main:1.0.3-7'
-
     implementation project(":JRakNet")
     implementation 'org.jetbrains:annotations:24.0.0'
 }

@@ -1,8 +1,8 @@
 package ink.flybird.quantum3d_legacy.textures;
 
+import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.math.AABB2D;
 import ink.flybird.fcommon.math.MathHelper;

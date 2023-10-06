@@ -3,7 +3,7 @@
     "state": "default",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:gui/controls/topbar.png",
@@ -23,7 +23,7 @@
     "state": "back_pressed",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:gui/controls/topbar.png",
@@ -43,7 +43,7 @@
     "state": "ore_ui:default",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:gui/controls/topbar_ore_ui.png",
@@ -63,7 +63,7 @@
     "state": "ore_ui:back_pressed",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:gui/controls/topbar_ore_ui.png",

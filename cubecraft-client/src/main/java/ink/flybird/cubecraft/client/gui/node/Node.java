@@ -1,7 +1,8 @@
 package ink.flybird.cubecraft.client.gui.node;
 
+import ink.flybird.cubecraft.client.event.gui.component.ComponentInitializeEvent;
 import ink.flybird.cubecraft.client.gui.ComponentRenderer;
-import ink.flybird.cubecraft.client.gui.GUIManager;
+import ink.flybird.cubecraft.client.gui.GUIContext;
 import ink.flybird.cubecraft.client.gui.GUIRegistry;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
@@ -24,16 +25,15 @@ public abstract class Node {
     protected String id;
     protected Node parent;
     protected Screen screen;
-    protected GUIManager context;
-
+    protected GUIContext context;
 
     public void init(Element element) {
         if (element == null) {
             throw new IllegalArgumentException("null element for deserializing node!");
         }
         this.element = element;
-        this.style = DocumentUtil.getAttribute(element, "style", "default");
         this.id = DocumentUtil.getAttribute(element, "id", String.valueOf(element.hashCode()));
+        this.style = DocumentUtil.getAttribute(element, "style", "default");
         this.layout = GUIRegistry.createLayout(element.getAttribute("layout"), element.getAttribute("border"));
 
         if (element.hasAttribute("scale")) {
@@ -48,7 +48,7 @@ public abstract class Node {
         this.deserializeChild(element);
     }
 
-    public void setContext(Screen screen, Node parent, GUIManager context) {
+    public void setContext(Screen screen, Node parent, GUIContext context) {
         this.screen = screen;
         this.parent = parent;
         this.context = context;
@@ -56,6 +56,7 @@ public abstract class Node {
         for (Node n : nodes.values()) {
             n.setContext(screen, parent, context);
         }
+        this.context.getEventBus().callEvent(new ComponentInitializeEvent(this, this.screen, this.context), this.getId());
     }
 
     //context
@@ -71,16 +72,12 @@ public abstract class Node {
         return screen;
     }
 
-    public GUIManager getContext() {
+    public GUIContext getContext() {
         return context;
     }
 
     public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return this.id;
     }
 
     public Layout getLayout() {
@@ -135,9 +132,9 @@ public abstract class Node {
             renderer.render(this);
         }
         for (Node node : this.nodes.values()) {
-            GLUtil.checkError("pre child shortTick:" + node.id);
+            GLUtil.checkError("pre child render:" + node.getId());
             node.render(interpolationTime);
-            GLUtil.checkError("post child shortTick:" + node.id);
+            GLUtil.checkError("post child render:" + node.getId());
         }
     }
 
@@ -148,8 +145,14 @@ public abstract class Node {
     }
 
     public void addNode(String name, Node node) {
+        node.id=name;
         node.setContext(this.screen, this, this.context);
         this.nodes.put(name, node);
+    }
+
+    public void addNode(Node node) {
+        node.setContext(this.screen, this, this.context);
+        this.nodes.put(node.getId(), node);
     }
 
     public void removeNode(String id) {
@@ -188,5 +191,31 @@ public abstract class Node {
         int y0 = this.getLayout().getAbsoluteY();
         int y1 = y0 + this.getLayout().getAbsoluteHeight();
         return xm > x0 && xm < x1 && ym > y0 && ym < y1;
+    }
+
+    public Node cloneComponent() {
+        return GUIRegistry.createNode(element.getTagName(), element);
+    }
+
+    public Node copyComponent(String elementName) {
+        Element ele = null;
+        for (String type : GUIRegistry.NODE.getMap().keySet()) {
+            NodeList elementList = element.getElementsByTagName(type);
+            if (ele != null) {
+                break;
+            }
+
+            for (int i = 0; i < elementList.getLength(); i++) {
+                Element e = (Element) elementList.item(i);
+                if (e.getAttribute("id").equals(elementName)) {
+                    ele = e;
+                    break;
+                }
+            }
+        }
+        if (ele == null) {
+            return null;
+        }
+        return GUIRegistry.createNode(ele.getTagName(), ele);
     }
 }

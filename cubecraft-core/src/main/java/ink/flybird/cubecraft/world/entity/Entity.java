@@ -9,6 +9,7 @@ import ink.flybird.fcommon.math.HittableObject;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
 import ink.flybird.fcommon.registry.TypeItem;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -48,19 +49,12 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
         this.uuid = UUID.nameUUIDFromBytes(String.valueOf(System.currentTimeMillis() ^ this.hashCode()).getBytes(StandardCharsets.UTF_8)).toString();
     }
 
-//  ------ moving ------
 
     protected void resetPos() {
         this.setPos(x, y, z);
     }
 
-    /**
-     * set position of entity
-     *
-     * @param x x
-     * @param y y
-     * @param z z
-     */
+
     public void setPos(double x, double y, double z) {
         this.x = x;
         this.y = y;
@@ -68,6 +62,21 @@ public abstract class Entity implements HittableObject<Entity, IWorld>, NBTDataI
         this.collisionBox = getCollisionBoxSize();
         this.collisionBox.move(x, y, z);
     }
+
+    public void setPos(Vector3d vec) {
+        this.setPos(vec.x, vec.y, vec.z);
+    }
+
+    public void setRotation(float yaw, float pitch, float roll) {
+        this.xRot = yaw;
+        this.yRot = pitch;
+        this.zRot = roll;
+    }
+
+    public void setRotation(Vector3f vec){
+        this.setRotation(vec.x, vec.y, vec.z);
+    }
+
 
     /**
      * this is offset but not set. Yaw value will clamp to -90~90（degree）

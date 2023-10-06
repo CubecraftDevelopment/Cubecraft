@@ -30,7 +30,7 @@ public class PacketPlayerJoinWorldResponse implements Packet {
     @Override
     public void writePacketData(ByteBuf buffer) {
         NBTTagCompound tag=new NBTTagCompound();
-        tag.setCompoundTag("level",this.levelInfo.getData());
+        tag.setCompoundTag("level",this.levelInfo.getTag());
         tag.setCompoundTag("entity",this.tag);
         try {
             NBTBuilder.write(tag,new ByteBufOutputStream(buffer));
@@ -47,7 +47,7 @@ public class PacketPlayerJoinWorldResponse implements Packet {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.levelInfo.setData(tag.getCompoundTag("level"));
+        this.levelInfo=new LevelInfo(tag.getCompoundTag("level"));
         this.tag=tag.getCompoundTag("entity");
     }
 

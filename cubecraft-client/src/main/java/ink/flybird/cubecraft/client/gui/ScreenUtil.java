@@ -65,7 +65,7 @@ public class ScreenUtil {
         for (Popup p: ((List<Popup>) popupList.clone())){
 
             GL11.glPushMatrix();
-            GL11.glTranslated(info.scrWidth()-200-16+p.getPos(interpolationTime),yPop,0);
+            GL11.glTranslated(info.getScreenWidth()-200-16+p.getPos(interpolationTime),yPop,0);
             p.render();
             GL11.glPopMatrix();
             yPop+=50;

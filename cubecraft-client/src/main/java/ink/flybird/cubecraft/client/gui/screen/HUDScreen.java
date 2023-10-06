@@ -47,8 +47,8 @@ public final class HUDScreen extends Screen {
             this.pointer.bind();
             GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_DST_COLOR);
             ShapeRenderer.drawRectUV(
-                    info.centerX() - 8, info.centerX() + 8,
-                    info.centerY() - 8, info.centerY() + 8,
+                    info.getCenterX() - 8, info.getCenterX() + 8,
+                    info.getCenterY() - 8, info.getCenterY() + 8,
                     0, 0, 1, 0, 1
             );
             GLUtil.disableBlend();
@@ -96,7 +96,7 @@ public final class HUDScreen extends Screen {
     public void onKeyEventPressed(KeyboardPressEvent event) {
         if (event.getKey() == KeyboardButton.KEY_ESCAPE) {
             CubecraftClient.CLIENT.getMouse().setMouseGrabbed(false);
-            CubecraftClient.CLIENT.getGuiManager().setScreen("cubecraft:pause_screen.xml");
+            CubecraftClient.CLIENT.getGuiManager().setScreen(ResourceRegistry.PAUSE_SCREEN);
         }
         if (event.getKey() == KeyboardButton.KEY_F1) {
             HUDScreen.this.showGUI = !HUDScreen.this.showGUI;
@@ -116,7 +116,7 @@ public final class HUDScreen extends Screen {
     private void renderActionBar(DisplayScreenInfo info) {
         final float scale = 1.263f;
         GL11.glPushMatrix();
-        GL11.glTranslated(info.centerX() - 91 * scale, info.scrHeight() - 22 * scale, 0);
+        GL11.glTranslated(info.getCenterX() - 91 * scale, info.getScreenHeight() - 22 * scale, 0);
         this.actionBar.bind();
         ShapeRenderer.drawRectUV(
                 0, 182 * scale, 0, 22 * scale, 0,

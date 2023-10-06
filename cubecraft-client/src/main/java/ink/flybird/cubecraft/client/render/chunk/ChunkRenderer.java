@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 //todo:针对CPU优化（目标占用5%以内）
-//todo: 共享的任务池（区块增删）（拉取队列后allocate）
 //fixme: mipmap带来的一些方块变色
 
 @TypeItem("cubecraft:chunk_renderer")
@@ -51,7 +50,7 @@ public final class ChunkRenderer extends IWorldRenderer {
     private final ChunkSorter chunkSorter;
     private final ChunkCompileRequestSorter chunkCompileRequestSorter;
     private final ChunkCompileResultSorter chunkCompileResultSorter;
-    private Daemon daemon=new Daemon();
+    private Daemon daemon = new Daemon();
     private ChunkCompilerTask[] daemons;
 
     public ChunkRenderer(Window window, IWorld world, EntityPlayer player, Camera cam, GameSetting setting) {
@@ -140,8 +139,9 @@ public final class ChunkRenderer extends IWorldRenderer {
         }
         this.renderListAlpha.clear();
         this.renderListTransparent.clear();
-        while (!this.resultQueue.isEmpty()) {
-            ChunkCompileResult result = this.resultQueue.poll();
+
+
+        for (ChunkCompileResult result : this.resultQueue.toArray(new ChunkCompileResult[0])) {
             if (result == null) {
                 continue;
             }
@@ -149,6 +149,7 @@ public final class ChunkRenderer extends IWorldRenderer {
                 result.upload();
             }
         }
+
         this.requestQueue.clear();
         this.resultQueue.clear();
         this.posCache.clear();

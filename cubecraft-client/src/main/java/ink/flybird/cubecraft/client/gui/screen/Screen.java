@@ -2,14 +2,14 @@ package ink.flybird.cubecraft.client.gui.screen;
 
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
+import ink.flybird.cubecraft.client.event.gui.component.ComponentInitializeEvent;
 import ink.flybird.cubecraft.client.gui.base.DisplayScreenInfo;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.node.Container;
+import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.registry.ClientSettingRegistry;
 import ink.flybird.fcommon.JVMInfo;
 import ink.flybird.fcommon.container.OrderedHashMap;
-import ink.flybird.fcommon.file.FAMLDeserializer;
-import ink.flybird.fcommon.file.XmlReader;
 import ink.flybird.cubecraft.client.gui.ScreenUtil;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
@@ -34,6 +34,18 @@ public class Screen extends Container {
         this.context = CubecraftClient.CLIENT.getGuiManager();
     }
 
+
+    public Screen(Element element){
+        this(false, "_test", ScreenBackgroundType.EMPTY);
+        this.init(element);
+        this.setContext(this, this, CubecraftClient.CLIENT.getGuiManager());
+    }
+
+    @Override
+    public Node getParent() {
+        return this;
+    }
+
     @Override
     public void init(Element element) {
         this.backgroundType = ScreenBackgroundType.from(element.getAttribute("bg"));
@@ -45,6 +57,7 @@ public class Screen extends Container {
         this.client = CubecraftClient.CLIENT;
         this.client.getDeviceEventBus().registerEventListener(this);
         this.client.getMouse().setMouseGrabbed(this.grabMouse);
+        this.context.getEventBus().callEvent(new ComponentInitializeEvent(this, this, this.context), getId());
     }
 
     //debug
@@ -56,14 +69,13 @@ public class Screen extends Container {
         }
         pos = 2;
         for (String s : this.debugInfoRight.values()) {
-            ClientSharedContext.SMOOTH_FONT_RENDERER.renderShadow(s, info.scrWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
+            ClientSharedContext.SMOOTH_FONT_RENDERER.renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
             pos += 10;
         }
     }
 
 
     public void getDebug() {
-        CubecraftClient client = CubecraftClient.CLIENT;
         this.debugInfoLeft.put("version", "version: client - %s".formatted(
                 CubecraftClient.VERSION
         ));
@@ -76,8 +88,8 @@ public class Screen extends Container {
                 this.client.getTPS()
         ));
         this.debugInfoLeft.put("gui", "scr: %s(%s)".formatted(
-                this.getID(),
-                this.parent == null ? null : this.parent.getID()
+                getId(),
+                this.parent == null ? null : this.parent.getId()
         ));
         VertexUploader.resetUploadCount();
 
@@ -141,10 +153,6 @@ public class Screen extends Container {
         return client;
     }
 
-    public String getID() {
-        return id;
-    }
-
     public void release() {
         this.destroy();
         Screen.this.client.getDeviceEventBus().unregisterEventListener(this);
@@ -154,14 +162,8 @@ public class Screen extends Container {
         return backgroundType;
     }
 
-    //decode
-    public static class XMLDeserializer implements FAMLDeserializer<Screen> {
-        @Override
-        public Screen deserialize(Element element, XmlReader reader) {
-            Screen screen = new Screen(false, "_test", ScreenBackgroundType.EMPTY);
-            screen.init(element);
-            screen.setContext(screen, null, CubecraftClient.CLIENT.getGuiManager());
-            return screen;
-        }
+    @Override
+    public String getId() {
+        return this.id;
     }
 }

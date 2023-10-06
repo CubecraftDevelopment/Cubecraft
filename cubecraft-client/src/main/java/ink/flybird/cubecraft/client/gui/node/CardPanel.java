@@ -1,14 +1,16 @@
 package ink.flybird.cubecraft.client.gui.node;
 
-import ink.flybird.cubecraft.client.event.gui.CardPanelClickedEvent;
+import ink.flybird.cubecraft.client.event.gui.component.CardPanelClickedEvent;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
+import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d.device.MouseButton;
 import ink.flybird.quantum3d.device.event.MouseClickEvent;
 import ink.flybird.quantum3d.device.event.MousePosEvent;
 import org.w3c.dom.Element;
 
+@TypeItem("card_panel")
 public class CardPanel extends Container {
     public boolean enabled = true;
     public boolean hovered = false;
@@ -27,7 +29,7 @@ public class CardPanel extends Container {
     @EventHandler
     public void onClicked(MouseClickEvent e) {
         if (this.hovered && this.enabled && e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
-            this.context.getEventBus().callEvent(new CardPanelClickedEvent(this, this.screen, this.context), this.screen.getID());
+            this.context.getEventBus().callEvent(new CardPanelClickedEvent(this, this.screen, this.context), this.screen.getId());
         }
     }
 

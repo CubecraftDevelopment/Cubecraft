@@ -1,7 +1,7 @@
 package ink.flybird.quantum3d_legacy.textures;
 
-import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL45;

@@ -47,6 +47,7 @@ import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseOne;
 import com.whirvis.jraknet.protocol.login.ConnectionRequestAccepted;
 import com.whirvis.jraknet.protocol.status.UnconnectedPing;
 import com.whirvis.jraknet.protocol.status.UnconnectedPong;
+
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 

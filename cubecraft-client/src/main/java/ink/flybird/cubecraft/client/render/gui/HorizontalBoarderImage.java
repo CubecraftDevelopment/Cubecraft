@@ -3,9 +3,9 @@ package ink.flybird.cubecraft.client.render.gui;
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
 import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.cubecraft.client.resource.TextureAsset;
+import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
@@ -14,7 +14,14 @@ import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-public record HorizontalBoarderImage(double x0,double x1,double y0,double y1,int boarder,String loc) implements IComponentPartRenderer {
+@TypeItem("horizontal_border_image")
+public final class HorizontalBoarderImage extends ImageComponentRendererPart {
+    private final int border;
+
+    public HorizontalBoarderImage(double x0, double x1, double y0, double y1, int border, String textureLocation) {
+        super(x0, x1, y0, y1, textureLocation);
+        this.border = border;
+    }
 
     @Override
     public void render(Node node) {
@@ -24,10 +31,10 @@ public record HorizontalBoarderImage(double x0,double x1,double y0,double y1,int
         int w= (int) (node.getLayout().getAbsoluteWidth() *(x1-x0));
         int h= (int) (node.getLayout().getAbsoluteHeight() *(y1-y0));
 
-        Texture2D tex= ClientRenderContext.TEXTURE.getTexture2DContainer().get(ResourceLocation.uiTexture(this.loc.split(":")[0],this.loc.split(":")[1]).format());
-        double tbh=(double) boarder/ tex.getWidth();
+        Texture2D tex= this.getTexture();
+        double tbh=(double) this.border/ tex.getWidth();
 
-        int x0In=x+boarder,x1In=x+w-boarder,x1Out=x+w;
+        int x0In=x+this.border,x1In=x+w-this.border,x1Out=x+w;
         VertexBuilder builder = VertexBuilderAllocator.createByPrefer(12);
         builder.begin();
         ShapeRenderer.drawRectUV(builder, x,x0In,y,y+h,z, 0,tbh,0,1);
@@ -36,11 +43,6 @@ public record HorizontalBoarderImage(double x0,double x1,double y0,double y1,int
         builder.end();
         builder.uploadPointer();
         builder.free();
-    }
-
-    @Override
-    public void initializeRenderer(Set<TextureAsset> loc) {
-        loc.add(new TextureAsset(this.loc));
     }
 
     public static class JDeserializer implements JsonDeserializer<HorizontalBoarderImage>{

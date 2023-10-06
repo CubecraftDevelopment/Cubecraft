@@ -3,7 +3,7 @@ package ink.flybird.cubecraft.client.internal.handler;
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.event.ClientRendererInitializeEvent;
-import ink.flybird.cubecraft.client.gui.GUIManager;
+import ink.flybird.cubecraft.client.gui.GUIContext;
 import ink.flybird.cubecraft.client.render.block.ModelRenderer;
 import ink.flybird.cubecraft.client.render.world.ParticleRenderer;
 import ink.flybird.fcommon.event.EventHandler;
@@ -32,7 +32,7 @@ public class ClientListener {
             CubecraftClient.CLIENT.getWindow().setFullscreen(!CubecraftClient.CLIENT.getWindow().isFullscreen());
         }
         if (e.getKey() == KeyboardButton.KEY_ESCAPE) {
-            GUIManager guiManager = CubecraftClient.CLIENT.getGuiManager();
+            GUIContext guiManager = CubecraftClient.CLIENT.getGuiManager();
             if (guiManager.getScreen().getParentScreen() != null) {
                 guiManager.setScreen(guiManager.getScreen().getParentScreen());
             }

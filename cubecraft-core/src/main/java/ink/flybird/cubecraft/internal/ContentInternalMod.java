@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.internal;
 
-import ink.flybird.cubecraft.extansion.ExtensionSide;
+import ink.flybird.cubecraft.extension.ModSide;
 import ink.flybird.cubecraft.internal.auth.DefaultSessionService;
 import ink.flybird.cubecraft.internal.block.BlockBehaviorRegistry;
 import ink.flybird.cubecraft.internal.block.BlockRegistry;
@@ -13,13 +13,13 @@ import ink.flybird.cubecraft.internal.world.biome.BiomesRegistry;
 import ink.flybird.cubecraft.internal.world.worldGen.WorldGeneratorOverworld;
 import ink.flybird.cubecraft.ContentRegistries;
 import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.cubecraft.mod.ContentInitializeEvent;
-import ink.flybird.cubecraft.extansion.CubecraftExtension;
+import ink.flybird.cubecraft.event.mod.ContentInitializeEvent;
+import ink.flybird.cubecraft.extension.CubecraftMod;
 
 import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.world.worldGen.ChunkGeneratorPipeline;
 
-@CubecraftExtension(side = ExtensionSide.BOTH)
+@CubecraftMod(side = ModSide.BOTH)
 public class ContentInternalMod{
     @EventHandler
     public void onContentInitialize(ContentInitializeEvent e){

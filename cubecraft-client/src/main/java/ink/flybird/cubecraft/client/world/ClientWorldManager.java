@@ -1,61 +1,79 @@
 package ink.flybird.cubecraft.client.world;
 
+import ink.flybird.cubecraft.EnvironmentPath;
 import ink.flybird.cubecraft.client.CubecraftClient;
+import ink.flybird.cubecraft.client.event.gui.component.ButtonClickedEvent;
+import ink.flybird.cubecraft.client.event.gui.component.ComponentInitializeEvent;
+import ink.flybird.cubecraft.client.event.gui.component.TextBarSubmitEvent;
+import ink.flybird.cubecraft.client.event.gui.component.ToggleButtonClickedEvent;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
-import ink.flybird.cubecraft.client.gui.screen.Screen;
-import ink.flybird.cubecraft.client.gui.node.Button;
-import ink.flybird.cubecraft.client.gui.node.CardPanel;
-import ink.flybird.cubecraft.client.gui.node.Label;
-import ink.flybird.cubecraft.client.gui.node.ScrollPanel;
-import ink.flybird.cubecraft.client.event.gui.ButtonClickedEvent;
-import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
-import ink.flybird.cubecraft.client.event.gui.TextBarSubmitEvent;
 import ink.flybird.cubecraft.client.gui.layout.OriginLayout;
+import ink.flybird.cubecraft.client.gui.node.*;
+import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.cubecraft.client.internal.gui.ScreenType;
 import ink.flybird.cubecraft.client.net.ClientIO;
 import ink.flybird.cubecraft.client.net.ClientNetHandler;
+import ink.flybird.cubecraft.internal.network.packet.connect.PacketServerStatusQuery;
+import ink.flybird.cubecraft.internal.network.packet.connect.PacketServerStatusQueryResult;
+import ink.flybird.cubecraft.level.Level;
+import ink.flybird.cubecraft.level.LevelInfo;
+import ink.flybird.cubecraft.net.NetHandlerContext;
+import ink.flybird.cubecraft.net.packet.PacketListener;
 import ink.flybird.cubecraft.server.CubecraftServer;
+import ink.flybird.cubecraft.server.ServerFactory;
 import ink.flybird.cubecraft.server.ServerStatus;
-import ink.flybird.cubecraft.server.world.ServerWorld;
 import ink.flybird.fcommon.NetworkUtil;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.event.SubscribedEvent;
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
-import ink.flybird.cubecraft.internal.network.packet.connect.PacketServerStatusQuery;
-import ink.flybird.cubecraft.internal.network.packet.connect.PacketServerStatusQueryResult;
-import ink.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinRequest;
-import ink.flybird.cubecraft.internal.world.WorldType;
-import ink.flybird.cubecraft.level.Level;
-import ink.flybird.cubecraft.level.LevelInfo;
-import ink.flybird.cubecraft.level.LevelInfoFactory;
-import ink.flybird.cubecraft.net.NetHandlerContext;
-import ink.flybird.cubecraft.net.packet.PacketListener;
-import ink.flybird.cubecraft.EnvironmentPath;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
 public class ClientWorldManager extends ClientNetHandler {
+    private static final ILogger LOGGER = LogManager.getLogger("client-world-manager");
+
     private final CubecraftClient client;
     private final HashMap<String, LevelInfo> levels = new HashMap<>();
-    private final Logger logger = new SimpleLogger("ClientWorldManager");
+    private final ArrayList<LevelInfo> showedInfoList = new ArrayList<>();
     private ServerStatus status;
     private CubecraftServer server;
     private InetSocketAddress integratedServerLocation;
     private LevelInfo selectedLevel;
-    private final ArrayList<LevelInfo> showedInfoList = new ArrayList<>();
+
     private ScrollPanel panel;
+    private ToggleButton card;
+    private Button joinWorldButton;
+    private Button deleteWorldButton;
+    private Button editWorldButton;
 
     public ClientWorldManager(CubecraftClient client) {
         this.client = client;
         this.client.getClientIO().getListener().registerEventListener(this);
         this.client.getGuiManager().getEventBus().registerEventListener(this);
     }
+
+    public void joinLocalWorld(String name) {
+        this.server = ServerFactory.createIntegratedServer(name);
+        LOGGER.info("integrated server started.");
+
+        new Thread(this.server).start();
+
+        while (!this.server.getLifetimeCounter().isAllocated()) {
+            Thread.yield();
+        }
+
+        Level level=this.getIntegratedServer().getLevel();
+        this.client.joinWorld(level.getLocation(this.client.getPlayer()).getWorld(level));
+        level.join(this.client.getPlayer());
+    }
+
 
     public boolean checkLocalWorldExist(String name) {
         File[] files = EnvironmentPath.getSaveFolder().listFiles();
@@ -69,29 +87,7 @@ public class ClientWorldManager extends ClientNetHandler {
         return s.contains(name);
     }
 
-    public boolean startIntegratedServer(String worldName) {
-        if (!this.checkLocalWorldExist(worldName)) {
-            return false;
-        }
-        this.integratedServerLocation = NetworkUtil.allocateLocalAddressUDP();
-        if (this.server.isRunning()) {
-            this.server.setRunning(false);
-        }
-        this.server = new CubecraftServer(this.integratedServerLocation, worldName);
-        new Thread(this.server, "integrated_server").start();
-        do {
-            if (this.waitFor()) {
-                return false;
-            }
-        } while (this.server.getStatus() != ServerStatus.NETWORK_STARTING);
-        return true;
-    }
-
     public boolean connectToServer(InetSocketAddress address) {
-        this.setConnectionScreenText(
-                "connection.statement.connecting",
-                "connection.detail.connecting"
-        );
         ClientIO clientIO = this.client.getClientIO();
         if (clientIO.isRunning()) {
             clientIO.closeConnection();
@@ -100,34 +96,14 @@ public class ClientWorldManager extends ClientNetHandler {
         try {
             clientIO.connect(address);
         } catch (Exception e) {
-            this.setConnectionScreenText(
-                    "connection.statement.failed",
-                    "connection.detail.failed_client",
-                    e.getMessage()
-            );
             return false;
         }
         do {
-            this.setConnectionScreenText(
-                    "connection.statement.connecting",
-                    "connection.server." + status.getStatus()
-            );
             clientIO.sendPacket(new PacketServerStatusQuery());
             if (this.waitFor()) {
                 return false;
             }
         } while (this.status != ServerStatus.RUNNING);
-        return true;
-    }
-
-    public boolean joinLocalWorld(String name) {
-        if (!this.startIntegratedServer(name)) {
-            return false;
-        }
-        if (!this.connectToServer(this.integratedServerLocation)) {
-            return false;
-        }
-        this.sendPacket(new PacketPlayerJoinRequest(CubecraftClient.CLIENT.getPlayer().getSession()));
         return true;
     }
 
@@ -184,12 +160,8 @@ public class ClientWorldManager extends ClientNetHandler {
         }
 
         for (File worldFolder : files) {
-            LevelInfo info = LevelInfoFactory.fromWorldFolder(worldFolder);
-            if (!info.getProperties().containsKey(LevelInfo.NAME)) {
-                this.logger.exception("no name property for %s, ignored.".formatted(worldFolder));
-                continue;
-            }
-            String name = info.getProperty(LevelInfo.NAME);
+            LevelInfo info = LevelInfo.load(worldFolder);
+            String name = info.getLevelName();
             this.levels.put(name, info);
         }
         updateShowedList("");
@@ -204,57 +176,103 @@ public class ClientWorldManager extends ClientNetHandler {
                 if (this.selectedLevel == null) {
                     return;
                 }
-                this.joinLocalWorld(this.selectedLevel.getProperty(LevelInfo.NAME));
+                this.joinLocalWorld(this.selectedLevel.getLevelName());
             }
-            case "create_world" ->
-                    this.client.joinWorld(new ServerWorld(WorldType.OVERWORLD, new Level(new LevelInfo(), new ClientWorldFactory()), null));
+            case "create_world" -> {
+                LevelInfo info = LevelInfo.create("ExampleWorld", 11451419198710L);
+                this.levels.put(info.getLevelName(), info);
+            }
         }
     }
 
     @EventHandler
-    @SubscribedEvent(ScreenType.SINGLE_PLAYER)
     public void componentInitialized(ComponentInitializeEvent event) {
-        switch (event.getComponentID()) {
-            case "join_world", "delete_world" -> ((Button) event.getComponent()).enabled = (selectedLevel != null);
-            case "world_list" -> {
-                this.panel = (ScrollPanel) event.getComponent();
-                this.readLevels();
-            }
+        if (event.getComponentID() == null) {
+            return;
         }
+        switch (event.getComponentID()) {
+            }
     }
 
     @EventHandler
     @SubscribedEvent(ScreenType.SINGLE_PLAYER)
     public void onSubmit(TextBarSubmitEvent event) {
-        this.updateShowedList(event.getText());
+        //this.updateShowedList(event.getText());
     }
 
     public void updateShowedList(String s) {
-
-        /*
         int h = 0;
         this.showedInfoList.clear();
         this.panel.getNodes().clear();
+
         for (LevelInfo info : this.levels.values()) {
-            String name = info.getProperty(LevelInfo.NAME);
+            String name = info.getLevelName();
             if (name.contains(s)) {
                 try {
-                    CardPanel panel = new CardPanel();
+                    ToggleButton panel = (ToggleButton) this.card.cloneComponent();
+
                     ((OriginLayout) panel.getLayout()).setRelativeY(h);
                     this.panel.addNode(name, panel);
                     ((Label) panel.getNode("title")).setText(new Text(name, 0xFFFFFF, FontAlignment.LEFT));
-                    ((Label) panel.getNode("sub1")).setText(new Text(info.getProperty(LevelInfo.DATE), 0xFFFFFF, FontAlignment.LEFT));
-                    ((Label) panel.getNode("sub2")).setText(new Text(info.getProperty(LevelInfo.CREATOR), 0xFFFFFF, FontAlignment.LEFT));
+                    ((Label) panel.getNode("created_time")).setText(new Text(new SimpleDateFormat().format(info.getCreatedTime()), 0xFFFFFF, FontAlignment.LEFT));
 
-                    h += 50;
+
+                    //((Label) panel.getNode("sub2")).setText(new Text(info.getProperty(LevelInfo.CREATOR), 0xFFFFFF, FontAlignment.LEFT));
+
+                    h += ((OriginLayout) panel.getLayout()).getRelativeHeight();
                     this.showedInfoList.add(this.levels.get(name));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error(e);
                 }
             }
         }
+    }
 
-         */
+    @EventHandler
+    public void onCardClicked(ToggleButtonClickedEvent event){
+        if(event.getComponentID()==null){
+            return;
+        }
+        if(event.isButtonSelected()){
+            this.selectedLevel=this.levels.get(event.getComponentID());
+            event.getButton().selected=true;
+        }
+
+        if(this.selectedLevel!=null){
+            this.joinWorldButton.enabled=true;
+            this.deleteWorldButton.enabled=true;
+            this.editWorldButton.enabled=true;
+        }else {
+            this.joinWorldButton.enabled = false;
+            this.deleteWorldButton.enabled = false;
+            this.editWorldButton.enabled = false;
+        }
+    }
+
+    @EventHandler
+    public void initWorldList(ComponentInitializeEvent event) {
+        if(event.getComponentID()==null){
+            return;
+        }
+        switch (event.getComponentID()){
+            case "world_list"->{
+                this.panel = (ScrollPanel) event.getComponent();
+                this.card = (ToggleButton) this.panel.getNode("card_example");
+                this.readLevels();
+            }
+            case "join_world"->{
+                this.joinWorldButton= ((Button) event.getComponent());
+                this.joinWorldButton.enabled=false;
+            }
+            case "delete_world"->{
+                this.deleteWorldButton= ((Button) event.getComponent());
+                this.deleteWorldButton.enabled=false;
+            }
+            case "edit_world"->{
+                this.editWorldButton= ((Button) event.getComponent());
+                this.editWorldButton.enabled=false;
+            }
+        }
     }
 
     public LevelInfo getSelectedLevel() {

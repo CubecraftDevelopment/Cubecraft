@@ -3,6 +3,7 @@ package ink.flybird.cubecraft.server.world;
 import ink.flybird.cubecraft.event.chunk.ChunkUnloadEvent;
 import ink.flybird.cubecraft.internal.entity.EntityPlayer;
 import ink.flybird.cubecraft.level.Level;
+import ink.flybird.cubecraft.level.Location;
 import ink.flybird.cubecraft.server.CubecraftServer;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.access.ChunkLoadAccess;
@@ -53,9 +54,9 @@ public class ServerWorld extends IWorld {
     @Override
     public void tick() {
         super.tick();
-        EntityLocation loc = this.level.getSpawnPoint("__LOAD");
-        if (Objects.equals(loc.getDim(), this.getID())) {
-           ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) loc.getX(), (long) loc.getZ()), 4, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 20));
+        Location worldSpawnPoint = this.level.getLocation(null);
+        if (Objects.equals(worldSpawnPoint.getWorldId(), this.getID())) {
+           ChunkLoadAccess.loadChunkRange(this, worldSpawnPoint.getChunkPos(), 4, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 20));
         }
 
         Iterator<WorldChunk> it = this.chunks.map.values().iterator();
@@ -108,6 +109,11 @@ public class ServerWorld extends IWorld {
                 this.scheduledTickEvents.remove(key);
             }
         });
+    }
+
+
+    public void load(ink.flybird.cubecraft.world.ChunkProvider chunkProvider) {
+        server.getSetting();
     }
 }
 

@@ -18,7 +18,7 @@
                 <type>left_bottom</type>
                 <border>[0,0,0,0]</border>
             </layout>
-            <text type="lang" color="ffffff" align="left">awa</text>
+            <label type="lang" color="ffffff" align="left">awa</label>
         </label>
     </elements>
 </faml>

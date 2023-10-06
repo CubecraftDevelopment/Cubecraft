@@ -8,8 +8,10 @@ import ink.flybird.cubecraft.client.gui.layout.Layout;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.math.MathHelper;
+import ink.flybird.fcommon.registry.TypeItem;
 import org.w3c.dom.Element;
 
+@TypeItem("label")
 public class Label extends Node {
     public Text text2;
     public int color;

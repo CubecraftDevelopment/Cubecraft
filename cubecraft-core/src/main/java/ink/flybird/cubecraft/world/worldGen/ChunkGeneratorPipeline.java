@@ -1,7 +1,5 @@
 package ink.flybird.cubecraft.world.worldGen;
 import ink.flybird.cubecraft.world.chunk.WorldChunk;
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,14 +9,12 @@ import java.util.Objects;
 
 @Deprecated
 public class ChunkGeneratorPipeline {
-    private final Logger logger;
     private final ArrayList<IChunkGenerator> handlers =new ArrayList<>();
 
     public final String id;
 
     public ChunkGeneratorPipeline(String id) {
         this.id=id;
-        this.logger = new SimpleLogger("WorldGenerator");
     }
 
     public ChunkGeneratorPipeline add(IChunkGenerator generator){
@@ -42,7 +38,6 @@ public class ChunkGeneratorPipeline {
                         try {
                             m.invoke(handler,chunk,setting);
                         } catch (IllegalAccessException | InvocationTargetException e2) {
-                            logger.exception(e2);
                         }
                     }
                 }

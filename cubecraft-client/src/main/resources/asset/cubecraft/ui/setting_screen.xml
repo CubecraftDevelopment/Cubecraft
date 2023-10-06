@@ -11,7 +11,7 @@
                 <layout>[24,0]</layout>
 
             </layout>
-            <text type="lang" color="ffffff" align="middle">option.title</text>
+            <label type="lang" color="ffffff" align="middle">option.title</label>
         </element>
         <element type="panel" id="setting_list_bg">
             <layout type="origin">
@@ -28,7 +28,7 @@
                         <border>[20,20,0,0]</border>
                         <scale>[true,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.title</text>
+                    <label type="lang" color="ffffff" align="middle">option.title</label>
                 </element>
                 <element type="card_panel" style="invisible" id="_setting:video">
                     <layout type="origin">
@@ -43,14 +43,14 @@
                                 <layout>[22,6,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="lang" color="ffffff" align="left">option.video</text>
+                            <label type="lang" color="ffffff" align="left">option.video</label>
                         </element>
                         <element type="label" id="icon">
                             <layout type="origin">
                                 <layout>[4,4,0,13]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="icon" color="dddddd" align="left">E714</text>
+                            <label type="icon" color="dddddd" align="left">E714</label>
                         </element>
                     </elements>
                 </element>
@@ -67,14 +67,14 @@
                                 <layout>[22,6,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="lang" color="ffffff" align="left">option.control</text>
+                            <label type="lang" color="ffffff" align="left">option.control</label>
                         </element>
                         <element type="label" id="icon">
                             <layout type="origin">
                                 <layout>[4,4,0,13]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="icon" color="dddddd" align="left">E765</text>
+                            <label type="icon" color="dddddd" align="left">E765</label>
                         </element>
                     </elements>
                 </element>
@@ -91,14 +91,14 @@
                                 <layout>[22,6,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="lang" color="ffffff" align="left">option.audio</text>
+                            <label type="lang" color="ffffff" align="left">option.audio</label>
                         </element>
                         <element type="label" id="icon">
                             <layout type="origin">
                                 <layout>[4,4,0,13]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="icon" color="dddddd" align="left">E767</text>
+                            <label type="icon" color="dddddd" align="left">E767</label>
                         </element>
                     </elements>
                 </element>
@@ -115,14 +115,14 @@
                                 <layout>[22,6,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="lang" color="ffffff" align="left">option.resource_pack</text>
+                            <label type="lang" color="ffffff" align="left">option.resource_pack</label>
                         </element>
                         <element type="label" id="icon">
                             <layout type="origin">
                                 <layout>[4,4,0,13]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="icon" color="dddddd" align="left">EC50</text>
+                            <label type="icon" color="dddddd" align="left">EC50</label>
                         </element>
                     </elements>
                 </element>
@@ -139,14 +139,14 @@
                                 <layout>[22,6,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="lang" color="ffffff" align="left">option.mod</text>
+                            <label type="lang" color="ffffff" align="left">option.mod</label>
                         </element>
                         <element type="label" id="icon">
                             <layout type="origin">
                                 <layout>[4,4,0,13]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="icon" color="dddddd" align="left">E7B8</text>
+                            <label type="icon" color="dddddd" align="left">E7B8</label>
                         </element>
                     </elements>
                 </element>
@@ -163,14 +163,14 @@
                                 <layout>[22,6,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="lang" color="ffffff" align="left">option.language</text>
+                            <label type="lang" color="ffffff" align="left">option.language</label>
                         </element>
                         <element type="label" id="icon">
                             <layout type="origin">
                                 <layout>[4,4,0,13]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="icon" color="dddddd" align="left">E775</text>
+                            <label type="icon" color="dddddd" align="left">E775</label>
                         </element>
                     </elements>
                 </element>
@@ -187,14 +187,14 @@
                                 <layout>[22,6,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="lang" color="ffffff" align="left">option.about</text>
+                            <label type="lang" color="ffffff" align="left">option.about</label>
                         </element>
                         <element type="label" id="icon">
                             <layout type="origin">
                                 <layout>[4,4,0,13]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="icon" color="dddddd" align="left">EA1F</text>
+                            <label type="icon" color="dddddd" align="left">EA1F</label>
                         </element>
                     </elements>
                 </element>
@@ -216,7 +216,7 @@
                         <border>[20,20,4,4]</border>
                         <scale>[true,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.button.confirm</text>
+                    <label type="lang" color="ffffff" align="middle">option.button.confirm</label>
                 </element>
                 <element type="button" id="discard">
                     <layout type="origin">
@@ -224,7 +224,7 @@
                         <type>left_bottom</type>
                         <border>[20,20,4,4]</border>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.button.quit</text>
+                    <label type="lang" color="ffffff" align="middle">option.button.quit</label>
                 </element>
                 <element type="button" id="apply">
                     <layout type="origin">
@@ -233,7 +233,7 @@
                         <border>[20,20,4,4]</border>
                         <scale>[false,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.button.apply</text>
+                    <label type="lang" color="ffffff" align="middle">option.button.apply</label>
                 </element>
             </elements>
         </element>
@@ -251,7 +251,7 @@
                         <type>left_top</type>
                         <scale>[false,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.about</text>
+                    <label type="lang" color="ffffff" align="middle">option.about</label>
                 </element>
                 <element type="scroll_panel" id="about_panel" yMin="0" yMax="0" horizontalEnabled="false">
                     <layout type="origin">
@@ -266,28 +266,28 @@
                                 <layout>[8,8,0,12]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">Cubecraft-alpha0.2.5</text>
+                            <label type="raw" color="ffffff" align="left">Cubecraft-alpha0.2.5</label>
                         </element>
                         <element type="label" id="about_11">
                             <layout type="origin">
                                 <layout>[8,24,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">Author：GrassBlock2022</text>
+                            <label type="raw" color="ffffff" align="left">Author：GrassBlock2022</label>
                         </element>
                         <element type="label" id="about_12">
                             <layout type="origin">
                                 <layout>[8,36,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">TechSupport：CubeVlmu</text>
+                            <label type="raw" color="ffffff" align="left">TechSupport：CubeVlmu</label>
                         </element>
                         <element type="label" id="about_13">
                             <layout type="origin">
                                 <layout>[8,48,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">ArtDirect：HaoYu_Cai,Yakamo_QAQ</text>
+                            <label type="raw" color="ffffff" align="left">ArtDirect：HaoYu_Cai,Yakamo_QAQ</label>
                         </element>
 
                         <element type="label" id="about_2">
@@ -295,56 +295,56 @@
                                 <layout>[8,80,0,12]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">3rd-Libraries</text>
+                            <label type="raw" color="ffffff" align="left">3rd-Libraries</label>
                         </element>
                         <element type="label" id="about_21">
                             <layout type="origin">
                                 <layout>[8,96,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">whirvis:JRakNet(MIT)[https://github.com/whirvis/JRakNet]</text>
+                            <label type="raw" color="ffffff" align="left">whirvis:JRakNet(MIT)[https://github.com/whirvis/JRakNet]</label>
                         </element>
                         <element type="label" id="about_22">
                             <layout type="origin">
                                 <layout>[8,108,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">netty:Netty-IO(Apache-2.0)[https://github.com/netty/netty]</text>
+                            <label type="raw" color="ffffff" align="left">netty:Netty-IO(Apache-2.0)[https://github.com/netty/netty]</label>
                         </element>
                         <element type="label" id="about_23">
                             <layout type="origin">
                                 <layout>[8,120,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">lwjgl:LWJGL-3(BSD-3-clause)[https://github.com/LWJGL/lwjgl3]</text>
+                            <label type="raw" color="ffffff" align="left">lwjgl:LWJGL-3(BSD-3-clause)[https://github.com/LWJGL/lwjgl3]</label>
                         </element>
                         <element type="label" id="about_24">
                             <layout type="origin">
                                 <layout>[8,132,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">iq80:LEVEL_DB(Apache License 2.0)[https://github.com/755472363/leveldb/]</text>
+                            <label type="raw" color="ffffff" align="left">iq80:LEVEL_DB(Apache License 2.0)[https://github.com/755472363/leveldb/]</label>
                         </element>
                         <element type="label" id="about_25">
                             <layout type="origin">
                                 <layout>[8,144,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">JOML-CI:JOML(MIT)[https://github.com/JOML-CI/JOML]</text>
+                            <label type="raw" color="ffffff" align="left">JOML-CI:JOML(MIT)[https://github.com/JOML-CI/JOML]</label>
                         </element>
                         <element type="label" id="about_26">
                             <layout type="origin">
                                 <layout>[8,156,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">Google:gson(Apache-2.0)[https://github.com/google/gson]</text>
+                            <label type="raw" color="ffffff" align="left">Google:gson(Apache-2.0)[https://github.com/google/gson]</label>
                         </element>
                         <element type="label" id="about_27">
                             <layout type="origin">
                                 <layout>[8,168,0,8]</layout>
                                 <type>left_top</type>
                             </layout>
-                            <text type="raw" color="ffffff" align="left">(And other libraries not mentioned...)</text>
+                            <label type="raw" color="ffffff" align="left">(And other libraries not mentioned...)</label>
                         </element>
                     </elements>
                 </element>
@@ -365,7 +365,7 @@
 
                         <scale>[false,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.video</text>
+                    <label type="lang" color="ffffff" align="middle">option.video</label>
                 </element>
                 <element type="scroll_panel" id="video_panel" yMin="0" yMax="0" horizontalEnabled="false">
                     <layout type="origin">
@@ -395,7 +395,7 @@
 
                         <scale>[false,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.video</text>
+                    <label type="lang" color="ffffff" align="middle">option.video</label>
                 </element>
                 <element type="scroll_panel" id="video_panel" yMin="0" yMax="0" horizontalEnabled="false">
                     <layout type="origin">
@@ -425,7 +425,7 @@
 
                         <scale>[false,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">option.video</text>
+                    <label type="lang" color="ffffff" align="middle">option.video</label>
                 </element>
                 <element type="scroll_panel" id="video_panel" yMin="0" yMax="0" horizontalEnabled="false">
                     <layout type="origin">

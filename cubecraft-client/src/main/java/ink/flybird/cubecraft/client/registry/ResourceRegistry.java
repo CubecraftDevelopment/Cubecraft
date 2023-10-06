@@ -1,8 +1,10 @@
 package ink.flybird.cubecraft.client.registry;
 
 import ink.flybird.cubecraft.client.ClientSharedContext;
+import ink.flybird.cubecraft.client.gui.screen.Screen;
 import ink.flybird.cubecraft.client.resource.FontAsset;
 import ink.flybird.cubecraft.client.resource.TextureAsset;
+import ink.flybird.cubecraft.client.resource.UIAsset;
 import ink.flybird.cubecraft.event.resource.ResourceLoadFinishEvent;
 import ink.flybird.cubecraft.resource.Load;
 import ink.flybird.fcommon.event.EventHandler;
@@ -49,6 +51,20 @@ public interface ResourceRegistry {
 
     @FieldRegistry("pointer_texture")
     TextureAsset POINTER = new TextureAsset("cubecraft:gui/icon/pointer.png");
+
+
+    @FieldRegistry("title_screen")
+    UIAsset TITLE_SCREEN = new UIAsset("cubecraft:/title_screen.xml");
+
+    @FieldRegistry("single_player_screen")
+    UIAsset SINGLE_PLAYER_SCREEN = new UIAsset("cubecraft:/single_player_screen.xml");
+
+    @FieldRegistry("multi_player_screen")
+    UIAsset MULTI_PLAYER_SCREEN = new UIAsset("cubecraft:/multi_player_screen.xml");
+
+    @FieldRegistry("pause_screen")
+    UIAsset PAUSE_SCREEN = new UIAsset("cubecraft:/pause_screen.xml");
+
 
     @EventHandler
     static void onResourceLoadComplete(ResourceLoadFinishEvent event) {

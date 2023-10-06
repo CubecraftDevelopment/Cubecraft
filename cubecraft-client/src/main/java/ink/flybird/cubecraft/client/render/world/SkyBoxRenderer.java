@@ -18,8 +18,11 @@ import org.lwjgl.opengl.GL11;
 
 @TypeItem(WorldRendererType.SKY_BOX)
 public final class SkyBoxRenderer extends IWorldRenderer {
-    private final IRenderCall sky = new ListRenderCall();
-    private final IRenderCall sky2 = new ListRenderCall();
+    public static final int FOG=0xdce9f5;
+    private static final int SKY = 0x091FF;
+
+    private final IRenderCall skyCover = new ListRenderCall();
+    private final IRenderCall skySide = new ListRenderCall();
 
     public SkyBoxRenderer(Window window, IWorld world, EntityPlayer player, Camera cam, GameSetting setting) {
         super(window, world, player, cam, setting);
@@ -27,17 +30,17 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
     @Override
     public void stop() {
-        if(!this.sky.isAllocated()){
+        if(!this.skyCover.isAllocated()){
             return;
         }
-        this.sky.free();
-        this.sky2.free();
+        this.skyCover.free();
+        this.skySide.free();
     }
 
     @Override
     public void init() {
-        this.sky.allocate();
-        this.sky2.allocate();
+        this.skyCover.allocate();
+        this.skySide.allocate();
 
 
         int d2 = LevelRenderer.SettingHolder.CHUNK_RENDER_DISTANCE.getValue();
@@ -55,25 +58,25 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
             float x1 = (float) Math.cos((double) (i + 1) * Math.PI / 180) * r + cx;
             float y1 = (float) Math.sin((double) (i + 1) * Math.PI / 180) * r + cy;
-            builder.color(0x33 / 255f, 0x9b / 255f, 0xe8 / 255f, 1.0f);
+            builder.color(SKY);
             builder.vertex(cx, cy + d2 * 64, cz);
-            builder.color(0xdc / 255f, 0xe9 / 255f, 0xf5 / 255f, 1.0f);
+            builder.color(FOG);
             builder.vertex(x, cy, y);
             builder.vertex(x1, cy, y1);
 
-            builder.color(0xdc / 255f, 0xe9 / 255f, 0xf5 / 255f, 1.0f);
+            builder.color(FOG);
             builder.vertex(cx, -(cy + d2 * 64), cz);
             builder.vertex(x, -cy, y);
             builder.vertex(x1, -cy, y1);
         }
         builder.end();
-        this.sky.upload(builder);
+        this.skyCover.upload(builder);
         builder.free();
 
         builder = VertexBuilderAllocator.createByPrefer(4096, DrawMode.QUAD_STRIP);
 
         builder.begin();
-        builder.color(0xdc / 255f, 0xe9 / 255f, 0xf5 / 255f, 1.0f);
+        builder.color(FOG);
         int sides = 32; // 设置圆柱体的边数
         double radius = d2 * 16 * 32; // 设置圆柱体的半径
         double height = d2 * 64; // 设置圆柱体的高度
@@ -91,7 +94,7 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         GL11.glLoadIdentity();
 
         builder.end();
-        this.sky2.upload(builder);
+        this.skySide.upload(builder);
         builder.free();
     }
 
@@ -111,8 +114,8 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_CULL_FACE);
-        this.sky.call();
-        this.sky2.call();
+        this.skyCover.call();
+        this.skySide.call();
         GL11.glEnable(GL11.GL_CULL_FACE);
     }
 }

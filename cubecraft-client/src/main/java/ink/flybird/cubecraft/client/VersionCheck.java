@@ -8,16 +8,18 @@ import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.fcommon.NetworkUtil;
 import ink.flybird.fcommon.I18nHelper;
 import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.logging.SimpleLogger;
 
 import java.io.IOException;
 
 
 public class VersionCheck implements Runnable {
+    private static final ILogger LOGGER = LogManager.getLogger("version-check");
 
     public static final String CHECK_VERSION_URL = "https://api.github.com/repos/FlyBirdGameStudio/Cubecraft/releases/tags/Client";
 
-    private final Logger logger = new SimpleLogger("VersionCheck");
 
     @Override
     public void run() {
@@ -69,7 +71,7 @@ public class VersionCheck implements Runnable {
                 );
             }
         } catch (IOException e) {
-            logger.exception(e);
+            LOGGER.error(e);
             ScreenUtil.createPopup(
                     i18nHelper.get("version_check.exception.title"),
                     i18nHelper.get("version_check.exception.subtitle"),
@@ -77,7 +79,6 @@ public class VersionCheck implements Runnable {
             );
         }
     }
-
 
     public static final int UNKNOWN_REMOTE = 404;
     public static final int UNKNOWN_CLIENT = 303;

@@ -48,7 +48,7 @@ import com.whirvis.jraknet.protocol.message.EncapsulatedPacket;
 import com.whirvis.jraknet.protocol.status.UnconnectedPing;
 import com.whirvis.jraknet.protocol.status.UnconnectedPong;
 import com.whirvis.jraknet.peer.RakNetPeer;
-import ink.flybird.fcommon.logging.Logger;
+
 
 import com.whirvis.jraknet.InvalidChannelException;
 import com.whirvis.jraknet.Packet;
@@ -64,6 +64,7 @@ import com.whirvis.jraknet.protocol.connection.OpenConnectionRequestTwo;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseOne;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseTwo;
 
+import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;

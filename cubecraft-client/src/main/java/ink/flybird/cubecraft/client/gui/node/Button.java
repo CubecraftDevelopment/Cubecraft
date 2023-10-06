@@ -2,17 +2,16 @@ package ink.flybird.cubecraft.client.gui.node;
 
 
 import ink.flybird.cubecraft.client.gui.base.Text;
-import ink.flybird.cubecraft.client.event.gui.ButtonClickedEvent;
+import ink.flybird.cubecraft.client.event.gui.component.ButtonClickedEvent;
+import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d.device.MouseButton;
 import ink.flybird.quantum3d.device.event.MouseClickEvent;
 import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.file.FAMLDeserializer;
-import ink.flybird.fcommon.file.XmlReader;
-import ink.flybird.quantum3d.device.event.MousePosEvent;
 import org.w3c.dom.Element;
 
 import java.util.Objects;
 
+@TypeItem("button")
 public class Button extends Node {
     public boolean enabled = true;
     public boolean hovered = false;
@@ -39,12 +38,12 @@ public class Button extends Node {
     @EventHandler
     public void onClicked(MouseClickEvent e) {
         if (this.hovered && this.enabled && e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
-            this.context.getEventBus().callEvent(new ButtonClickedEvent(this, this.screen, this.context), this.screen.getID());
+            this.context.getEventBus().callEvent(new ButtonClickedEvent(this, this.screen, this.context), this.screen.getId());
         }
     }
 
-    @EventHandler
-    public void onMousePos(MousePosEvent event){
+    @Override
+    public void tick() {
         this.hovered=this.isMouseInbound();
     }
 

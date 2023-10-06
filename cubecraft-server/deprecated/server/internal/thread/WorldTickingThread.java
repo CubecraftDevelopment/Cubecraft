@@ -1,6 +1,7 @@
 package ink.flybird.cubecraft.server.internal.thread;
 
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.threading.LoopTickingThread;
 import ink.flybird.cubecraft.register.SharedContext;
 import ink.flybird.cubecraft.server.CubecraftServer;

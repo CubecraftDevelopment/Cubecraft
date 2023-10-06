@@ -3,7 +3,7 @@
     "state": "default",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH": 1,
         "boarderV": 1,
         "loc": "cubecraft:gui/controls/panel.png",

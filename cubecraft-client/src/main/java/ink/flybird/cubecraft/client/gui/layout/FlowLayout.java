@@ -1,7 +1,8 @@
 package ink.flybird.cubecraft.client.gui.layout;
 
-import ink.flybird.cubecraft.client.gui.layout.Layout;
+import ink.flybird.fcommon.registry.TypeItem;
 
+@TypeItem("flow")
 public final class FlowLayout extends Layout {
     private FlowSide side;
     private int pos, length;
@@ -19,49 +20,49 @@ public final class FlowLayout extends Layout {
     public void resize(int x, int y, int scrWidth, int scrHeight) {
         switch (this.side) {
             case TOP -> {
-                this.absoluteY = y + pos;
-                this.absoluteWidth = scrWidth;
-                this.absoluteX = x;
-                this.absoluteHeight = length;
+                this.setAbsoluteY(y + pos);
+                this.setAbsoluteWidth(scrWidth);
+                this.setAbsoluteX(x);
+                this.setAbsoluteHeight(length);
             }
             case BOTTOM -> {
-                this.absoluteY = x + scrHeight - pos;
-                this.absoluteWidth = scrWidth;
-                this.absoluteX = x;
-                this.absoluteHeight = length;
+                this.setAbsoluteY(x + scrHeight - pos);
+                this.setAbsoluteWidth(scrWidth);
+                this.setAbsoluteX(x);
+                this.setAbsoluteHeight(length);
             }
             case LEFT -> {
-                this.absoluteX = x + pos;
-                this.absoluteHeight = scrHeight;
-                this.absoluteY = y;
-                this.absoluteWidth = length;
+                this.setAbsoluteX(x + pos);
+                this.setAbsoluteHeight(scrHeight);
+                this.setAbsoluteY(y);
+                this.setAbsoluteWidth(length);
             }
             case RIGHT -> {
-                this.absoluteX = x + scrWidth - pos;
-                this.absoluteHeight = scrHeight;
-                this.absoluteY = y;
-                this.absoluteWidth = length;
+                this.setAbsoluteX(x + scrWidth - pos);
+                this.setAbsoluteHeight(scrHeight);
+                this.setAbsoluteY(y);
+                this.setAbsoluteWidth(length);
             }
         }
 
 
         if (this.scale.left()) {
-            this.absoluteX = 0;
+            this.setAbsoluteX(0);
         }
         if (this.scale.right()) {
-            this.absoluteWidth = scrWidth - this.absoluteX;
+            this.setAbsoluteWidth(scrWidth - this.getAbsoluteX());
         }
         if (this.scale.bottom()) {
-            this.absoluteHeight = scrHeight - this.absoluteY;
+            this.setAbsoluteHeight(scrHeight - this.getAbsoluteY());
         }
         if (this.scale.top()) {
-            this.absoluteY = 0;
+            this.setAbsoluteY(0);
         }
 
-        this.absoluteX += this.getBorder().left();
-        this.absoluteY += this.getBorder().top();
-        this.absoluteWidth -= this.getBorder().right()+this.getBorder().left();
-        this.absoluteHeight -= this.getBorder().bottom()+this.getBorder().top();
+        this.setAbsoluteX(this.getAbsoluteX() + this.getBorder().left());
+        this.setAbsoluteY(this.getAbsoluteY() + this.getBorder().top());
+        this.setAbsoluteWidth(this.getAbsoluteWidth() - (this.getBorder().right()+this.getBorder().left()));
+        this.setAbsoluteHeight(this.getAbsoluteHeight() - (this.getBorder().bottom()+this.getBorder().top()));
     }
 
     public enum FlowSide {

@@ -7,13 +7,15 @@ import com.google.gson.JsonParseException;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
+import ink.flybird.cubecraft.client.render.renderer.ComponentRendererPart;
 import ink.flybird.cubecraft.client.resource.TextureAsset;
+import ink.flybird.fcommon.registry.TypeItem;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
-public record Font(double x, double y, int size, int col, int yOffset, String query,float iconModifier) implements IComponentPartRenderer {
+@TypeItem("font")
+public record Font(double x, double y, int size, int col, int yOffset, String query,float iconModifier) implements ComponentRendererPart {
     @Override
     public void render(Node node) {
         int x= (int) (node.getLayout().getAbsoluteX() +this.x* node.getLayout().getAbsoluteWidth());

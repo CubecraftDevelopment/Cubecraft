@@ -1,0 +1,21 @@
+[dependencies-shared]
+cubecraft-client = "{#any}"
+
+[dependencies-client]
+cubecraft-core = "{#any}"
+
+[dependencies-server]
+cubecraft-server = "{#any}"
+
+[meta]
+id="cubecraft_content"
+version="0.0.1-beta"
+class="ink.flybird.cubecraft.content.CubecraftContentMod"
+
+[auto-reg]
+block="/data/cubecraft/registry_index/blocks.json"
+
+[info]
+name="Cubecraft-Content-Pack"
+author="GrassBlock2022"
+website="https://flybird.ink"

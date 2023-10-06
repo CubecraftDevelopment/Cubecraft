@@ -12,8 +12,10 @@ import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.fcommon.registry.RegisterMap;
 import ink.flybird.cubecraft.auth.SessionService;
 
-import ink.flybird.cubecraft.extansion.ExtensionManager;
+import ink.flybird.cubecraft.extension.ModManager;
 import ink.flybird.cubecraft.net.packet.Packet;
+import ink.flybird.jflogger.LogManager;
+import ink.flybird.jflogger.config.ConfigBuilder;
 import org.iq80.leveldb.DBFactory;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 
@@ -23,6 +25,8 @@ import java.util.HashMap;
  * simple register entry set...
  */
 public interface SharedContext {
+
+
     GsonBuilder GSON_BUILDER=new GsonBuilder();
     XmlReader FAML_READER = new XmlReader();
 
@@ -31,7 +35,7 @@ public interface SharedContext {
     ConstructingMap<Packet> PACKET = new ConstructingMap<>(Packet.class);
     I18nHelper I18N =new I18nHelper(I18nHelper.CHINESE_SIMPLIFIED,I18nHelper.ENGLISH);
 
-    ExtensionManager MOD=new ExtensionManager();
+    ModManager MOD=new ModManager();
 
     DynamicURLClassLoader CLASS_LOADER=new DynamicURLClassLoader();
     ThreadInitializer THREAD_INITIALIZER=new ThreadInitializer(CLASS_LOADER);
@@ -46,4 +50,8 @@ public interface SharedContext {
     }
 
 
+
+    static void initializeLogContext(){
+        LogManager.loadUp(new ConfigBuilder());
+    }
 }

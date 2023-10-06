@@ -11,7 +11,7 @@
                 <layout>[24,0]</layout>
                 <border>[0,0,0,0]</border>
             </layout>
-            <text type="lang" color="ffffff" align="middle">multiplayer.title</text>
+            <label type="lang" color="ffffff" align="middle">multiplayer.title</label>
         </element>
         <element type="panel" id="server_search_bg">
             <layout type="origin">
@@ -27,16 +27,16 @@
                         <border>[20,20,0,0]</border>
                         <scale>[true,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">multiplayer.title</text>
+                    <label type="lang" color="ffffff" align="middle">multiplayer.title</label>
                 </element>
-                <element type="textbar" id="server_search" limit="20">
+                <element type="labelbar" id="server_search" limit="20">
                     <layout type="origin">
                         <layout>[0,32,0,24]</layout>
                         <type>left_top</type>
                         <border>[20,20,0,0]</border>
                         <scale>[true,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="aaaaaa" align="left">multiplayer.search_server</text>
+                    <label type="lang" color="aaaaaa" align="left">multiplayer.search_server</label>
                 </element>
                 <element type="button" id="join_server">
                     <layout type="origin">
@@ -45,7 +45,7 @@
                         <border>[20,20,4,4]</border>
                         <scale>[true,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">multiplayer.button.join</text>
+                    <label type="lang" color="ffffff" align="middle">multiplayer.button.join</label>
                 </element>
                 <element type="button" id="create_server">
                     <layout type="origin">
@@ -54,7 +54,7 @@
                         <border>[20,20,4,4]</border>
                         <scale>[true,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">multiplayer.button.create</text>
+                    <label type="lang" color="ffffff" align="middle">multiplayer.button.create</label>
                 </element>
                 <element type="button" id="delete_server">
                     <layout type="origin">
@@ -63,7 +63,7 @@
                         <border>[20,20,4,4]</border>
                         <scale>[true,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">multiplayer.button.delete</text>
+                    <label type="lang" color="ffffff" align="middle">multiplayer.button.delete</label>
                 </element>
             </elements>
         </element>
@@ -82,7 +82,7 @@
                         <border>[0,0,0,0]</border>
                         <scale>[false,true,false,false]</scale>
                     </layout>
-                    <text type="lang" color="ffffff" align="middle">multiplayer.select_server</text>
+                    <label type="lang" color="ffffff" align="middle">multiplayer.select_server</label>
                 </element>
                 <element type="scroll_panel" id="server_list" yMin="-128" yMax="0" horizontalEnabled="false">
                     <layout type="origin">
@@ -99,28 +99,28 @@
                                 <border>[4,4,4,0]</border>
                                 <scale>[true,true,false,false]</scale>
                             </layout>
-                            <text type="lang" color="ffffff" align="middle">multiplayer.button.join</text>
+                            <label type="lang" color="ffffff" align="middle">multiplayer.button.join</label>
                             <elements>
                                 <element type="label" id="title">
                                     <layout type="origin">
                                         <layout>[4,4,0,12]</layout>
                                         <type>left_top</type>
                                     </layout>
-                                    <text type="raw" color="ffffff" align="left">_Title_</text>
+                                    <label type="raw" color="ffffff" align="left">_Title_</label>
                                 </element>
                                 <element type="label" id="sub1">
                                     <layout type="origin">
                                         <layout>[4,20,0,6]</layout>
                                         <type>left_top</type>
                                     </layout>
-                                    <text type="raw" color="dddddd" align="left">_Subtitle1_</text>
+                                    <label type="raw" color="dddddd" align="left">_Subtitle1_</label>
                                 </element>
                                 <element type="label" id="sub2">
                                     <layout type="origin">
                                         <layout>[4,30,0,6]</layout>
                                         <type>left_top</type>
                                     </layout>
-                                    <text type="raw" color="dddddd" align="left">_Subtitle2_</text>
+                                    <label type="raw" color="dddddd" align="left">_Subtitle2_</label>
                                 </element>
                             </elements>
                         </factory_element>

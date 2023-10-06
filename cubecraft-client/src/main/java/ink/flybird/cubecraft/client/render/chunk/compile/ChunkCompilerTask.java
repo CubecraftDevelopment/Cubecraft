@@ -1,16 +1,16 @@
 package ink.flybird.cubecraft.client.render.chunk.compile;
 
-import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 
 import java.util.PriorityQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ChunkCompilerTask implements Runnable {
-    private static final Logger LOGGER = SharedContext.LOG_CONTEXT.createLogger("chunk_compiler_task");
+    private static final ILogger LOGGER = LogManager.getLogger("chunk-compiler-task");
+
     protected final PriorityQueue<ChunkCompileResult> resultQueue;
     protected final PriorityQueue<ChunkCompileRequest> requestQueue;
 
@@ -86,7 +86,7 @@ public abstract class ChunkCompilerTask implements Runnable {
                 try {
                     this.process();
                 } catch (Exception e) {
-                    LOGGER.exception(e);
+                    LOGGER.error(e);
                 }
                 Thread.yield();
             }

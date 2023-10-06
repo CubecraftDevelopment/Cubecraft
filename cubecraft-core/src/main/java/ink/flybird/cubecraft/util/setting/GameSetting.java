@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-//todo:迁移配置文件
 public final class GameSetting {
     private final HashMap<String, SettingItem<?>> data = new HashMap<>();
     private final HashMap<String, Object> modify = new HashMap<>();

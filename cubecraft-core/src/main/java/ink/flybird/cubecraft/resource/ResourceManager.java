@@ -12,11 +12,11 @@ import ink.flybird.cubecraft.resource.provider.ModResourceLoader;
 import ink.flybird.cubecraft.resource.provider.ResourceLoader;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.registry.FieldRegistry;
 import ink.flybird.fcommon.registry.FieldRegistryHolder;
 import ink.flybird.fcommon.registry.RegisterMap;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResourceManager {
-    private static final Logger LOGGER = new SimpleLogger("resource_manager");
+    private static final ILogger LOGGER = LogManager.getLogger("resource_manager");
+
     public final ArrayList<ResourcePack> resourcePacks = new ArrayList<>();
     protected final ArrayList<Object> listeners = new ArrayList<>();
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);

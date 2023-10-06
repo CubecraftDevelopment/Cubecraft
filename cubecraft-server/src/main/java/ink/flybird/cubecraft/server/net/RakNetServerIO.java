@@ -4,7 +4,7 @@ import com.whirvis.jraknet.RakNetException;
 import com.whirvis.jraknet.server.RakNetServer;
 import ink.flybird.cubecraft.net.packet.Packet;
 import ink.flybird.cubecraft.SharedContext;
-import ink.flybird.cubecraft.server.ServerRegistries;
+import ink.flybird.cubecraft.server.ServerSharedContext;
 
 import java.net.InetSocketAddress;
 
@@ -14,7 +14,7 @@ public class RakNetServerIO implements ServerIO {
     private RakNetServer server;
 
     public RakNetServerIO() {
-        this.listener = new RakNetServerListenerAdapter(SharedContext.PACKET, ServerRegistries.NET_HANDLER);
+        this.listener = new RakNetServerListenerAdapter(SharedContext.PACKET, ServerSharedContext.NET_HANDLER);
     }
 
     public RakNetServer getServer() {

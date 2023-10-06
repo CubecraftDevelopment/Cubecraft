@@ -1,7 +1,8 @@
 package ink.flybird.cubecraft.net;
 
 import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.fcommon.registry.TypeItem;
@@ -21,7 +22,7 @@ import java.util.concurrent.Executors;
  */
 public abstract class NetworkListenerAdapter extends NetWorkEventBus {
     public static final ExecutorService HANDLER_POOL = Executors.newFixedThreadPool(8);
-    protected final Logger logger=new SimpleLogger("NetworkListenerAdapter");
+    protected final ILogger logger=LogManager.getLogger("NetworkListenerAdapter");
     protected final ConstructingMap<Packet> packetConstructor;
 
     /**
@@ -66,7 +67,7 @@ public abstract class NetworkListenerAdapter extends NetWorkEventBus {
             buffer.writeBytes(data);
         } catch (Exception e) {
             this.logger.error("find exception when writing packet:" + e.getMessage());
-            this.logger.exception(e);
+            this.logger.error(e);
         }
     }
 
@@ -98,7 +99,7 @@ public abstract class NetworkListenerAdapter extends NetWorkEventBus {
             pkt.readPacketData(data);
         } catch (Exception e) {
             this.logger.error("find exception when decoding packet:" + e.getMessage());
-            this.logger.exception(e);
+            this.logger.error(e);
         }
         data.release();
 

@@ -1,18 +1,18 @@
 package ink.flybird.cubecraft.client.render.chunk.compile;
 
 import ink.flybird.cubecraft.client.ClientRenderContext;
-import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
 import ink.flybird.cubecraft.client.render.LevelRenderer;
 import ink.flybird.cubecraft.client.render.block.IBlockRenderer;
+import ink.flybird.cubecraft.client.render.chunk.RenderChunkPos;
 import ink.flybird.cubecraft.client.render.chunk.layer.ChunkLayer;
 import ink.flybird.cubecraft.internal.block.BlockType;
-import ink.flybird.cubecraft.SharedContext;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.access.ChunkLoadAccess;
 import ink.flybird.cubecraft.world.block.access.IBlockAccess;
 import ink.flybird.cubecraft.world.chunk.ChunkLoadTicket;
 import ink.flybird.cubecraft.world.chunk.ChunkPos;
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 
@@ -20,10 +20,10 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public interface ChunkCompiler {
-    Logger LOGGER = SharedContext.LOG_CONTEXT.createLogger("chunk_layer_compiler");
+    ILogger LOGGER = LogManager.getLogger("chunk-layer-compiler");
 
     static ChunkCompileResult rebuild(String id, IWorld world, RenderChunkPos pos, ChunkLayer layer) {
-        long x =pos.getX();
+        long x = pos.getX();
         long y = pos.getY();
         long z = pos.getZ();
 
@@ -63,7 +63,7 @@ public interface ChunkCompiler {
             builder.free();
             return ChunkCompileResult.failed(pos, id);
         } catch (Exception e) {
-            LOGGER.exception(e);
+            LOGGER.error(e);
 
             builder.free();
             return ChunkCompileResult.failed(pos, id);

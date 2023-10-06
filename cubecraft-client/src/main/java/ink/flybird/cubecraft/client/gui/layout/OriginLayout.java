@@ -1,7 +1,8 @@
 package ink.flybird.cubecraft.client.gui.layout;
 
-import ink.flybird.cubecraft.client.gui.layout.Layout;
+import ink.flybird.fcommon.registry.TypeItem;
 
+@TypeItem("origin")
 public final class OriginLayout extends Layout {
     public Origin origin;
     private int rx, ry;
@@ -12,6 +13,22 @@ public final class OriginLayout extends Layout {
 
     public void setRelativeY(int ry) {
         this.ry = ry;
+    }
+
+    public int getRelativeX() {
+        return rx;
+    }
+
+    public int getRelativeY() {
+        return ry;
+    }
+
+    public int getRelativeWidth() {
+        return width;
+    }
+
+    public int getRelativeHeight() {
+        return height;
     }
 
     public void setOrigin(Origin origin) {
@@ -54,31 +71,31 @@ public final class OriginLayout extends Layout {
                 oy = scrHeight - this.height + y;
             }
         }
-        this.absoluteX = ox + rx;
-        this.absoluteY = oy + ry;
+        this.setAbsoluteX(ox + rx);
+        this.setAbsoluteY(oy + ry);
 
         if (this.scale.left()) {
-            this.absoluteX = x;
+            this.setAbsoluteX(x);
         }
         if (this.scale.top()) {
-            this.absoluteY = y;
+            this.setAbsoluteY(y);
         }
 
         if (this.scale.right()) {
-            this.absoluteWidth = scrWidth - this.absoluteX + x;
+            this.setAbsoluteWidth(scrWidth - this.getAbsoluteX() + x);
         } else {
-            this.absoluteWidth = this.width;
+            this.setAbsoluteWidth(this.width);
         }
         if (this.scale.bottom()) {
-            this.absoluteHeight = scrHeight - this.absoluteY + y;
+            this.setAbsoluteHeight(scrHeight - this.getAbsoluteY() + y);
         } else {
-            this.absoluteHeight = this.height;
+            this.setAbsoluteHeight(this.height);
         }
 
-        this.absoluteX += this.getBorder().left();
-        this.absoluteY += this.getBorder().top();
-        this.absoluteWidth -= this.getBorder().right() + this.getBorder().left();
-        this.absoluteHeight -= this.getBorder().bottom() + this.getBorder().top();
+        this.setAbsoluteX(this.getAbsoluteX() + this.getBorder().left());
+        this.setAbsoluteY(this.getAbsoluteY() + this.getBorder().top());
+        this.setAbsoluteWidth(this.getAbsoluteWidth() - (this.getBorder().right() + this.getBorder().left()));
+        this.setAbsoluteHeight(this.getAbsoluteHeight() - (this.getBorder().bottom() + this.getBorder().top()));
     }
 
 

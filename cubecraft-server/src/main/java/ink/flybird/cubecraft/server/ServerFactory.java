@@ -8,8 +8,8 @@ import java.net.InetSocketAddress;
 import java.util.Properties;
 
 public interface ServerFactory {
-    static CubecraftServer createIntegratedServer(InetSocketAddress address, String levelName) {
-        return new CubecraftServer(address, levelName);
+    static CubecraftServer createIntegratedServer(String levelName) {
+        return new CubecraftServer(new InetSocketAddress("127.0.0.1",11451), levelName, true);
     }
 
     static CubecraftServer createExternalServer() {
@@ -23,6 +23,6 @@ public interface ServerFactory {
         String ip = (String) properties.getOrDefault("network.address", "127.0.0.1");
         int port = (int) properties.getOrDefault("network.port", 25585);
 
-        return new CubecraftServer(new InetSocketAddress(ip,port),levelName);
+        return new CubecraftServer(new InetSocketAddress(ip,port),levelName, false);
     }
 }

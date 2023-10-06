@@ -2,19 +2,20 @@ package ink.flybird.cubecraft.client.internal.handler;
 
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.VersionCheck;
-import ink.flybird.cubecraft.client.gui.GUIManager;
+import ink.flybird.cubecraft.client.gui.GUIContext;
 import ink.flybird.cubecraft.client.gui.ScreenUtil;
 import ink.flybird.cubecraft.client.gui.base.Popup;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.cubecraft.client.gui.node.Label;
-import ink.flybird.cubecraft.client.event.gui.ButtonClickedEvent;
-import ink.flybird.cubecraft.client.event.gui.ComponentInitializeEvent;
+import ink.flybird.cubecraft.client.event.gui.component.ButtonClickedEvent;
+import ink.flybird.cubecraft.client.event.gui.component.ComponentInitializeEvent;
 import ink.flybird.cubecraft.client.gui.screen.HUDScreen;
 import ink.flybird.cubecraft.client.internal.gui.ScreenLocation;
 import ink.flybird.cubecraft.client.internal.gui.ScreenType;
 import ink.flybird.cubecraft.SharedContext;
+import ink.flybird.cubecraft.client.registry.ResourceRegistry;
 import ink.flybird.fcommon.event.EventHandler;
 
 import ink.flybird.fcommon.event.SubscribedEvent;
@@ -36,7 +37,7 @@ public class ScreenController {
             //todo:achievement screen
         }
         if (Objects.equals(e.getButton().getId(), "button_quit")) {
-            CubecraftClient.CLIENT.getGuiManager().setScreen("cubecraft:title_screen.xml");
+            CubecraftClient.CLIENT.getGuiManager().setScreen(ResourceRegistry.TITLE_SCREEN);
             CubecraftClient.CLIENT.leaveWorld();
         }
     }
@@ -44,10 +45,10 @@ public class ScreenController {
     @EventHandler
     @SubscribedEvent(ScreenType.TITLE)
     public void buttonClicked(ButtonClickedEvent event) {
-        GUIManager context = event.getContext();
+        GUIContext context = event.getContext();
         switch (event.getComponentID()) {
-            case "button_singleplayer" -> context.setScreen(ScreenLocation.SINGLE_PLAYER, ScreenLocation.TITLE);
-            case "button_multiplayer" -> context.setScreen(ScreenLocation.MULTI_PLAYER, ScreenLocation.TITLE);
+            case "button_singleplayer" -> context.setScreen(ResourceRegistry.SINGLE_PLAYER_SCREEN,ResourceRegistry.TITLE_SCREEN);
+            case "button_multiplayer" -> context.setScreen(ResourceRegistry.MULTI_PLAYER_SCREEN,ResourceRegistry.TITLE_SCREEN);
             case "button_option" -> context.setScreen(ScreenLocation.OPTION, ScreenLocation.TITLE);
 
             case "button_check_version" -> {
@@ -72,9 +73,16 @@ public class ScreenController {
                 CubecraftClient.VERSION, SharedContext.MOD.getLoadedMods().size());
 
         Node node = event.getComponent();
-        switch (event.getComponentID()) {
-            case "auth_str" -> ((Label) node).setText(auth);
-            case "version_str" -> ((Label) node).setText(version);
+        if(node.getId()==null){
+            return;
+        }
+        try {
+            switch (event.getComponentID()) {
+                case "auth_str" -> ((Label) node).setText(auth);
+                case "version_str" -> ((Label) node).setText(version);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

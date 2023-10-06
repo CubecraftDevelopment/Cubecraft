@@ -65,7 +65,7 @@ public class PlayerController {
             }
             if (entity.isFlying()) {
                 if (entity.runningMode) {
-                    speed = 3.5f;
+                    speed = 20.5f;
                 } else {
                     speed = 2f;
                 }

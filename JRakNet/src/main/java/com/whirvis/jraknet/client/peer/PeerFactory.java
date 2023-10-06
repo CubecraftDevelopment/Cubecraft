@@ -34,6 +34,7 @@ import static com.whirvis.jraknet.RakNetPacket.*;
 import java.net.InetSocketAddress;
 
 import com.whirvis.jraknet.protocol.ConnectionType;
+
 import ink.flybird.fcommon.logging.Logger;
 import ink.flybird.fcommon.logging.SimpleLogger;
 

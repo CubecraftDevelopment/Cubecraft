@@ -1,8 +1,8 @@
 package ink.flybird.cubecraft.client.gui.layout;
 
 import com.google.gson.Gson;
-import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.SharedContext;
+import ink.flybird.cubecraft.client.gui.GUIContext;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
 import org.w3c.dom.Element;
@@ -10,12 +10,12 @@ import org.w3c.dom.Element;
 public abstract class Layout {
     public int layer;
     protected int width, height;
-    protected int absoluteX;
-    protected int absoluteY;
-    protected int absoluteWidth;
-    protected int absoluteHeight;
     protected Scale scale = new Scale(false, false, false, false);
     protected Border border = new Border(0, 0, 0, 0);
+    private int absoluteX;
+    private int absoluteY;
+    private int absoluteWidth;
+    private int absoluteHeight;
 
     public abstract void initialize(String[] metadata);
 
@@ -65,10 +65,11 @@ public abstract class Layout {
         this.absoluteHeight = absoluteHeight;
     }
 
+
     public static class XMLDeserializer implements FAMLDeserializer<Layout> {
         @Override
         public Layout deserialize(Element element, XmlReader reader) {
-            Layout layout = SharedContext.FAML_READER.deserialize(element, CubecraftClient.CLIENT.getGuiManager().getLayoutClass(element.getAttribute("type")));
+            Layout layout = SharedContext.FAML_READER.deserialize(element, GUIContext.getLayoutClass(element.getAttribute("type")));
             if (element.getElementsByTagName("border").getLength() > 0) {
                 int[] l2 = new Gson().fromJson(element.getElementsByTagName("border").item(0).getTextContent(), int[].class);
                 layout.setBorder(new Border(l2[0], l2[1], l2[2], l2[3]));

@@ -7,7 +7,7 @@ import ink.flybird.cubecraft.internal.network.packet.join.PacketPlayerJoinRespon
 import ink.flybird.cubecraft.net.NetHandlerContext;
 import ink.flybird.cubecraft.net.packet.PacketListener;
 import ink.flybird.cubecraft.SharedContext;
-import ink.flybird.cubecraft.server.ServerRegistries;
+import ink.flybird.cubecraft.server.ServerSharedContext;
 import ink.flybird.cubecraft.server.event.join.PlayerLoginEvent;
 import ink.flybird.cubecraft.server.net.ServerNetHandler;
 
@@ -32,7 +32,7 @@ public class ServerHandlerPlayerJoin extends ServerNetHandler {
         ctx.sendPacket(PacketPlayerJoinResponse.accept());
         String uid = service.genUUID(packet.getSession());
         EntityPlayer p = new EntityPlayer(null, packet.getSession());
-        ServerRegistries.SERVER.getPlayers().add(p, uid, ctx.from());
+        ServerSharedContext.SERVER.getPlayers().add(p, uid, ctx.from());
 
         ctx.sendPacket(new PacketPlayerJoinResponse("__ACCEPT__"));
     }

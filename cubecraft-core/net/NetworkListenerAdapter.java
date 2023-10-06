@@ -3,7 +3,8 @@ package ink.flybird.cubecraft.net;
 import ink.flybird.cubecraft.net.packet.Packet;
 import ink.flybird.fcommon.event.EventBus;
 
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.fcommon.registry.TypeItem;

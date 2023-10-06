@@ -2,15 +2,17 @@ package ink.flybird.cubecraft.client.render.gui;
 
 import com.google.gson.*;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
+import ink.flybird.cubecraft.client.render.renderer.ComponentRendererPart;
 import ink.flybird.cubecraft.client.resource.TextureAsset;
+import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
-public record Color(double x0, double x1, double y0, double y1, int r, int g, int b, int a)implements IComponentPartRenderer {
+@TypeItem("color")
+public record Color(double x0, double x1, double y0, double y1, int r, int g, int b, int a)implements ComponentRendererPart {
     @Override
     public void render(Node node) {
         int x= (int) (node.getLayout().getAbsoluteX() +x0* node.getLayout().getAbsoluteWidth());
@@ -22,7 +24,6 @@ public record Color(double x0, double x1, double y0, double y1, int r, int g, in
 
         ShapeRenderer.setColor(r,g,b,a);
         ShapeRenderer.drawRect(x,x+w,y,y+h,z,z);
-        ShapeRenderer.setColor(256,256,256,256);
 
         GLUtil.enableBlend();
         GLUtil.enableDepthTest();

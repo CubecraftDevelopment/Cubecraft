@@ -3,14 +3,14 @@
     "state": "default:normal",
     "components": [
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:controls/slider.png",
         "pos": [0,1,0.5,1]
       },
       {
-        "type": "image_all_boarder",
+        "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
         "loc": "cubecraft:controls/slider.png",

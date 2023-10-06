@@ -11,24 +11,24 @@
         </icon>
     </button>
     <button layout="origin/middle_middle,0,-10,300,30" border="0,0,0,4" id="button_singleplayer">
-        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
             title_screen.button.singleplayer
-        </text>
+        </label>
     </button>
     <button layout="origin/middle_middle,0,20,300,30" border="0,0,0,4" id="button_multiplayer" enabled="false">
-        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
             title_screen.button.multiplayer
-        </text>
+        </label>
     </button>
     <button layout="origin/middle_middle,-75,50,150,30" border="0,4,0,4" id="button_option">
-        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
             title_screen.button.option
-        </text>
+        </label>
     </button>
     <button layout="origin/middle_middle,75,50,150,30" border="4,0,0,4" id="button_quit">
-        <text type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
             title_screen.button.quit
-        </text>
+        </label>
     </button>
     <image layout="origin/middle_middle,0,-80,318,106" h-clip="scale" v-clip="scale">
         cubecraft:gui/logo/game_logo.png
@@ -36,15 +36,15 @@
     <splash type="lang" id="splash" rotation="-20" bobbing="true" layout="origin/middle_middle,140,-70,16,8" color="efff00" align="middle">
         /asset/cubecraft/text/splash.json
     </splash>
-    <text type="raw" layout="origin/right_bottom,-2,-2,0,8" color="ffffff" align="right">
+    <label type="raw" layout="origin/right_bottom,-2,-2,0,8" color="ffffff" align="right">
         ©FlybirdGames 2015-2023
-    </text>
-    <text type="lang" layout="origin/left_bottom,2,-12,0,8" color="ffffff" align="left" id="auth_str">
+    </label>
+    <label type="lang" layout="origin/left_bottom,2,-12,0,8" color="ffffff" align="left" id="auth_str">
         title_screen.auth
-    </text>
-    <text type="lang" layout="origin/left_bottom,2,-2,0,8" color="ffffff" align="left" id="version_str">
+    </label>
+    <label type="lang" layout="origin/left_bottom,2,-2,0,8" color="ffffff" align="left" id="version_str">
         title_screen.version
-    </text>
+    </label>
 </screen>
 
 

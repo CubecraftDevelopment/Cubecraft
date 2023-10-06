@@ -30,13 +30,13 @@ public final class LogoLoadingScreen extends AnimationScreen {
     public void render(DisplayScreenInfo info, float deltaTime) {
         super.render(info, deltaTime);
 
-        int xc = info.centerX();
-        int yc = info.centerY() - 25;
+        int xc = info.getCenterX();
+        int yc = info.getCenterY() - 25;
 
         VertexBuilder bg = VertexBuilderAllocator.createByPrefer(16);
         bg.begin();
         bg.color(33 / 255f, 33 / 255f, 33 / 255f, this.getContext().getHoverScreenAlpha());
-        ShapeRenderer.drawRect(bg, 0, info.scrWidth(), 0, info.scrHeight(), 2, 2);
+        ShapeRenderer.drawRect(bg, 0, info.getScreenWidth(), 0, info.getScreenHeight(), 2, 2);
         bg.end();
         bg.uploadPointer();
 

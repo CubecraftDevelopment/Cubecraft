@@ -5,15 +5,18 @@ import ink.flybird.cubecraft.client.render.model.object.Model;
 import ink.flybird.cubecraft.resource.Resource;
 import ink.flybird.cubecraft.resource.ResourceLocation;
 import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.cubecraft.SharedContext;
 
 import java.util.HashMap;
 
 public class ModelManager<I extends Model> {
+    private static final ILogger LOGGER = LogManager.getLogger("model-manager");
+
     private final Class<I> clazz;
     private final ResourceLocation fallback;
-    private final Logger logger = new SimpleLogger("ModelManager");
     private final HashMap<String, I> models = new HashMap<>();
 
     public ModelManager(Class<I> clazz, ResourceLocation fallback) {
@@ -44,7 +47,7 @@ public class ModelManager<I extends Model> {
         } catch (Exception e) {
             I model = SharedContext.createJsonReader().fromJson(ClientSharedContext.RESOURCE_MANAGER.getResource(fallback).getAsText(), clazz);
             this.models.put(file, model);
-            this.logger.exception(e);
+            LOGGER.warn(e);
         }
     }
 

@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.server.internal;
 
-import ink.flybird.cubecraft.mod.ServerSideInitializeEvent;
-import ink.flybird.cubecraft.extansion.CubecraftExtension;
+import ink.flybird.cubecraft.extension.ServerSideInitializeEvent;
+import ink.flybird.cubecraft.extension.CubecraftExtension;
 import ink.flybird.cubecraft.server.ServerRegistries;
 import ink.flybird.cubecraft.server.internal.network.ServerHandlerConnection;
 import ink.flybird.cubecraft.server.internal.network.ServerHandlerDataFetch;

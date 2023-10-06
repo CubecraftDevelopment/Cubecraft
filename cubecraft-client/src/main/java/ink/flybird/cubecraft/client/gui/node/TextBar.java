@@ -1,9 +1,10 @@
 package ink.flybird.cubecraft.client.gui.node;
 
-import ink.flybird.cubecraft.client.event.gui.TextBarSubmitEvent;
+import ink.flybird.cubecraft.client.event.gui.component.TextBarSubmitEvent;
 import ink.flybird.cubecraft.client.gui.base.Text;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.fcommon.event.EventHandler;
+import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.event.KeyboardCharEvent;
 import ink.flybird.quantum3d.device.event.KeyboardHoldEvent;
@@ -13,6 +14,7 @@ import org.w3c.dom.Element;
 
 import java.util.Objects;
 
+@TypeItem("textbar")
 public class TextBar extends Component {
     private final StringBuilder text = new StringBuilder();
     private int limit;
@@ -45,7 +47,7 @@ public class TextBar extends Component {
                 this.cursorPos--;
             }
             if (k == KeyboardButton.KEY_ENTER) {
-                this.context.getEventBus().callEvent(new TextBarSubmitEvent(this, this.screen, this.context, this.text.toString()), this.screen.getID());
+                this.context.getEventBus().callEvent(new TextBarSubmitEvent(this, this.screen, this.context, this.text.toString()), this.screen.getId());
             }
             if (k == KeyboardButton.KEY_RIGHT && this.cursorPos < text.length()) {
                 this.cursorPos++;
@@ -94,7 +96,7 @@ public class TextBar extends Component {
         int y1 = y0 + this.getLayout().getAbsoluteHeight();
         this.focus = xm > x0 && xm < x1 && ym > y0 && ym < y1;
         if (!this.focus) {
-            this.context.getEventBus().callEvent(new TextBarSubmitEvent(this, this.screen, this.context, this.text.toString()), this.screen.getID());
+            this.context.getEventBus().callEvent(new TextBarSubmitEvent(this, this.screen, this.context, this.text.toString()), this.screen.getId());
         }
     }
 }

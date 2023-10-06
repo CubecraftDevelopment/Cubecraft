@@ -4,10 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ink.flybird.cubecraft.EnvironmentPath;
 import ink.flybird.cubecraft.SharedContext;
-import ink.flybird.fcommon.container.StartArguments;
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.timer.Timer;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.quantum3d.device.DeviceContext;
 import ink.flybird.quantum3d.lwjgl.context.CompactOGLRenderContext;
 import ink.flybird.quantum3d.lwjgl.device.GLFWDeviceContext;
@@ -21,14 +20,17 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class ClientMain {
-    private static final Logger LOGGER = new SimpleLogger("client_boot");
+    private static final ILogger LOGGER= LogManager.getLogger("client-boot");
 
     public static void main(String[] args) {
+
+
+
         EnvironmentPath.allCreateFolder();
         Platform platform = Platform.current();
         System.setProperty("java.library.path", EnvironmentPath.NATIVE_FOLDER);
 
-        LOGGER.info("system: %s", platform.toString());
+        LOGGER.info("system: ", platform.toString());
         LOGGER.info("start args: " + Arrays.toString(args));
         LOGGER.info("runtime path: " + EnvironmentPath.GAME_FOLDER);
         LOGGER.info("native: " + System.getProperty("java.library.path"));
@@ -51,7 +53,7 @@ public final class ClientMain {
                 solution.renderContext(),
                 new Timer(20.0f)
         );
-        LOGGER.info("starting client started.");
+        LOGGER.info("client started.");
         client.run();
         LOGGER.info("client thread stopped.");
         System.exit(0);
@@ -67,7 +69,7 @@ public final class ClientMain {
             object = JsonParser.parseString(new String(stream.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
             stream.close();
         } catch (Exception e) {
-            LOGGER.exception(e);
+            LOGGER.error(e);
             return false;
         }
 
@@ -102,7 +104,7 @@ public final class ClientMain {
                 outputStream.close();
                 stream.close();
             } catch (Exception e) {
-                LOGGER.exception(e);
+                LOGGER.error(e);
                 LOGGER.error("could not load native library. system will exit");
                 System.exit(0);
             }

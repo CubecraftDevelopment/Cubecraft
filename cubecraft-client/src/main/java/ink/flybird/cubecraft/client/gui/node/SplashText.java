@@ -3,14 +3,15 @@ package ink.flybird.cubecraft.client.gui.node;
 import com.google.gson.Gson;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
-import ink.flybird.cubecraft.client.gui.node.Component;
 import ink.flybird.fcommon.file.DocumentUtil;
 import ink.flybird.fcommon.math.MathHelper;
+import ink.flybird.fcommon.registry.TypeItem;
 import org.lwjgl.opengl.GL11;
 import org.w3c.dom.Element;
 
 import java.util.Random;
 
+@TypeItem("splash")
 public class SplashText extends Component {
     int rotation;
     boolean bobbing;

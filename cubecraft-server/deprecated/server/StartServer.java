@@ -1,7 +1,8 @@
 package ink.flybird.cubecraft.server.server;
 
 import ink.flybird.fcommon.container.StartArguments;
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.logging.SimpleLogger;
 
 public class StartServer {

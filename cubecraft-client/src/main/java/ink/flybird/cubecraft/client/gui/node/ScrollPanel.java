@@ -2,6 +2,7 @@ package ink.flybird.cubecraft.client.gui.node;
 
 import ink.flybird.cubecraft.client.CubecraftClient;
 import ink.flybird.cubecraft.client.registry.ClientSettingRegistry;
+import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d.device.KeyboardButton;
 import ink.flybird.quantum3d.device.event.MouseScrollEvent;
@@ -13,6 +14,7 @@ import ink.flybird.fcommon.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 import org.w3c.dom.Element;
 
+@TypeItem("scroll_panel")
 public class ScrollPanel extends Node {
     private boolean horizontalEnabled;
     private int xOffset, yOffset;
@@ -36,8 +38,12 @@ public class ScrollPanel extends Node {
         this.layout.resize(x, y, w, h);
     }
 
+
+
     @Override
     public void render(float interpolationTime) {
+        this.context.getRenderController(this.getClass()).render(this);
+
         int x = (int) MathHelper.linearInterpolate(this.xo, this.xOffset, interpolationTime);
         int y = (int) MathHelper.linearInterpolate(this.yo, this.yOffset, interpolationTime);
         for (Node node : this.nodes.values()) {
@@ -58,7 +64,6 @@ public class ScrollPanel extends Node {
 
         GL11.glScissor(sx, sy, sw, sh);
         super.render(interpolationTime);
-        this.context.getRenderController(this.getClass()).render(this);
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         GLUtil.checkError("");
     }

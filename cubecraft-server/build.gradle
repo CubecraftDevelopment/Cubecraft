@@ -6,6 +6,7 @@ group 'ink.flybird'
 version '1.0-SNAPSHOT'
 
 apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
+apply from: rootDir.getAbsolutePath()+"/script/shared.gradle"
 
 repositories {
     mavenCentral()

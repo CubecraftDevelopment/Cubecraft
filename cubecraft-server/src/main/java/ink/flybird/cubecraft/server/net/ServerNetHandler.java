@@ -3,12 +3,12 @@ package ink.flybird.cubecraft.server.net;
 import ink.flybird.cubecraft.net.INetHandler;
 import ink.flybird.cubecraft.net.packet.Packet;
 import ink.flybird.cubecraft.server.CubecraftServer;
-import ink.flybird.cubecraft.server.ServerRegistries;
+import ink.flybird.cubecraft.server.ServerSharedContext;
 
 import java.net.InetSocketAddress;
 
 public abstract class ServerNetHandler implements INetHandler {
-    protected final CubecraftServer server=ServerRegistries.SERVER;
+    protected final CubecraftServer server= ServerSharedContext.SERVER;
 
     protected final void sendPacket(InetSocketAddress address, Packet pkt){
         this.server.getServerIO().sendPacket(pkt, address);

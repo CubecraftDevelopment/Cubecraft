@@ -1,25 +1,28 @@
 package ink.flybird.cubecraft.client.render.gui;
 
 import com.google.gson.*;
-import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.gui.node.Node;
-import ink.flybird.cubecraft.client.render.renderer.IComponentPartRenderer;
-import ink.flybird.cubecraft.resource.ResourceLocation;
-import ink.flybird.cubecraft.client.resource.TextureAsset;
+import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 
 import java.lang.reflect.Type;
-import java.util.Set;
 
-public record VerticalBorderImage(double x0,double x1,double y0,double y1,int boarder,String loc) implements IComponentPartRenderer {
-    @Override
-    public void render(Node node) {
-        Texture2D tex= ClientRenderContext.TEXTURE.getTexture2DContainer().get(ResourceLocation.uiTexture(this.loc.split(":")[0],this.loc.split(":")[1]).format());
+@TypeItem("vertical_border_image")
+public final class VerticalBorderImage extends ImageComponentRendererPart {
+    private final int border;
+
+    public VerticalBorderImage(double x0, double x1, double y0, double y1, int border, String textureLocation) {
+        super(x0, x1, y0, y1, textureLocation);
+        this.border = border;
     }
 
     @Override
-    public void initializeRenderer(Set<TextureAsset> loc) {
-        loc.add(new TextureAsset(this.loc));
+    public void render(Node node) {
+        //todo
+        Texture2D tex= this.getTexture();
+        tex.bind();
+
+        tex.unbind();
     }
 
     public static class JDeserializer implements JsonDeserializer<VerticalBorderImage> {

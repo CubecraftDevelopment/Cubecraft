@@ -4,8 +4,10 @@ import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.cubecraft.client.gui.node.Node;
 import ink.flybird.fcommon.math.MathHelper;
+import ink.flybird.fcommon.registry.TypeItem;
 import org.w3c.dom.Element;
 
+@TypeItem("icon")
 public class Icon extends Node {
     char icon;
     int color;

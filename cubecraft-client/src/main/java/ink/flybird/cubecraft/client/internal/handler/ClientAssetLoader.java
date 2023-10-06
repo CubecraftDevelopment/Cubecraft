@@ -3,8 +3,6 @@ package ink.flybird.cubecraft.client.internal.handler;
 import ink.flybird.cubecraft.client.ClientRenderContext;
 import ink.flybird.cubecraft.client.ClientSharedContext;
 import ink.flybird.cubecraft.client.CubecraftClient;
-import ink.flybird.cubecraft.client.gui.font.LegacyFontRenderer;
-import ink.flybird.cubecraft.client.registry.ResourceRegistry;
 import ink.flybird.cubecraft.event.resource.ResourceReloadEvent;
 import ink.flybird.cubecraft.client.render.model.block.BlockModel;
 import ink.flybird.cubecraft.client.render.model.block.BlockModelComponent;
@@ -20,23 +18,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import ink.flybird.cubecraft.EnvironmentPath;
 import ink.flybird.cubecraft.SharedContext;
-import ink.flybird.quantum3d_legacy.textures.Texture2D;
+
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import ink.flybird.quantum3d_legacy.textures.TextureStateManager;
 import ink.flybird.fcommon.I18nHelper;
 import ink.flybird.fcommon.container.NameSpaceMap;
 
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 
-
-import java.awt.*;
 import java.io.File;
 import java.util.*;
 
 public class ClientAssetLoader {
     public final HashSet<TextureAsset> textureList = new HashSet<>();
-    final Logger logger = new SimpleLogger("client_asset_loader");
+    final ILogger logger = LogManager.getLogger("client_asset_loader");
 
     @ResourceLoadHandler(stage = ResourceLoadStage.BLOCK_MODEL)
     public void loadBlockModel(ResourceReloadEvent e) {
@@ -51,7 +47,7 @@ public class ClientAssetLoader {
                 }
             }
         } catch (Exception ex) {
-            this.logger.exception(ex);
+            this.logger.error(ex);
         }
     }
 
@@ -83,7 +79,7 @@ public class ClientAssetLoader {
             TextureStateManager.setTextureMipMap(terrain, true);
             TextureStateManager.setTextureClamp(terrain, true);
         } catch (Exception ex) {
-            this.logger.exception(ex);
+            this.logger.error(ex);
         }
     }
 
@@ -95,7 +91,7 @@ public class ClientAssetLoader {
                 ClientRenderContext.COLOR_MAP.get(s2).load();
             }
         } catch (Exception ex) {
-            this.logger.exception(ex);
+            this.logger.error(ex);
         }
     }
 
@@ -129,22 +125,13 @@ public class ClientAssetLoader {
                 }
             }
         } catch (Exception ex) {
-            this.logger.exception(ex);
+            this.logger.error(ex);
         }
     }
 
-    @ResourceLoadHandler(stage = ResourceLoadStage.UI_CONTROLLER)
-    public void loadUIController(ResourceReloadEvent e) {
-        CubecraftClient.CLIENT.getGuiManager().initialize();
-    }
 
     @ResourceLoadHandler(stage = ResourceLoadStage.DETECT)
     public void detectResourceLoader(ResourceReloadEvent e) {
         e.resourceManager().addNameSpace("cubecraft");
     }
-
-
-
-
-
 }

@@ -26,8 +26,8 @@ public class StudioLoadingScreen extends AnimationScreen {
     public void render(DisplayScreenInfo info, float deltaTime) {
         super.render(info, deltaTime);
         GLUtil.enableBlend();
-        int xc = info.centerX();
-        int yc = info.centerY() - 25;
+        int xc = info.getCenterX();
+        int yc = info.getCenterY() - 25;
         float alpha = 0f;
         float bgAlpha = 1f;
 
@@ -51,7 +51,7 @@ public class StudioLoadingScreen extends AnimationScreen {
 
         builder.begin();
         builder.color((int) (255 * bgAlpha), (int) (178 * bgAlpha), (int) (26 * bgAlpha));
-        ShapeRenderer.drawRect(builder, 0, info.scrWidth(), 0, info.scrHeight(), 2, 2);
+        ShapeRenderer.drawRect(builder, 0, info.getScreenWidth(), 0, info.getScreenHeight(), 2, 2);
         builder.end();
 
         builder.uploadPointer();

@@ -7,7 +7,8 @@ import ink.flybird.cubecraft.server.service.AbstractService;
 import ink.flybird.cubecraft.server.CubecraftServer;
 import ink.flybird.cubecraft.server.world.ServerWorld;
 import ink.flybird.cubecraft.world.IWorld;
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.registry.TypeItem;
 
 @TypeItem("cubecraft:world_tick")

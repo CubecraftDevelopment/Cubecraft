@@ -2,7 +2,7 @@ package ink.flybird.cubecraft.client.internal.gui;
 
 import ink.flybird.cubecraft.client.gui.controller.ScreenController;
 import ink.flybird.cubecraft.client.gui.controller.ScreenDocument;
-import ink.flybird.cubecraft.client.event.gui.ButtonClickedEvent;
+import ink.flybird.cubecraft.client.event.gui.component.ButtonClickedEvent;
 
 @ScreenController
 public class TitleScreenController {

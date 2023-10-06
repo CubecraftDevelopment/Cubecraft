@@ -15,7 +15,8 @@ import ink.flybird.cubecraft.net.packet.ConnectSuccessPacket;
 import ink.flybird.cubecraft.net.packet.DisconnectPacket;
 import ink.flybird.cubecraft.net.packet.Packet;
 import ink.flybird.cubecraft.SharedContext;
-import ink.flybird.fcommon.logging.Logger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.logging.SimpleLogger;
 import ink.flybird.fcommon.registry.ConstructingMap;
 import io.netty.buffer.ByteBuf;
@@ -24,8 +25,8 @@ import io.netty.buffer.ByteBufAllocator;
 import java.net.InetSocketAddress;
 
 public class RakNetClientIO extends ClientIO {
+    private static final ILogger LOGGER = LogManager.getLogger("net-client-io");
     private boolean running=false;
-    private final Logger logger=new SimpleLogger("RakNetClientIO");
     private final RakNetClientListenerAdapter listener;
     private RakNetClient client;
 
@@ -52,7 +53,7 @@ public class RakNetClientIO extends ClientIO {
         try {
             this.client.connect(addr);
         } catch (RakNetException e) {
-            this.logger.exception(e);
+            LOGGER.error(e);
         }
     }
 
