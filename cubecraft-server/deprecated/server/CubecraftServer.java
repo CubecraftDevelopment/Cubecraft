@@ -10,7 +10,7 @@ import ink.flybird.cubecraft.server.service.ServiceManager;
 import ink.flybird.cubecraft.server.world.ServerWorldFactory;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.entity.Entity;
-import ink.flybird.fcommon.GameSetting;
+
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;

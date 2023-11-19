@@ -4,8 +4,8 @@ import ink.flybird.cubecraft.internal.network.NetHandlerType;
 import ink.flybird.cubecraft.internal.network.packet.PacketBlockChange;
 import ink.flybird.cubecraft.internal.network.packet.PacketEntityPosition;
 import ink.flybird.cubecraft.server.net.ServerNetHandler;
-import ink.flybird.cubecraft.world.event.block.BlockChangeEvent;
-import ink.flybird.cubecraft.world.event.entity.EntityMoveEvent;
+import ink.flybird.cubecraft.event.block.BlockChangeEvent;
+import ink.flybird.cubecraft.event.entity.EntityMoveEvent;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.fcommon.event.EventHandler;
 

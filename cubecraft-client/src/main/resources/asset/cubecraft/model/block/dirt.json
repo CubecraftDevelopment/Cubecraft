@@ -4,7 +4,7 @@
     "replacement": [
       {
         "from": "#texture",
-        "to": "cubecraft:block/dirt.png"
+        "to": "cubecraft:/block/dirt.png"
       }
     ]
   }

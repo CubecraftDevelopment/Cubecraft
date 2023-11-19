@@ -24,12 +24,12 @@ public class Texture2D extends Texture {
         this.height = img.getHeight();
         this.bind();
         ByteBuffer buffer = ImageUtil.getByteFromBufferedImage_RGBA(img);
-        GL11.glTexImage2D(this.getBindingType(), 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        GL33.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+
         BufferAllocation.free(buffer);
         GLUtil.checkError("load");
-        if(this.mipMap){
-            GL33.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-        }
         return this;
     }
 

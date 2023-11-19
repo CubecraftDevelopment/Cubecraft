@@ -1,0 +1,169 @@
+package net.cubecraft.client.gui.screen;
+
+import net.cubecraft.SharedObjects;
+import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
+import net.cubecraft.client.gui.GUIRegistry;
+import net.cubecraft.client.gui.base.DisplayScreenInfo;
+import net.cubecraft.client.gui.font.FontAlignment;
+import net.cubecraft.client.gui.node.Container;
+import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.client.registry.ClientSettingRegistry;
+import ink.flybird.fcommon.JVMInfo;
+import ink.flybird.fcommon.container.OrderedHashMap;
+import net.cubecraft.client.gui.ScreenUtil;
+import ink.flybird.quantum3d_legacy.BufferAllocation;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import ink.flybird.quantum3d_legacy.draw.VertexUploader;
+import org.w3c.dom.Element;
+
+public class Screen extends Container {
+    protected final OrderedHashMap<String, String> debugInfoLeft = new OrderedHashMap<>();
+    protected final OrderedHashMap<String, String> debugInfoRight = new OrderedHashMap<>();
+    protected final boolean grabMouse;
+    public String id;
+    public ScreenBackgroundType backgroundType;
+    protected CubecraftClient client;
+    private Screen parent;
+
+    //init
+    public Screen(boolean grabMouse, String id, ScreenBackgroundType type) {
+        this.grabMouse = grabMouse;
+        this.id = id;
+        this.backgroundType = type;
+        this.context = CubecraftClient.CLIENT.getGuiManager();
+    }
+
+
+    public Screen(Element element){
+        this(false, "_test", ScreenBackgroundType.EMPTY);
+        this.init(element);
+        this.setContext(this, this, CubecraftClient.CLIENT.getGuiManager());
+    }
+
+    @Override
+    public Node getParent() {
+        return this;
+    }
+
+    @Override
+    public void init(Element element) {
+        this.backgroundType = ScreenBackgroundType.from(element.getAttribute("bg"));
+        this.id = element.getAttribute("id");
+        this.deserializeChild(element);
+    }
+
+    public void init() {
+        this.client = CubecraftClient.CLIENT;
+        this.client.getDeviceEventBus().registerEventListener(this);
+        this.client.getMouse().setMouseGrabbed(this.grabMouse);
+        this.context.getEventBus().callEvent(new ComponentInitializeEvent(this, this, this.context), getId());
+    }
+
+    //debug
+    public void renderDebug(DisplayScreenInfo info) {
+        int pos = 2;
+        for (String s : this.debugInfoLeft.values()) {
+            GUIRegistry.SMOOTH_FONT_RENDERER.renderShadow(s, 2, pos, 16777215, 8, FontAlignment.LEFT);
+            pos += 10;
+        }
+        pos = 2;
+        for (String s : this.debugInfoRight.values()) {
+            GUIRegistry.SMOOTH_FONT_RENDERER.renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
+            pos += 10;
+        }
+    }
+
+
+    public void getDebug() {
+        this.debugInfoLeft.put("version", "version: %s".formatted(
+                CubecraftClient.VERSION
+        ));
+        this.debugInfoLeft.put("fps", "fps: %d, builder: %d, vert: %d".formatted(
+                this.client.getFPS(),
+                VertexBuilderAllocator.ALLOCATED_COUNT.get(),
+                VertexUploader.getUploadedCount()
+        ));
+        this.debugInfoLeft.put("tps", "tps: %d".formatted(
+                this.client.getTPS()
+        ));
+        this.debugInfoLeft.put("gui", "scr: %s(%s)".formatted(
+                getId(),
+                this.parent == null ? null : this.parent.getId()
+        ));
+        VertexUploader.resetUploadCount();
+        this.debugInfoRight.put("vm", "VM: %s-%s, os:%s-%s".formatted(
+                JVMInfo.getJavaName(),
+                JVMInfo.getJavaVersion(),
+                JVMInfo.getOSName(),
+                JVMInfo.getOSVersion()
+        ));
+        this.debugInfoRight.put("mem", "Mem: %s/%s(%s),o: %sMB(%d)".formatted(
+                JVMInfo.getUsedMemory(),
+                JVMInfo.getTotalMemory(),
+                JVMInfo.getUsage(),
+                SharedObjects.SHORT_DECIMAL_FORMAT.format(BufferAllocation.getAllocSize() / 1024f / 1024),
+                BufferAllocation.getAllocInstances()
+        ));
+    }
+
+    //run
+    public void render(DisplayScreenInfo info, float deltaTime) {
+        switch (this.backgroundType) {
+            case IMAGE_BACKGROUND -> ScreenUtil.renderPictureBackground(this.client.getWindow());
+            case TILE_BACKGROUND -> ScreenUtil.renderTileBackground();
+            case IN_GAME -> {
+            }
+            case IMAGE_BLUR_BACKGROUND -> ScreenUtil.renderPictureBackgroundBlur(this.client.getWindow());
+            case IMAGE_BLUR_MASK_BACKGROUND -> {
+                GLUtil.enableBlend();
+                ScreenUtil.renderPictureBackgroundBlur(this.client.getWindow());
+                ScreenUtil.renderMask(this.client.getWindow());
+            }
+            case IN_GAME_MASK -> ScreenUtil.renderMask(this.client.getWindow());
+        }
+        super.render(deltaTime);
+        if (CubecraftClient.CLIENT.isDebug) {
+            this.debugInfoLeft.clear();
+            this.debugInfoRight.clear();
+            this.getDebug();
+            this.renderDebug(info);
+        }
+    }
+
+    public void tick() {
+        super.tick();
+        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
+        this.onResize(0, 0, (int) (this.context.getWindow().getWidth() / scale), (int) (this.context.getWindow().getHeight() / scale));
+    }
+
+
+    //attribute
+
+    public Screen getParentScreen() {
+        return this.parent;
+    }
+
+    public void setParentScreen(Screen scr) {
+        this.parent = scr;
+    }
+
+    public CubecraftClient getClient() {
+        return client;
+    }
+
+    public void release() {
+        this.destroy();
+        Screen.this.client.getDeviceEventBus().unregisterEventListener(this);
+    }
+
+    public ScreenBackgroundType getBackgroundType() {
+        return backgroundType;
+    }
+
+    @Override
+    public String getId() {
+        return this.id;
+    }
+}

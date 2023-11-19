@@ -1,6 +1,6 @@
 package ink.flybird.cubecraft.net;
 
-import ink.flybird.fcommon.file.NBTBuilder;
+import ink.flybird.fcommon.nbt.NBT;
 import ink.flybird.fcommon.nbt.NBTBase;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -20,7 +20,7 @@ public interface ByteBufUtil {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try {
             ByteBufOutputStream stream=new ByteBufOutputStream(byteBuf);
-            NBTBuilder.write(tag,stream);
+            NBT.write(tag,stream);
             stream.close();
         } catch (Exception e) {
             throw new RuntimeException("could not write NBT:" + e);
@@ -37,7 +37,7 @@ public interface ByteBufUtil {
         NBTBase base;
         try {
             ByteBufInputStream stream=new ByteBufInputStream(byteBuf);
-            base= NBTBuilder.read(stream);
+            base= NBT.read(stream);
             stream.close();
         } catch (Exception e) {
             throw new RuntimeException("could not read nbt:" + e);

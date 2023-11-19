@@ -10,7 +10,7 @@ cubecraft-server = "{#any}"
 [meta]
 id="cubecraft_content"
 version="0.0.1-beta"
-class="ink.flybird.cubecraft.content.CubecraftContentMod"
+class="content.net.cubecraft.CubecraftContentMod"
 
 [auto-reg]
 block="/data/cubecraft/registry_index/blocks.json"

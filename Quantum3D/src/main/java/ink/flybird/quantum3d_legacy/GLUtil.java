@@ -109,7 +109,7 @@ public interface GLUtil {
     static void enableAlphaTest() {
         GLUtil.assertRenderThread();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.0f);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f);
     }
 
     static void disableAlphaTest() {

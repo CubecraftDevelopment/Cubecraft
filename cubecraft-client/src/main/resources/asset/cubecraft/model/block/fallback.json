@@ -4,7 +4,7 @@
     "replacement": [
       {
         "from": "#texture",
-        "to": "cubecraft:block/fallback.png"
+        "to": "cubecraft:/block/fallback.png"
       }
     ]
   }

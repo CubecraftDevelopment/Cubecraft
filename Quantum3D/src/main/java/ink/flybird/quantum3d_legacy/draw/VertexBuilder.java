@@ -16,6 +16,7 @@ public abstract class VertexBuilder {
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
 
     protected VertexBuilder(int size, DrawMode drawMode) {
+        VertexBuilderAllocator.ALLOCATED_COUNT.addAndGet(1);
         this.size = size;
         this.drawMode = drawMode;
         this.lifetimeCounter.allocate();

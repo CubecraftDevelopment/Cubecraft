@@ -18,9 +18,6 @@ public class ListRenderCall implements IRenderCall {
     public ListRenderCall() {
     }
 
-
-    public static int time;
-
     @Override
     public void call() {
         if (!this.allocated) {
@@ -30,7 +27,6 @@ public class ListRenderCall implements IRenderCall {
             throw new DrawCallException("not a list!");
         }
 
-        time++;
         GL11.glCallList(this.list);
         VertexUploader.UPLOAD_COUNTER.addAndGet(this.count);
     }

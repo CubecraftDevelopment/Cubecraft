@@ -6,7 +6,7 @@
         "type": "border_image",
         "boarderH": 1,
         "boarderV": 1,
-        "loc": "cubecraft:gui/controls/panel.png",
+        "loc": "cubecraft:/gui/controls/panel.png",
         "pos": [0,1,0,1]
       }
     ]
@@ -18,7 +18,7 @@
         "type": "border_image",
         "boarderH": 1,
         "boarderV": 1,
-        "loc": "cubecraft:gui/controls/panel_ore_ui.png",
+        "loc": "cubecraft:/gui/controls/panel_ore_ui.png",
         "pos": [0,1,0,1]
       }
     ]

@@ -3,7 +3,7 @@ package ink.flybird.quantum3d_legacy.textures;
 import ink.flybird.fcommon.registry.RegisterMap;
 
 public class TextureContainer<T extends Texture> {
-    final RegisterMap<T, T> mapping = new RegisterMap<>();
+    final RegisterMap<T> mapping = new RegisterMap<>();
 
     public T get(String name) {
         return this.mapping.get(name);
@@ -14,7 +14,7 @@ public class TextureContainer<T extends Texture> {
         return t;
     }
 
-    public RegisterMap<T, T> getMapping() {
+    public RegisterMap<T> getMapping() {
         return mapping;
     }
 

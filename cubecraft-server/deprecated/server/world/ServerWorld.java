@@ -8,7 +8,6 @@ import ink.flybird.cubecraft.internal.entity.EntityPlayer;
 import ink.flybird.cubecraft.level.Level;
 import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.access.ChunkLoadAccess;
-import ink.flybird.cubecraft.world.chunk.*;
 import ink.flybird.cubecraft.world.entity.Entity;
 import ink.flybird.cubecraft.world.entity.EntityLocation;
 import ink.flybird.cubecraft.world.worldGen.ChunkProvider;

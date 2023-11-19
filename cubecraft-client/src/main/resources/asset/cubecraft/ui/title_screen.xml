@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<screen bg="image-bg-blur" id="cubecraft:title_screen">
+<screen bg="image-bg" id="cubecraft:title_screen">
     <button layout="origin/left_top,0,0,30,30" border="4,4,4,4" id="button_check_version">
         <icon layout="origin/middle_middle,0,0,0,16" color="ffffff" align="middle">
             E946
@@ -31,13 +31,13 @@
         </label>
     </button>
     <image layout="origin/middle_middle,0,-80,318,106" h-clip="scale" v-clip="scale">
-        cubecraft:gui/logo/game_logo.png
+        cubecraft:/gui/logo/game_logo.png
     </image>
     <splash type="lang" id="splash" rotation="-20" bobbing="true" layout="origin/middle_middle,140,-70,16,8" color="efff00" align="middle">
         /asset/cubecraft/text/splash.json
     </splash>
     <label type="raw" layout="origin/right_bottom,-2,-2,0,8" color="ffffff" align="right">
-        ©FlybirdGames 2015-2023
+        ©CubecraftDevelopment-2023
     </label>
     <label type="lang" layout="origin/left_bottom,2,-12,0,8" color="ffffff" align="left" id="auth_str">
         title_screen.auth

@@ -8,8 +8,8 @@ import ink.flybird.cubecraft.world.IWorld;
 import ink.flybird.cubecraft.world.chunk.ChunkCodec;
 import ink.flybird.cubecraft.world.chunk.ChunkPos;
 import ink.flybird.cubecraft.world.chunk.WorldChunk;
-import ink.flybird.fcommon.GameSetting;
-import ink.flybird.fcommon.file.NBTBuilder;
+
+import ink.flybird.fcommon.nbt.NBT;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
@@ -123,7 +123,7 @@ public class ChunkIOService extends AbstractService {
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream(4096);
             GZIPOutputStream zipOutput = new GZIPOutputStream(stream);
-            NBTBuilder.write(tag, new DataOutputStream(zipOutput));
+            NBT.write(tag, new DataOutputStream(zipOutput));
             zipOutput.close();
             stream.close();
 
@@ -147,7 +147,7 @@ public class ChunkIOService extends AbstractService {
 
             ByteArrayInputStream stream = new ByteArrayInputStream(data);
             GZIPInputStream zipInput = new GZIPInputStream(stream);
-            NBTTagCompound tag = (NBTTagCompound) NBTBuilder.read(new DataInputStream(zipInput));
+            NBTTagCompound tag = (NBTTagCompound) NBT.read(new DataInputStream(zipInput));
             zipInput.close();
             stream.close();
 

@@ -1,7 +1,7 @@
 import java.nio.charset.StandardCharsets
 
-task syncGitIgnore {
-    FileInputStream stream = new FileInputStream(rootDir.getAbsolutePath()+"/.gitignore")
+tasks.register('syncGitIgnore') {
+    FileInputStream stream = new FileInputStream(rootDir.getAbsolutePath() + "/.gitignore")
     String s = new String(stream.readAllBytes(), StandardCharsets.UTF_8)
     stream.close()
     for (String s2 : s.split("\n")) {
@@ -9,9 +9,7 @@ task syncGitIgnore {
             continue
         }
 
-        String cmd="git rm -r --cached "+s2.replaceFirst("/","")
-
-        //Runtime.getRuntime().exec("cmd", null, projectDir)
+        String cmd = "git rm -r --cached " + s2.replaceFirst("/", "")
         println cmd
     }
 }

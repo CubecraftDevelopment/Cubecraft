@@ -19,9 +19,14 @@ dependencies {
     implementation 'org.iq80.leveldb:leveldb:0.12'
     implementation 'com.moandjiezana.toml:toml4j:0.7.2'
 
-    implementation 'ink.flybird:fcommon-main:1.0.3-7'
-
     implementation 'ink.flybird:jflogger:0.0.2-1'
+
+    implementation local("fcommon-1.0.5")
+}
+
+ConfigurableFileCollection local(String lib) {
+    String path=rootDir.getAbsolutePath() + "/libs/" + lib + ".jar"
+    return files(path)
 }
 
 test {
@@ -29,6 +34,6 @@ test {
 }
 
 
-task prepareKotlinBuildScriptModel{
+task prepareKotlinBuildScriptModel {
 
 }

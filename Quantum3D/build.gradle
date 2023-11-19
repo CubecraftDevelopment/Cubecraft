@@ -7,8 +7,6 @@ plugins {
 group 'ink.flybird'
 version '1.0.0'
 
-apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
-
 repositories {
     mavenCentral()
     mavenLocal()
@@ -21,7 +19,12 @@ dependencies {
     implementation 'org.lwjgl:lwjgl-glfw:3.3.1'
     implementation 'org.jetbrains:annotations:24.0.1'
 
-    implementation 'ink.flybird:fcommon-main:1.0.3-7'
+    implementation local("fcommon-1.0.5-8")
+}
+
+ConfigurableFileCollection local(String lib) {
+    String path=rootDir.getAbsolutePath() + "/libs/" + lib + ".jar"
+    return files(path)
 }
 
 test {

@@ -3,6 +3,7 @@ package ink.flybird.quantum3d_legacy.draw;
 import ink.flybird.fcommon.context.LifetimeCounter;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
@@ -19,7 +20,7 @@ public final class OffHeapVertexBuilder extends VertexBuilder {
     private final FloatBuffer texCoordArray;
     private final FloatBuffer colorArray;
     private final FloatBuffer normalArray;
-    private final DoubleBuffer rawArray;
+    private final FloatBuffer rawArray;
     private final LifetimeCounter counter = new LifetimeCounter();
 
     public OffHeapVertexBuilder(int size, DrawMode drawMode) {
@@ -29,7 +30,7 @@ public final class OffHeapVertexBuilder extends VertexBuilder {
         this.texCoordArray = BufferAllocation.allocFloatBuffer(this.size * 3);
         this.colorArray = BufferAllocation.allocFloatBuffer(this.size * 4);
         this.normalArray = BufferAllocation.allocFloatBuffer(this.size * 3);
-        this.rawArray = BufferAllocation.allocDoubleBuffer(this.size * 13);
+        this.rawArray = BufferAllocation.allocFloatBuffer(this.size * 13);
     }
 
     public void free() {
@@ -54,7 +55,11 @@ public final class OffHeapVertexBuilder extends VertexBuilder {
         this.texCoordArray.put(this.u).put(this.v);
         this.colorArray.put(this.r).put(this.g).put(this.b).put(this.a);
         this.normalArray.put(this.n).put(this.f).put(this.l);
-        this.rawArray.put(this.u).put(this.v).put(this.r).put(this.g).put(this.b).put(this.a).put(this.n).put(this.f).put(this.l).put(x).put(y).put(z);
+        this.rawArray
+                .put(this.u).put(this.v)
+                .put(this.r).put(this.g).put(this.b).put(this.a)
+                .put(this.n).put(this.f).put(this.l)
+                .put((float) x).put((float) y).put((float) z);
         this.count += 1;
     }
 
@@ -74,7 +79,7 @@ public final class OffHeapVertexBuilder extends VertexBuilder {
         return normalArray.flip().slice();
     }
 
-    public DoubleBuffer getRawArray() {
+    public FloatBuffer getRawArray() {
         return rawArray.flip().slice();
     }
 
@@ -92,12 +97,10 @@ public final class OffHeapVertexBuilder extends VertexBuilder {
         GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, MemoryUtil.memAddress(this.getVertexArray()));
         GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, MemoryUtil.memAddress(this.getTexCoordArray()));
         GL11.glColorPointer(4, GL11.GL_FLOAT, 0, MemoryUtil.memAddress(this.getColorArray()));
+        GL11.glNormalPointer(GL11.GL_FLOAT, 0, MemoryUtil.memAddress(this.getNormalArray()));
 
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
-        //GL11.glNormalPointer(GL11.GL_FLOAT, 0, MemoryUtil.memAddress(this.getNormalArray()));
+        GLUtil.enableClientState();
         GL11.glDrawArrays(this.getDrawMode().getGlMode(), 0, this.getCount());
         GLUtil.disableClientState();
     }

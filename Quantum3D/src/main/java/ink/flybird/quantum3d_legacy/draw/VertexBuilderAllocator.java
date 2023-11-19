@@ -9,34 +9,15 @@ public interface VertexBuilderAllocator {
     AtomicInteger ALLOCATED_COUNT = new AtomicInteger(0);
 
     static OffHeapVertexBuilder createOffHeap(int capacity, DrawMode drawMode) {
-        ALLOCATED_COUNT.addAndGet(1);
         return new OffHeapVertexBuilder(capacity, drawMode);
     }
-
-    static ArrayVertexBuilder createArray(int capacity, DrawMode drawMode) {
-        ALLOCATED_COUNT.addAndGet(1);
-        return new ArrayVertexBuilder(capacity, drawMode);
-    }
-
 
     static OffHeapVertexBuilder createOffHeap(int capacity) {
         return createOffHeap(capacity, DrawMode.QUADS);
     }
 
-    static ArrayVertexBuilder createArray(int capacity) {
-        return createArray(capacity, DrawMode.QUADS);
-    }
-
-
     static VertexBuilder createByType(int capacity, DrawMode drawMode, int type) {
-        if (type == OFF_HEAP_BUILDER) {
-            return createOffHeap(capacity, drawMode);
-        }
-        return createArray(capacity, drawMode);
-    }
-
-    static VertexBuilder createByType(int capacity, int type) {
-        return createByType(capacity, DrawMode.QUADS, type);
+        return createOffHeap(capacity, drawMode);
     }
 
     static VertexBuilder createByPrefer(int capacity, DrawMode drawMode) {

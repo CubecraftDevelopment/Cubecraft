@@ -17,7 +17,7 @@ pause_screen.button.resume=回到游戏
 pause_screen.button.option=选项
 pause_screen.button.advancement=成就(暂不可用)
 pause_screen.button.open_to_net=对局域网开放(暂不可用)
-pause_screen.button.quit=退出
+pause_screen.button.quit=保存并退出
 
 #option screen
 option.title=选项

@@ -23,8 +23,8 @@
       "type": "cubecraft:cloud_renderer",
       "config": {
         "color": "FFFFFF",
-        "opacity": 0.95,
-        "thick": 12,
+        "opacity": 0.25,
+        "thick": 20,
         "size": 48,
         "dense": 0.25,
         "use_classic_lighting": true,
