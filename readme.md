@@ -1,34 +1,5 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-
-<!-- fill links here -->
-[repo-url]: https://github.com/FlybirdGameStudio/Cubecraft/
-[issues-url]: https://github.com/FlybirdGameStudio/Cubecraft/issues
-[stars-url]: https://github.com/FlybirdGameStudio/Cubecraft/stargazers
-[forks-url]: https://github.com/FlybirdGameStudio/Cubecraft/network/members
-[contributors-url]: https://github.com/FlybirdGameStudio/Cubecraft/graphs/contributors
-
-[doc-url]: https://example.org
-[logo-url]: logo.png
-[demo-url]: https://example.org
-
-[org-website]: https://flybird.ink
-[org-github]: https://github.com/FlybirdGameStudio/
-
-[contributors-shield]: https://img.shields.io/github/contributors/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
-[forks-shield]: https://img.shields.io/github/forks/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
-[stars-shield]: https://img.shields.io/github/stars/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
-[issues-shield]: https://img.shields.io/github/issues/FlybirdGameStudio/Cubecraft.svg?style=for-the-badge
-
-
-
 <br/>
 <div align="center" id="readme-top">
-
-
-![logo][logo-url]
 
 <h3 align="center">Cubecraft</h3>
 <p align="center">filled with bugs (or game features)...
@@ -39,8 +10,10 @@
 
 </div>
 
-## Content
-
+<details>
+<summary>
+Table of Contents
+</summary>
 <ol>
     <li>
         <a href="#about-the-project">About The Project</a>
@@ -73,11 +46,12 @@
         </ul>
     </li>
 </ol>
+</details>
+
 
 <div id="about-the-project"></div>
 
 <hr>
-
 
 ## About the project
 
@@ -104,24 +78,22 @@ If anyone wants to write a data compatible mod, welcome.)
 
 these are the core technology that we used to uil the platform itself.
 
-| Name        | Usage                                  | Link                                        |
-|-------------|----------------------------------------|---------------------------------------------|
-| Gson        | Model deserializing                    | https://github.com/google/gson              |
-| FLua        | Scripting,Entity animation control     | https://github.com/ProtonGameStudio/FLua    |
-| LWJGL3      | OpenGL binding,GLFW and Memory Control | https://github.com/LWJGL/lwjgl3             |
-| FCommon     | Common tools,Registering               | https://github.com/ProtonGameStudio/FCommon |
-| Quantum3D   | OpenGL packaging,Memory Control        | N/A                                         |
-| JRakNet     | Network protocol implementation        | https://github.com/whirvis/JRakNet          |
-| NettyIO     | Network protocol implementation        | https://github.com/netty/netty              |
-| JOML        | General math computing                 | https://github.com/JOML-CI/JOML             |
+| Name      | Usage                                  | Link                               |
+|-----------|----------------------------------------|------------------------------------|
+| Gson      | Model deserializing                    | https://github.com/google/gson     |
+| FLua      | Scripting,Entity animation control     | N/A                                |
+| LWJGL3    | OpenGL binding,GLFW and Memory Control | https://github.com/LWJGL/lwjgl3    |
+| FCommon   | Common tools,Registering               | N/A                                |
+| Quantum3D | OpenGL packaging,Memory Control        | N/A                                |
+| JRakNet   | Network protocol implementation        | https://github.com/whirvis/JRakNet |
+| NettyIO   | Network protocol implementation        | https://github.com/netty/netty     |
+| JOML      | General math computing                 | https://github.com/JOML-CI/JOML    |
 
 <div id="licence"></div>
 
 ### Licence
 
-this project is under our customized licence.
-
-[link](https://flybird.ink/licence/opensource.html)
+wait i didnt know yet...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -182,7 +154,6 @@ this project is under our customized licence.
 
 - Making it runs in multiple render API
 - having a fully data compatible with Minecraft
-- having a network protcol compat with Minecraft
 
 <div id="roadmap"></div>
 
@@ -203,12 +174,12 @@ this project is under our customized licence.
 
 <div id="more-info"></div>
 
-
 ## More Information
 
 <div id="special-thanks"></div>
 
 ### Special thanks:
+
 - MojangStudio and Microsoft did not sue me:).
 - the makers of third-party java libraries.
 - AdamYuan,Dreamtowards for giving me instructions on rendering.
@@ -217,7 +188,7 @@ this project is under our customized licence.
 <div id="contact"></div>
 
 ### Contact
-- [FlyBirdGames](https://github.com/FlybirdGameStudio)
+
 - [GrassBlock2022](https://github.com/Grass-Block)
 
 <div id="contributing"></div>
@@ -229,7 +200,7 @@ contributions you make are **greatly appreciated**.
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
 simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+Don't forget to give the project a **star**! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch
@@ -242,6 +213,6 @@ Don't forget to give the project a star! Thanks again!
 <hr>
 
 <h4 align="center">Cubecraft</h4>
-<h6 align="center">artifact by GrassBlock2022, owned by FlybirdGames</h6>
+<h6 align="center">artifact by CubecraftDevelopment 2023</h6>
 
 <h6 align="center">(The END)</h6>

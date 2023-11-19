@@ -5,7 +5,7 @@ import net.cubecraft.extension.ModSide;
 import ink.flybird.fcommon.event.EventHandler;
 
 @CubecraftMod(side = ModSide.BOTH)
-public class CubecraftContentMod {
+public final class CubecraftContentMod {
     @EventHandler
     public static void onLoaderSetup(){
 
