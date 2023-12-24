@@ -1,0 +1,16 @@
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+project.ext.applyScript = { path ->
+    println "> Apply script: $path"
+    apply from: rootDir.getAbsolutePath() + "/script/" + path
+}
+
+project.ext.local = { lib ->
+    String path = rootDir.getAbsolutePath() + "/libs/" + lib + ".jar"
+    return files(path)
+}

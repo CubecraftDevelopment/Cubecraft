@@ -1,14 +1,13 @@
 package net.cubecraft.world.chunk.pos;
 
+import ink.flybird.fcommon.container.Key;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.entity.Entity;
-import ink.flybird.fcommon.container.Key;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class ChunkPos implements Key {
-    public static final ConcurrentHashMap<String, ChunkPos> CONSTANT_POOL = new ConcurrentHashMap<>(1024);
     public static final int DATA_ARRAY_SIZE_2D = Chunk.WIDTH * Chunk.WIDTH;
     public static final int DATA_ARRAY_SIZE_3D = Chunk.WIDTH * Chunk.WIDTH * Chunk.HEIGHT;
     public static final int DATA_FRAGMENT_ARRAY_SIZE = Chunk.WIDTH * Chunk.WIDTH * Chunk.WIDTH;
@@ -52,16 +51,17 @@ public final class ChunkPos implements Key {
 
     //todo:常量池回收问题
     public static ChunkPos create(long x, long z) {
-        String k = encode(x, z);
         return new ChunkPos(x, z);
-        //if (!CONSTANT_POOL.containsKey(k)) {
-            //CONSTANT_POOL.put(k, new ChunkPos(x, z));
-        //}
-        //return CONSTANT_POOL.get(k);
     }
 
-    public static String encode(long x, long z) {
-        return x + "/" + z;
+
+    public static final int HASH_KEY_0=1664525;
+    public static final long HASH_KEY_1=101390422321321413L;
+
+    public static int encode(long x, long z) {
+        int i = (int) (HASH_KEY_0 * (int)(x + HASH_KEY_1)&-HASH_KEY_1);
+        int j = HASH_KEY_0 * (int)((int)(z ^ -559038737*Integer.MAX_VALUE) + 1013904223*Integer.MAX_VALUE);
+        return i ^ j;
     }
 
     public long getX() {
@@ -73,13 +73,8 @@ public final class ChunkPos implements Key {
     }
 
     @Override
-    public String toString() {
-        return encode(this.getX(), this.getZ());
-    }
-
-    @Override
     public int hashCode() {
-        return toString().hashCode();
+        return encode(this.x, this.z);
     }
 
     public long toWorldPosX(int offset) {

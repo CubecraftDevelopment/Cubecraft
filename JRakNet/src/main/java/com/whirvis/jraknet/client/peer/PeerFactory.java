@@ -35,9 +35,6 @@ import java.net.InetSocketAddress;
 
 import com.whirvis.jraknet.protocol.ConnectionType;
 
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
-
 import com.whirvis.jraknet.PacketBufferException;
 import com.whirvis.jraknet.RakNet;
 import com.whirvis.jraknet.RakNetPacket;
@@ -51,6 +48,8 @@ import com.whirvis.jraknet.protocol.connection.OpenConnectionRequestTwo;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseOne;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseTwo;
 
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -91,7 +90,7 @@ public final class PeerFactory {
 	private static final int STATE_PEER_ASSEMBLED = 2;
 
 	private int factoryState;
-	private final Logger logger;
+	private final ILogger logger;
 	private final RakNetClient client;
 	private final InetSocketAddress address;
 	private final Bootstrap bootstrap;
@@ -135,7 +134,7 @@ public final class PeerFactory {
 			throw new NullPointerException("IP address cannot be null");
 		}
 		this.factoryState = STATE_IDLE;
-		this.logger = new SimpleLogger("PeerFactory");
+		this.logger = LogManager.getLogger("PeerFactory");
 		this.client = client;
 		this.address = address;
 		this.bootstrap = bootstrap;

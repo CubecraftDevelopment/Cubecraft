@@ -8,7 +8,7 @@ import net.cubecraft.server.event.ServerSetupEvent;
 import net.cubecraft.server.internal.network.ServerHandlerConnection;
 import net.cubecraft.server.internal.network.ServerHandlerDataFetch;
 import net.cubecraft.server.internal.network.ServerHandlerWorldListener;
-import net.cubecraft.server.service.ChunkServiceImpl;
+import net.cubecraft.server.service.ChunkService;
 import net.cubecraft.server.service.WorldTickService;
 import ink.flybird.fcommon.event.EventHandler;
 
@@ -25,6 +25,6 @@ public class ServerInternalMod {
     @EventHandler
     public void onServerSetup(ServerSetupEvent event) {
         ServerSharedContext.SERVICE.registerItem(WorldTickService.class);
-        ServerSharedContext.SERVICE.registerItem(ChunkServiceImpl.class);
+        ServerSharedContext.SERVICE.registerItem(ChunkService.class);
     }
 }

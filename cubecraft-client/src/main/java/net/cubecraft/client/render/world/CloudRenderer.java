@@ -1,7 +1,6 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonElement;
-import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.internal.entity.EntityPlayer;
@@ -10,10 +9,9 @@ import net.cubecraft.world.worldGen.noiseGenerator.Noise;
 import net.cubecraft.world.worldGen.noiseGenerator.PerlinNoise;
 import ink.flybird.fcommon.ColorUtil;
 
-import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.quantum3d.device.Window;
+import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
@@ -22,13 +20,9 @@ import ink.flybird.quantum3d_legacy.draw.DrawMode;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
 import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
-import org.joml.Vector2d;
-import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 @TypeItem(WorldRendererType.CLOUD)
@@ -95,12 +89,13 @@ public class CloudRenderer extends IWorldRenderer {
             return;
         }
         GLUtil.checkError("pre_cloud_render");
-        camera.setUpGlobalCamera(window);
+        camera.setUpGlobalCamera();
         camera.updateFrustum();
     }
 
     @Override
     public void render(RenderType type, float delta) {
+        /*
         if (type != RenderType.TRANSPARENT) {
             return;
         }
@@ -167,6 +162,8 @@ public class CloudRenderer extends IWorldRenderer {
             }
             GL11.glPopMatrix();
         }
+
+         */
     }
 
     @Override

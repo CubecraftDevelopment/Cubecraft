@@ -1,21 +1,21 @@
-[dependencies-shared]
-cubecraft-client = "{#any}"
+[meta]
+id = "cubecraft-content"
+version = "0.0.1-b1"
+class = "content.net.cubecraft.CubecraftContentMod"
 
 [dependencies-client]
-cubecraft-core = "{#any}"
+cubecraft-client = "__any__"
+cubecraft-core = "__any__"
 
 [dependencies-server]
-cubecraft-server = "{#any}"
-
-[meta]
-id="cubecraft_content"
-version="0.0.1-beta"
-class="content.net.cubecraft.CubecraftContentMod"
-
-[auto-reg]
-block="/data/cubecraft/registry_index/blocks.json"
+cubecraft-server = "__any__"
+cubecraft-core = "__any__"
 
 [info]
-name="Cubecraft-Content-Pack"
-author="GrassBlock2022"
-website="https://flybird.ink"
+name = "Cubecraft-Content-Pack"
+author = "GrassBlock2022"
+website = "https://github.com/CubecraftDevelopment"
+
+[auto-reg]
+block = "/data/cubecraft/registry_index/blocks.json"
+

@@ -38,7 +38,7 @@ public class CubecraftServer extends LoopTickingThread {
     private final ServerIO serverIO = new RakNetServerIO();
     private final PlayerTable playerTable = new PlayerTable();
     private final EventBus eventBus = new SimpleEventBus();
-    private final Logger logger = new SimpleLogger("Server");
+    private final ILogger logger = LogManager.getLogger("Server");
     private String levelName;
     private ServerStatus status = ServerStatus.STOPPING;
 

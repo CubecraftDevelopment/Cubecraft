@@ -4,6 +4,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import ink.flybird.fcommon.ColorUtil;
+import ink.flybird.fcommon.container.MultiMap;
+import ink.flybird.fcommon.event.EventHandler;
+import ink.flybird.fcommon.math.MathHelper;
+import ink.flybird.quantum3d_legacy.Camera;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.KeyboardReleaseEvent;
 import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
@@ -13,21 +22,14 @@ import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.resource.ResourceLocation;
 import net.cubecraft.world.IWorld;
-import ink.flybird.fcommon.ColorUtil;
-import ink.flybird.fcommon.container.MultiMap;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.quantum3d.device.KeyboardButton;
-import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
-import ink.flybird.quantum3d.device.event.KeyboardReleaseEvent;
-import ink.flybird.quantum3d_legacy.Camera;
-import ink.flybird.quantum3d_legacy.GLUtil;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Objects;
 
 public final class LevelRenderer {
+    public static final double CHUNK_DISTANCE_FIX_VALUE = 2;
+
     public final MultiMap<String, IWorldRenderer> renderers = new MultiMap<>();
     public final IWorld world;
     public final EntityPlayer player;
@@ -75,7 +77,7 @@ public final class LevelRenderer {
 
         //deprecated
         GL11.glDisable(GL11.GL_FOG);
-        int d = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue();
+        int d = ClientSettingRegistry.getFixedViewDistance();
         Vector3d vec = this.player.getCameraPosition().add(this.player.getPosition());
         if (Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")) {
             GLUtil.setupFog(d, ColorUtil.int1Float1ToFloat4(0x050533, 1));
@@ -121,7 +123,7 @@ public final class LevelRenderer {
 
 
     public void renderContext(LevelRenderContext context) {
-        this.camera.setUpGlobalCamera(CubecraftClient.CLIENT.getWindow());
+        this.camera.setUpGlobalCamera();
         for (IWorldRenderer renderer : this.renderers.values()) {
             //renderer.preRender(context);
         }

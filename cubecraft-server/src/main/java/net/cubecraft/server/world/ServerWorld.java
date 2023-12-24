@@ -46,7 +46,7 @@ public class ServerWorld extends IWorld {
         super.tick();
         Location worldSpawnPoint = this.level.getLocation(null);
         if (Objects.equals(worldSpawnPoint.getWorldId(), this.getId())) {
-            ChunkLoadAccess.loadChunkRange(this, worldSpawnPoint.getChunkPos(), 4, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 20));
+            ChunkLoadAccess.loadChunkRange(this, worldSpawnPoint.getChunkPos(), 8, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 20));
         }
 
         Iterator<WorldChunk> it = this.chunks.map.values().iterator();
@@ -73,7 +73,7 @@ public class ServerWorld extends IWorld {
         while (it2.hasNext()) {
             Entity e = it2.next();
             if (e instanceof EntityPlayer) {
-                ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) e.x, (long) e.z), 1, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10));
+                ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) e.x, (long) e.z), 4, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10));
             } else {
                 WorldChunk c = this.getChunk(ChunkPos.create((long) (e.x) / 16, (long) (e.z) / 16));
                 if (c.task == null) {

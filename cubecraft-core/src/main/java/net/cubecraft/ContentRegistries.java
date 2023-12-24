@@ -6,6 +6,7 @@ import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.fcommon.registry.FieldRegistry;
 import ink.flybird.fcommon.registry.FieldRegistryHolder;
 import ink.flybird.fcommon.registry.RegisterMap;
+import net.cubecraft.internal.item.ItemRegistry;
 import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.biome.BiomeMap;
@@ -14,7 +15,7 @@ import net.cubecraft.world.block.behavior.BlockBehavior;
 import net.cubecraft.world.block.property.BlockProperty;
 import net.cubecraft.world.dimension.Dimension;
 import net.cubecraft.world.entity.Entity;
-import net.cubecraft.world.item.Inventory;
+import net.cubecraft.world.item.container.Inventory;
 import net.cubecraft.world.item.Item;
 import net.cubecraft.world.item.behavior.ItemBehavior;
 import net.cubecraft.world.worldGen.pipeline.WorldGenPipelineBuilder;
@@ -27,12 +28,11 @@ public interface ContentRegistries {
     @FieldRegistry("inventory")
     ConstructingMap<Inventory> INVENTORY = new ConstructingMap<>(Inventory.class);
 
-    @FieldRegistry("item")
-    RegisterMap<Item> ITEM = new RegisterMap<>();
-
     @FieldRegistry("item_behavior")
     RegisterMap<ItemBehavior> ITEM_BEHAVIOR = new RegisterMap<>();
 
+    @FieldRegistry("item")
+    RegisterMap<Item> ITEM = new RegisterMap<>(ItemRegistry.DUMMY);
 
     //block
     @FieldRegistry("block")

@@ -1,0 +1,8 @@
+apply from:"../script/build-base.gradle"
+
+dependencies {
+    implementation 'org.joml:joml:1.10.5';
+    implementation 'org.jetbrains:annotations:24.0.1'
+    implementation local("fcommon-1.0.5-8")
+    implementation local("jflogger-0.0.2-1")
+}

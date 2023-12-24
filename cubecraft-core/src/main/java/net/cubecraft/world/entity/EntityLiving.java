@@ -9,17 +9,18 @@ import ink.flybird.fcommon.nbt.NBTTagCompound;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.access.IBlockAccess;
-import net.cubecraft.world.item.Inventory;
+import net.cubecraft.world.item.container.Container;
+import net.cubecraft.world.item.container.Inventory;
 import org.joml.Vector3d;
 
 import java.util.Collection;
 import java.util.List;
 
 public abstract class EntityLiving extends Entity {
+    private final Inventory inventory;
     public HitResult hitResult;
     public boolean runningMode;
     public boolean sneak = false;
-    private final Inventory inventory;
     private float health;
 
     public EntityLiving(IWorld world) {
@@ -67,7 +68,7 @@ public abstract class EntityLiving extends Entity {
     public NBTTagCompound getData() {
         NBTTagCompound tag = super.getData();
         tag.setBoolean("flying", this.flying);
-        tag.setCompoundTag("inventory", this.inventory.getData());
+        tag.setCompoundTag("inventory", this.inventory.serialize());
         return tag;
     }
 
@@ -83,9 +84,9 @@ public abstract class EntityLiving extends Entity {
             return;
         }
         if (this.hitResult.instanceOf(EntityLiving.class)) {
-            this.hitResult.getObject(EntityLiving.class);
+            Container.getItem(this.inventory.getActive()).onAttack(this.hitResult.getObject(EntityLiving.class));
         } else {
-            this.hitResult.getObject(IBlockAccess.class).getBlock();
+            Container.getItem(this.inventory.getActive()).onDig(this.hitResult.getObject(IBlockAccess.class));
         }
     }
 
@@ -94,9 +95,9 @@ public abstract class EntityLiving extends Entity {
             return;
         }
         if (this.hitResult.instanceOf(EntityLiving.class)) {
-            this.hitResult.getObject(EntityLiving.class);
+            Container.getItem(this.inventory.getActive()).onUse(this.hitResult.getObject(EntityLiving.class));
         } else {
-            this.hitResult.getObject(IBlockAccess.class).getBlock();
+            Container.getItem(this.inventory.getActive()).onUse(this.hitResult.getObject(IBlockAccess.class));
         }
     }
 

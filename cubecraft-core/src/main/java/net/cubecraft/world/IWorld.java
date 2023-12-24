@@ -367,4 +367,9 @@ public abstract class IWorld {
 
     public void save() {
     }
+
+    //todo
+    public <T extends Entity> T spawnEntity(Class<T> clazz){
+        return null;
+    }
 }

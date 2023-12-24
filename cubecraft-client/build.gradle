@@ -1,27 +1,25 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.beryx.jlink' version '2.25.0'
 }
 
+apply from: "../script/build-base.gradle"
+
+group= "net.cubecraft"
 version '0.3.2'
 
-apply from: rootDir.getAbsolutePath()+"/script/jar.gradle"
-apply from: rootDir.getAbsolutePath()+"/script/shared.gradle"
+ext.applyScript("/jar.gradle")
+ext.applyScript("/lib/basic.gradle")
+ext.applyScript("/lib/cubecraft.gradle")
+ext.applyScript("/lib/lwjgl.gradle")
 
 dependencies {
     implementation project(":cubecraft-core")
     implementation project(":cubecraft-server")
-    implementation project(":Quantum3D")
+    implementation project(':Quantum3D-legacy')
     implementation project(":JRakNet")
 
-    implementation "org.lwjgl:lwjgl:3.3.1"
-    implementation "org.lwjgl:lwjgl-glfw:3.3.1"
-    implementation "org.lwjgl:lwjgl-openal:3.3.1"
-    implementation "org.lwjgl:lwjgl-opengl:3.3.1"
-
-    implementation local("quantum3d-lwjgl-0.0.2-2")
-    implementation local("quantum3d-std-0.0.2-2")
+    implementation project(":quantum3d")
 
     implementation "com.twelvemonkeys.imageio:imageio-tga:3.9.4"
 }
@@ -35,9 +33,4 @@ jar {
                 'Main-Class': 'ink.flybird.cubecraft.client.ClientMain'
         )
     }
-}
-
-ConfigurableFileCollection local(String lib) {
-    String path=rootDir.getAbsolutePath() + "/libs/" + lib + ".jar"
-    return files(path)
 }

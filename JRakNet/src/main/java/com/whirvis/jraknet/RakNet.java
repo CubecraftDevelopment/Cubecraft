@@ -48,9 +48,10 @@ import com.whirvis.jraknet.protocol.login.ConnectionRequestAccepted;
 import com.whirvis.jraknet.protocol.status.UnconnectedPing;
 import com.whirvis.jraknet.protocol.status.UnconnectedPong;
 
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
 
+
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -96,7 +97,7 @@ public final class RakNet {
 
 	}
 
-	private static final Logger LOGGER  = new SimpleLogger("RakNet");
+	private static final ILogger LOGGER  = LogManager.getLogger("RakNet");
 
 	/**
 	 * The length of IPv4 addresses.

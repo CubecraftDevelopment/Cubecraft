@@ -1,11 +1,11 @@
 package net.cubecraft.client.gui.node;
 
+import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.registry.ClientSettingRegistry;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d.device.KeyboardButton;
-import ink.flybird.quantum3d.device.event.MouseScrollEvent;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.file.DocumentUtil;
 import ink.flybird.fcommon.file.FAMLDeserializer;

@@ -5,7 +5,9 @@ plugins {
 group 'io.flybirdStudio'
 version '1.0-SNAPSHOT'
 
-apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
+apply from: "../script/build-base.gradle"
+
+ext.applyScript("/lib/basic.gradle")
 
 repositories {
     mavenLocal()
@@ -13,9 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'ink.flybird:fcommon-main:1.0.3-7'
     implementation 'io.netty:netty-handler:4.1.90.Final'
     implementation 'io.netty:netty-buffer:4.1.90.Final'
     implementation 'io.netty:netty-transport:4.1.90.Final'
 }
-

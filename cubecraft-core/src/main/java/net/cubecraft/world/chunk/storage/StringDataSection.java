@@ -33,7 +33,7 @@ public class StringDataSection implements NBTDataIO, StringStorage {
             try {
                 ((SimpleStringStorage) this.storage).getMap().manageFragment();
             } catch (Exception e) {
-                throw new RuntimeException("failed to compress %s!" + this);
+                //todo
             }
             return;
         }

@@ -64,8 +64,8 @@ import com.whirvis.jraknet.protocol.connection.OpenConnectionRequestTwo;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseOne;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseTwo;
 
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -102,7 +102,7 @@ public class RakNetServer implements RakNetServerListener {
 
 	private final InetSocketAddress bindingAddress;
 	private final long guid;
-	private final Logger logger;
+	private final ILogger logger;
 	private final long pongId;
 	private final long timestamp;
 	private final int maximumTransferUnit;
@@ -172,7 +172,7 @@ public class RakNetServer implements RakNetServerListener {
 		UUID uuid = UUID.randomUUID();
 		this.bindingAddress = address;
 		this.guid = uuid.getMostSignificantBits();
-		this.logger = new SimpleLogger("RakNetServer");
+		this.logger = LogManager.getLogger("RakNetServer");
 		this.pongId = uuid.getLeastSignificantBits();
 		this.timestamp = System.currentTimeMillis();
 		this.maxConnections = maxConnections;

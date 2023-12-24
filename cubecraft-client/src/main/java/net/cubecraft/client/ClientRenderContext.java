@@ -14,7 +14,7 @@ import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.IWorld;
 import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.fcommon.registry.RegisterMap;
-import ink.flybird.quantum3d.device.Window;
+import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.textures.TextureManager;
 

@@ -5,9 +5,9 @@ import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
 import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.quantum3d.device.MouseButton;
-import ink.flybird.quantum3d.device.event.MouseClickEvent;
-import ink.flybird.quantum3d.device.event.MousePosEvent;
+import me.gb2022.quantum3d.device.MouseButton;
+import me.gb2022.quantum3d.device.event.MouseClickEvent;
+import me.gb2022.quantum3d.device.event.MousePosEvent;
 import org.w3c.dom.Element;
 
 @TypeItem("card_panel")

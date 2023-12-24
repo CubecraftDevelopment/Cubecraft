@@ -1,0 +1,11 @@
+plugins{
+    id "java"
+}
+
+apply from: "../script/build-base.gradle"
+
+group 'me.gb2022'
+version '1.0.25'
+
+ext.applyScript("/lib/lwjgl.gradle")
+ext.applyScript("/lib/basic.gradle")

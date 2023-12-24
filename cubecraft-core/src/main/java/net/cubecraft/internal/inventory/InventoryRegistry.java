@@ -2,7 +2,7 @@ package net.cubecraft.internal.inventory;
 
 import ink.flybird.fcommon.registry.ConstructingMap;
 import ink.flybird.fcommon.registry.ItemRegisterFunc;
-import net.cubecraft.world.item.Inventory;
+import net.cubecraft.world.item.container.Inventory;
 
 
 public class InventoryRegistry {

@@ -1,21 +1,19 @@
 package net.cubecraft.client.internal.handler;
 
+import me.gb2022.quantum3d.device.event.WindowFocusEvent;
+import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.ClientRendererInitializeEvent;
 import net.cubecraft.client.gui.GUIContext;
 import net.cubecraft.client.render.world.ParticleRenderer;
+import net.cubecraft.event.SettingReloadEvent;
 import net.cubecraft.event.register.BlockRegisterEvent;
 import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.quantum3d.device.KeyboardButton;
-import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 
 
 public class ClientListener {
-
-
-
-
-
     @EventHandler
     public static void onBlockRegister(BlockRegisterEvent event) {
 
@@ -42,6 +40,24 @@ public class ClientListener {
         }
         if (e.getKey() == KeyboardButton.KEY_F3) {
             CubecraftClient.CLIENT.isDebug = !CubecraftClient.CLIENT.isDebug;
+        }
+    }
+
+    @EventHandler
+    public void onFocusEvent(WindowFocusEvent event){
+        if(event.isFocus()) {
+            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.MAX_FPS.getValue();
+        }else{
+            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
+        }
+    }
+
+    @EventHandler
+    public void onSettingReload(SettingReloadEvent event){
+        if(CubecraftClient.CLIENT.getWindow().isFocused()) {
+            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.MAX_FPS.getValue();
+        }else{
+            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
         }
     }
 }

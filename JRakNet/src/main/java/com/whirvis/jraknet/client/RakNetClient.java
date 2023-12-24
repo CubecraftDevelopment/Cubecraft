@@ -45,8 +45,7 @@ import com.whirvis.jraknet.protocol.Reliability;
 import com.whirvis.jraknet.protocol.login.ConnectionRequest;
 import com.whirvis.jraknet.protocol.message.EncapsulatedPacket;
 import com.whirvis.jraknet.peer.RakNetPeer;
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
+
 
 import com.whirvis.jraknet.Packet;
 import com.whirvis.jraknet.RakNet;
@@ -56,6 +55,8 @@ import com.whirvis.jraknet.peer.RakNetPeerMessenger;
 import com.whirvis.jraknet.peer.RakNetServerPeer;
 import com.whirvis.jraknet.peer.RakNetState;
 
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -95,7 +96,7 @@ public class RakNetClient implements RakNetPeerMessenger, RakNetClientListener {
 
 	private final InetSocketAddress bindingAddress;
 	private final long guid;
-	private final Logger logger;
+	private final ILogger logger;
 	private final long timestamp;
 	private final ConcurrentLinkedQueue<RakNetClientListener> listeners;
 	private int eventThreadCount;
@@ -123,7 +124,7 @@ public class RakNetClient implements RakNetPeerMessenger, RakNetClientListener {
 	public RakNetClient(InetSocketAddress address) {
 		this.bindingAddress = address;
 		this.guid = UUID.randomUUID().getMostSignificantBits();
-		this.logger = new SimpleLogger("RakNetClient");
+		this.logger = LogManager.getLogger("RakNetClient");
 		this.timestamp = System.currentTimeMillis();
 		this.listeners = new ConcurrentLinkedQueue<RakNetClientListener>();
 		if (this.getClass() != RakNetClient.class && RakNetClientListener.class.isAssignableFrom(this.getClass())) {

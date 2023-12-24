@@ -1,21 +1,22 @@
 package net.cubecraft.client.gui.screen;
 
-import net.cubecraft.SharedObjects;
-import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
-import net.cubecraft.client.gui.GUIRegistry;
-import net.cubecraft.client.gui.base.DisplayScreenInfo;
-import net.cubecraft.client.gui.font.FontAlignment;
-import net.cubecraft.client.gui.node.Container;
-import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.registry.ClientSettingRegistry;
 import ink.flybird.fcommon.JVMInfo;
 import ink.flybird.fcommon.container.OrderedHashMap;
-import net.cubecraft.client.gui.ScreenUtil;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.draw.VertexUploader;
+import net.cubecraft.SharedObjects;
+import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
+import net.cubecraft.client.gui.GUIRegistry;
+import net.cubecraft.client.gui.ScreenUtil;
+import net.cubecraft.client.gui.base.DisplayScreenInfo;
+import net.cubecraft.client.gui.font.FontAlignment;
+import net.cubecraft.client.gui.node.Container;
+import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.util.SystemInfoQuery;
 import org.w3c.dom.Element;
 
 public class Screen extends Container {
@@ -36,7 +37,7 @@ public class Screen extends Container {
     }
 
 
-    public Screen(Element element){
+    public Screen(Element element) {
         this(false, "_test", ScreenBackgroundType.EMPTY);
         this.init(element);
         this.setContext(this, this, CubecraftClient.CLIENT.getGuiManager());
@@ -106,6 +107,8 @@ public class Screen extends Container {
                 SharedObjects.SHORT_DECIMAL_FORMAT.format(BufferAllocation.getAllocSize() / 1024f / 1024),
                 BufferAllocation.getAllocInstances()
         ));
+        this.debugInfoRight.put("cpu", "CPU: %s".formatted(SystemInfoQuery.getCPUInfo()));
+        this.debugInfoRight.put("gpu", "GPU: %s".formatted(SystemInfoQuery.getGPUInfo()));
     }
 
     //run

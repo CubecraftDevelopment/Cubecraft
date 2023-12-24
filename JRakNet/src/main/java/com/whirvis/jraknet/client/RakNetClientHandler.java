@@ -32,10 +32,9 @@ package com.whirvis.jraknet.client;
 import java.net.InetSocketAddress;
 
 
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
-
 import com.whirvis.jraknet.RakNetPacket;
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.DatagramPacket;
@@ -50,7 +49,7 @@ import io.netty.channel.socket.DatagramPacket;
  */
 public final class RakNetClientHandler extends ChannelInboundHandlerAdapter {
 
-	private final Logger logger;
+	private final ILogger logger;
 	private final RakNetClient client;
 	private InetSocketAddress causeAddress;
 
@@ -61,7 +60,7 @@ public final class RakNetClientHandler extends ChannelInboundHandlerAdapter {
 	 *            the client to send received packets to.
 	 */
 	protected RakNetClientHandler(RakNetClient client) {
-		this.logger = new SimpleLogger("RakNetClientHandler");
+		this.logger = LogManager.getLogger("RakNetClientHandler");
 		this.client = client;
 	}
 

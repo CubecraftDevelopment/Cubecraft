@@ -1,7 +1,7 @@
 package net.cubecraft.internal.item;
 
-import net.cubecraft.world.block.property.BlockProperty;
 import net.cubecraft.world.item.Item;
+import net.cubecraft.world.item.property.ItemProperty;
 
 import java.util.Map;
 
@@ -13,8 +13,7 @@ public class BlockItem extends Item {
     }
 
     @Override
-    public void initPropertyMap(Map<String, BlockProperty<?>> map) {
-
+    public void initPropertyMap(Map<String, ItemProperty<?>> map) {
     }
 
     @Override

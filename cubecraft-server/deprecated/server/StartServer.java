@@ -10,7 +10,7 @@ public class StartServer {
 
     public static void main(String[] args) {
 
-        Logger logHandler= new SimpleLogger("ServerMain");
+        ILogger logHandler= LogManager.getLogger("ServerMain");
         //init game runtime
         startArguments =new StartArguments(args);
         gamePath= startArguments.getValueAsString("path",System.getProperty("user.dir"));

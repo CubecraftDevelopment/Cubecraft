@@ -45,12 +45,12 @@ public final class ChunkCompileRequest {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj==null){
+        if (obj == null) {
             return false;
         }
-        if(!(obj instanceof ChunkCompileRequest req)){
+        if (!(obj instanceof ChunkCompileRequest req)) {
             return false;
         }
-        return req.getPos().equals(this.getPos())&& Objects.equals(req.getLayerId(), this.layerId);
+        return req.getPos().equals(this.getPos()) && Objects.equals(req.getLayerId(), this.layerId);
     }
 }

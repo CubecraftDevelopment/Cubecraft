@@ -1,6 +1,7 @@
 package net.cubecraft.client.gui;
 
 import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
@@ -9,7 +10,6 @@ import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.gui.screen.Screen;
-import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.render.renderer.ComponentRendererPart;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.resource.UIAsset;
@@ -22,8 +22,8 @@ import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.fcommon.file.XmlReader;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
-import ink.flybird.quantum3d.device.Window;
-import ink.flybird.quantum3d.device.event.MousePosEvent;
+import me.gb2022.quantum3d.device.Window;
+import me.gb2022.quantum3d.device.event.MousePosEvent;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;

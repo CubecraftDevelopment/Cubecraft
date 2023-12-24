@@ -1,10 +1,10 @@
 package net.cubecraft.client.gui;
 
+import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.base.Popup;
 import net.cubecraft.client.gui.font.FontAlignment;
-import net.cubecraft.client.registry.ClientSettingRegistry;
-import ink.flybird.quantum3d.device.Window;
+import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import net.cubecraft.client.registry.TextureRegistry;
@@ -22,7 +22,7 @@ public class ScreenUtil {
     private static final ArrayList<Popup> popupList=new ArrayList<>();
 
     public static void renderPictureBackground(Window window){
-        double scale= ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale= net.cubecraft.client.ClientSettingRegistry.GUI_SCALE.getValue();
         TextureRegistry.IMAGE_BG.bind();
         ShapeRenderer.begin();
         ShapeRenderer.drawRectUV(0, window.getWidth()/ scale,0,window.getHeight()/scale,-1, 0,1,0,1);
@@ -32,7 +32,7 @@ public class ScreenUtil {
 
     public static void renderMask(Window window){
         GLUtil.enableBlend();
-        double scale= ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale= net.cubecraft.client.ClientSettingRegistry.GUI_SCALE.getValue();
         ShapeRenderer.setColor(0,0,0,127);
         ShapeRenderer.drawRect(0,window.getWidth()/ scale,0,window.getHeight()/scale,-1,-1);
     }

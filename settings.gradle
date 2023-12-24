@@ -3,5 +3,7 @@ include 'cubecraft-core'
 include 'cubecraft-server'
 include 'cubecraft-content'
 
-include 'Quantum3D'
+include 'Quantum3D-legacy'
 include 'JRakNet'
+include 'quantum3d'
+include 'quantum3d'

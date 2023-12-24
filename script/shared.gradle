@@ -9,31 +9,19 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:24.0.1'
-    implementation 'org.joml:joml:1.10.5'
 
-
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'io.netty:netty-buffer:4.1.90.Final'
-    implementation 'io.netty:netty-transport:4.1.90.Final'
-    implementation 'org.iq80.leveldb:leveldb:0.12'
-    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
-
-    implementation 'ink.flybird:jflogger:0.0.2-1'
-
-    implementation local("fcommon-1.0.5")
-}
-
-ConfigurableFileCollection local(String lib) {
-    String path=rootDir.getAbsolutePath() + "/libs/" + lib + ".jar"
-    return files(path)
 }
 
 test {
     useJUnitPlatform()
 }
 
-
 task prepareKotlinBuildScriptModel {
 
+}
+
+
+def localLibrary(String lib) {
+    String path=rootDir.getAbsolutePath() + "/libs/" + lib + ".jar"
+    return files(path)
 }

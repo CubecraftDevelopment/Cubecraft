@@ -9,7 +9,7 @@ import net.cubecraft.world.block.entity.BlockEntity;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import ink.flybird.fcommon.container.ArrayUtil;
-import ink.flybird.fcommon.container.DynamicNameIdMap;
+import net.cubecraft.util.DynamicNameIdMap;
 import ink.flybird.fcommon.nbt.NBT;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
 import ink.flybird.fcommon.registry.TypeItem;

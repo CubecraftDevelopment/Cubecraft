@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  */
 public abstract class NetworkListenerAdapter extends NetWorkEventBus {
     public static final ExecutorService HANDLER_POOL = Executors.newFixedThreadPool(8);
-    protected final Logger logger=new SimpleLogger("NetworkListenerAdapter");
+    protected final ILogger logger=LogManager.getLogger("NetworkListenerAdapter");
     protected final ConstructingMap<Packet> packetConstructor;
 
     /**

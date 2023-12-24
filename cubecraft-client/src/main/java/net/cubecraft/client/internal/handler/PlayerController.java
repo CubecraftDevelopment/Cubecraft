@@ -9,10 +9,10 @@ import net.cubecraft.world.entity.EntityLiving;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.nbt.NBT;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
-import ink.flybird.quantum3d.device.KeyboardButton;
-import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
-import ink.flybird.quantum3d.device.event.MousePosEvent;
-import ink.flybird.quantum3d.device.event.MouseScrollEvent;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.MousePosEvent;
+import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;

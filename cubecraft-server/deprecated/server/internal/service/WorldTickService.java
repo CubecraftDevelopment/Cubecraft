@@ -13,7 +13,7 @@ import ink.flybird.fcommon.registry.TypeItem;
 
 @TypeItem("cubecraft:world_tick")
 public final class WorldTickService extends AbstractService {
-    private final Logger logger= SharedContext.LOG_CONTEXT.createLogger("world_tick_service");
+    private final ILogger logger= SharedContext.LOG_CONTEXT.createLogger("world_tick_service");
     private final Level level;
 
     private final ink.flybird.cubecraft.server.internal.thread.WorldTickingThread[] threads;

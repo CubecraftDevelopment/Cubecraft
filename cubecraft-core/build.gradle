@@ -3,21 +3,10 @@ plugins {
 }
 
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
-group 'io.flybirdStudio'
-version '1.0-SNAPSHOT'
+group 'net.cubecraft'
+version '0.2.0-beta'
 
-apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
-apply from: rootDir.getAbsolutePath()+"/script/shared.gradle"
+apply from: "../script/build-base.gradle"
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation project(":JRakNet")
-    implementation 'org.jetbrains:annotations:24.0.0'
-}
-
-test {
-    useJUnitPlatform()
-}
+ext.applyScript("/lib/basic.gradle")
+ext.applyScript("/lib/cubecraft.gradle")

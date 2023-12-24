@@ -1,14 +1,15 @@
 package net.cubecraft.world.chunk.storage;
 
-import ink.flybird.fcommon.container.DynamicNameIdMap;
+
 import ink.flybird.fcommon.nbt.NBTTagCompound;
+import net.cubecraft.util.DynamicNameIdMap;
 
 public class SimpleStringStorage implements StringStorage {
     private final DynamicNameIdMap data;
 
     public SimpleStringStorage(StringStorage storage) {
         this.data = new DynamicNameIdMap(DataSection.DATA_SIZE);
-        this.data.fill(storage.get(0,0,0));
+        this.data.fill(storage.get(0, 0, 0));
     }
 
     public SimpleStringStorage(DynamicNameIdMap data) {
@@ -16,10 +17,10 @@ public class SimpleStringStorage implements StringStorage {
     }
 
     public SimpleStringStorage() {
-        data=new DynamicNameIdMap(DataSection.DATA_SIZE);
+        data = new DynamicNameIdMap(DataSection.DATA_SIZE);
     }
 
-    public String[] getArray(){
+    public String[] getArray() {
         return this.data.getArray();
     }
 
@@ -36,7 +37,7 @@ public class SimpleStringStorage implements StringStorage {
     }
 
     public void set(int x, int y, int z, String i) {
-        this.data.set(DataSection.calcRawDataPos3D(x, y, z),i);
+        this.data.set(DataSection.calcRawDataPos3D(x, y, z), i);
     }
 
     public DynamicNameIdMap getMap() {

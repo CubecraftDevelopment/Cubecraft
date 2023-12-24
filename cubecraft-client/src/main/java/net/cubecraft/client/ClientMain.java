@@ -7,10 +7,10 @@ import net.cubecraft.SharedContext;
 import ink.flybird.fcommon.timer.Timer;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
-import ink.flybird.quantum3d.device.DeviceContext;
-import ink.flybird.quantum3d.lwjgl.context.CompactOGLRenderContext;
-import ink.flybird.quantum3d.lwjgl.device.GLFWDeviceContext;
-import ink.flybird.quantum3d.render.RenderContext;
+import me.gb2022.quantum3d.device.DeviceContext;
+import me.gb2022.quantum3d.lwjgl.context.CompactOGLRenderContext;
+import me.gb2022.quantum3d.lwjgl.device.GLFWDeviceContext;
+import me.gb2022.quantum3d.render.RenderContext;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -11,7 +11,7 @@ import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d.device.Window;
+import me.gb2022.quantum3d.device.Window;
 
 import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.registry.TypeItem;
@@ -50,7 +50,7 @@ public class ParticleRenderer extends IWorldRenderer {
 
     @Override
     public void preRender() {
-        this.camera.setUpGlobalCamera(window);
+        this.camera.setUpGlobalCamera();
         this.frustum.calculateFrustum();
     }
 
@@ -59,7 +59,7 @@ public class ParticleRenderer extends IWorldRenderer {
         if (type != RenderType.ALPHA) {
             return;
         }
-        this.camera.setUpGlobalCamera(window);
+        this.camera.setUpGlobalCamera();
         double yRot = this.camera.getRotation().y;
         double xRot = this.camera.getRotation().x;
 

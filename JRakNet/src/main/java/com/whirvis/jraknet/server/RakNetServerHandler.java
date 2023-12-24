@@ -34,13 +34,14 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
+
 
 
 import com.whirvis.jraknet.RakNetPacket;
 import com.whirvis.jraknet.peer.RakNetClientPeer;
 
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.DatagramPacket;
@@ -55,7 +56,7 @@ import io.netty.channel.socket.DatagramPacket;
  */
 public final class RakNetServerHandler extends ChannelInboundHandlerAdapter {
 
-	private final Logger logger;
+	private final ILogger logger;
 	private final RakNetServer server;
 	private final ConcurrentHashMap<InetAddress, BlockedAddress> blocked;
 	private InetSocketAddress causeAddress;
@@ -67,7 +68,7 @@ public final class RakNetServerHandler extends ChannelInboundHandlerAdapter {
 	 *            the server to send received packets to.
 	 */
 	public RakNetServerHandler(RakNetServer server) {
-		this.logger = new SimpleLogger("RakNetServerHandler");
+		this.logger = LogManager.getLogger("RakNetServerHandler");
 		this.server = server;
 		this.blocked = new ConcurrentHashMap<>();
 	}

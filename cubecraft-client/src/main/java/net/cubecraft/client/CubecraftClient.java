@@ -7,18 +7,19 @@ import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
 import ink.flybird.fcommon.timer.Timer;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
-import ink.flybird.quantum3d.GameApplication;
-import ink.flybird.quantum3d.device.DeviceContext;
-import ink.flybird.quantum3d.device.Keyboard;
-import ink.flybird.quantum3d.device.Mouse;
-import ink.flybird.quantum3d.device.Window;
-import ink.flybird.quantum3d.device.adapter.KeyboardEventAdapter;
-import ink.flybird.quantum3d.device.adapter.MouseEventAdapter;
-import ink.flybird.quantum3d.render.RenderContext;
+import me.gb2022.quantum3d.GameApplication;
+import me.gb2022.quantum3d.device.DeviceContext;
+import me.gb2022.quantum3d.device.Keyboard;
+import me.gb2022.quantum3d.device.Mouse;
+import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.ContextManager;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.platform.Sync;
+import me.gb2022.quantum3d.device.adapter.KeyboardEventAdapter;
+import me.gb2022.quantum3d.device.adapter.MouseEventAdapter;
+import me.gb2022.quantum3d.device.adapter.WindowEventAdapter;
+import me.gb2022.quantum3d.render.RenderContext;
 import net.cubecraft.SharedContext;
 import net.cubecraft.auth.Session;
 import net.cubecraft.client.event.app.ClientDisposeEvent;
@@ -33,7 +34,6 @@ import net.cubecraft.client.gui.screen.*;
 import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.net.ClientIO;
 import net.cubecraft.client.net.RakNetClientIO;
-import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.registry.TextureRegistry;
 import net.cubecraft.client.render.LevelRenderer;
@@ -43,6 +43,7 @@ import net.cubecraft.extension.ModManager;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.level.Level;
 import net.cubecraft.resource.ResourceLocation;
+import net.cubecraft.util.SystemInfoQuery;
 import net.cubecraft.util.VersionInfo;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.entity.particle.ParticleEngine;
@@ -58,13 +59,13 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
     private static final ILogger LOGGER = LogManager.getLogger("client-main");
     public static CubecraftClient CLIENT;
-
     private final EventBus clientEventBus = new SimpleEventBus();
     private final Session session = new Session("GrassBlock2022", "cubecraft:default");
     private final ClientIO clientIO = new RakNetClientIO();
     private final EventBus deviceEventBus = new SimpleEventBus();
     private final GUIContext guiManager = new GUIContext(SharedContext.FAML_READER, this, this.getWindow());
     private final ClientWorldManager clientWorldManager = new ClientWorldManager(this);
+    public int maxFPS = 60;
     public boolean isDebug;
     private Keyboard keyboard;
     private Mouse mouse;
@@ -89,6 +90,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         ClientSharedContext.CLIENT_SETTING.load();
         ClientSharedContext.CLIENT_SETTING.register(ClientSettingRegistry.class);
         ClientSharedContext.CLIENT_SETTING.setEventBus(this.getClientEventBus());
+        this.maxFPS = ClientSettingRegistry.MAX_FPS.getValue();
         LOGGER.info("config initialized.");
 
         ClientSharedContext.RESOURCE_MANAGER.registerResources(ResourceRegistry.class);
@@ -108,6 +110,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         window.setResizeable(true);
         window.setVsync(ClientSettingRegistry.V_SYNC.getValue());
         window.setIcon(ResourceRegistry.GAME_ICON.getStream());
+        window.addListener(new WindowEventAdapter(this.getClientEventBus()));
 
         GLFW.glfwWindowHint(GLFW.GLFW_SCALE_TO_MONITOR, GLFW.GLFW_TRUE);
 
@@ -134,7 +137,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         ContextManager.createLegacyGLContext();
         ContextManager.setGLContextVersion(4, 6);
         VertexBuilderAllocator.PREFER_MODE.set(0);
-        if (!ClientSettingRegistry.SKIP_STUDIO_LOGO.getValue()) {
+        if (!net.cubecraft.client.ClientSettingRegistry.SKIP_STUDIO_LOGO.getValue()) {
             StudioLoadingScreen scr = new StudioLoadingScreen();
             this.guiManager.setScreen(scr);
             this.renderAnimationScreen(scr);
@@ -223,13 +226,14 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         Window window = this.getWindow();
         DisplayScreenInfo screenInfo = getDisplaySize();
 
-        //shortTick world
         Screen scr = this.getGuiManager().getScreen();
+
         if (scr != null && (scr.getBackgroundType().shouldRenderWorld())) {
             GLUtil.checkError("pre_world_render");
             levelRenderer.render(this.timer.interpolatedTime);
             GLUtil.checkError("post_world_render");
         }
+
         GLUtil.setupOrthogonalCamera(0, 0, window.getWidth(), window.getHeight(), screenInfo.getScreenWidth(), screenInfo.getScreenHeight());
         GLUtil.enableDepthTest();
         GLUtil.enableBlend();
@@ -238,9 +242,10 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         this.guiManager.render(screenInfo, this.timer.interpolatedTime);
         GLUtil.checkError("post_screen_render");
         GLUtil.disableBlend();
-        Sync.sync(ClientSettingRegistry.MAX_FPS.getValue());
+        Sync.sync(this.maxFPS);
 
         if (System.currentTimeMillis() - this.lastGCTime > ClientSettingRegistry.TICK_GC.getValue()) {
+            SystemInfoQuery.update();
             System.gc();
             this.lastGCTime = System.currentTimeMillis();
         }
@@ -274,7 +279,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
     public DisplayScreenInfo getDisplaySize() {
         Window window = this.getWindow();
-        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale = net.cubecraft.client.ClientSettingRegistry.GUI_SCALE.getValue();
         return new DisplayScreenInfo(
                 (int) Math.max(window.getWidth() / scale, 1),
                 (int) Math.max(window.getHeight() / scale, 1),

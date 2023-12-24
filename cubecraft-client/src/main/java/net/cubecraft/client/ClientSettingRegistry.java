@@ -2,6 +2,7 @@ package net.cubecraft.client;
 
 import net.cubecraft.util.setting.SettingItemRegistry;
 import net.cubecraft.util.setting.item.BooleanSettingItem;
+import net.cubecraft.util.setting.item.DoubleSettingItem;
 import net.cubecraft.util.setting.item.IntegerSettingItem;
 
 public interface ClientSettingRegistry {
@@ -31,4 +32,36 @@ public interface ClientSettingRegistry {
 
     @SettingItemRegistry
     BooleanSettingItem FORCE_REBUILD_NEAREST_CHUNK = new BooleanSettingItem("chunk_renderer", "force_rebuild_nearest_chunk", false);
+
+    @SettingItemRegistry
+    IntegerSettingItem INACTIVE_FPS_LIMIT = new IntegerSettingItem("render", "inactive_fps_limit", 30);
+
+    @SettingItemRegistry
+    IntegerSettingItem MAX_FPS = new IntegerSettingItem("render", "max_fps", 240);
+
+    @SettingItemRegistry
+    BooleanSettingItem V_SYNC = new BooleanSettingItem("render", "vsync", true);
+
+    @SettingItemRegistry
+    BooleanSettingItem FULL_SCREEN = new BooleanSettingItem("render", "fullscreen", false);
+
+    @SettingItemRegistry
+    IntegerSettingItem FXAA = new IntegerSettingItem("render", "fxaa", 0);
+
+    @SettingItemRegistry
+    DoubleSettingItem GUI_SCALE = new DoubleSettingItem("gui", "scale", 2.0);
+
+    @SettingItemRegistry
+    BooleanSettingItem SKIP_STUDIO_LOGO = new BooleanSettingItem("gui", "skip_studio_logo", false);
+
+    @SettingItemRegistry
+    BooleanSettingItem DISABLE_CONSTANT_POOL = new BooleanSettingItem("performance", "disable_constant_pool", true);
+
+    @SettingItemRegistry
+    IntegerSettingItem TICK_GC = new IntegerSettingItem("performance", "gc_frequency", 100);
+
+    static int getFixedViewDistance() {
+        return CHUNK_RENDER_DISTANCE.getValue() + 2;
+    }
+
 }

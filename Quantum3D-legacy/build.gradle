@@ -1,0 +1,11 @@
+plugins{
+    id "java"
+}
+
+apply from: "../script/build-base.gradle"
+
+group 'ink.flybird'
+version '1.0.0'
+
+ext.applyScript("/lib/lwjgl.gradle")
+ext.applyScript("/lib/basic.gradle")

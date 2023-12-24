@@ -6,8 +6,9 @@ import net.cubecraft.client.render.RenderType;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.IWorld;
 import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.Camera;
+
+import me.gb2022.quantum3d.device.Window;
 
 
 public abstract class IWorldRenderer {

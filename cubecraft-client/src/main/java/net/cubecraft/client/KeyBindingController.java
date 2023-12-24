@@ -5,10 +5,10 @@ import net.cubecraft.event.SettingReloadEvent;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.quantum3d.device.Keyboard;
-import ink.flybird.quantum3d.device.KeyboardButton;
-import ink.flybird.quantum3d.device.adapter.KeyboardEventAdapter;
-import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.Keyboard;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.adapter.KeyboardEventAdapter;
+import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 
 import java.util.HashMap;
 import java.util.Map;

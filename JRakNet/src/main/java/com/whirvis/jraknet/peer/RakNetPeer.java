@@ -48,8 +48,7 @@ import com.whirvis.jraknet.protocol.message.acknowledge.NotAcknowledgedPacket;
 import com.whirvis.jraknet.protocol.message.acknowledge.Record;
 import com.whirvis.jraknet.protocol.status.ConnectedPing;
 import com.whirvis.jraknet.protocol.status.ConnectedPong;
-import ink.flybird.fcommon.logging.Logger;
-import ink.flybird.fcommon.logging.SimpleLogger;
+
 
 import com.whirvis.jraknet.InvalidChannelException;
 import com.whirvis.jraknet.Packet;
@@ -57,6 +56,8 @@ import com.whirvis.jraknet.RakNet;
 import com.whirvis.jraknet.RakNetPacket;
 import com.whirvis.jraknet.map.concurrent.ConcurrentIntMap;
 
+import ink.flybird.jflogger.ILogger;
+import ink.flybird.jflogger.LogManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.DatagramPacket;
@@ -158,7 +159,7 @@ public abstract class RakNetPeer implements RakNetPeerMessenger {
 	 */
 	public static final long PEER_TIMEOUT = DETECTION_SEND_INTERVAL * 10;
 
-	private final Logger logger;
+	private final ILogger logger;
 	private final InetSocketAddress address;
 	private final long guid;
 	private final int maximumTransferUnit;
@@ -214,7 +215,7 @@ public abstract class RakNetPeer implements RakNetPeerMessenger {
 	 */
 	protected RakNetPeer(InetSocketAddress address, long guid, int maximumTransferUnit, ConnectionType connectionType,
 			Channel channel) {
-		this.logger =  new SimpleLogger("RakNetPeer");
+		this.logger =  LogManager.getLogger("RakNetPeer");
 		this.address = address;
 		this.guid = guid;
 		this.maximumTransferUnit = maximumTransferUnit;
@@ -251,7 +252,7 @@ public abstract class RakNetPeer implements RakNetPeerMessenger {
 	 * 
 	 * @return the logger.
 	 */
-	protected final Logger getLogger() {
+	protected final ILogger getLogger() {
 		return this.logger;
 	}
 

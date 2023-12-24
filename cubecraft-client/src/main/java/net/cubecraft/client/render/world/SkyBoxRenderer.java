@@ -1,13 +1,7 @@
 package net.cubecraft.client.render.world;
 
-import net.cubecraft.client.ClientSettingRegistry;
-import net.cubecraft.client.internal.renderer.world.WorldRendererType;
-import net.cubecraft.client.render.RenderType;
-import net.cubecraft.internal.entity.EntityPlayer;
-import net.cubecraft.world.IWorld;
-
 import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.quantum3d.device.Window;
+import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.draw.DrawMode;
 import ink.flybird.quantum3d_legacy.draw.OffHeapVertexBuilder;
@@ -15,6 +9,11 @@ import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
 import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
+import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.internal.renderer.world.WorldRendererType;
+import net.cubecraft.client.render.RenderType;
+import net.cubecraft.internal.entity.EntityPlayer;
+import net.cubecraft.world.IWorld;
 import org.lwjgl.opengl.GL11;
 
 @TypeItem(WorldRendererType.SKY_BOX)
@@ -27,8 +26,10 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
     public SkyBoxRenderer(Window window, IWorld world, EntityPlayer player, Camera cam) {
         super(window, world, player, cam);
-        this.skyCover.allocate();
-        this.skySide.allocate();
+        if (!this.skyCover.isAllocated()) {
+            this.skyCover.allocate();
+            this.skySide.allocate();
+        }
     }
 
     @Override
@@ -50,8 +51,12 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         this.build();
     }
 
-    public void build(){
-        int d2 = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue();
+    public void build() {
+        if (!this.skyCover.isAllocated()) {
+            this.skyCover.allocate();
+            this.skySide.allocate();
+        }
+        int d2 = ClientSettingRegistry.getFixedViewDistance();
         VertexBuilder builder = new OffHeapVertexBuilder(4096, DrawMode.TRIANGLES);
         builder.begin();
 
@@ -109,7 +114,7 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         if (type != RenderType.ALPHA) {
             return;
         }
-        this.camera.setUpGlobalCamera(this.window);
+        this.camera.setUpGlobalCamera();
     }
 
     @Override

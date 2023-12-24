@@ -8,7 +8,7 @@ import ink.flybird.cubecraft.server.CubecraftServer;
 import ink.flybird.cubecraft.server.world.ServerWorld;
 
 public final class WorldTickingThread extends LoopTickingThread {
-    private final Logger logger;
+    private final ILogger logger;
     private final ServerWorld world;
 
     public WorldTickingThread(ServerWorld world, CubecraftServer server) {

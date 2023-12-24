@@ -33,7 +33,7 @@ public class ChunkIOService extends AbstractService {
     public static final Options DEFAULT_LEVELDB_OPTIONS = new Options().createIfMissing(true).blockSize(1024);
     public static final int DEFAULT_DB_LIFETIME = 150;
 
-    private final Logger logger = SharedContext.LOG_CONTEXT.createLogger("chunk_io");
+    private final ILogger logger = SharedContext.LOG_CONTEXT.createLogger("chunk_io");
     private final ExecutorService taskPool;
     private final HashMap<String, DB> cachedDatabase = new HashMap<>(16);
     private final HashMap<String, Integer> lifetime = new HashMap<>(16);

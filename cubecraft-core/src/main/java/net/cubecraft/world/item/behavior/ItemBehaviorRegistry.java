@@ -7,4 +7,7 @@ import ink.flybird.fcommon.registry.FieldRegistryHolder;
 public interface ItemBehaviorRegistry {
     @FieldRegistry("block")
     ItemBehavior BLOCK = new BlockItemBehavior();
+
+    @FieldRegistry("diggable")
+    ItemBehavior DIGGABLE = new DigableItemBehavior();
 }

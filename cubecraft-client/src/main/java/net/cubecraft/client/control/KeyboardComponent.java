@@ -1,6 +1,6 @@
 package net.cubecraft.client.control;
 
-import ink.flybird.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.KeyboardButton;
 
 public class KeyboardComponent implements ControlComponent{
     private final KeyboardButton component;

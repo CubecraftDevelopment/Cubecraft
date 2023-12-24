@@ -1,10 +1,8 @@
 package net.cubecraft.world.chunk;
 
+import net.cubecraft.world.block.Block;
 import net.cubecraft.world.chunk.pos.ChunkPos;
-import net.cubecraft.world.chunk.storage.ByteDataSection;
-import net.cubecraft.world.chunk.storage.SectionBlockAccess;
-import net.cubecraft.world.chunk.storage.SectionLightAccess;
-import net.cubecraft.world.chunk.storage.StringDataSection;
+import net.cubecraft.world.chunk.storage.*;
 import ink.flybird.fcommon.container.KeyGetter;
 import ink.flybird.fcommon.nbt.NBTDataIO;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
@@ -102,6 +100,12 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
     public String getBlockID(int x, int y, int z) {
         ChunkPos.checkChunkRelativePosition(x, y, z);
         return this.blockIdSections[y / WIDTH].get(x, y % WIDTH, z);
+    }
+
+    public Block getBlock(int x, int y, int z){
+        ChunkPos.checkChunkRelativePosition(x, y, z);
+        //return this.blockIdSections[y / WIDTH].getBlock(x, y % WIDTH, z);
+        return null;
     }
 
     public EnumFacing getBlockFacing(int x, int y, int z) {

@@ -1,15 +1,1 @@
-import java.nio.charset.StandardCharsets
-
-tasks.register('syncGitIgnore') {
-    FileInputStream stream = new FileInputStream(rootDir.getAbsolutePath() + "/.gitignore")
-    String s = new String(stream.readAllBytes(), StandardCharsets.UTF_8)
-    stream.close()
-    for (String s2 : s.split("\n")) {
-        if (s2.length() <= 1) {
-            continue
-        }
-
-        String cmd = "git rm -r --cached " + s2.replaceFirst("/", "")
-        println cmd
-    }
-}
+apply from:"/script/git.gradle"

@@ -3,11 +3,11 @@ package net.cubecraft.client.gui.screen;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.math.hitting.HitResult;
 import ink.flybird.fcommon.math.hitting.Hittable;
-import ink.flybird.quantum3d.device.KeyboardButton;
-import ink.flybird.quantum3d.device.MouseButton;
-import ink.flybird.quantum3d.device.event.KeyboardPressEvent;
-import ink.flybird.quantum3d.device.event.MouseClickEvent;
-import ink.flybird.quantum3d.device.event.MouseScrollEvent;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.MouseButton;
+import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.MouseClickEvent;
+import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
@@ -17,7 +17,7 @@ import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.registry.ResourceRegistry;
-import net.cubecraft.world.item.Inventory;
+import net.cubecraft.world.item.container.Inventory;
 import org.lwjgl.opengl.GL11;
 
 public final class HUDScreen extends Screen {
