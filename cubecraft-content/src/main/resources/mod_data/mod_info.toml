@@ -3,18 +3,20 @@ id = "cubecraft-content"
 version = "0.0.1-b1"
 class = "content.net.cubecraft.CubecraftContentMod"
 
+[dependencies-shared]
+cubecraft-core = "__any__"
+
 [dependencies-client]
 cubecraft-client = "__any__"
-cubecraft-core = "__any__"
 
 [dependencies-server]
 cubecraft-server = "__any__"
-cubecraft-core = "__any__"
 
 [info]
 name = "Cubecraft-Content-Pack"
 author = "GrassBlock2022"
 website = "https://github.com/CubecraftDevelopment"
+description = ""
 
 [auto-reg]
 block = "/data/cubecraft/registry_index/blocks.json"

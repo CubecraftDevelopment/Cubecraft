@@ -1,30 +1,23 @@
 package net.cubecraft.client.gui.screen;
 
 import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.math.hitting.HitResult;
-import ink.flybird.fcommon.math.hitting.Hittable;
-import me.gb2022.quantum3d.device.KeyboardButton;
-import me.gb2022.quantum3d.device.MouseButton;
-import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
-import me.gb2022.quantum3d.device.event.MouseClickEvent;
-import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.MousePressEvent;
 import net.cubecraft.SharedObjects;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.registry.ResourceRegistry;
-import net.cubecraft.world.item.container.Inventory;
 import org.lwjgl.opengl.GL11;
 
 public final class HUDScreen extends Screen {
     private final Texture2D actionBar = new Texture2D(false, false);
     private final Texture2D pointer = new Texture2D(false, false);
-
-    private int slot;
 
     private boolean showGUI = true;
 
@@ -53,60 +46,12 @@ public final class HUDScreen extends Screen {
         }
     }
 
-    @EventHandler
-    public void onScroll(MouseScrollEvent e) {
-        int i = (int) -e.getYOffset();
-        if (i > 0) {
-            i = 1;
-        }
-        if (i < 0) {
-            i = -1;
-        }
-        this.slot += i;
-        if (this.slot > 8) {
-            this.slot = 0;
-        }
-        if (this.slot < 0) {
-            this.slot = 8;
-        }
-    }
-
-    @EventHandler
-    public void onClicked(MouseClickEvent e) {
-        if (e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
-            CubecraftClient.CLIENT.getMouse().setMouseGrabbed(true);
-            CubecraftClient.CLIENT.getPlayer().attack();
-        }
-        if (e.getButton() == MouseButton.MOUSE_BUTTON_RIGHT) {
-            CubecraftClient.CLIENT.getPlayer().interact();
-        }
-        if (e.getButton() == MouseButton.MOUSE_BUTTON_MIDDLE) {
-            HitResult hitResult = CubecraftClient.CLIENT.getPlayer().hitResult;
-            if (hitResult != null) {
-                Hittable obj = CubecraftClient.CLIENT.getPlayer().hitResult.getObject(Hittable.class);
-                Inventory inv = CubecraftClient.CLIENT.getPlayer().getInventory();
-                inv.selectItem(obj, this.slot);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onKeyEventPressed(KeyboardPressEvent event) {
-        if (event.getKey() == KeyboardButton.KEY_ESCAPE) {
-            CubecraftClient.CLIENT.getMouse().setMouseGrabbed(false);
-            CubecraftClient.CLIENT.getGuiManager().setScreen(ResourceRegistry.PAUSE_SCREEN);
-        }
-        if (event.getKey() == KeyboardButton.KEY_F1) {
-            this.showGUI = !this.showGUI;
-        }
-    }
 
     @Override
     public void tick() {
         PlayerController controller = CubecraftClient.CLIENT.getPlayerController();
         if (controller != null) {
             controller.tick();
-            controller.setSelectedSlot(slot);
         }
         super.tick();
     }
@@ -121,7 +66,7 @@ public final class HUDScreen extends Screen {
                 0, 182 * scale, 0, 22 * scale, 0,
                 0, 182 / 256f, 0, 22 / 32f
         );
-        float slotBase = slot * 20 * scale;
+        float slotBase = this.getClient().getPlayer().getInventory().getActiveSlotId() * 20 * scale;
         ShapeRenderer.drawRectUV(slotBase - 1 * scale, slotBase + 23 * scale, -1 * scale, 23 * scale, 0, 232 / 256f, 1, 0, 24 / 32f);
         GL11.glPopMatrix();
     }
@@ -129,14 +74,16 @@ public final class HUDScreen extends Screen {
     @Override
     public void getDebug() {
         super.getDebug();
-        this.debugInfoLeft.put("chunk_renderer", "C: pc=%d req=%d res=%d, a=%s/%s t=%s/%s".formatted(
+        this.debugInfoLeft.put("chunk_renderer", "C: pc=%d req=%d res=%d, a=%s/%s t=%s/%s cache=%s".formatted(
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "pos_cache_size", int.class),
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "compile_request_size", int.class),
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "compile_result_size", int.class),
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_success_size_alpha", int.class),
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_size_alpha", int.class),
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_success_size_transparent", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_size_transparent", int.class)
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_size_transparent", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "status_cache", String.class)
+
         ));
         this.debugInfoLeft.put("entity_renderer", "E: %d/%d".formatted(
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "success_size", int.class),
@@ -162,5 +109,21 @@ public final class HUDScreen extends Screen {
                 this.getClient().getClientWorld().getId(),
                 this.getClient().getClientWorld().chunks.size()
         ));
+    }
+
+    @EventHandler
+    public void onKeyEventPressed(KeyboardPressEvent event) {
+        if (event.getKey() == KeyboardButton.KEY_ESCAPE) {
+            CubecraftClient.CLIENT.getMouse().setMouseGrabbed(false);
+            CubecraftClient.CLIENT.getGuiManager().setScreen(ResourceRegistry.PAUSE_SCREEN);
+        }
+        if (event.getKey() == KeyboardButton.KEY_F1) {
+            this.showGUI = !this.showGUI;
+        }
+    }
+
+    @EventHandler
+    public void onMousePress(MousePressEvent event) {
+        CubecraftClient.CLIENT.getMouse().setMouseGrabbed(true);
     }
 }

@@ -1,13 +1,10 @@
 package me.gb2022.quantum3d.render;
 
 import ink.flybird.fcommon.container.ArrayQueue;
-import ink.flybird.fcommon.memory.BufferAllocator;
 import me.gb2022.quantum3d.render.command.RenderCall;
-import me.gb2022.quantum3d.render.command.RenderCallAllocator;
 import me.gb2022.quantum3d.render.texture.SimpleTexture2D;
 import me.gb2022.quantum3d.render.texture.TilemapTexture2D;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
 import org.joml.Matrix4d;
 
 
@@ -43,15 +40,9 @@ public abstract class RenderContext {
 
     public abstract void setMatrix(Matrix4d mat);
 
-    public abstract VertexBuilderAllocator newVertexBuilderAllocator(BufferAllocator allocator);
-
     public abstract void setViewport(int x, int y, int width, int height);
 
     public abstract void uploadVertexBuilder(VertexBuilder builder);
-
-    public abstract VertexBuilderAllocator newVertexBuilderAllocator();
-
-    public abstract RenderCallAllocator newRenderCallAllocator();
 
     public abstract RenderCall newRenderCall();
 

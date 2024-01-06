@@ -1,8 +1,7 @@
-package me.gb2022.quantum3d.lwjgl.texture;
+package me.gb2022.quantum3d.render.texture;
 
 import me.gb2022.quantum3d.ITextureImage;
 import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
-import me.gb2022.quantum3d.render.texture.SimpleTexture2D;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;

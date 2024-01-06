@@ -15,11 +15,14 @@ import net.cubecraft.world.IWorld;
 import net.cubecraft.world.access.ChunkLoadAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
+import net.cubecraft.world.chunk.Chunk;
+import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public interface ChunkCompiler {
     ILogger LOGGER = LogManager.getLogger("chunk-layer-compiler");
@@ -101,9 +104,14 @@ public interface ChunkCompiler {
         long z0 = z * 16, z1 = z0 + 15;
 
         boolean discard = true;
-        world.loadChunk(p, ChunkLoadTicket.LOAD_DATA);
-        world.addChunkLock(p, pos);
-        List<IBlockAccess> list = world.getAllBlockInRange(x0, y0, z0, x1, y1, z1);
+        WorldChunk c;
+        try {
+            c = (WorldChunk) world.loadChunk(p, ChunkLoadTicket.LOAD_DATA).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        c.getDataLock().addLock(pos);
+        IBlockAccess[] list = c.getAllBlockInRange(x0, y0, z0, x1, y1, z1);
         for (IBlockAccess access : list) {
             if (!Objects.equals(access.getBlockID(), BlockType.AIR)) {
                 discard = false;
@@ -111,13 +119,16 @@ public interface ChunkCompiler {
             }
         }
         if (discard) {
-            world.removeChunkLock(p, pos);
+            c.getDataLock().removeLock(pos);
             return true;
         }
+
 
         discard = true;
         ChunkLoadAccess.addChunkLockRange(world, p, 1, pos);
         list = world.getAllBlockInRange(x0 - 1, y0 - 1, z0 - 1, x1 + 1, y1 + 1, z1 + 1);
+        return false;
+        /*
         for (IBlockAccess access : list) {
             if (!BlockPropertyDispatcher.isSolid(access)) {
                 discard = false;
@@ -129,5 +140,7 @@ public interface ChunkCompiler {
             return true;
         }
         return false;
+
+         */
     }
 }

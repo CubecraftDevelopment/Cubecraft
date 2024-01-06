@@ -111,7 +111,7 @@ public final class RenderList {
                 continue;
             }
 
-            Vector3d translation = pos.getWorldPosition().add(-viewBase.x, -viewBase.y, -viewBase.z);
+            Vector3d translation = pos.getBaseWorldPosition().add(-viewBase.x, -viewBase.y, -viewBase.z);
 
             GL11.glPushMatrix();
             GL11.glTranslated(translation.x, translation.y, translation.z);

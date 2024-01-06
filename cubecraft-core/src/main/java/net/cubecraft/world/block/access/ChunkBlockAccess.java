@@ -1,49 +1,35 @@
 package net.cubecraft.world.block.access;
 
-import net.cubecraft.ContentRegistries;
 import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.world.IWorld;
-import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.EnumFacing;
-import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 
-import java.util.HashMap;
-
 public class ChunkBlockAccess extends IBlockAccess {
-    private static final HashMap<String, Block> BLOCK_CACHE = new HashMap<>();
     private final WorldChunk chunk;
+    private String cachedBlockId;
 
     public ChunkBlockAccess(IWorld world, long x, long y, long z, WorldChunk chunk) {
         super(world, x, y, z);
         this.chunk = chunk;
-
-
-        String blockId = this.getBlockID();
-        if (BLOCK_CACHE.containsKey(blockId)) {
-            this.block = BLOCK_CACHE.get(blockId);
-        } else {
-            Block block1 = ContentRegistries.BLOCK.get(blockId);
-            if (block1 == null) {
-                block1 = BlockRegistry.AIR;
-            }
-            BLOCK_CACHE.put(blockId, block1);
-            this.block = block1;
-        }
     }
 
     @Override
     public String getBlockID() {
-        String id = this.world.getDimension().predictBlockID(this.world, this.x, this.y, this.z);
-        if (id != null) {
-            return id;
-        } else {
-            ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-            return this.chunk.getBlockID(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z));
+        if (this.cachedBlockId != null) {
+            return this.cachedBlockId;
         }
+
+        String id = this.chunk.getBlockID((int) (this.x & 15), (int) y, (int) (this.z & 15));
+        if (id != null) {
+            this.cachedBlockId = id;
+        } else {
+            this.cachedBlockId = this.world.getDimension().predictBlockID(this.world, this.x, this.y, this.z);
+        }
+        return this.cachedBlockId;
     }
 
     @Override
@@ -156,6 +142,4 @@ public class ChunkBlockAccess extends IBlockAccess {
         }
         this.chunk.setBiome(pos.getRelativePosX(x), (int) this.y, pos.getRelativePosZ(z), biome);
     }
-
-
 }

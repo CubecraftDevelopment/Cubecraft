@@ -62,7 +62,7 @@ public abstract class ChunkLayer implements WorldRenderObject {
     public void render(LevelRenderContext context) {
         ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().bind("cubecraft:terrain");
         GL11.glPushMatrix();
-        context.getCamera().setupObjectCamera(this.getPos().getWorldPosition());
+        context.getCamera().setupObjectCamera(this.getPos().getBaseWorldPosition());
         this.render();
         GL11.glPopMatrix();
     }

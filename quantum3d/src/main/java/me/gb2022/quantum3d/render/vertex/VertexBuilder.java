@@ -1,259 +1,151 @@
 package me.gb2022.quantum3d.render.vertex;
 
 import ink.flybird.fcommon.context.LifetimeCounter;
+import ink.flybird.fcommon.memory.BufferAllocator;
 
-import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public abstract class VertexBuilder {
+public class VertexBuilder {
     protected final AtomicInteger vertexCount = new AtomicInteger();
-    private final DataFormat vertexFormat;
-    private final DataFormat textureFormat;
-    private final DataFormat colorFormat;
-    private final DataFormat normalFormat;
+    private final VertexFormat format;
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
     private final DrawMode drawMode;
     private final int capacity;
 
-    /**
-     * Constructs a VertexBuilder with specified parameters.
-     *
-     * @param capacity      The maximum capacity of the builder.
-     * @param drawMode      The draw mode for rendering.
-     * @param vertexFormat  The format for vertex data.
-     * @param textureFormat The format for texture data.
-     * @param colorFormat   The format for color data.
-     * @param normalFormat  The format for normal data.
-     */
-    public VertexBuilder(
-            int capacity,
-            DrawMode drawMode,
-            DataFormat vertexFormat,
-            DataFormat textureFormat,
-            DataFormat colorFormat,
-            DataFormat normalFormat
-    ) {
-        this.vertexFormat = vertexFormat;
-        this.textureFormat = textureFormat;
-        this.colorFormat = colorFormat;
-        this.normalFormat = normalFormat;
+    private BufferAllocator allocator;
+    private ByteBuffer vertexBuffer;
+    private ByteBuffer colorBuffer;
+    private ByteBuffer textureBuffer;
+    private ByteBuffer normalBuffer;
+    private ByteBuffer rawBuffer;
+
+    private double[] colorCache;
+    private double[] textureCache;
+    private double[] normalCache;
+
+
+    public VertexBuilder(VertexFormat format, int capacity, DrawMode drawMode, BufferAllocator allocator) {
+        this.format = format;
         this.drawMode = drawMode;
         this.capacity = capacity;
+        this.allocator = allocator;
     }
 
-    /**
-     * Checks whether the given data matches the specified element's size.
-     *
-     * @param element The vertex format element to check against.
-     * @param data    The data to be checked.
-     * @throws IllegalArgumentException if the data size does not match the element size.
-     */
-    public static void checkRange(DataFormat element, double... data) {
-        if (element == null) {
-            throw new IllegalArgumentException("No data channel provided!");
-        }
-        if (data.length != element.getSize()) {
-            throw new IllegalArgumentException(
-                    "Non-matched vertex size: %d required, %d provided"
-                            .formatted(element.getSize(), data.length)
-            );
-        }
-    }
+    public void allocate() {
+        int cap = this.getCapacity();
 
-    /**
-     * Allocates resources for the vertex builder.
-     */
-    public final void allocate() {
         this.lifetimeCounter.allocate();
-        this.alloc();
+
+        this.vertexBuffer = this.allocator.allocateBuffer(this.format.getVertexBufferSize(cap));
+        this.colorBuffer = this.allocator.allocateBuffer(this.format.getColorBufferSize(cap));
+        this.textureBuffer = this.allocator.allocateBuffer(this.format.getTextureBufferSize(cap));
+        this.normalBuffer = this.allocator.allocateBuffer(this.format.getNormalBufferSize(cap));
+        this.rawBuffer = this.allocator.allocateBuffer(this.format.getRawBufferSize(cap));
+
+        if (this.format.hasColorData()) {
+            this.colorCache = new double[this.format.getColorFormat().getSize()];
+        }
+        if (this.format.hasTextureData()) {
+            this.textureCache = new double[this.format.getTextureFormat().getSize()];
+        }
+        if (this.format.hasNormalData()) {
+            this.normalCache = new double[this.format.getNormalFormat().getSize()];
+        }
+
+        Arrays.fill(this.colorCache, 1.0f);
     }
 
-    /**
-     * Frees allocated resources.
-     */
-    public final void free() {
+    public void free() {
         this.lifetimeCounter.release();
-        this.dealloc();
+        this.allocator.free(this.vertexBuffer);
+        this.allocator.free(this.colorBuffer);
+        this.allocator.free(this.textureBuffer);
+        this.allocator.free(this.normalBuffer);
+        this.allocator.free(this.rawBuffer);
     }
 
-    /**
-     * Adds a vertex with the specified data.
-     *
-     * @param data The vertex data to be added.
-     */
     public final void addVertex(double... data) {
         if (this.vertexCount.get() >= this.capacity) {
             throw new RuntimeException("Builder overflowed: reached capacity " + this.capacity);
         }
-        checkRange(this.vertexFormat, data);
-        this.vertex(data);
         this.vertexCount.incrementAndGet();
+        this.format.putVertexData(this.vertexBuffer, this.rawBuffer, data);
+        this.format.putColorData(this.colorBuffer, this.rawBuffer, this.colorCache);
+        this.format.putTextureData(this.textureBuffer, this.rawBuffer, this.textureCache);
+        this.format.putNormalData(this.normalBuffer, this.rawBuffer, this.normalCache);
     }
 
-    /**
-     * Sets texture coordinates with the specified data.
-     *
-     * @param data The texture coordinate data to be set.
-     */
-    public final void setTextureCoord(double... data) {
-        checkRange(this.textureFormat, data);
-        this.textureCoord(data);
-    }
-
-    /**
-     * Sets color with the specified data.
-     *
-     * @param data The color data to be set.
-     */
     public final void setColor(double... data) {
-        checkRange(this.colorFormat, data);
-        this.color(data);
+        this.colorCache = data;
     }
 
-    /**
-     * Sets normal with the specified data.
-     *
-     * @param data The normal data to be set.
-     */
+    public final void setTextureCoordinate(double... data) {
+        this.textureCache = data;
+    }
+
     public final void setNormal(double... data) {
-        checkRange(this.normalFormat, data);
-        this.normal(data);
+        this.normalCache = data;
     }
 
-    /**
-     * Adds vertex data to the builder. Subclasses should implement this method.
-     *
-     * @param data The vertex data to be added.
-     */
-    public abstract void vertex(double... data);
-
-    /**
-     * Adds texture coordinate data to the builder. Subclasses should implement this method.
-     *
-     * @param data The texture coordinate data to be added.
-     */
-    public abstract void textureCoord(double... data);
-
-    /**
-     * Adds color data to the builder. Subclasses should implement this method.
-     *
-     * @param data The color data to be added.
-     */
-    public abstract void color(double... data);
-
-    /**
-     * Adds normal data to the builder. Subclasses should implement this method.
-     *
-     * @param data The normal data to be added.
-     */
-    public abstract void normal(double... data);
-
-    /**
-     * Allocates resources for the vertex builder. Subclasses should implement this method.
-     */
-    public abstract void alloc();
-
-    /**
-     * Deallocates resources for the vertex builder. Subclasses should implement this method.
-     */
-    public abstract void dealloc();
-
-    /**
-     * Returns the buffer containing the vertex data.
-     *
-     * @return The vertex data buffer.
-     */
-    public abstract Buffer getVertexData();
-
-    /**
-     * Returns the buffer containing the texture data.
-     *
-     * @return The texture data buffer.
-     */
-    public abstract Buffer getTextureData();
-
-    /**
-     * Returns the buffer containing the color data.
-     *
-     * @return The color data buffer.
-     */
-    public abstract Buffer getColorData();
-
-    /**
-     * Returns the buffer containing the normal data.
-     *
-     * @return The normal data buffer.
-     */
-    public abstract Buffer getNormalData();
-
-    /**
-     * Returns the buffer containing the raw data.
-     *
-     * @return The raw data buffer.
-     */
-    public abstract Buffer getRawData();
-
-    /**
-     * Get the color format of the vertex builder.
-     *
-     * @return The color format.
-     */
-    public DataFormat getColorFormat() {
-        return this.colorFormat;
-    }
-
-    /**
-     * Get the normal format of the vertex builder.
-     *
-     * @return The normal format.
-     */
-    public DataFormat getNormalFormat() {
-        return this.normalFormat;
-    }
-
-    /**
-     * Get the texture format of the vertex builder.
-     *
-     * @return The texture format.
-     */
-    public DataFormat getTextureFormat() {
-        return this.textureFormat;
-    }
-
-    /**
-     * Get the vertex format of the vertex builder.
-     *
-     * @return The vertex format.
-     */
-    public DataFormat getVertexFormat() {
-        return this.vertexFormat;
-    }
-
-    /**
-     * Get the current vertex count in the builder.
-     *
-     * @return The current vertex count.
-     */
     public int getVertexCount() {
         return this.vertexCount.get();
     }
 
-    /**
-     * Get the draw mode of the vertex builder.
-     *
-     * @return The draw mode.
-     */
     public DrawMode getDrawMode() {
         return this.drawMode;
     }
 
-    /**
-     * Get the capacity of the vertex builder.
-     *
-     * @return The capacity.
-     */
     public int getCapacity() {
         return this.capacity;
+    }
+
+    public VertexFormat getFormat() {
+        return format;
+    }
+
+
+    //buffer reference
+    public ByteBuffer getVertexBuffer() {
+        return vertexBuffer;
+    }
+
+    public ByteBuffer getColorBuffer() {
+        return colorBuffer;
+    }
+
+    public ByteBuffer getTextureBuffer() {
+        return textureBuffer;
+    }
+
+    public ByteBuffer getNormalBuffer() {
+        return normalBuffer;
+    }
+
+    public ByteBuffer getRawBuffer() {
+        return rawBuffer;
+    }
+
+    //generate buffer
+    public ByteBuffer generateVertexBuffer() {
+        return getVertexBuffer().slice(0, this.format.getVertexBufferSize(this.getVertexCount()));
+    }
+
+    public ByteBuffer generateColorBuffer() {
+        return getColorBuffer().slice(0, this.format.getColorBufferSize(this.getVertexCount()));
+    }
+
+    public ByteBuffer generateTextureBuffer() {
+        return getTextureBuffer().slice(0, this.format.getTextureBufferSize(this.getVertexCount()));
+    }
+
+    public ByteBuffer generateNormalBuffer() {
+        return getNormalBuffer().slice(0, this.format.getNormalBufferSize(this.getVertexCount()));
+    }
+
+    public ByteBuffer generateRawBuffer() {
+        return getRawBuffer().slice(0, this.format.getRawBufferSize(this.getVertexCount()));
     }
 }

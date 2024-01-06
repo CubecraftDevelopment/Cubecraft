@@ -5,10 +5,11 @@ import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.entity.Entity;
 import net.cubecraft.world.item.ItemStack;
 
-import javax.swing.*;
 import java.util.Objects;
 
 public abstract class Inventory extends Container {
+    int activeSlot = 0;
+
     public void selectItem(Hittable obj, int targetSlot) {
         String id;
         if (obj instanceof IBlockAccess) {
@@ -32,7 +33,15 @@ public abstract class Inventory extends Container {
     }
 
     public ItemStack getActive() {
-        return null;
+        return this.get(this.activeSlot);
+    }
+
+    public int getActiveSlotId() {
+        return this.activeSlot;
+    }
+
+    public void setActiveSlot(int activeSlot) {
+        this.activeSlot = activeSlot;
     }
 }
 

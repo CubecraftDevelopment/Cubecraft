@@ -1,38 +1,27 @@
 {
-  "global": {
-    "fog_color": "DCE9F5",
-    "clear_color": "DCE9F5"
-  },
-  "renderers": [
-    {
-      "type": "cubecraft:chunk_renderer"
+  "allow_fov": true,
+  "fog_color": "#DCE9F5",
+  "renderers": {
+    "cubecraft:chunk_renderer": {},
+    "cubecraft:particle_renderer": {},
+    "cubecraft:entity_renderer": {},
+    "cubecraft:sky_box_renderer": {
+      "sky_color": "#79A7FF",
+      "sky_fog_color": "#DCE9F5"
     },
-    {
-      "type": "cubecraft:particle_renderer"
+    "cubecraft:cloud_renderer": {
+      "color": "#FFFFFF44",
+      "thick": 20,
+      "size": 48,
+      "dense": 0.25,
+      "height": 384.5,
+      "speed_x": 0,
+      "speed_z": 0,
+      "use_classic_lighting": true,
+      "effect_by_world_light": true
     },
-    {
-      "type": "cubecraft:hud_renderer"
-    },
-    {
-      "type": "cubecraft:entity_renderer"
-    },
-    {
-      "type": "cubecraft:sky_box_renderer"
-    },
-    {
-      "type": "cubecraft:cloud_renderer",
-      "config": {
-        "color": "FFFFFF",
-        "opacity": 0.25,
-        "thick": 20,
-        "size": 48,
-        "dense": 0.25,
-        "use_classic_lighting": true,
-        "effect_by_world_light": true,
-        "height": 384.5,
-        "motion_x": 0,
-        "motion_z": 0
-      }
+    "cubecraft:hud_renderer": {
+      "allow_debug": true
     }
-  ]
+  }
 }

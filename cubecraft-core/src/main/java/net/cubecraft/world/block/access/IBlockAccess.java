@@ -8,27 +8,24 @@ import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.EnumFacing;
-import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
-import net.cubecraft.world.dimension.Dimension;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 public abstract class IBlockAccess implements Hittable {
+    private static final HashMap<String, Block> BLOCK_CACHE = new HashMap<>();
     protected final IWorld world;
     protected final long x;
     protected final long y;
     protected final long z;
-    protected final Dimension dimension;
     protected Block block;
 
     public IBlockAccess(IWorld world, long x, long y, long z) {
-        Block block1;
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.dimension = this.world.getDimension();
     }
 
 
@@ -60,6 +57,10 @@ public abstract class IBlockAccess implements Hittable {
 
 
     public Block getBlock() {
+        if (this.block != null) {
+            return this.block;
+        }
+        this.block = ContentRegistries.BLOCK.get(this.getBlockID());
         return this.block;
     }
 

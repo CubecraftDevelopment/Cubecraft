@@ -1,11 +1,10 @@
-package me.gb2022.quantum3d.lwjgl.texture;
+package me.gb2022.quantum3d.render.texture;
 
 import ink.flybird.fcommon.math.AABB2D;
 import ink.flybird.fcommon.threading.TaskProgressCallback;
 import me.gb2022.quantum3d.ITextureImage;
 import me.gb2022.quantum3d.lwjgl.deprecated.BufferAllocation;
 import me.gb2022.quantum3d.lwjgl.deprecated.textures.ImageUtil;
-import me.gb2022.quantum3d.render.texture.TilemapTexture2D;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.image.BufferedImage;

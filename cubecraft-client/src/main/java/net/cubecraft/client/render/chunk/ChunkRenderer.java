@@ -1,14 +1,10 @@
 package net.cubecraft.client.render.chunk;
 
 import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
-
-import me.gb2022.quantum3d.device.Window;
-
 import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
@@ -23,9 +19,6 @@ import net.cubecraft.client.render.chunk.sort.ChunkSorter;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.event.SettingReloadEvent;
-import net.cubecraft.internal.entity.EntityPlayer;
-import net.cubecraft.world.IWorld;
-import net.cubecraft.world.chunk.Chunk;
 import org.joml.Vector3d;
 
 import java.util.*;
@@ -34,7 +27,6 @@ import java.util.*;
 public final class ChunkRenderer extends IWorldRenderer {
     public static final String SETTING_NAMESPACE = "chunk_renderer";
     public static final Map<String, ChunkLayer> DUMMY = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(false, RenderChunkPos.create(0, 0, 0));
-    public final HashMap<RenderChunkPos, ChunkUpdateStatus> posCache = new HashMap<>(16384);
     private final FrustumCuller frustum = new FrustumCuller();
     private final RenderList renderListAlpha = new RenderList(RenderType.ALPHA);
     private final RenderList renderListTransparent = new RenderList(RenderType.TRANSPARENT);
@@ -47,8 +39,10 @@ public final class ChunkRenderer extends IWorldRenderer {
     private Daemon daemon;
     private ChunkCompilerTask[] compilers;
 
-    public ChunkRenderer(Window window, IWorld world, EntityPlayer player, Camera cam) {
-        super(window, world, player, cam);
+    private ChunkStatusCache chunkStatusCache;
+
+
+    public ChunkRenderer() {
         this.chunkSorter = new ChunkSorter();
         this.chunkCompileRequestSorter = new ChunkCompileRequestSorter(this.frustum);
         this.chunkCompileResultSorter = new ChunkCompileResultSorter(this.frustum);
@@ -63,22 +57,24 @@ public final class ChunkRenderer extends IWorldRenderer {
         int count = ClientSettingRegistry.CHUNK_UPDATE_THREAD.getValue();
         this.compilers = new ChunkCompilerTask[count];
         for (int i = 0; i < count; i++) {
-            ChunkCompilerTask task = ChunkCompilerTask.daemon(this.requestQueue, this.resultQueue);
+            ChunkCompilerTask task = ChunkCompilerTask.daemon(this, this.requestQueue, this.resultQueue);
             this.compilers[i] = task;
             Thread t = new Thread(task);
             t.setDaemon(true);
+            t.setPriority(1);
             t.start();
         }
         ClientSharedContext.QUERY_HANDLER.registerCallback(this.getID(), (arg -> switch (arg) {
-            case "pos_cache_size" -> this.posCache.size();
             case "draw_size_alpha" -> this.renderListAlpha.size();
             case "draw_size_transparent" -> this.renderListTransparent.size();
             case "draw_success_size_alpha" -> this.renderListAlpha.getSuccessDrawCount();
             case "draw_success_size_transparent" -> this.renderListTransparent.getSuccessDrawCount();
             case "compile_result_size" -> this.resultQueue.size();
             case "compile_request_size" -> this.requestQueue.size();
+            case "status_cache"-> this.chunkStatusCache.toString();
             default -> 0;
         }));
+        this.chunkStatusCache = new ChunkStatusCache(new ChunkUpdateHandler(this));
         this.daemon = Daemon.create(this);
     }
 
@@ -120,10 +116,10 @@ public final class ChunkRenderer extends IWorldRenderer {
                 result.upload();
                 successCount++;
                 renderList.putLayer(layer);
-                this.posCache.put(result.getPos(), ChunkUpdateStatus.CHECKED);
+                this.chunkStatusCache.set(result.getPos(), ChunkUpdateStatus.UPDATE_SUCCESS);
             } else {
                 renderList.removeLayer(result.getLayerId(), result.getPos());
-                this.posCache.put(result.getPos(), ChunkUpdateStatus.UPDATE_FAILED);
+                this.chunkStatusCache.set(result.getPos(), ChunkUpdateStatus.UPDATE_FAILED);
             }
         }
     }
@@ -177,82 +173,17 @@ public final class ChunkRenderer extends IWorldRenderer {
 
         this.requestQueue.clear();
         this.resultQueue.clear();
-        this.posCache.clear();
         ClientSharedContext.QUERY_HANDLER.unregisterCallback(this.getID());
         this.world.getEventBus().registerEventListener(this);
     }
 
-    private void updateRenderer() {
-        List<RenderChunkPos> cache = new ArrayList<>();
-        int dist = ClientSettingRegistry.getFixedViewDistance();
-        long playerCX = (long) ((this.camera.getPosition().x + 8) / 16);
-        long playerCZ = (long) ((this.camera.getPosition().z + 8) / 16);
-        long playerCY = (long) ((this.camera.getPosition().y + 8) / 16);
-        for (long cx = playerCX - dist; cx <= playerCX + dist; cx++) {
-            for (long cz = playerCZ - dist; cz <= playerCZ + dist; cz++) {
-                long y1 = MathHelper.clamp(playerCY - dist, Chunk.HEIGHT / Chunk.WIDTH + 1, -1);
-                long y2 = MathHelper.clamp(playerCY + dist, Chunk.HEIGHT / Chunk.WIDTH + 1, -1);
-                for (long cy = y1; cy <= y2; cy++) {
-                    RenderChunkPos pos = RenderChunkPos.create(cx, cy, cz);
-                    if (this.chunkRemove(pos)) {
-                        continue;
-                    }
-                    if (!this.chunkVisible(pos)) {
-                        continue;
-                    }
-                    if (this.posCache.getOrDefault(pos, ChunkUpdateStatus.UNCHECKED) != ChunkUpdateStatus.UNCHECKED) {
-                        continue;
-                    }
-                    this.posCache.put(pos, ChunkUpdateStatus.CHECKED);
-                    cache.add(new RenderChunkPos(cx, cy, cz));
-                }
-            }
-        }
-
-        if (ClientSettingRegistry.FORCE_REBUILD_NEAREST_CHUNK.getValue()) {
-            setUpdate(playerCX, playerCY, playerCZ, false);
-        }
-
-        cache.sort(this.chunkSorter);
-
-        for (int i = cache.size() - 1; i >= 0; i--) {
-            RenderChunkPos pos = cache.get(i);
-            setUpdate(pos.getX(), pos.getY(), pos.getZ(), false);
-        }
-    }
-
-    public void gc(){
+    public void gc() {
         try {
-            Set<RenderChunkPos> removePositionList = new HashSet<>();
             if (!requestQueue.isEmpty()) {
-                this.requestQueue.removeIf(req -> {
-                    if (req == null) {
-                        return true;
-                    }
-                    boolean b = chunkRemove(req.getPos());
-                    if (b) {
-                        removePositionList.add(req.getPos());
-                    }
-                    return b;
-                });
+                this.requestQueue.removeIf((o) -> Objects.isNull(o) || chunkRemove(o.getPos()));
             }
             if (!resultQueue.isEmpty()) {
-                this.resultQueue.removeIf(res -> {
-                    if (res == null) {
-                        return true;
-                    }
-                    boolean b = chunkRemove(res.getPos());
-                    if (b) {
-                        removePositionList.add(res.getPos());
-                    }
-                    return b;
-                });
-            }
-            this.posCache.forEach((k, v) -> {
-                if (this.chunkRemove(k)) removePositionList.add(k);
-            });
-            for (RenderChunkPos pos : removePositionList) {
-                this.posCache.remove(pos);
+                this.resultQueue.removeIf((o) -> Objects.isNull(o) || chunkRemove(o.getPos()));
             }
         } catch (ConcurrentModificationException ignored) {
         }
@@ -265,42 +196,25 @@ public final class ChunkRenderer extends IWorldRenderer {
 
     public void setUpdate(String layer, long x, long y, long z, boolean immediate) {
         RenderChunkPos pos = RenderChunkPos.create(x, y, z);
-        this.posCache.put(pos, ChunkUpdateStatus.CHECKED);
-        String k = ChunkLayer.encode(layer, x, y, z);
-
-        if (!DUMMY.containsKey(layer)) {
-            return;
-        }
-
-        RenderList callList;
-        if (DUMMY.get(layer).getRenderType() == RenderType.ALPHA) {
-            callList = this.renderListAlpha;
-        } else {
-            callList = this.renderListTransparent;
-        }
-
         ChunkCompileRequest request;
-        if (callList.containsLayer(k)) {
-            request = ChunkCompileRequest.rebuildAt(this.world, pos, callList.getLayer(k));
-        } else {
-            request = ChunkCompileRequest.buildAt(this.world, pos, layer);
-        }
+        request = ChunkCompileRequest.buildAt(this.world, pos, layer);
         if (immediate) {
-            ChunkCompilerTask.task(request, this.resultQueue).run();
+            ChunkCompilerTask.task(this, request, this.resultQueue).run();
             return;
         }
-        if (!this.requestQueue.contains(request)) {
-            this.requestQueue.add(request);
+        if (this.requestQueue.contains(request)) {
+            return;
         }
+        this.requestQueue.add(request);
     }
 
     public Boolean chunkRemove(RenderChunkPos pos) {
         int dist = ClientSettingRegistry.getFixedViewDistance() * 16;
-        return pos.distanceTo(this.player) > dist;
+        return pos.gridDistanceTo(this.player.getPosition()) > dist;
     }
 
     public Boolean chunkVisible(RenderChunkPos pos) {
-        return this.frustum.aabbVisible(pos.getAABB(this.camera.getPosition()));
+        return this.frustum.aabbVisible(pos.getBounding(this.camera.getPosition()));
     }
 
     @EventHandler
@@ -309,22 +223,23 @@ public final class ChunkRenderer extends IWorldRenderer {
         long cx = x >> 4;
         long cy = y >> 4;
         long cz = z >> 4;
-        if (MathHelper.getRelativePosInChunk(x, 16) == 0) {
+
+        if ((x & 15) == 0) {
             setUpdate(cx - 1, cy, cz, true);
         }
-        if (MathHelper.getRelativePosInChunk(x, 16) == 15) {
+        if ((x & 15) == 15) {
             setUpdate(cx + 1, cy, cz, true);
         }
-        if (MathHelper.getRelativePosInChunk(y, 16) == 0) {
+        if ((y & 15) == 0) {
             setUpdate(cx, cy - 1, cz, true);
         }
-        if (MathHelper.getRelativePosInChunk(y, 16) == 15) {
+        if ((y & 15) == 15) {
             setUpdate(cx, cy + 1, cz, true);
         }
-        if (MathHelper.getRelativePosInChunk(z, 16) == 0) {
+        if ((z & 15) == 0) {
             setUpdate(cx, cy, cz - 1, true);
         }
-        if (MathHelper.getRelativePosInChunk(z, 16) == 15) {
+        if ((z & 15) == 15) {
             setUpdate(cx, cy, cz + 1, true);
         }
         setUpdate(cx, cy, cz, true);
@@ -355,6 +270,7 @@ public final class ChunkRenderer extends IWorldRenderer {
         private double lastRotX = Double.MAX_VALUE;
         private double lastRotY = Double.MAX_VALUE;
         private double lastRotZ = Double.MAX_VALUE;
+        private long last = 0L;
 
         private Daemon(ChunkRenderer parent) {
             this.parent = parent;
@@ -364,36 +280,67 @@ public final class ChunkRenderer extends IWorldRenderer {
         public static Daemon create(ChunkRenderer parent) {
             Daemon daemon = new Daemon(parent);
             daemon.setDaemon(true);
-            daemon.setName("chunk_renderer_daemon");
+            daemon.setName("chunk_check_daemon");
+            daemon.setPriority(1);
             daemon.start();
-
             return daemon;
         }
 
         @Override
         public void run() {
-            long last = 0L;
             while (this.running) {
-                while (System.currentTimeMillis() - last < DELAY_INTERVAL) {
+                if (System.currentTimeMillis() - last < DELAY_INTERVAL) {
                     try {
-                        Thread.yield();
-                        Thread.sleep(10);
-                        Thread.yield();
+                        Thread.sleep(20);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+                    Thread.yield();
                 }
-                Thread.yield();
-                last = System.currentTimeMillis();
-                if (checkForUpdate()) {
-                    this.parent.updateRenderer();
-                }
-                this.parent.gc();
-                Thread.yield();
+                this.last = System.currentTimeMillis();
+                process();
             }
         }
 
-        public boolean checkForUpdate() {
+        public void process() {
+            this.parent.gc();
+            Thread.yield();
+            if (this.checkPosition() || this.needRotationCheck()) {
+                this.parent.chunkStatusCache.processUpdate();
+            }
+        }
+
+        public boolean checkPosition() {
+            long x = (long) (this.camera.getPosition().x) >> 4;
+            long y = (long) (this.camera.getPosition().y) >> 4;
+            long z = (long) (this.camera.getPosition().z) >> 4;
+
+            if (ClientSettingRegistry.FORCE_REBUILD_NEAREST_CHUNK.getValue()) {
+                //this.parent.setUpdate(x, y, z, true);
+            }
+
+            boolean check = false;
+
+            if (x != this.lastX) {
+                this.lastX = x;
+                check = true;
+            }
+            if (y != this.lastY) {
+                this.lastY = y;
+                check = true;
+            }
+            if (z != this.lastZ) {
+                this.lastZ = z;
+                check = true;
+            }
+            if (check) {
+                this.parent.chunkStatusCache.moveTo(x, y, z);
+            }
+
+            return check;
+        }
+
+        public boolean needRotationCheck() {
             double xr = this.camera.getRotation().x;
             double yr = this.camera.getRotation().y;
             double zr = this.camera.getRotation().z;
@@ -411,27 +358,29 @@ public final class ChunkRenderer extends IWorldRenderer {
                 return true;
             }
 
-            long x = (long) ((this.camera.getPosition().x + 8) / 16);
-            long y = (long) ((this.camera.getPosition().y + 8) / 16);
-            long z = (long) ((this.camera.getPosition().z + 8) / 16);
-
-            if (x != this.lastX) {
-                this.lastX = x;
-                return true;
-            }
-            if (y != this.lastY) {
-                this.lastY = y;
-                return true;
-            }
-            if (z != this.lastZ) {
-                this.lastZ = z;
-                return true;
-            }
             return false;
         }
 
         public void setRunning(boolean running) {
             this.running = running;
+        }
+    }
+
+    @SuppressWarnings("ClassCanBeRecord")
+    private static class ChunkUpdateHandler implements ChunkStatusCache.UpdateHandler {
+        private final ChunkRenderer renderer;
+
+        private ChunkUpdateHandler(ChunkRenderer renderer) {
+            this.renderer = renderer;
+        }
+
+        @Override
+        public boolean apply(RenderChunkPos pos) {
+            if (!this.renderer.chunkVisible(pos)) {
+                return false;
+            }
+            this.renderer.setUpdate(pos.getX(), pos.getY(), pos.getZ(), false);
+            return true;
         }
     }
 }

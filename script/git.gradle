@@ -6,6 +6,7 @@ class SyncGitIgnoreTask extends DefaultTask {
         var stream = new FileInputStream(project.getRootDir().getAbsolutePath() + "/.gitignore")
         var s = new String(stream.readAllBytes(), StandardCharsets.UTF_8)
         stream.close()
+
         for (String s2 : s.split("\n")) {
             if (s2.length() <= 1) {
                 continue

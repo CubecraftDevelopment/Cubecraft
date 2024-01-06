@@ -9,6 +9,7 @@ import org.joml.Vector3d;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class RenderChunkPos implements Key, DistanceComparable {
     public static final long HASH_KEY_0 = 63615134589L;
     public static final long HASH_KEY_1 = 37855153351311L;
@@ -23,7 +24,8 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         this.z = z;
     }
 
-    public static AABB getAABBFromPos(RenderChunkPos renderChunkPos, Vector3d viewOffset) {
+
+    public static AABB getBounding(RenderChunkPos renderChunkPos, Vector3d viewOffset) {
         double x = renderChunkPos.getWorldX() - viewOffset.x();
         double y = renderChunkPos.getWorldY() - viewOffset.y();
         double z = renderChunkPos.getWorldZ() - viewOffset.z();
@@ -35,48 +37,63 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         if (ClientSettingRegistry.DISABLE_CONSTANT_POOL.getValue()) {
             return new RenderChunkPos(x, y, z);
         }
-        String k = encode(x, y, z);
+        String k = toString(x, y, z);
         if (!CONSTANT_POOL.containsKey(k)) {
             CONSTANT_POOL.put(k, new RenderChunkPos(x, y, z));
         }
         return CONSTANT_POOL.get(k);
     }
 
-    public static String encode(long x, long y, long z) {
-        return x + "/" + y + "/" + z;
+    public static Vector3d toWorldPos(long x, long y, long z) {
+        return new Vector3d(x * 16 + 8, y * 16 + 8, z * 16 + 8);
     }
 
-    public AABB getAABB(Vector3d viewOffset) {
-        return getAABBFromPos(this, viewOffset);
+    public static String toString(long x, long y, long z) {
+        return "render_pos{x=%d,y=%d,z=%d}".formatted(x, y, z);
     }
 
-    @Override
-    public double distanceTo(Entity target) {
-        return this.getWorldPosition().add(8, 8, 8).distance(target.getPosition());
-    }
+    public static int hash(RenderChunkPos pos) {
+        long hashValue = -1;
 
-    public double distanceTo(Vector3d pos) {
-        return this.getWorldPosition().add(8, 8, 8).distance(pos);
-    }
-
-    @Override
-    public int hashCode() {
-        long hashValue = 0;
-
-        hashValue = (hashValue * HASH_KEY_0) + this.getX() ^ -HASH_KEY_2;
-        hashValue = (hashValue * HASH_KEY_1) + this.getY() | HASH_KEY_0;
-        hashValue = ((hashValue ^ HASH_KEY_1) * HASH_KEY_0) + this.getZ();
+        hashValue = (hashValue * HASH_KEY_0) + pos.getX() ^ -HASH_KEY_2;
+        hashValue = (hashValue * HASH_KEY_1) + pos.getY() | HASH_KEY_0;
+        hashValue = ((hashValue ^ HASH_KEY_1) * HASH_KEY_0) + pos.getZ();
 
         return (int) (hashValue % HASH_KEY_2);
     }
 
-    @Override
-    public String toString() {
-        return encode(this.getX(), this.getY(), this.getZ());
+    public static double distanceTo(long cx, long cy, long cz, Vector3d vec) {
+        return vec.distance(cx * 16 + 8, cy * 16 + 8, cz * 16 + 8);
     }
 
-    public Vector3d getWorldPosition() {
-        return new Vector3d(this.getWorldX(), this.getWorldY(), this.getWorldZ());
+    public static Vector3d getCenterWorldPosition(long cx, long cy, long cz) {
+        return new Vector3d(cx * 16 + 8, cy * 16 + 8, cz * 16 + 8);
+    }
+
+    public static Vector3d getBaseWorldPosition(long cx, long cy, long cz) {
+        return new Vector3d(cx * 16, cy * 16, cz * 16);
+    }
+
+
+    @Override
+    public double distanceTo(Entity target) {
+        return distanceTo(this.x, this.y, this.z, target.getPosition());
+    }
+
+    public double gridDistanceTo(Vector3d pos) {
+        return distanceTo(this.x, this.y, this.z, pos);
+    }
+
+    public double distanceTo(Vector3d pos) {
+        return this.getCenterWorldPosition().distance(pos);
+    }
+
+    public Vector3d getBaseWorldPosition() {
+        return getBaseWorldPosition(this.x, this.y, this.z);
+    }
+
+    public Vector3d getCenterWorldPosition() {
+        return getCenterWorldPosition(this.x, this.y, this.z);
     }
 
     public long getX() {
@@ -112,5 +129,19 @@ public final class RenderChunkPos implements Key, DistanceComparable {
             return false;
         }
         return p.x == this.x && p.y == this.y && p.z == this.z;
+    }
+
+    @Override
+    public int hashCode() {
+        return hash(this);
+    }
+
+    @Override
+    public String toString() {
+        return toString(this.getX(), this.getY(), this.getZ());
+    }
+
+    public AABB getBounding(Vector3d viewOffset) {
+        return getBounding(this, viewOffset);
     }
 }

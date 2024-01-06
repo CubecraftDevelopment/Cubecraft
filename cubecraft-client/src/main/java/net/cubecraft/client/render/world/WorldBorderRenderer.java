@@ -22,10 +22,6 @@ public final class WorldBorderRenderer extends IWorldRenderer {
 
     private IRenderCall border;
 
-    public WorldBorderRenderer(Window window, IWorld world, EntityPlayer player, Camera cam) {
-        super(window, world, player, cam);
-    }
-
     @Override
     public void stop() {
         if (this.border == null) {

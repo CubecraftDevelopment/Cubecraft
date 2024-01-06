@@ -1,12 +1,15 @@
 package net.cubecraft.world.chunk;
 
+import ink.flybird.fcommon.nbt.NBTDataIO;
+import ink.flybird.fcommon.threading.ThreadLock;
+import net.cubecraft.world.IWorld;
+import net.cubecraft.world.block.access.ChunkBlockAccess;
+import net.cubecraft.world.block.access.IBlockAccess;
+import net.cubecraft.world.block.access.NonLoadedBlockAccess;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.task.ChunkLoadTaskType;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.chunk.task.ChunkProcessTask;
-import ink.flybird.fcommon.nbt.NBTDataIO;
-import ink.flybird.fcommon.threading.ThreadLock;
-import net.cubecraft.world.IWorld;
 
 //todo:task|add dynamic chunk height
 public final class WorldChunk extends Chunk implements NBTDataIO {
@@ -70,5 +73,28 @@ public final class WorldChunk extends Chunk implements NBTDataIO {
 
     public ChunkProcessTask getTask() {
         return task;
+    }
+
+
+    public IBlockAccess getBlockAccess(long x, long y, long z) {
+        if (x >> 4 != this.x || z >> 4 != this.z) {
+            return new NonLoadedBlockAccess(this.getWorld(), x, y, z);
+        }
+        //todo:hotspot
+        return new ChunkBlockAccess(this.getWorld(), x, y, z, this);
+    }
+
+    public IBlockAccess[] getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
+        IBlockAccess[] result = new IBlockAccess[(int) ((x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1))];
+        int counter = 0;
+        for (long i = x0; i <= x1; i++) {
+            for (long j = y0; j <= y1; j++) {
+                for (long k = z0; k <= z1; k++) {
+                    result[counter] = getBlockAccess(i, j, k);
+                    counter++;
+                }
+            }
+        }
+        return result;
     }
 }

@@ -3,10 +3,10 @@ package net.cubecraft.client.render.chunk.compile;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
+import net.cubecraft.client.render.chunk.ChunkRenderer;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.world.IWorld;
 
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 public abstract class ChunkCompilerTask implements Runnable {
@@ -14,20 +14,22 @@ public abstract class ChunkCompilerTask implements Runnable {
 
     protected final Queue<ChunkCompileResult> resultQueue;
     protected final Queue<ChunkCompileRequest> requestQueue;
+    protected final ChunkRenderer parent;
 
     private boolean running = true;
 
-    protected ChunkCompilerTask(Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
+    protected ChunkCompilerTask(ChunkRenderer parent, Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
+        this.parent = parent;
         this.resultQueue = result;
         this.requestQueue = request;
     }
 
-    public static ChunkCompilerTask daemon(Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
-        return new CompilerDaemon(request, result);
+    public static ChunkCompilerTask daemon(ChunkRenderer parent, Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
+        return new CompilerDaemon(parent, request, result);
     }
 
-    public static ChunkCompilerTask task(ChunkCompileRequest request, Queue<ChunkCompileResult> result) {
-        return new CompilerTask(request, result);
+    public static ChunkCompilerTask task(ChunkRenderer parent, ChunkCompileRequest request, Queue<ChunkCompileResult> result) {
+        return new CompilerTask(parent, request, result);
     }
 
     public void processRequest(ChunkCompileRequest request) {
@@ -41,9 +43,6 @@ public abstract class ChunkCompilerTask implements Runnable {
             result = ChunkCompiler.build(layerId, world, pos);
         } else {
             result = ChunkCompiler.rebuild(layerId, world, pos, request.getLayer());
-        }
-        if (result == null) {
-            return;
         }
 
         if ((!this.running) && result.isSuccess()) {
@@ -64,8 +63,8 @@ public abstract class ChunkCompilerTask implements Runnable {
     private static class CompilerTask extends ChunkCompilerTask {
         private final ChunkCompileRequest request;
 
-        protected CompilerTask(ChunkCompileRequest request, Queue<ChunkCompileResult> result) {
-            super(null, result);
+        protected CompilerTask(ChunkRenderer parent, ChunkCompileRequest request, Queue<ChunkCompileResult> result) {
+            super(parent, null, result);
             this.request = request;
         }
 
@@ -74,51 +73,45 @@ public abstract class ChunkCompilerTask implements Runnable {
             if (this.request == null) {
                 return;
             }
+            if (this.parent.chunkRemove(this.request.getPos())) {
+                return;
+            }
             this.processRequest(this.request);
         }
     }
 
     private static class CompilerDaemon extends ChunkCompilerTask {
-        protected CompilerDaemon(Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
-            super(request, result);
+        protected CompilerDaemon(ChunkRenderer parent, Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
+            super(parent, request, result);
         }
 
         @Override
         public void run() {
             while (this.isRunning()) {
                 try {
-                    if (this.requestQueue.isEmpty()) {
-                        Thread.sleep(200);
-                        Thread.yield();
-                        continue;
-                    }
-                    boolean finished = false;
                     while (BufferAllocation.getAllocSize() > 67108864 * 8) {
                         Thread.yield();
                     }
-                    try {
-                        ChunkCompileRequest request = null;
-                        synchronized ("chunk_poll") {
-                            if (this.requestQueue.isEmpty()) {
-                                Thread.yield();
-                                finished = true;
-                            } else {
+                    for (int i = 0; i < 40; i++) {
+                        ChunkCompileRequest request;
+                        if (this.requestQueue.isEmpty()) {
+                            Thread.yield();
+                            Thread.sleep(1);
+                            continue;
+                        } else {
+                            synchronized ("chunk_poll") {
                                 request = this.requestQueue.poll();
                             }
                         }
-                        if (!finished) {
-                            if (request == null) {
-                                Thread.yield();
-                                Thread.sleep(50);
-                            } else {
-                                this.processRequest(request);
-                            }
 
+                        if (request == null || this.parent.chunkRemove(request.getPos())) {
+                            Thread.yield();
+                            continue;
                         }
 
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        this.processRequest(request);
                     }
+                    Thread.sleep(5);
                 } catch (Exception e) {
                     LOGGER.error(e);
                 }

@@ -327,6 +327,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
     }
 
     public void leaveWorld() {
+        this.getDeviceEventBus().unregisterEventListener(this.controller);
         this.clientWorld = null;
         this.player = null;
         this.levelRenderer.stop();

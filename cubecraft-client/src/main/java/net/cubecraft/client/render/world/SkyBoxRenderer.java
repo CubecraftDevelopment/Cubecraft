@@ -1,44 +1,27 @@
 package net.cubecraft.client.render.world;
 
+import com.google.gson.JsonObject;
 import ink.flybird.fcommon.registry.TypeItem;
-import me.gb2022.quantum3d.device.Window;
-import ink.flybird.quantum3d_legacy.Camera;
-import ink.flybird.quantum3d_legacy.draw.DrawMode;
-import ink.flybird.quantum3d_legacy.draw.OffHeapVertexBuilder;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
-import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
+import me.gb2022.quantum3d.ColorElement;
+import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
+import me.gb2022.quantum3d.render.vertex.*;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
+import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
-import net.cubecraft.internal.entity.EntityPlayer;
-import net.cubecraft.world.IWorld;
 import org.lwjgl.opengl.GL11;
 
 @TypeItem(WorldRendererType.SKY_BOX)
 public final class SkyBoxRenderer extends IWorldRenderer {
-    public static final int FOG = 0xdce9f5;
-    private static final int SKY = 0x79a7ff;
+    private static final VertexBuilderAllocator ALLOCATOR = new VertexBuilderAllocator(LevelRenderer.ALLOCATOR);
+    private final GLRenderList skyRenderBatch = new GLRenderList();
 
-    private final IRenderCall skyCover = new ListRenderCall();
-    private final IRenderCall skySide = new ListRenderCall();
-
-    public SkyBoxRenderer(Window window, IWorld world, EntityPlayer player, Camera cam) {
-        super(window, world, player, cam);
-        if (!this.skyCover.isAllocated()) {
-            this.skyCover.allocate();
-            this.skySide.allocate();
-        }
-    }
+    private ColorElement skyColor;
+    private ColorElement skyFogColor;
 
     @Override
     public void stop() {
-        if (!this.skyCover.isAllocated()) {
-            return;
-        }
-        this.skyCover.free();
-        this.skySide.free();
+        this.skyRenderBatch.free();
     }
 
     @Override
@@ -46,19 +29,11 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         this.build();
     }
 
-    @Override
-    public void refresh() {
-        this.build();
-    }
-
     public void build() {
-        if (!this.skyCover.isAllocated()) {
-            this.skyCover.allocate();
-            this.skySide.allocate();
-        }
+        this.skyRenderBatch.allocate();
         int d2 = ClientSettingRegistry.getFixedViewDistance();
-        VertexBuilder builder = new OffHeapVertexBuilder(4096, DrawMode.TRIANGLES);
-        builder.begin();
+        VertexBuilder builder = ALLOCATOR.allocate(VertexFormat.V3F_C3F, DrawMode.TRIANGLES, 5120);
+        builder.allocate();
 
         float cx = 0;
         float cy = d2 * 16 * 2;
@@ -71,26 +46,23 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
             float x1 = (float) Math.cos((double) (i + 1) * Math.PI / 180) * r + cx;
             float y1 = (float) Math.sin((double) (i + 1) * Math.PI / 180) * r + cy;
-            builder.color(SKY);
-            builder.vertex(cx, cy + d2 * 64, cz);
-            builder.color(FOG);
-            builder.vertex(x, cy, y);
-            builder.vertex(x1, cy, y1);
+            builder.setColor(this.skyColor.RGB_F());
+            builder.addVertex(cx, cy + d2 * 64, cz);
+            builder.setColor(this.skyFogColor.RGB_F());
+            builder.addVertex(x, cy, y);
+            builder.addVertex(x1, cy, y1);
 
-            builder.color(0x2255cc);
-            builder.vertex(cx, -(cy + d2 * 64), cz);
-            builder.color(FOG);
-            builder.vertex(x, -cy, y);
-            builder.vertex(x1, -cy, y1);
+            builder.setColor(this.skyColor.RGB_F());
+            builder.addVertex(cx, -(cy + d2 * 64), cz);
+            builder.setColor(this.skyFogColor.RGB_F());
+            builder.addVertex(x, -cy, y);
+            builder.addVertex(x1, -cy, y1);
         }
-        builder.end();
-        this.skyCover.upload(builder);
-        builder.free();
 
-        builder = VertexBuilderAllocator.createByPrefer(4096, DrawMode.QUAD_STRIP);
+        VertexBuilder builder2 = ALLOCATOR.allocate(VertexFormat.V3F_C3F, DrawMode.QUAD_STRIP, 5120);
+        builder2.allocate();
 
-        builder.begin();
-        builder.color(FOG);
+        builder2.setColor(this.skyFogColor.RGB_F());
         int sides = 32; // 设置圆柱体的边数
         double radius = d2 * 16 * 32; // 设置圆柱体的半径
         double height = d2 * 64; // 设置圆柱体的高度
@@ -100,13 +72,17 @@ public final class SkyBoxRenderer extends IWorldRenderer {
             double x = Math.cos(angle) * radius;
             double z = Math.sin(angle) * radius;
 
-            builder.vertex(x, height, z); // 上圆柱体的点
-            builder.vertex(x, -height, z); // 下圆柱体的点
+            builder2.addVertex(x, height, z); // 上圆柱体的点
+            builder2.addVertex(x, -height, z); // 下圆柱体的点
         }
 
-        builder.end();
-        this.skySide.upload(builder);
-        builder.free();
+        this.skyRenderBatch.upload(() -> {
+            VertexBuilderUploader.uploadPointer(builder);
+            VertexBuilderUploader.uploadPointer(builder2);
+        });
+
+        ALLOCATOR.free(builder);
+        ALLOCATOR.free(builder2);
     }
 
     @Override
@@ -119,37 +95,24 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
     @Override
     public void render(RenderType type, float delta) {
+        GL11.glClearColor(1, 1, 1, 1);
+
         if (type != RenderType.ALPHA) {
             return;
         }
-
-        /*
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0, (float) -this.camera.getPosition().y, 0);
-        int r = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16 * 100;
-        int x0 = -r, x1 = r, y1 = 0, z0 = -r, z1 = r;
-        VertexBuilder builder = new OffHeapVertexBuilder(16, DrawMode.QUADS);
-        builder.begin();
-        builder.color(0x3366cc);
-        builder.vertex(x1, y1, z1);
-        builder.vertex(x1, y1, z0);
-        builder.vertex(x0, y1, z0);
-        builder.vertex(x0, y1, z1);
-        builder.end();
-        GLUtil.disableBlend();
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        builder.uploadPointer();
-        builder.free();
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GLUtil.enableBlend();
-        GL11.glPopMatrix();
-
-         */
-
+        GL11.glDisable(GL11.GL_FOG);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_CULL_FACE);
-        this.skyCover.call();
-        this.skySide.call();
+        this.skyRenderBatch.call();
         GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_FOG);
     }
+
+    @Override
+    public void config(JsonObject json) {
+        this.skyColor = ColorElement.parseFromString(json.get("sky_color").getAsString());
+        this.skyFogColor = ColorElement.parseFromString(json.get("sky_fog_color").getAsString());
+    }
+
+
 }

@@ -21,10 +21,10 @@ public abstract class DistanceSorter {
 
     public int getOrderFrustum(FrustumCuller frustum, RenderChunkPos pos, RenderChunkPos pos2) {
         Vector3d camPos = this.getCameraPosition();
-        if (!frustum.aabbVisible(pos.getAABB(camPos))) {
+        if (!frustum.aabbVisible(pos.getBounding(camPos))) {
             return -1;
         }
-        if (!frustum.aabbVisible(pos2.getAABB(camPos))) {
+        if (!frustum.aabbVisible(pos2.getBounding(camPos))) {
             return 1;
         }
         return 0;

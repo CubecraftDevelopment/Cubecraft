@@ -28,8 +28,7 @@ public class ParticleRenderer extends IWorldRenderer {
     private ParticleEngine particleEngine;
     private int successSize;
 
-    public ParticleRenderer(Window window, IWorld world, EntityPlayer player, Camera cam) {
-        super(window, world, player, cam);
+    public ParticleRenderer() {
         this.frustum = new FrustumCuller();
     }
 

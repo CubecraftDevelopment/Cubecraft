@@ -1,11 +1,11 @@
 package net.cubecraft.world.entity;
 
+import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.hitting.Hittable;
 import ink.flybird.fcommon.nbt.NBTDataIO;
-import net.cubecraft.world.IWorld;
-import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
 import ink.flybird.fcommon.registry.TypeItem;
+import net.cubecraft.world.IWorld;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
@@ -35,7 +35,7 @@ public abstract class Entity implements Hittable, NBTDataIO {
     public boolean horizontalCollision = false;
     public String selectedBlockID = "cubecraft:air";
     public float distanceWalked;
-    protected boolean flying;
+
     private IWorld world;
 
     private AABB collisionBox = new AABB(0, 0, 0, 0, 0, 0);
@@ -151,16 +151,9 @@ public abstract class Entity implements Hittable, NBTDataIO {
     }
 
 
-//  ------ entity meta ------
+    public void moveRelative(double xa, double za) {
+        float speed=this.getSpeed();
 
-    /**
-     * simulate relative move and turn them into momentum in 3 axis
-     *
-     * @param xa    front and back
-     * @param za    left and right
-     * @param speed IDK what is that
-     */
-    public void moveRelative(double xa, double za, float speed) {
         this.distanceWalked += speed;
         double dist = xa * xa + za * za;
         if (dist < 0.01f) {
@@ -199,8 +192,8 @@ public abstract class Entity implements Hittable, NBTDataIO {
             this.xd *= 0.8f;
             this.yd *= 0.8f;
             this.zd *= 0.8f;
-            if (!flying) {
-                this.yd -= 0.08;
+            if (this.shouldBeEffectedByGravity()) {
+                this.yd -= 0.055;
             }
             if (this.horizontalCollision && this.isFree(this.xd, this.yd + 0.6f - this.y + yo, this.zd)) {
                 this.yd = 0.3f;
@@ -210,12 +203,12 @@ public abstract class Entity implements Hittable, NBTDataIO {
             this.xd *= 0.91f;
             this.yd *= 0.98f;
             this.zd *= 0.91f;
-            if (!flying) {
+            if (this.shouldBeEffectedByGravity()) {
                 this.yd -= 0.08;
             } else {
                 this.yd *= 0.5f;
             }
-            if (this.onGround) {
+            if (this.isOnGround()) {
                 this.xd *= 0.6f;
                 this.zd *= 0.6f;
             }
@@ -354,11 +347,15 @@ public abstract class Entity implements Hittable, NBTDataIO {
         return this.lastCollisionBox;
     }
 
-    public boolean isFlying() {
-        return this.flying;
+    public void setYMotion(float v) {
+        this.yd = v;
     }
 
-    public void setFlying(boolean b) {
-        this.flying = b;
+    public boolean shouldBeEffectedByGravity(){
+        return true;
+    }
+
+    public float getSpeed(){
+        return 0.1f;
     }
 }

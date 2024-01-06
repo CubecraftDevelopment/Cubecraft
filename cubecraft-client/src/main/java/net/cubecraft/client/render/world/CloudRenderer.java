@@ -1,43 +1,47 @@
 package net.cubecraft.client.render.world;
 
-import com.google.gson.JsonElement;
-import net.cubecraft.client.internal.renderer.world.WorldRendererType;
-import net.cubecraft.client.render.RenderType;
-import net.cubecraft.internal.entity.EntityPlayer;
-import net.cubecraft.world.IWorld;
-import net.cubecraft.world.worldGen.noiseGenerator.Noise;
-import net.cubecraft.world.worldGen.noiseGenerator.PerlinNoise;
-import ink.flybird.fcommon.ColorUtil;
-
+import com.google.gson.JsonObject;
+import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.fcommon.registry.TypeItem;
-import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.draw.OffHeapVertexBuilder;
-import ink.flybird.quantum3d_legacy.draw.DrawMode;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
-import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
-import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
+import me.gb2022.quantum3d.ColorElement;
+import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
+import me.gb2022.quantum3d.render.vertex.DrawMode;
+import me.gb2022.quantum3d.render.vertex.VertexBuilder;
+import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
+import me.gb2022.quantum3d.render.vertex.VertexFormat;
+import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.internal.renderer.world.WorldRendererType;
+import net.cubecraft.client.render.LevelRenderer;
+import net.cubecraft.client.render.RenderType;
+import net.cubecraft.world.worldGen.noiseGenerator.Noise;
+import net.cubecraft.world.worldGen.noiseGenerator.PerlinNoise;
+import org.joml.Vector2d;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+
+//todo:区块压缩16个section共享一张表并整体传输
 
 @TypeItem(WorldRendererType.CLOUD)
 public class CloudRenderer extends IWorldRenderer {
+    public static final VertexBuilderAllocator ALLOCATOR = new VertexBuilderAllocator(LevelRenderer.ALLOCATOR);
+
     public static final float CLASSIC_LIGHT_Z = 0.8f;
     public static final float CLASSIC_LIGHT_X = 0.6f;
 
-    private final IRenderCall[] renderLists = new IRenderCall[5];
+    private final GLRenderList[] renderLists = new GLRenderList[6];
     private ByteBuffer cachedMapping;
-
     private Config cfg;
 
-    public CloudRenderer(Window window, IWorld world, EntityPlayer player, Camera cam) {
-        super(window, world, player, cam);
-    }
+    private ColorElement cloudColor;
 
     @Override
     public void init() {
@@ -48,8 +52,8 @@ public class CloudRenderer extends IWorldRenderer {
                 this.cachedMapping.put(x * 512 + z, (byte) synth.getValue(x, z));
             }
         }
-        for (int i = 0; i < 5; i++) {
-            this.renderLists[i] = new ListRenderCall();
+        for (int i = 0; i < 6; i++) {
+            this.renderLists[i] = new GLRenderList();
             this.renderLists[i].allocate();
         }
         this.updateCloud();
@@ -58,7 +62,7 @@ public class CloudRenderer extends IWorldRenderer {
     @Override
     public void stop() {
         if (this.renderLists[0] != null) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 6; i++) {
                 this.renderLists[i].free();
             }
         }
@@ -68,18 +72,19 @@ public class CloudRenderer extends IWorldRenderer {
     }
 
     @Override
-    public void config(JsonElement json) {
+    public void config(JsonObject json) {
+        this.cloudColor = ColorElement.parseFromString(json.getAsJsonObject().get("color").getAsString());
+
         this.cfg = new Config(
                 MathHelper.hex2Int(json.getAsJsonObject().get("color").getAsString()),
                 json.getAsJsonObject().get("thick").getAsFloat(),
                 json.getAsJsonObject().get("size").getAsFloat(),
-                json.getAsJsonObject().get("opacity").getAsFloat(),
                 json.getAsJsonObject().get("use_classic_lighting").getAsBoolean(),
                 json.getAsJsonObject().get("effect_by_world_light").getAsBoolean(),
                 1 - json.getAsJsonObject().get("dense").getAsFloat(),
                 json.getAsJsonObject().get("height").getAsFloat(),
-                json.getAsJsonObject().get("motion_x").getAsFloat(),
-                json.getAsJsonObject().get("motion_z").getAsFloat()
+                json.getAsJsonObject().get("speed_x").getAsFloat(),
+                json.getAsJsonObject().get("speed_z").getAsFloat()
         );
     }
 
@@ -95,13 +100,11 @@ public class CloudRenderer extends IWorldRenderer {
 
     @Override
     public void render(RenderType type, float delta) {
-        /*
         if (type != RenderType.TRANSPARENT) {
             return;
         }
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
         int d2 = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16 * 10;
-        GL11.glEnable(GL11.GL_CULL_FACE);
 
         List<Vector2d> list = new ArrayList<>();
 
@@ -136,6 +139,9 @@ public class CloudRenderer extends IWorldRenderer {
             return -Double.compare(vec1.distance(this.camera.getPosition()), vec2.distance(this.camera.getPosition()));
         });
 
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+
 
         for (Vector2d vec : list) {
             GL11.glPushMatrix();
@@ -148,22 +154,28 @@ public class CloudRenderer extends IWorldRenderer {
 
             camera.setupObjectCamera(new Vector3d(cloudX, cloudY, cloudZ));
             this.renderLists[0].call();
+            this.renderLists[1].call();
             if (this.shouldDiscard(i, j - 1)) {
-                this.renderLists[1].call();
-            }
-            if (this.shouldDiscard(i, j + 1)) {
                 this.renderLists[2].call();
             }
-            if (this.shouldDiscard(i - 1, j)) {
+            if (this.shouldDiscard(i, j + 1)) {
                 this.renderLists[3].call();
             }
-            if (this.shouldDiscard(i + 1, j)) {
+            if (this.shouldDiscard(i - 1, j)) {
                 this.renderLists[4].call();
+            }
+            if (this.shouldDiscard(i + 1, j)) {
+                this.renderLists[5].call();
             }
             GL11.glPopMatrix();
         }
 
-         */
+        double d3 = d2 * cloudSize;
+        double a = Math.sqrt(d3) * d3;
+        GLUtil.setupFog(a, this.parent.getFogColor());
+
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
     @Override
@@ -171,106 +183,89 @@ public class CloudRenderer extends IWorldRenderer {
         if (type != RenderType.TRANSPARENT) {
             return;
         }
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
 
         GLUtil.checkError("post_cloud_render");
     }
 
     public void updateCloud() {
         GLUtil.checkError("pre_cloud_update");
+        for (int i = 0; i < 6; i++) {
+            this.generateData(i);
+        }
+    }
 
+    public void generateData(int face) {
         double x0 = (0);
         double x1 = (this.cfg.cloudSize);
         double y0 = (0);
         double y1 = (this.cfg.cloudThick);
         double z0 = (0);
         double z1 = (this.cfg.cloudSize);
-        float[] col = ColorUtil.int1Float1ToFloat4(this.cfg.cloudColor, 0.8f);
-        float col0 = 1;
+        double[] col = this.cloudColor.RGBA_F();
 
-        {
-            VertexBuilder builder = new OffHeapVertexBuilder(24, DrawMode.QUADS);
-            builder.begin();
-            builder.color(col[0], col[1], col[2], col[3]);
-            builder.vertex(x1, y1, z1);
-            builder.vertex(x1, y1, z0);
-            builder.vertex(x0, y1, z0);
-            builder.vertex(x0, y1, z1);
-            builder.vertex(x0, y0, z1);
-            builder.vertex(x0, y0, z0);
-            builder.vertex(x1, y0, z0);
-            builder.vertex(x1, y0, z1);
-            builder.end();
-            this.renderLists[0].upload(builder);
-            builder.free();
-        }
+        VertexBuilder builder = ALLOCATOR.allocate(VertexFormat.V3F_C4F, DrawMode.QUADS, 4);
+        builder.allocate();
 
+        float col0 = 1.0f;
 
-        {
-            if (this.cfg.useClassLighting) {
-                col0 = CLASSIC_LIGHT_Z;
+        switch (face) {
+            case 2, 3 -> {
+                if (this.cfg.useClassLighting) {
+                    col0 = CLASSIC_LIGHT_Z;
+                }
             }
-            //draw back
-            VertexBuilder builder = new OffHeapVertexBuilder(12, DrawMode.QUADS);
-            builder.begin();
-            builder.color(col[0] * col0, col[1] * col0, col[2] * col0, col[3]);
-            builder.vertex(x0, y1, z0);
-            builder.vertex(x1, y1, z0);
-            builder.vertex(x1, y0, z0);
-            builder.vertex(x0, y0, z0);
-            builder.end();
-            this.renderLists[1].upload(builder);
-            builder.free();
-        }
-        {
-            VertexBuilder builder = new OffHeapVertexBuilder(12, DrawMode.QUADS);
-            builder.begin();
-            builder.color(col[0] * col0, col[1] * col0, col[2] * col0, col[3]);
-            builder.vertex(x0, y1, z1);
-            builder.vertex(x0, y0, z1);
-            builder.vertex(x1, y0, z1);
-            builder.vertex(x1, y1, z1);
-            builder.end();
-            this.renderLists[2].upload(builder);
-            builder.free();
+            case 4, 5 -> {
+                if (this.cfg.useClassLighting) {
+                    col0 = CLASSIC_LIGHT_X;
+                }
+            }
         }
 
-        if (this.cfg.useClassLighting) {
-            col0 = CLASSIC_LIGHT_X;
+        builder.setColor(col[0] * col0, col[1] * col0, col[2] * col0, 0.7f);
+
+        switch (face) {
+            case 0 -> {
+                builder.addVertex(x1, y1, z1);
+                builder.addVertex(x1, y1, z0);
+                builder.addVertex(x0, y1, z0);
+                builder.addVertex(x0, y1, z1);
+            }
+            case 1 -> {
+                builder.addVertex(x0, y0, z1);
+                builder.addVertex(x0, y0, z0);
+                builder.addVertex(x1, y0, z0);
+                builder.addVertex(x1, y0, z1);
+            }
+            case 2 -> {
+                builder.addVertex(x0, y1, z0);
+                builder.addVertex(x1, y1, z0);
+                builder.addVertex(x1, y0, z0);
+                builder.addVertex(x0, y0, z0);
+            }
+            case 3 -> {
+                builder.addVertex(x0, y1, z1);
+                builder.addVertex(x0, y0, z1);
+                builder.addVertex(x1, y0, z1);
+                builder.addVertex(x1, y1, z1);
+            }
+            case 4 -> {
+                builder.addVertex(x0, y1, z1);
+                builder.addVertex(x0, y1, z0);
+                builder.addVertex(x0, y0, z0);
+                builder.addVertex(x0, y0, z1);
+            }
+            case 5 -> {
+                builder.addVertex(x1, y0, z1);
+                builder.addVertex(x1, y0, z0);
+                builder.addVertex(x1, y1, z0);
+                builder.addVertex(x1, y1, z1);
+            }
         }
-        //draw left
-        {
-            VertexBuilder builder = new OffHeapVertexBuilder(12, DrawMode.QUADS);
-            builder.begin();
-            builder.color(col[0] * col0, col[1] * col0, col[2] * col0, col[3]);
-            builder.vertex(x0, y1, z1);
-            builder.vertex(x0, y1, z0);
-            builder.vertex(x0, y0, z0);
-            builder.vertex(x0, y0, z1);
-            builder.end();
-            this.renderLists[3].upload(builder);
-            builder.free();
-        }
-        {
-            VertexBuilder builder = new OffHeapVertexBuilder(12, DrawMode.QUADS);
-            builder.begin();
-            builder.color(col[0] * col0, col[1] * col0, col[2] * col0, col[3]);
-            builder.vertex(x1, y0, z1);
-            builder.vertex(x1, y0, z0);
-            builder.vertex(x1, y1, z0);
-            builder.vertex(x1, y1, z1);
-            builder.end();
-            this.renderLists[4].upload(builder);
-            GLUtil.checkError("post_cloud_update");
-            builder.free();
-        }
+
+        this.renderLists[face].upload(builder);
+        ALLOCATOR.free(builder);
     }
 
-    @Override
-    public void refresh() {
-        this.init();
-    }
 
     public boolean shouldDiscard(long x, long z) {
         int fixX = (int) MathHelper.getRelativePosInChunk(x, 512);
@@ -284,7 +279,6 @@ public class CloudRenderer extends IWorldRenderer {
             int cloudColor,
             float cloudThick,
             float cloudSize,
-            float cloudOpacity,
             boolean useClassLighting,
             boolean effectByWorldLight,
 

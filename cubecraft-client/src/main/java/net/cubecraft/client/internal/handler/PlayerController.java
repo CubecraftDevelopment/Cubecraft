@@ -1,40 +1,35 @@
 package net.cubecraft.client.internal.handler;
 
-import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.EnvironmentPath;
-import net.cubecraft.world.chunk.ChunkCodec;
-import net.cubecraft.world.chunk.WorldChunk;
-import net.cubecraft.world.entity.EntityLiving;
 import ink.flybird.fcommon.event.EventHandler;
+import ink.flybird.fcommon.math.hitting.HitResult;
+import ink.flybird.fcommon.math.hitting.Hittable;
 import ink.flybird.fcommon.nbt.NBT;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
 import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.MouseClickEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
+import net.cubecraft.EnvironmentPath;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.internal.entity.EntityPlayer;
+import net.cubecraft.world.chunk.ChunkCodec;
+import net.cubecraft.world.chunk.WorldChunk;
+import net.cubecraft.world.entity.EntityLiving;
+import net.cubecraft.world.entity.controller.EntityController;
+import net.cubecraft.world.item.container.Inventory;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 
-public class PlayerController {
-    @Deprecated
-    public static final String[] list = new String[]{
-            "cubecraft:stone",
-            "cubecraft:stone",
-            "cubecraft:stone",
-            "cubecraft:stone",
-            "cubecraft:stone",
-            "cubecraft:stone",
-            "cubecraft:stone",
-            "cubecraft:stone",
-            "cubecraft:blue_stained_glass"
-    };
-
+public class PlayerController extends EntityController<EntityPlayer> {
     private final CubecraftClient client;
     private EntityLiving entity;
+    private int slot;
 
     public PlayerController(CubecraftClient client, EntityLiving e) {
         this.client = client;
@@ -42,69 +37,57 @@ public class PlayerController {
         this.client.getDeviceEventBus().registerEventListener(this);
     }
 
-    public void setEntity(EntityLiving entity) {
+    public void setEntity(EntityPlayer entity) {
         this.entity = entity;
+
     }
 
     public void tick() {
-        float xa = 0.0f;
-        float ya = 0.0f;
+        this.handle((EntityPlayer) entity);
         float speed;
         {
             if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_W)) {
-                ya -= 1;
+                this.moveForward();
             }
             if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_S)) {
-                ya += 1;
+                this.moveBackward();
             }
             if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_A)) {
-                xa -= 1;
+                this.moveLeft();
             }
             if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_D)) {
-                xa += 1;
+                this.moveRight();
             }
-            if (entity.isFlying()) {
-                if (entity.runningMode) {
-                    speed = 20.5f;
-                } else {
-                    speed = 2f;
-                }
-            } else {
-                if (entity.runningMode) {
-                    speed = 1.38f;
-                } else {
-                    speed = 0.9f;
-                }
+            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_SPACE)) {
+                this.jump();
             }
 
+
+
+
             if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_SPACE)) {
-                if (!this.entity.isFlying()) {
-                    if (this.entity.inLiquid()) {
-                        this.entity.yd += 0.13f;
-                    } else if (this.entity.isOnGround()) {
-                        this.entity.yd = 0.45f;
-                    }
+                if (this.entity.isFlying()) {
+                    this.flyUp();
                 } else {
-                    entity.yd = 0.45f;
+                    this.jump();
                 }
             }
             if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_LEFT_SHIFT)) {
                 if (entity.isFlying()) {
                     entity.yd = -0.45f;
                 } else {
-                    this.entity.sneak = !this.entity.sneak;
+                    this.entity.setSneaking(true);
                 }
+            } else {
+                this.entity.setSneaking(false);
             }
-            this.entity.moveRelative(xa, ya, this.entity.isOnGround() ? this.entity.inLiquid() ? 0.02f * speed : 0.1f * speed : 0.02f * speed);
         }
 
         if (this.client.getKeyboard().isKeyDoubleClicked(KeyboardButton.KEY_SPACE, 250)) {
-            this.entity.setFlying(!this.entity.isFlying());
+            this.toggleFly();
         }
-    }
 
-    public void setSelectedSlot(int slot) {
-        this.entity.selectedBlockID = list[slot];
+        super.tick();
     }
 
 
@@ -119,8 +102,12 @@ public class PlayerController {
     @EventHandler
     public void onKeyEventPressed(KeyboardPressEvent e) {
         if (e.getKey() == KeyboardButton.KEY_LEFT_CONTROL) {
-            entity.runningMode = !entity.runningMode;
+            this.toggleSprint();
         }
+
+
+
+
         if (e.getKey() == KeyboardButton.KEY_R) {
             ClientSharedContext.CLIENT_SETTING.load();
         }
@@ -167,10 +154,48 @@ public class PlayerController {
     }
 
     @EventHandler
-    public void onMouseScroll(MouseScrollEvent e) {
-        //todo:add scroll logic
+    public void onScroll(MouseScrollEvent e) {
+        int i = (int) -e.getYOffset();
+        if (i > 0) {
+            i = 1;
+        }
+        if (i < 0) {
+            i = -1;
+        }
+        this.slot += i;
+        if (this.slot > 8) {
+            this.slot = 0;
+        }
+        if (this.slot < 0) {
+            this.slot = 8;
+        }
+        this.entity.getInventory().setActiveSlot(this.slot);
+    }
+
+    @EventHandler
+    public void onClicked(MouseClickEvent e) {
+        if(!this.isHandlingEntity()){
+            return;
+        }
+
+        if (e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
+            this.entity.attack();
+        }
+        if (e.getButton() == MouseButton.MOUSE_BUTTON_RIGHT) {
+            this.entity.interact();
+        }
+        if (e.getButton() == MouseButton.MOUSE_BUTTON_MIDDLE) {
+            HitResult hitResult = this.entity.hitResult;
+            if (hitResult != null) {
+                Hittable obj = this.entity.hitResult.getObject(Hittable.class);
+                Inventory inv = this.entity.getInventory();
+                inv.selectItem(obj, this.slot);
+            }
+        }
     }
 
 
-    //todo:按键绑定，内置服务端，toml设置
+    //todo:按键绑定
+
+
 }

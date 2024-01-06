@@ -1,13 +1,16 @@
 package net.cubecraft.world.chunk;
 
-import net.cubecraft.world.block.Block;
-import net.cubecraft.world.chunk.pos.ChunkPos;
-import net.cubecraft.world.chunk.storage.*;
 import ink.flybird.fcommon.container.KeyGetter;
 import ink.flybird.fcommon.nbt.NBTDataIO;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
+import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.BlockState;
 import net.cubecraft.world.block.EnumFacing;
+import net.cubecraft.world.chunk.pos.ChunkPos;
+import net.cubecraft.world.chunk.storage.ByteDataSection;
+import net.cubecraft.world.chunk.storage.SectionBlockAccess;
+import net.cubecraft.world.chunk.storage.SectionLightAccess;
+import net.cubecraft.world.chunk.storage.StringDataSection;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,11 +47,9 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
         }
     }
 
-
     public Collection<BlockState> getBlockEntityList() {
         return this.blockEntities.values();
     }
-
 
     //block state
     public BlockState getBlockState(int x, int y, int z) {
@@ -84,25 +85,27 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
 
     public void setBiome(int x, int y, int z, String biome) {
         ChunkPos.checkChunkRelativePosition(x, y, z);
-        this.biomeSections[y / WIDTH].set(x, y % WIDTH, z,biome);
+        this.biomeSections[y / WIDTH].set(x, y % WIDTH, z, biome);
     }
 
     public void setTemperature(int x, int y, int z, byte temperature) {
         ChunkPos.checkChunkRelativePosition(x, y, z);
-        this.temperatureSections[y / WIDTH].set(x, y % WIDTH, z,temperature);
+        this.temperatureSections[y / WIDTH].set(x, y % WIDTH, z, temperature);
     }
 
     public void setHumidity(int x, int y, int z, byte humidity) {
         ChunkPos.checkChunkRelativePosition(x, y, z);
-        this.humiditySections[y / WIDTH].set(x, y % WIDTH, z,humidity);
+        this.humiditySections[y / WIDTH].set(x, y % WIDTH, z, humidity);
     }
 
     public String getBlockID(int x, int y, int z) {
-        ChunkPos.checkChunkRelativePosition(x, y, z);
-        return this.blockIdSections[y / WIDTH].get(x, y % WIDTH, z);
+        if (x >= 0 && y >= 0 && z >= 0 && x < Chunk.WIDTH && y < Chunk.HEIGHT && z < Chunk.WIDTH) {
+            return this.blockIdSections[y / WIDTH].get(x, y % WIDTH, z);
+        }
+        return null;
     }
 
-    public Block getBlock(int x, int y, int z){
+    public Block getBlock(int x, int y, int z) {
         ChunkPos.checkChunkRelativePosition(x, y, z);
         //return this.blockIdSections[y / WIDTH].getBlock(x, y % WIDTH, z);
         return null;

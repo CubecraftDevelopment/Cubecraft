@@ -7,28 +7,28 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 
 public final class OffHeapVertexBuilder extends VertexBuilder {
     public static final int ALLOCATED = 1;
     public static final int RELEASED = 2;
 
 
-    private final FloatBuffer vertexArray;
-    private final FloatBuffer texCoordArray;
-    private final FloatBuffer colorArray;
-    private final FloatBuffer normalArray;
-    private final FloatBuffer rawArray;
+    private final ByteBuffer vertexArray;
+    private final ByteBuffer texCoordArray;
+    private final ByteBuffer colorArray;
+    private final ByteBuffer normalArray;
+    private final ByteBuffer rawArray;
     private final LifetimeCounter counter = new LifetimeCounter();
 
     public OffHeapVertexBuilder(int size, DrawMode drawMode) {
         super(size, drawMode);
         this.counter.allocate();
-        this.vertexArray = BufferAllocation.allocFloatBuffer(this.size * 3);
-        this.texCoordArray = BufferAllocation.allocFloatBuffer(this.size * 3);
-        this.colorArray = BufferAllocation.allocFloatBuffer(this.size * 4);
-        this.normalArray = BufferAllocation.allocFloatBuffer(this.size * 3);
-        this.rawArray = BufferAllocation.allocFloatBuffer(this.size * 13);
+        this.vertexArray = BufferAllocation.allocByteBuffer(this.size * 3 * 4);
+        this.texCoordArray = BufferAllocation.allocByteBuffer(this.size * 3 * 4);
+        this.colorArray = BufferAllocation.allocByteBuffer(this.size * 4 * 4);
+        this.normalArray = BufferAllocation.allocByteBuffer(this.size * 3 * 4);
+        this.rawArray = BufferAllocation.allocByteBuffer(this.size * 13 * 4);
     }
 
     public void free() {
@@ -49,36 +49,36 @@ public final class OffHeapVertexBuilder extends VertexBuilder {
         if (!this.counter.isAllocated()) {
             return;
         }
-        this.vertexArray.put((float) x).put((float) y).put((float) z);
-        this.texCoordArray.put(this.u).put(this.v);
-        this.colorArray.put(this.r).put(this.g).put(this.b).put(this.a);
-        this.normalArray.put(this.n).put(this.f).put(this.l);
+        this.vertexArray.putFloat((float) x).putFloat((float) y).putFloat((float) z);
+        this.texCoordArray.putFloat(this.u).putFloat(this.v);
+        this.colorArray.putFloat(this.r).putFloat(this.g).putFloat(this.b).putFloat(this.a);
+        this.normalArray.putFloat(this.n).putFloat(this.f).putFloat(this.l);
         this.rawArray
-                .put(this.u).put(this.v)
-                .put(this.r).put(this.g).put(this.b).put(this.a)
-                .put(this.n).put(this.f).put(this.l)
-                .put((float) x).put((float) y).put((float) z);
+                .putFloat(this.u).putFloat(this.v)
+                .putFloat(this.r).putFloat(this.g).putFloat(this.b).putFloat(this.a)
+                .putFloat(this.n).putFloat(this.f).putFloat(this.l)
+                .putFloat((float) x).putFloat((float) y).putFloat((float) z);
 
         this.count++;
     }
 
-    public FloatBuffer getVertexArray() {
+    public ByteBuffer getVertexArray() {
         return this.vertexArray.flip().slice();
     }
 
-    public FloatBuffer getTexCoordArray() {
+    public ByteBuffer getTexCoordArray() {
         return texCoordArray.flip().slice();
     }
 
-    public FloatBuffer getColorArray() {
+    public ByteBuffer getColorArray() {
         return colorArray.flip().slice();
     }
 
-    public FloatBuffer getNormalArray() {
+    public ByteBuffer getNormalArray() {
         return normalArray.flip().slice();
     }
 
-    public FloatBuffer getRawArray() {
+    public ByteBuffer getRawArray() {
         return rawArray.flip().slice();
     }
 

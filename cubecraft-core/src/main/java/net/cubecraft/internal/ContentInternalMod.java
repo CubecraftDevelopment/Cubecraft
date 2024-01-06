@@ -22,10 +22,7 @@ import net.cubecraft.world.worldGen.generator.WorldGeneratorPipelineRegistry;
 public class ContentInternalMod {
     @EventHandler
     public void onContentInitialize(ContentInitializeEvent e) {
-
-        ContentRegistries.BLOCK_BEHAVIOR.registerFieldHolder(BlockBehaviorRegistry.class);
-        ContentRegistries.BLOCK.registerFieldHolder(BlockRegistry.class);
-
+        ContentRegistries.EVENT_BUS.registerEventListener(ItemRegistry.class);
 
         ContentRegistries.ENTITY.registerGetFunctionProvider(EntityRegistry.class);
         ContentRegistries.INVENTORY.registerGetFunctionProvider(InventoryRegistry.class);
@@ -36,9 +33,10 @@ public class ContentInternalMod {
 
         ContentRegistries.DIMENSION.registerFieldHolder(DimensionRegistry.class);
         ContentRegistries.CHUNK_GENERATE_PIPELINE.registerFieldHolder(WorldGeneratorPipelineRegistry.class);
-
         ContentRegistries.ITEM_BEHAVIOR.registerFieldHolder(ItemBehaviorRegistry.class);
-
         ContentRegistries.ITEM.registerFieldHolder(ItemRegistry.class);
+
+        ContentRegistries.BLOCK_BEHAVIOR.registerFieldHolder(BlockBehaviorRegistry.class);
+        ContentRegistries.BLOCK.registerFieldHolder(BlockRegistry.class);
     }
 }

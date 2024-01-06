@@ -1,4 +1,4 @@
-package me.gb2022.quantum3d.lwjgl.context;
+package me.gb2022.quantum3d.memory;
 
 import ink.flybird.fcommon.memory.BufferAllocator;
 import org.lwjgl.system.MemoryUtil;

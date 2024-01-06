@@ -6,16 +6,18 @@ import java.nio.ByteBuffer;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class DataFormat {
+    public static final DataFormat EMPTY = null;
+
+    public static final DataFormat FLOAT_2 = new DataFormat(3, DataType.FLOAT);
+    public static final DataFormat FLOAT_3 = new DataFormat(3, DataType.FLOAT);
+    public static final DataFormat FLOAT_4 = new DataFormat(4, DataType.FLOAT);
+
     private final int size;
     private final DataType type;
 
     public DataFormat(int size, DataType type) {
         this.size = size;
         this.type = type;
-    }
-
-    public static ByteBuffer createBuffer(BufferAllocator allocator, int vertexCount, DataFormat... fmtList) {
-        return allocator.allocateBuffer(getDataLength(vertexCount, fmtList));
     }
 
     public static int getDataLength(int vertexCount, DataFormat... fmtList) {
@@ -37,52 +39,26 @@ public final class DataFormat {
         return this.size;
     }
 
-    public void check(double... data) {
-        if (data.length == this.size) {
-            return;
-        }
-        throw new RuntimeException("none matched data size %s, expected %s!".formatted(data.length, this.size));
-    }
-
     public int getBufferCapacity(int vertexCount) {
-        return vertexCount * this.type.getBytes();
+        return vertexCount * this.type.getBytes() * this.getSize();
     }
 
+    @Deprecated
     public ByteBuffer createBuffer(BufferAllocator allocator, int vertexCount) {
         return allocator.allocateBuffer(this.getBufferCapacity(vertexCount));
     }
 
+    @Deprecated
     public void putToBuffer(ByteBuffer buffer, double... data) {
-        switch (this.type) {
-            case BYTE, UNSIGNED_BYTE -> {
-                for (double d : data) {
-                    buffer.put((byte) d);
-                }
-            }
-            case SHORT, UNSIGNED_SHORT -> {
-                for (double d : data) {
-                    buffer.putShort((short) d);
-                }
-            }
-            case INTEGER, UNSIGNED_INT -> {
-                for (double d : data) {
-                    buffer.putInt((int) d);
-                }
-            }
-            case LONG, UNSIGNED_LONG -> {
-                for (double d : data) {
-                    buffer.putLong((long) d);
-                }
-            }
-            case FLOAT -> {
-                for (double d : data) {
-                    buffer.putFloat((float) d);
-                }
-            }
-            case DOUBLE -> {
-                for (double d : data) {
-                    buffer.putDouble(d);
-                }
+        for (int i = 0; i < this.getSize(); i++) {
+            double d = data[i];
+            switch (this.type) {
+                case BYTE, UNSIGNED_BYTE -> buffer.put((byte) d);
+                case SHORT, UNSIGNED_SHORT -> buffer.putShort((short) d);
+                case INTEGER, UNSIGNED_INT -> buffer.putInt((int) d);
+                case LONG, UNSIGNED_LONG -> buffer.putLong((long) d);
+                case FLOAT -> buffer.putFloat((float) d);
+                case DOUBLE -> buffer.putDouble(d);
             }
         }
     }

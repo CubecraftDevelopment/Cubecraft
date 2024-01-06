@@ -66,6 +66,7 @@ public interface ChunkLoadAccess {
             for (long z = centerCZ - range; z <= centerCZ + range; z++) {
                 ChunkPos p=ChunkPos.create(x, z);
                 world.loadChunk(p,ChunkLoadTicket.LOAD_DATA);
+                //todo:hotspot
                 world.waitUntilChunkExist(p);
                 world.addChunkLock(p,caller);
             }

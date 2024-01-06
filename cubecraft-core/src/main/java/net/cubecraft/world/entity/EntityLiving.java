@@ -19,8 +19,11 @@ import java.util.List;
 public abstract class EntityLiving extends Entity {
     private final Inventory inventory;
     public HitResult hitResult;
-    public boolean runningMode;
-    public boolean sneak = false;
+
+    public boolean sprinting;
+    public boolean sneaking = false;
+    protected boolean flying;
+
     private float health;
 
     public EntityLiving(IWorld world) {
@@ -103,5 +106,51 @@ public abstract class EntityLiving extends Entity {
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public boolean isSprinting() {
+        return this.sprinting;
+    }
+
+    public void setSprinting(boolean b) {
+        this.sprinting = b;
+    }
+
+    public boolean isFlying() {
+        return this.flying;
+    }
+
+    public void setFlying(boolean b) {
+        this.flying = b;
+    }
+
+    public boolean isSneaking() {
+        return this.sneaking;
+    }
+
+    public void setSneaking(boolean b) {
+        this.sneaking = b;
+    }
+
+    @Override
+    public boolean shouldBeEffectedByGravity() {
+        return !this.flying;
+    }
+
+    @Override
+    public float getSpeed() {
+        if (this.isFlying()) {
+            return this.sprinting ? 0.55f : 0.2f;
+        } else {
+            if (this.inLiquid()) {
+                return this.sprinting ? 0.05f : 0.045f;
+            } else {
+                if (this.isOnGround()) {
+                    return this.sneaking ? 0.03f : this.sprinting ? 0.138f : 0.09f;
+                } else {
+                    return this.sprinting ? 0.0276f : 0.02f;
+                }
+            }
+        }
     }
 }

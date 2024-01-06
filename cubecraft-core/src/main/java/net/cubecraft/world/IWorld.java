@@ -8,7 +8,6 @@ import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.hitting.Hittable;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.level.Level;
-import net.cubecraft.world.block.access.ChunkBlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.access.NonLoadedBlockAccess;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
@@ -270,16 +269,18 @@ public abstract class IWorld {
         return this.chunks.contains(p);
     }
 
-    public List<IBlockAccess> getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
-        ArrayList<IBlockAccess> blocks = new ArrayList<>();
+    public IBlockAccess[] getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
+        IBlockAccess[] result = new IBlockAccess[(int) ((x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1))];
+        int counter = 0;
         for (long i = x0; i <= x1; i++) {
             for (long j = y0; j <= y1; j++) {
                 for (long k = z0; k <= z1; k++) {
-                    blocks.add(getBlockAccess(i, j, k));
+                    result[counter] = getBlockAccess(i, j, k);
+                    counter++;
                 }
             }
         }
-        return blocks;
+        return result;
     }
 
     //todo:light fetch->Light engine
@@ -288,10 +289,11 @@ public abstract class IWorld {
         return dimension;
     }
 
+    //todo:hotspot
     public IBlockAccess getBlockAccess(long x, long y, long z) {
         WorldChunk c = getChunk(ChunkPos.fromWorldPos(x, z));
         if (c != null) {
-            return new ChunkBlockAccess(this, x, y, z, c);
+            return c.getBlockAccess(x, y, z);
         }
         return new NonLoadedBlockAccess(this, x, y, z);
     }
@@ -327,17 +329,6 @@ public abstract class IWorld {
         return 512;
     }
 
-    public boolean areaSolidAndNear(long x0, long y0, long z0, long x1, long y1, long z1) {
-        return this.getAllBlockInRange(x0, y0, z0, x1, y1, z1).stream().allMatch(block -> block.getBlock() != null
-                && BlockPropertyDispatcher.isSolid(block)
-                && this.getAllBlockInRange(x0, y1 + 1, z0, x1, y1 + 1, z1).stream().allMatch(BlockPropertyDispatcher::isSolid)
-                && this.getAllBlockInRange(x0, y0 - 1, z0, x1, y0 - 1, z1).stream().allMatch(BlockPropertyDispatcher::isSolid)
-                && this.getAllBlockInRange(x0 - 1, y0, z0, x0 - 1, y1, z1).stream().allMatch(BlockPropertyDispatcher::isSolid)
-                && this.getAllBlockInRange(x1 + 1, y0, z0, x1 + 1, y1, z1).stream().allMatch(BlockPropertyDispatcher::isSolid)
-                && this.getAllBlockInRange(x0, y0, z0 - 1, x1, y1, z0 - 1).stream().allMatch(BlockPropertyDispatcher::isSolid)
-                && this.getAllBlockInRange(x0, y0, z1 + 1, x1, y1, z1 + 1).stream().allMatch(BlockPropertyDispatcher::isSolid));
-    }
-
     public IBlockAccess[] getBlockAndNeighbor(long x, long y, long z) {
         return new IBlockAccess[]{
                 getBlockAccess(x, y, z),
@@ -369,7 +360,7 @@ public abstract class IWorld {
     }
 
     //todo
-    public <T extends Entity> T spawnEntity(Class<T> clazz){
+    public <T extends Entity> T spawnEntity(Class<T> clazz) {
         return null;
     }
 }
