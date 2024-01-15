@@ -87,9 +87,9 @@ public abstract class EntityLiving extends Entity {
             return;
         }
         if (this.hitResult.instanceOf(EntityLiving.class)) {
-            Container.getItem(this.inventory.getActive()).onAttack(this.hitResult.getObject(EntityLiving.class));
+            Container.getItem(this.inventory.getActive()).onAttack(this.hitResult, this.hitResult.getObject(EntityLiving.class));
         } else {
-            Container.getItem(this.inventory.getActive()).onDig(this.hitResult.getObject(IBlockAccess.class));
+            Container.getItem(this.inventory.getActive()).onDig(this.hitResult, this.hitResult.getObject(IBlockAccess.class));
         }
     }
 
@@ -98,9 +98,9 @@ public abstract class EntityLiving extends Entity {
             return;
         }
         if (this.hitResult.instanceOf(EntityLiving.class)) {
-            Container.getItem(this.inventory.getActive()).onUse(this.hitResult.getObject(EntityLiving.class));
+            Container.getItem(this.inventory.getActive()).onUse(this.hitResult, this.hitResult.getObject(EntityLiving.class));
         } else {
-            Container.getItem(this.inventory.getActive()).onUse(this.hitResult.getObject(IBlockAccess.class));
+            Container.getItem(this.inventory.getActive()).onUse(this.hitResult, this.hitResult.getObject(IBlockAccess.class));
         }
     }
 

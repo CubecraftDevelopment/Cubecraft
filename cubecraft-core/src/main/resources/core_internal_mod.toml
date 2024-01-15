@@ -1,0 +1,11 @@
+[meta]
+id = "cubecraft_core"
+version = "1.0.0"
+class = "net.cubecraft.internal.CubecraftCoreInternalMod"
+side = "shared"
+
+[info]
+name = "Cubecraft-Core"
+author = "GrassBlock2022"
+website = "https://github.com/CubecraftDevelopment"
+description = "Basic core framework."

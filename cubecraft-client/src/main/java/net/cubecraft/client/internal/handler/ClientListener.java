@@ -1,16 +1,16 @@
 package net.cubecraft.client.internal.handler;
 
-import me.gb2022.quantum3d.device.event.WindowFocusEvent;
-import net.cubecraft.client.ClientSettingRegistry;
-import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.event.ClientRendererInitializeEvent;
-import net.cubecraft.client.gui.GUIContext;
-import net.cubecraft.client.render.world.ParticleRenderer;
-import net.cubecraft.event.SettingReloadEvent;
-import net.cubecraft.event.register.BlockRegisterEvent;
 import ink.flybird.fcommon.event.EventHandler;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.WindowFocusEvent;
+import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.context.ClientGUIContext;
+import net.cubecraft.client.event.ClientRendererInitializeEvent;
+import net.cubecraft.client.render.world.ParticleRenderer;
+import net.cubecraft.event.SettingReloadEvent;
+import net.cubecraft.event.register.BlockRegisterEvent;
 
 
 public class ClientListener {
@@ -19,7 +19,7 @@ public class ClientListener {
 
 
         //todo:注册事件
-         }
+    }
 
     @EventHandler
     public void onClientRendererInitialize(ClientRendererInitializeEvent e) {
@@ -30,34 +30,34 @@ public class ClientListener {
     @EventHandler
     public void onKeyEventPressed(KeyboardPressEvent e) {
         if (e.getKey() == KeyboardButton.KEY_F11) {
-            CubecraftClient.CLIENT.getWindow().setFullscreen(!CubecraftClient.CLIENT.getWindow().isFullscreen());
+            ClientSharedContext.getClient().getWindow().setFullscreen(!ClientSharedContext.getClient().getWindow().isFullscreen());
         }
         if (e.getKey() == KeyboardButton.KEY_ESCAPE) {
-            GUIContext guiManager = CubecraftClient.CLIENT.getGuiManager();
+            ClientGUIContext guiManager = ClientSharedContext.getClient().getClientGUIContext();
             if (guiManager.getScreen().getParentScreen() != null) {
                 guiManager.setScreen(guiManager.getScreen().getParentScreen());
             }
         }
         if (e.getKey() == KeyboardButton.KEY_F3) {
-            CubecraftClient.CLIENT.isDebug = !CubecraftClient.CLIENT.isDebug;
+            ClientSharedContext.getClient().isDebug = !ClientSharedContext.getClient().isDebug;
         }
     }
 
     @EventHandler
-    public void onFocusEvent(WindowFocusEvent event){
-        if(event.isFocus()) {
-            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.MAX_FPS.getValue();
-        }else{
-            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
+    public void onFocusEvent(WindowFocusEvent event) {
+        if (event.isFocus()) {
+            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.MAX_FPS.getValue();
+        } else {
+            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
         }
     }
 
     @EventHandler
-    public void onSettingReload(SettingReloadEvent event){
-        if(CubecraftClient.CLIENT.getWindow().isFocused()) {
-            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.MAX_FPS.getValue();
-        }else{
-            CubecraftClient.CLIENT.maxFPS=ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
+    public void onSettingReload(SettingReloadEvent event) {
+        if (ClientSharedContext.getClient().getWindow().isFocused()) {
+            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.MAX_FPS.getValue();
+        } else {
+            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
         }
     }
 }

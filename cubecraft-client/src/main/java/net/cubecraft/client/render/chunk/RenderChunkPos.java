@@ -53,7 +53,7 @@ public final class RenderChunkPos implements Key, DistanceComparable {
     }
 
     public static int hash(RenderChunkPos pos) {
-        long hashValue = -1;
+        long hashValue = -3;
 
         hashValue = (hashValue * HASH_KEY_0) + pos.getX() ^ -HASH_KEY_2;
         hashValue = (hashValue * HASH_KEY_1) + pos.getY() | HASH_KEY_0;
@@ -64,6 +64,13 @@ public final class RenderChunkPos implements Key, DistanceComparable {
 
     public static double distanceTo(long cx, long cy, long cz, Vector3d vec) {
         return vec.distance(cx * 16 + 8, cy * 16 + 8, cz * 16 + 8);
+    }
+
+    public static double chunkDistanceTo(long cx, long cy, long cz, Vector3d vec) {
+        long fx = (((long) vec.x) >> 4) * 16 + 8;
+        long fy = (((long) vec.y) >> 4) * 16 + 8;
+        long fz = (((long) vec.z) >> 4) * 16 + 8;
+        return new Vector3d(fx, fy, fz).distance(cx * 16 + 8, cy * 16 + 8, cz * 16 + 8);
     }
 
     public static Vector3d getCenterWorldPosition(long cx, long cy, long cz) {
@@ -80,12 +87,12 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         return distanceTo(this.x, this.y, this.z, target.getPosition());
     }
 
-    public double gridDistanceTo(Vector3d pos) {
+    public double distanceTo(Vector3d pos) {
         return distanceTo(this.x, this.y, this.z, pos);
     }
 
-    public double distanceTo(Vector3d pos) {
-        return this.getCenterWorldPosition().distance(pos);
+    public double chunkDistanceTo(Vector3d vec) {
+        return chunkDistanceTo(this.x, this.y, this.z, vec);
     }
 
     public Vector3d getBaseWorldPosition() {

@@ -166,8 +166,8 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
     @Override
     public void load(IWorld world, ChunkPos pos, ChunkLoadTicket ticket) {
         this.loadTaskPool.submit(() -> {
-            //NBTTagCompound tag = this.loadChunkFromDB(new WorldChunkPos(world.getId(), pos));
-            NBTTagCompound tag=null;
+            NBTTagCompound tag = this.loadChunkFromDB(new WorldChunkPos(world.getId(), pos));
+           // NBTTagCompound tag=null;
             if (tag != null) {
                 WorldChunk chunk = new WorldChunk(world, pos);
                 ChunkCodec.setWorldChunkData(chunk, tag);

@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.resource.TextureAsset;
 import ink.flybird.fcommon.ColorUtil;
 import ink.flybird.fcommon.container.Vector3;
@@ -122,7 +122,7 @@ public class Cube extends BlockModelComponent {
     }
 
     public void renderFace(BlockModelFace f, int face, VertexBuilder builder, IWorld w, IBlockAccess blockAccess, long x, long y, long z, double renderX, double renderY, double renderZ) {
-        Texture2DTileMap terrain = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
+        Texture2DTileMap terrain = net.cubecraft.client.context.ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
 
         String path = f.texture().getAbsolutePath();
         float u0 = terrain.exactTextureU(path, f.u0());

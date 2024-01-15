@@ -1,10 +1,10 @@
 package net.cubecraft.client.gui.layout;
 
 import com.google.gson.Gson;
-import net.cubecraft.SharedContext;
-import net.cubecraft.client.gui.GUIContext;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
+import net.cubecraft.SharedContext;
+import net.cubecraft.client.context.ClientGUIContext;
 import org.w3c.dom.Element;
 
 public abstract class Layout {
@@ -69,7 +69,7 @@ public abstract class Layout {
     public static class XMLDeserializer implements FAMLDeserializer<Layout> {
         @Override
         public Layout deserialize(Element element, XmlReader reader) {
-            Layout layout = SharedContext.FAML_READER.deserialize(element, GUIContext.getLayoutClass(element.getAttribute("type")));
+            Layout layout = SharedContext.FAML_READER.deserialize(element, ClientGUIContext.getLayoutClass(element.getAttribute("type")));
             if (element.getElementsByTagName("border").getLength() > 0) {
                 int[] l2 = new Gson().fromJson(element.getElementsByTagName("border").item(0).getTextContent(), int[].class);
                 layout.setBorder(new Border(l2[0], l2[1], l2[2], l2[3]));

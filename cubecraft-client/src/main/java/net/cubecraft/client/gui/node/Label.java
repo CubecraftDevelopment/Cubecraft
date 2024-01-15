@@ -2,7 +2,7 @@ package net.cubecraft.client.gui.node;
 
 
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.gui.GUIRegistry;
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.layout.Layout;
@@ -31,7 +31,7 @@ public class Label extends Node {
     @Override
     public void render(float interpolationTime) {
         Layout layout = this.getLayout();
-        GUIRegistry.SMOOTH_FONT_RENDERER.render(this.text, layout.getAbsoluteX() + layout.getAbsoluteWidth() / 2, layout.getAbsoluteY(), this.color, layout.getAbsoluteHeight(), layout.layer, this.alignment);
+        ClientGUIContext.SMOOTH_FONT_RENDERER.render(this.text, layout.getAbsoluteX() + layout.getAbsoluteWidth() / 2, layout.getAbsoluteY(), this.color, layout.getAbsoluteHeight(), layout.layer, this.alignment);
     }
 
     @Override

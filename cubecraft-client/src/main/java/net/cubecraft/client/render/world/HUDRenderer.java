@@ -2,22 +2,16 @@ package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
 import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.fcommon.math.hitting.HitBox;
 import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.DrawMode;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
-import net.cubecraft.client.ClientSettingRegistry;
-import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.RenderType;
-import net.cubecraft.client.render.chunk.ChunkRenderer;
-import net.cubecraft.client.render.chunk.ChunkUpdateStatus;
-import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.world.block.access.IBlockAccess;
-import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
@@ -34,7 +28,7 @@ public class HUDRenderer extends IWorldRenderer {
         this.camera.setUpGlobalCamera();
 
         this.renderSelectionBox();
-        if (CubecraftClient.CLIENT.isDebug && this.allowDebug) {
+        if (ClientSharedContext.getClient().isDebug && this.allowDebug) {
             GL11.glLineWidth(1.0f);
             this.renderChunkBorder();
             this.renderEntityBoundary();

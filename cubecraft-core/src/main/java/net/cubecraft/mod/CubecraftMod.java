@@ -1,4 +1,6 @@
-package net.cubecraft.extension;
+package net.cubecraft.mod;
+
+import net.cubecraft.Side;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,6 +16,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface CubecraftMod {
-    ModSide side();
+    Side side() default Side.SHARED;
     int apiVersion() default 1;
 }

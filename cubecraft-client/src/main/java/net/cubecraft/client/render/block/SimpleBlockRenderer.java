@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.block;
 
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.access.IBlockAccess;

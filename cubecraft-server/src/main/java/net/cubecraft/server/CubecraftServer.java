@@ -9,7 +9,9 @@ import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
-import net.cubecraft.extension.ModManager;
+import net.cubecraft.Side;
+import net.cubecraft.mod.ModLoader;
+import net.cubecraft.mod.ModManager;
 import net.cubecraft.level.Level;
 import net.cubecraft.level.LevelInfo;
 import net.cubecraft.server.event.ServerSetupEvent;
@@ -61,10 +63,11 @@ public final class CubecraftServer extends LoopTickingThread {
 
         ModManager modManager = SharedContext.MOD;
         if (!this.isIntegrated) {
-            modManager.registerInternalMod("/content_mod_info.properties");
-            modManager.registerInternalMod("/server_mod_info.properties");
-            modManager.loadMods(null);
+            ModLoader.loadServerInternalMod();
+            ModLoader.loadServerInternalMod();
+            modManager.completeModRegister(Side.SERVER);
         }
+
         modManager.getModLoaderEventBus().callEvent(new ServerSetupEvent(this));
 
         this.serverIO.start(this.localAddress.getPort(), 128);

@@ -38,6 +38,9 @@ public abstract class ChunkCompilerTask implements Runnable {
         String layerId = request.getLayerId();
 
         ChunkCompileResult result;
+        if(this.parent.isChunkOutOfRange(request.getPos())){
+            return;
+        }
 
         if (request.getLayer() == null) {
             result = ChunkCompiler.build(layerId, world, pos);
@@ -73,7 +76,7 @@ public abstract class ChunkCompilerTask implements Runnable {
             if (this.request == null) {
                 return;
             }
-            if (this.parent.chunkRemove(this.request.getPos())) {
+            if (this.parent.isChunkOutOfRange(this.request.getPos())) {
                 return;
             }
             this.processRequest(this.request);
@@ -104,7 +107,7 @@ public abstract class ChunkCompilerTask implements Runnable {
                             }
                         }
 
-                        if (request == null || this.parent.chunkRemove(request.getPos())) {
+                        if (request == null || this.parent.isChunkOutOfRange(request.getPos())) {
                             Thread.yield();
                             continue;
                         }

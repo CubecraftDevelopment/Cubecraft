@@ -28,7 +28,6 @@ public abstract class IBlockAccess implements Hittable {
         this.z = z;
     }
 
-
     public abstract String getBlockID();
 
     public abstract EnumFacing getBlockFacing();
@@ -93,5 +92,9 @@ public abstract class IBlockAccess implements Hittable {
     public IBlockAccess getNear(EnumFacing facing) {
         Vector3<Long> pos = facing.findNear(this.x, this.y, this.z, 1);
         return this.world.getBlockAccess(pos.x(), pos.y(), pos.z());
+    }
+
+    public IWorld getWorld() {
+        return world;
     }
 }

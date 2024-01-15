@@ -23,6 +23,10 @@ public abstract class Inventory extends Container {
             }
         }
         int i = 0;
+
+        //todo creative
+        stacks[targetSlot]=new ItemStack(id,64);
+
         for (ItemStack stack : this) {
             if (stack != null && Objects.equals(stack.getType(), id)) {
                 exchangeSlot(i, targetSlot);

@@ -1,0 +1,11 @@
+[meta]
+id = "cubecraft_server"
+version = "1.0.0"
+class = "net.cubecraft.server.internal.CubecraftServerInternalMod"
+side = "shared"
+
+[info]
+name = "Cubecraft-Server"
+author = "GrassBlock2022"
+website = "https://github.com/CubecraftDevelopment"
+description = "Basic server framework."

@@ -18,7 +18,6 @@ public class Camera {
     private final FrustumCuller frustum = new FrustumCuller();
     private float fov = 70.0f;
     private Matrix4f proj = new Matrix4f();
-    private long playerGridX, playerGridY, playerGridZ;
     private double lastRotX, lastRotY, lastRotZ;
 
     public void setUpGlobalCamera() {
@@ -85,13 +84,6 @@ public class Camera {
         this.lastRotX = this.getRotation().x;
         this.lastRotY = this.getRotation().y;
         this.lastRotZ = this.getRotation().z;
-    }
-
-    public boolean isPositionChanged() {
-        return (long) (this.getPosition().x / 8) != this.playerGridX ||
-                (long) (this.getPosition().y / 8) != this.playerGridY ||
-                (long) (this.getPosition().z / 8) != this.playerGridZ;
-
     }
 
     public boolean isRotationChanged() {

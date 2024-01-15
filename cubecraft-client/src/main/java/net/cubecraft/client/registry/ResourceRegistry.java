@@ -1,6 +1,6 @@
 package net.cubecraft.client.registry;
 
-import net.cubecraft.client.gui.GUIRegistry;
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.resource.FontAsset;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.resource.UIAsset;
@@ -69,7 +69,7 @@ public interface ResourceRegistry {
         if (!Objects.equals(event.getStage(), "default")) {
             return;
         }
-        GUIRegistry.SMOOTH_FONT_RENDERER.setFontFamily(TEXT_FONT.getFont());
-        GUIRegistry.ICON_FONT_RENDERER.setFontFamily(ICON_FONT.getFont());
+        ClientGUIContext.SMOOTH_FONT_RENDERER.setFontFamily(TEXT_FONT.getFont());
+        ClientGUIContext.ICON_FONT_RENDERER.setFontFamily(ICON_FONT.getFont());
     }
 }

@@ -14,10 +14,10 @@ import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.KeyboardReleaseEvent;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.event.ClientRendererInitializeEvent;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.internal.entity.EntityPlayer;
@@ -36,9 +36,12 @@ public final class LevelRenderer {
     public final IWorld world;
     public final EntityPlayer player;
     public final Camera camera = new Camera();
+    private ColorElement fogColorElement;
     private FloatBuffer fogColor;
 
-    public LevelRenderer(IWorld w, EntityPlayer p, CubecraftClient client, ResourceLocation cfgLoc) {
+    public LevelRenderer(IWorld w, EntityPlayer p, ResourceLocation cfgLoc) {
+        CubecraftClient client = ClientSharedContext.getClient();
+
         this.fogColor = ALLOCATOR.allocFloatBuffer(5);
 
         client.getDeviceEventBus().registerEventListener(this);
@@ -59,19 +62,21 @@ public final class LevelRenderer {
         if (Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")) {
             GLUtil.setupFog(10, ColorUtil.int1Float1ToFloat4(0x050533, 1));
         } else {
-            //GLUtil.setupFog((int) (Math.sqrt(d) * d), ColorUtil.int1Float1ToFloat4(this.getConfig().fogColor(), 1));
+            GLUtil.setupFog((int) (dist), this.fogColorElement.RGBA_F());
         }
     }
 
     public void initialize(JsonObject config) {
-        CubecraftClient client = CubecraftClient.CLIENT;
+        CubecraftClient client = ClientSharedContext.getClient();
 
-        ColorElement.parseFromString(config.get("fog_color").getAsString()).toFloatRGBA(this.fogColor);
+        this.fogColorElement=ColorElement.parseFromString(config.get("fog_color").getAsString());
+        this.fogColorElement.toFloatRGBA(this.fogColor);
+
         JsonObject renderers = config.get("renderers").getAsJsonObject();
 
         for (String id : renderers.keySet()) {
             IWorldRenderer renderer = ClientRenderContext.WORLD_RENDERER.create(id);
-            renderer.initializeRenderer(this, client.getWindow(), client.getClientWorld(), client.getPlayer(), this.camera);
+            renderer.initializeRenderer(this, client.getWindow(), client.getClientWorldContext().getWorld(), client.getClientWorldContext().getPlayer(), this.camera);
             renderer.config(renderers.get(id).getAsJsonObject());
             client.getClientEventBus().registerEventListener(renderer);
             client.getDeviceEventBus().registerEventListener(renderer);
@@ -84,8 +89,6 @@ public final class LevelRenderer {
         Vector3d vec = this.player.getCameraPosition().add(this.player.getPosition());
         if (Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")) {
             GLUtil.setupFog(d, ColorUtil.int1Float1ToFloat4(0x050533, 1));
-        } else {
-            //GLUtil.setupFog((int) (Math.sqrt(d) * d), ColorUtil.int1Float1ToFloat4(this.getConfig().fogColor(), 1));
         }
 
         float[] col = new float[]{0, 0, 0, 0};

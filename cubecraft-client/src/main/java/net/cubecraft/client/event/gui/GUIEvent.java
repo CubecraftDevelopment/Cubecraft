@@ -1,15 +1,15 @@
 package net.cubecraft.client.event.gui;
 
-import net.cubecraft.client.gui.GUIContext;
+import net.cubecraft.client.context.ClientGUIContext;
 
 public abstract class GUIEvent {
-    protected final GUIContext context;
+    protected final ClientGUIContext context;
 
-    protected GUIEvent(GUIContext context) {
+    protected GUIEvent(ClientGUIContext context) {
         this.context = context;
     }
 
-    public GUIContext getContext() {
+    public ClientGUIContext getContext() {
         return this.context;
     }
 }

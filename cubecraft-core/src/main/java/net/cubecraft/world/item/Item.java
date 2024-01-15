@@ -1,6 +1,7 @@
 package net.cubecraft.world.item;
 
 import ink.flybird.fcommon.Initializable;
+import ink.flybird.fcommon.math.hitting.HitResult;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.entity.Entity;
@@ -44,9 +45,9 @@ public abstract class Item implements Initializable {
 
     public abstract String[] getBehaviorList();
 
-    public void onDig(IBlockAccess block) {
+    public void onDig(HitResult result, IBlockAccess block) {
         for (ItemBehavior behavior : getBehaviors()) {
-            behavior.onDig(this, block);
+            behavior.onDig(result, this, block);
         }
     }
 
@@ -62,21 +63,21 @@ public abstract class Item implements Initializable {
         return behaviors;
     }
 
-    public void onUse(IBlockAccess block) {
-        for (ItemBehavior behavior : this.behaviors.values()) {
-            behavior.onUse(this, block);
+    public void onUse(HitResult result, IBlockAccess block) {
+        for (ItemBehavior behavior : this.getBehaviors()) {
+            behavior.onUse(result, this, block);
         }
     }
 
-    public void onAttack(Entity entity) {
+    public void onAttack(HitResult result, Entity entity) {
         for (ItemBehavior behavior : this.behaviors.values()) {
-            behavior.onAttack(this, entity);
+            behavior.onAttack(result, this, entity);
         }
     }
 
-    public void onUse(Entity entity) {
+    public void onUse(HitResult result, Entity entity) {
         for (ItemBehavior behavior : this.behaviors.values()) {
-            behavior.onUse(this, entity);
+            behavior.onUse(result, this, entity);
         }
     }
 

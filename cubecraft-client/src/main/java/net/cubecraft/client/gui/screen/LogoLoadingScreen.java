@@ -1,14 +1,14 @@
 package net.cubecraft.client.gui.screen;
 
-import net.cubecraft.client.gui.ScreenUtil;
-import net.cubecraft.client.gui.base.DisplayScreenInfo;
-import net.cubecraft.client.gui.font.FontAlignment;
-import net.cubecraft.client.registry.ResourceRegistry;
 import ink.flybird.fcommon.JVMInfo;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import net.cubecraft.client.gui.ScreenUtil;
+import net.cubecraft.client.gui.base.DisplayScreenInfo;
+import net.cubecraft.client.gui.font.FontAlignment;
+import net.cubecraft.client.registry.ResourceRegistry;
 
 public final class LogoLoadingScreen extends AnimationScreen {
     private static final Texture2D GAME_LOGO = new Texture2D(false, false);

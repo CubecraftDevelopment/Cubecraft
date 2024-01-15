@@ -1,14 +1,23 @@
 package net.cubecraft.client.internal.gui;
 
-import net.cubecraft.client.gui.controller.ScreenController;
-import net.cubecraft.client.gui.controller.ScreenDocument;
+import ink.flybird.fcommon.event.EventHandler;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.gui.component.ButtonClickedEvent;
+import net.cubecraft.client.gui.controller.ScreenController;
 
-@ScreenController
-public class TitleScreenController {
+public class TitleScreenController extends ScreenController {
+    private final CubecraftClient client = ClientSharedContext.getClient();
 
-    @ScreenDocument
-    public void onQuitButtonClicked(ButtonClickedEvent event){
-
+    @Override
+    public void initializeController() {
+        this.client.getClientDeviceContext().attachListener(this);
     }
+
+    @EventHandler
+    public void onQuitButtonClicked(ButtonClickedEvent event) {
+        this.client.stop();
+    }
+
+
 }

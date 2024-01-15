@@ -1,10 +1,10 @@
 package net.cubecraft.content;
 
-import net.cubecraft.extension.CubecraftMod;
-import net.cubecraft.extension.ModSide;
+import net.cubecraft.mod.CubecraftMod;
+import net.cubecraft.Side;
 import ink.flybird.fcommon.event.EventHandler;
 
-@CubecraftMod(side = ModSide.BOTH)
+@CubecraftMod(side = Side.SHARED)
 public final class CubecraftContentMod {
     @EventHandler
     public static void onLoaderSetup(){

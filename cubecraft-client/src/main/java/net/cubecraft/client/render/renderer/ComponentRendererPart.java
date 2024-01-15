@@ -4,7 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.resource.TextureAsset;
 
@@ -20,7 +21,7 @@ public interface ComponentRendererPart {
         @Override
         public ComponentRendererPart deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             String id= jsonElement.getAsJsonObject().get("type").getAsString();
-            Class<?> clazz= CubecraftClient.CLIENT.getGuiManager().getRendererPartClass(id);
+            Class<?> clazz= ClientGUIContext.getRendererPartClass(id);
             return jsonDeserializationContext.deserialize(jsonElement,clazz);
         }
     }

@@ -1,22 +1,30 @@
 package me.gb2022.quantum3d.camera;
 
-import me.gb2022.quantum3d.render.RenderContext;
-import org.joml.Matrix4d;
+import ink.flybird.fcommon.math.AABB;
+import me.gb2022.quantum3d.FixedJOMLFrustum;
+import org.joml.Matrix4f;
 
 public final class PerspectiveCamera extends ICamera {
+    private final FixedJOMLFrustum frustum = new FixedJOMLFrustum();
     private float fov = 70.0f;
-    private float zNear = 0;
-    private float zFar = 1000;
 
-    public PerspectiveCamera(RenderContext context) {
-        super(context);
+    private float nearClipDistance = 0.0f;
+    private float farClipDistance = 1024.0f;
+
+    public float getFarClipDistance() {
+        return farClipDistance;
     }
 
-    @Override
-    public Matrix4d getMVPMatrix() {
-        Matrix4d mat = new Matrix4d();
-        mat.perspective(this.fov, this.getViewport().z() / (float) this.getViewport().w(), this.zNear, this.zFar);
-        return mat;
+    public void setFarClipDistance(float farClipDistance) {
+        this.farClipDistance = farClipDistance;
+    }
+
+    public float getNearClipDistance() {
+        return nearClipDistance;
+    }
+
+    public void setNearClipDistance(float nearClipDistance) {
+        this.nearClipDistance = nearClipDistance;
     }
 
     public float getFov() {
@@ -27,19 +35,17 @@ public final class PerspectiveCamera extends ICamera {
         this.fov = fov;
     }
 
-    public float getzNear() {
-        return zNear;
+    @Override
+    public Matrix4f getMVPMatrix() {
+        Matrix4f mat = new Matrix4f();
+        float aspect = this.getViewport().z() / (float) this.getViewport().w();
+        mat.perspective(this.fov, aspect, this.nearClipDistance, this.farClipDistance);
+        return mat;
     }
 
-    public void setzNear(float zNear) {
-        this.zNear = zNear;
-    }
-
-    public float getzFar() {
-        return zFar;
-    }
-
-    public void setzFar(float zFar) {
-        this.zFar = zFar;
+    @Override
+    public boolean visible(AABB aabb) {
+        AABB aabb2 = this.castAABB(aabb);
+        return frustum.testAab(aabb2.minPos(), aabb.maxPos());
     }
 }

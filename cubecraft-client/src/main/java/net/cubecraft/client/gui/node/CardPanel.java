@@ -1,5 +1,6 @@
 package net.cubecraft.client.gui.node;
 
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.gui.component.CardPanelClickedEvent;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.file.FAMLDeserializer;
@@ -17,7 +18,7 @@ public class CardPanel extends Container {
 
     @Override
     public void render(float interpolationTime) {
-        this.context.getRenderController(this.getClass()).render(this);
+        ClientGUIContext.getRenderController(this.getClass()).render(this);
         super.render(interpolationTime);
     }
 

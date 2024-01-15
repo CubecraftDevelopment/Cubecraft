@@ -23,9 +23,6 @@ public final class ClientMain {
     private static final ILogger LOGGER= LogManager.getLogger("client-boot");
 
     public static void main(String[] args) {
-
-
-
         EnvironmentPath.allCreateFolder();
         Platform platform = Platform.current();
         System.setProperty("java.library.path", EnvironmentPath.NATIVE_FOLDER);

@@ -49,7 +49,7 @@ public final class HUDScreen extends Screen {
 
     @Override
     public void tick() {
-        PlayerController controller = CubecraftClient.CLIENT.getPlayerController();
+        PlayerController controller = ClientSharedContext.getClient().getPlayerController();
         if (controller != null) {
             controller.tick();
         }
@@ -66,7 +66,8 @@ public final class HUDScreen extends Screen {
                 0, 182 * scale, 0, 22 * scale, 0,
                 0, 182 / 256f, 0, 22 / 32f
         );
-        float slotBase = this.getClient().getPlayer().getInventory().getActiveSlotId() * 20 * scale;
+        CubecraftClient client1 = this.getClient();
+        float slotBase = client1.getClientWorldContext().getPlayer().getInventory().getActiveSlotId() * 20 * scale;
         ShapeRenderer.drawRectUV(slotBase - 1 * scale, slotBase + 23 * scale, -1 * scale, 23 * scale, 0, 232 / 256f, 1, 0, 24 / 32f);
         GL11.glPopMatrix();
     }
@@ -96,26 +97,28 @@ public final class HUDScreen extends Screen {
         ));
         this.debugInfoLeft.put("_split_0", "");
         this.debugInfoLeft.put("loc", "Cam: %s/%s/%s (%s/%s/%s)".formatted(
-                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getPlayer().x),
-                SharedObjects.LONG_DECIMAL_FORMAT.format(this.client.getPlayer().y),
-                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getPlayer().z),
-                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getPlayer().xRot),
-                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getPlayer().yRot),
-                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getPlayer().zRot)
+                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getClientWorldContext().getPlayer().x),
+                SharedObjects.LONG_DECIMAL_FORMAT.format(this.client.getClientWorldContext().getPlayer().y),
+                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getClientWorldContext().getPlayer().z),
+                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getClientWorldContext().getPlayer().xRot),
+                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getClientWorldContext().getPlayer().yRot),
+                SharedObjects.SHORT_DECIMAL_FORMAT.format(this.client.getClientWorldContext().getPlayer().zRot)
         ));
 
         this.debugInfoLeft.put("_split_1", "");
+        CubecraftClient client1 = this.getClient();
+        CubecraftClient client2 = this.getClient();
         this.debugInfoLeft.put("world", "World: %s (c=%s)".formatted(
-                this.getClient().getClientWorld().getId(),
-                this.getClient().getClientWorld().chunks.size()
+                client2.getClientWorldContext().getWorld().getId(),
+                client1.getClientWorldContext().getWorld().chunks.size()
         ));
     }
 
     @EventHandler
     public void onKeyEventPressed(KeyboardPressEvent event) {
         if (event.getKey() == KeyboardButton.KEY_ESCAPE) {
-            CubecraftClient.CLIENT.getMouse().setMouseGrabbed(false);
-            CubecraftClient.CLIENT.getGuiManager().setScreen(ResourceRegistry.PAUSE_SCREEN);
+            this.client.getClientDeviceContext().getMouse().setMouseGrabbed(false);
+            this.client.getClientGUIContext().setScreen(ResourceRegistry.PAUSE_SCREEN);
         }
         if (event.getKey() == KeyboardButton.KEY_F1) {
             this.showGUI = !this.showGUI;
@@ -124,6 +127,6 @@ public final class HUDScreen extends Screen {
 
     @EventHandler
     public void onMousePress(MousePressEvent event) {
-        CubecraftClient.CLIENT.getMouse().setMouseGrabbed(true);
+        this.client.getClientDeviceContext().getMouse().setMouseGrabbed(true);
     }
 }

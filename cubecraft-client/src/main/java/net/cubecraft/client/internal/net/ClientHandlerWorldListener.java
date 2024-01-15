@@ -1,6 +1,6 @@
 package net.cubecraft.client.internal.net;
 
-import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.net.ClientNetHandler;
 import net.cubecraft.internal.network.NetHandlerType;
 import net.cubecraft.event.block.BlockChangeEvent;
@@ -22,13 +22,13 @@ public class ClientHandlerWorldListener extends ClientNetHandler {
 
     @EventHandler
     public void onBlockChanged(BlockChangeEvent e) {
-        this.sendPacket(new PacketBlockChange(e.x(), e.y(), e.z(), CubecraftClient.CLIENT.getClientWorld().getId(), e.newBlockState()));
+        this.sendPacket(new PacketBlockChange(e.x(), e.y(), e.z(), ClientSharedContext.getClient().getClientWorldContext().getWorld().getId(), e.newBlockState()));
     }
 
     @EventHandler
     public void onClientWorldChunkLoad(ChunkLoadEvent e) {
-        this.sendPacket(new PacketChunkGet(e.pos(), CubecraftClient.CLIENT.getClientWorld().getId()));
-        this.sendPacket(new PacketChunkLoad(CubecraftClient.CLIENT.getClientWorld().getId(), e.pos(), e.ticket()));
+        this.sendPacket(new PacketChunkGet(e.pos(), ClientSharedContext.getClient().getClientWorldContext().getWorld().getId()));
+        this.sendPacket(new PacketChunkLoad(ClientSharedContext.getClient().getClientWorldContext().getWorld().getId(), e.pos(), e.ticket()));
     }
 
     @EventHandler

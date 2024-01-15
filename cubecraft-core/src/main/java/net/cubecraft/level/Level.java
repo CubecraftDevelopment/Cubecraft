@@ -53,9 +53,9 @@ public class Level {
 
     public Location getLocation(Entity entity) {
         if (entity == null) {
-            return new Location("cubecraft:overworld", 0, 128, 0, 0, 0, 0);
+            return new Location("cubecraft:overworld", 8, 128, 8, 0, 0, 0);
         }
-        return new Location("cubecraft:overworld", 0, 160, 0, 0, 0, 0);
+        return new Location("cubecraft:overworld", 8, 160, 8, 0, 0, 0);
     }
 
     public IWorld getWorld(String id) {

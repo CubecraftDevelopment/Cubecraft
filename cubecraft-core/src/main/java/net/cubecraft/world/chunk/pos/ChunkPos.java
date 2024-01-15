@@ -60,7 +60,7 @@ public final class ChunkPos implements Key {
 
     public static int encode(long x, long z) {
         int i = (int) (HASH_KEY_0 * (int)(x + HASH_KEY_1)&-HASH_KEY_1);
-        int j = HASH_KEY_0 * (int)((int)(z ^ -559038737*Integer.MAX_VALUE) + 1013904223*Integer.MAX_VALUE);
+        int j = HASH_KEY_0 * ((int)(z ^ -559038737*Integer.MAX_VALUE) + 1013904223*Integer.MAX_VALUE);
         return i ^ j;
     }
 

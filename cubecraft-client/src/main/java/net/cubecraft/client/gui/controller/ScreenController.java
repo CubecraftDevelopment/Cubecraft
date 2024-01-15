@@ -1,11 +1,10 @@
 package net.cubecraft.client.gui.controller;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import net.cubecraft.client.gui.screen.Screen;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ScreenController {
+public abstract class ScreenController {
+    private Screen screen;
+
+    public void initializeController() {
+    }
 }

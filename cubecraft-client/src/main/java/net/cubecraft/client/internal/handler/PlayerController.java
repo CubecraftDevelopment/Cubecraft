@@ -5,6 +5,7 @@ import ink.flybird.fcommon.math.hitting.HitResult;
 import ink.flybird.fcommon.math.hitting.Hittable;
 import ink.flybird.fcommon.nbt.NBT;
 import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
@@ -43,36 +44,36 @@ public class PlayerController extends EntityController<EntityPlayer> {
     }
 
     public void tick() {
+        Keyboard keyboard = this.client.getClientDeviceContext().getKeyboard();
+
         this.handle((EntityPlayer) entity);
         float speed;
         {
-            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_W)) {
+            if (keyboard.isKeyDown(KeyboardButton.KEY_W)) {
                 this.moveForward();
             }
-            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_S)) {
+            if (keyboard.isKeyDown(KeyboardButton.KEY_S)) {
                 this.moveBackward();
             }
-            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_A)) {
+            if (keyboard.isKeyDown(KeyboardButton.KEY_A)) {
                 this.moveLeft();
             }
-            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_D)) {
+            if (keyboard.isKeyDown(KeyboardButton.KEY_D)) {
                 this.moveRight();
             }
-            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_SPACE)) {
+            if (keyboard.isKeyDown(KeyboardButton.KEY_SPACE)) {
                 this.jump();
             }
 
 
-
-
-            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_SPACE)) {
+            if (keyboard.isKeyDown(KeyboardButton.KEY_SPACE)) {
                 if (this.entity.isFlying()) {
                     this.flyUp();
                 } else {
                     this.jump();
                 }
             }
-            if (this.client.getKeyboard().isKeyDown(KeyboardButton.KEY_LEFT_SHIFT)) {
+            if (keyboard.isKeyDown(KeyboardButton.KEY_LEFT_SHIFT)) {
                 if (entity.isFlying()) {
                     entity.yd = -0.45f;
                 } else {
@@ -83,7 +84,7 @@ public class PlayerController extends EntityController<EntityPlayer> {
             }
         }
 
-        if (this.client.getKeyboard().isKeyDoubleClicked(KeyboardButton.KEY_SPACE, 250)) {
+        if (keyboard.isKeyDoubleClicked(KeyboardButton.KEY_SPACE, 250)) {
             this.toggleFly();
         }
 
@@ -93,7 +94,7 @@ public class PlayerController extends EntityController<EntityPlayer> {
 
     @EventHandler
     public void onMouseMove(MousePosEvent e) {
-        if (this.client.getMouse().isMouseGrabbed()) {
+        if (this.client.getClientDeviceContext().getMouse().isMouseGrabbed()) {
             this.entity.turn(e.getDeltaX(), -e.getDeltaY(), 0);
         }
     }
@@ -106,9 +107,7 @@ public class PlayerController extends EntityController<EntityPlayer> {
         }
 
 
-
-
-        if (e.getKey() == KeyboardButton.KEY_R) {
+        if (e.getKey() == KeyboardButton.KEY_F8) {
             ClientSharedContext.CLIENT_SETTING.load();
         }
         if (e.getKey() == KeyboardButton.KEY_O) {
@@ -174,7 +173,7 @@ public class PlayerController extends EntityController<EntityPlayer> {
 
     @EventHandler
     public void onClicked(MouseClickEvent e) {
-        if(!this.isHandlingEntity()){
+        if (!this.isHandlingEntity()) {
             return;
         }
 

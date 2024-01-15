@@ -2,6 +2,7 @@ package net.cubecraft.world.block.property;
 
 import ink.flybird.fcommon.math.AABB;
 import ink.flybird.fcommon.math.hitting.HitBox;
+import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.property.collision.CollisionProperty;
 import net.cubecraft.world.block.property.hitbox.HitBoxProperty;
@@ -29,4 +30,13 @@ public interface BlockPropertyDispatcher {
     static boolean isSolid(IBlockAccess block) {
         return block.getBlock().isSolid();
     }
+
+    static Collection<AABB> getCollisionBox(Block block, IBlockAccess access) {
+        CollisionProperty property = block.getBlockProperty("cubecraft:collision", CollisionProperty.class);
+        if (property == null) {
+            return List.of();
+        }
+        return property.get(access);
+    }
+
 }

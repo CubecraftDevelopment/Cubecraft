@@ -5,9 +5,9 @@ import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileRequest;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileResult;
@@ -26,7 +26,7 @@ import java.util.*;
 @TypeItem("cubecraft:chunk_renderer")
 public final class ChunkRenderer extends IWorldRenderer {
     public static final String SETTING_NAMESPACE = "chunk_renderer";
-    public static final Map<String, ChunkLayer> DUMMY = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(false, RenderChunkPos.create(0, 0, 0));
+    public static final Map<String, ChunkLayer> DUMMY = net.cubecraft.client.context.ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(false, RenderChunkPos.create(0, 0, 0));
     private final FrustumCuller frustum = new FrustumCuller();
     private final RenderList renderListAlpha = new RenderList(RenderType.ALPHA);
     private final RenderList renderListTransparent = new RenderList(RenderType.TRANSPARENT);
@@ -71,7 +71,7 @@ public final class ChunkRenderer extends IWorldRenderer {
             case "draw_success_size_transparent" -> this.renderListTransparent.getSuccessDrawCount();
             case "compile_result_size" -> this.resultQueue.size();
             case "compile_request_size" -> this.requestQueue.size();
-            case "status_cache"-> this.chunkStatusCache.toString();
+            case "status_cache" -> this.chunkStatusCache.toString();
             default -> 0;
         }));
         this.chunkStatusCache = new ChunkStatusCache(new ChunkUpdateHandler(this));
@@ -87,8 +87,8 @@ public final class ChunkRenderer extends IWorldRenderer {
 
         this.renderListTransparent.sort(this.chunkSorter);
         this.renderListAlpha.sort(this.chunkSorter);
-        this.renderListAlpha.remove(this::chunkRemove);
-        this.renderListTransparent.remove(this::chunkRemove);
+        this.renderListAlpha.remove(this::isChunkOutOfRange);
+        this.renderListTransparent.remove(this::isChunkOutOfRange);
     }
 
     @Override
@@ -130,10 +130,11 @@ public final class ChunkRenderer extends IWorldRenderer {
         this.camera.setUpGlobalCamera();
         this.frustum.calculateFrustum();
         if (type == RenderType.ALPHA) {
-            this.renderListAlpha.updateVisibility(this::chunkVisible);
+            this.renderListAlpha.updateVisibility(this::isChunkVisible);
         } else {
-            this.renderListTransparent.updateVisibility(this::chunkVisible);
+            this.renderListTransparent.updateVisibility(this::isChunkVisible);
         }
+        this.parent.setFog(ClientSettingRegistry.getFixedViewDistance() * 16);
     }
 
     @Override
@@ -180,10 +181,10 @@ public final class ChunkRenderer extends IWorldRenderer {
     public void gc() {
         try {
             if (!requestQueue.isEmpty()) {
-                this.requestQueue.removeIf((o) -> Objects.isNull(o) || chunkRemove(o.getPos()));
+                this.requestQueue.removeIf((o) -> Objects.isNull(o) || isChunkOutOfRange(o.getPos()));
             }
             if (!resultQueue.isEmpty()) {
-                this.resultQueue.removeIf((o) -> Objects.isNull(o) || chunkRemove(o.getPos()));
+                this.resultQueue.removeIf((o) -> Objects.isNull(o) || isChunkOutOfRange(o.getPos()));
             }
         } catch (ConcurrentModificationException ignored) {
         }
@@ -202,18 +203,15 @@ public final class ChunkRenderer extends IWorldRenderer {
             ChunkCompilerTask.task(this, request, this.resultQueue).run();
             return;
         }
-        if (this.requestQueue.contains(request)) {
-            return;
-        }
         this.requestQueue.add(request);
     }
 
-    public Boolean chunkRemove(RenderChunkPos pos) {
+    public boolean isChunkOutOfRange(RenderChunkPos pos) {
         int dist = ClientSettingRegistry.getFixedViewDistance() * 16;
-        return pos.gridDistanceTo(this.player.getPosition()) > dist;
+        return pos.chunkDistanceTo(this.player.getPosition()) > dist;
     }
 
-    public Boolean chunkVisible(RenderChunkPos pos) {
+    public boolean isChunkVisible(RenderChunkPos pos) {
         return this.frustum.aabbVisible(pos.getBounding(this.camera.getPosition()));
     }
 
@@ -288,6 +286,8 @@ public final class ChunkRenderer extends IWorldRenderer {
 
         @Override
         public void run() {
+            this.checkPosition();
+            this.parent.chunkStatusCache.processUpdate();
             while (this.running) {
                 if (System.currentTimeMillis() - last < DELAY_INTERVAL) {
                     try {
@@ -297,14 +297,14 @@ public final class ChunkRenderer extends IWorldRenderer {
                     }
                     Thread.yield();
                 }
-                this.last = System.currentTimeMillis();
-                process();
+                this.process();
+                Thread.yield();
             }
         }
 
         public void process() {
+            this.last = System.currentTimeMillis();
             this.parent.gc();
-            Thread.yield();
             if (this.checkPosition() || this.needRotationCheck()) {
                 this.parent.chunkStatusCache.processUpdate();
             }
@@ -316,7 +316,7 @@ public final class ChunkRenderer extends IWorldRenderer {
             long z = (long) (this.camera.getPosition().z) >> 4;
 
             if (ClientSettingRegistry.FORCE_REBUILD_NEAREST_CHUNK.getValue()) {
-                //this.parent.setUpdate(x, y, z, true);
+                this.parent.setUpdate(x, y, z, true);
             }
 
             boolean check = false;
@@ -376,7 +376,7 @@ public final class ChunkRenderer extends IWorldRenderer {
 
         @Override
         public boolean apply(RenderChunkPos pos) {
-            if (!this.renderer.chunkVisible(pos)) {
+            if (!this.renderer.isChunkVisible(pos)) {
                 return false;
             }
             this.renderer.setUpdate(pos.getX(), pos.getY(), pos.getZ(), false);

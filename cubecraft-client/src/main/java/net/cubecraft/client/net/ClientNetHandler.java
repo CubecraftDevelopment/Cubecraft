@@ -1,17 +1,17 @@
 package net.cubecraft.client.net;
 
-import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.net.INetHandler;
 import net.cubecraft.net.packet.Packet;
 
 public abstract class ClientNetHandler implements INetHandler {
 
     protected final void sendPacket(Packet pkt){
-        CubecraftClient.CLIENT.getClientIO().sendPacket(pkt);
+        ClientSharedContext.getClient().getClientIO().sendPacket(pkt);
     }
 
     protected final void closeConnection(){
-        CubecraftClient.CLIENT.getClientIO().closeConnection();
+        ClientSharedContext.getClient().getClientIO().closeConnection();
     }
 }
 

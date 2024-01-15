@@ -49,7 +49,7 @@ public class ClientWorldManager extends ClientNetHandler {
     public ClientWorldManager(CubecraftClient client) {
         this.client = client;
         this.client.getClientIO().getListener().registerEventListener(this);
-        this.client.getGuiManager().getEventBus().registerEventListener(this);
+        this.client.getClientGUIContext().getEventBus().registerEventListener(this);
     }
 
     public void joinLocalWorld(String name) {
@@ -63,13 +63,11 @@ public class ClientWorldManager extends ClientNetHandler {
         }
 
         Level level = this.getIntegratedServer().getLevel();
-        this.client.joinWorld(level.getLocation(this.client.getPlayer()).getWorld(level));
-        level.join(this.client.getPlayer());
-        this.client.setLevel(level);
+        this.client.joinLevel(level);
     }
 
     public void setConnectionScreenText(String statement, String reason, Object... reasonArgs) {
-        Screen screen = this.client.getGuiManager().getScreen();
+        Screen screen = this.client.getClientGUIContext().getScreen();
         if (!Objects.equals(screen.id, "cubecraft:connection_screen")) {
             throw new IllegalStateException("not the connection screen:" + screen.id);
         }
@@ -80,7 +78,7 @@ public class ClientWorldManager extends ClientNetHandler {
     }
 
     public boolean waitFor() {
-        this.client.refreshScreen();
+        this.client.getClientGUIContext().refreshScreen();
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -244,7 +242,7 @@ public class ClientWorldManager extends ClientNetHandler {
 
     public void leaveWorld() {
         this.getIntegratedServer().setRunning(false);
-        this.client.leaveWorld();
+        this.client.leaveLevel();
         while (this.getIntegratedServer().getState() != ThreadState.TERMINATED) {
             Thread.yield();
         }

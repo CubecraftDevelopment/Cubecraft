@@ -41,7 +41,7 @@ public class ParticleRenderer extends IWorldRenderer {
         this.world.getEventBus().registerEventListener(this);
         ClientSharedContext.QUERY_HANDLER.registerCallback(this.getID(), (arg -> switch (arg) {
             case "success_size" -> this.successSize;
-            case "all_size" -> this.particleEngine.getParticles().size();
+           // case "all_size" -> this.particleEngine.getParticles().size();
             default -> 0;
         }));
     }
@@ -71,7 +71,7 @@ public class ParticleRenderer extends IWorldRenderer {
         int i = 0;
         GL11.glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        ArrayList<EntityParticle> particles = new ArrayList<>(this.particleEngine.getParticles());
+        ArrayList<EntityParticle> particles = new ArrayList<>(/*this.particleEngine.getParticles()*/);
         for (EntityParticle p : particles) {
             AABB aabb = new AABB(p.x - 0.1, p.y - 0.1, p.z - 0.1, p.x + 0.1, p.y + 0.1, p.z + 0.1);
             if (this.frustum.aabbVisible(this.camera.castAABB(aabb))) {

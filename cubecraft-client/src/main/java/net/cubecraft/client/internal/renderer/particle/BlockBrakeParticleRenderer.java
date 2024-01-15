@@ -1,9 +1,9 @@
 package net.cubecraft.client.internal.renderer.particle;
 
-import net.cubecraft.client.ClientRenderContext;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import ink.flybird.fcommon.registry.TypeItem;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.client.render.renderer.IParticleRenderer;
 

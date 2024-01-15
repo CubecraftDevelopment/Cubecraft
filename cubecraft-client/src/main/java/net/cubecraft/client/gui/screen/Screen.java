@@ -8,9 +8,10 @@ import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.draw.VertexUploader;
 import net.cubecraft.SharedObjects;
 import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
-import net.cubecraft.client.gui.GUIRegistry;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.font.FontAlignment;
@@ -33,14 +34,14 @@ public class Screen extends Container {
         this.grabMouse = grabMouse;
         this.id = id;
         this.backgroundType = type;
-        this.context = CubecraftClient.CLIENT.getGuiManager();
+        this.context = ClientSharedContext.getClient().getClientGUIContext();
     }
 
 
     public Screen(Element element) {
         this(false, "_test", ScreenBackgroundType.EMPTY);
         this.init(element);
-        this.setContext(this, this, CubecraftClient.CLIENT.getGuiManager());
+        this.setContext(this, this, ClientSharedContext.getClient().getClientGUIContext());
     }
 
     @Override
@@ -56,9 +57,9 @@ public class Screen extends Container {
     }
 
     public void init() {
-        this.client = CubecraftClient.CLIENT;
+        this.client = ClientSharedContext.getClient();
         this.client.getDeviceEventBus().registerEventListener(this);
-        this.client.getMouse().setMouseGrabbed(this.grabMouse);
+        this.client.getClientDeviceContext().getMouse().setMouseGrabbed(this.grabMouse);
         this.context.getEventBus().callEvent(new ComponentInitializeEvent(this, this, this.context), getId());
     }
 
@@ -66,12 +67,12 @@ public class Screen extends Container {
     public void renderDebug(DisplayScreenInfo info) {
         int pos = 2;
         for (String s : this.debugInfoLeft.values()) {
-            GUIRegistry.SMOOTH_FONT_RENDERER.renderShadow(s, 2, pos, 16777215, 8, FontAlignment.LEFT);
+            ClientGUIContext.SMOOTH_FONT_RENDERER.renderShadow(s, 2, pos, 16777215, 8, FontAlignment.LEFT);
             pos += 10;
         }
         pos = 2;
         for (String s : this.debugInfoRight.values()) {
-            GUIRegistry.SMOOTH_FONT_RENDERER.renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
+            ClientGUIContext.SMOOTH_FONT_RENDERER.renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
             pos += 10;
         }
     }
@@ -127,7 +128,7 @@ public class Screen extends Container {
             case IN_GAME_MASK -> ScreenUtil.renderMask(this.client.getWindow());
         }
         super.render(deltaTime);
-        if (CubecraftClient.CLIENT.isDebug) {
+        if (ClientSharedContext.getClient().isDebug) {
             this.debugInfoLeft.clear();
             this.debugInfoRight.clear();
             this.getDebug();

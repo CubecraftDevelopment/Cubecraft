@@ -5,8 +5,8 @@ import ink.flybird.jflogger.LogManager;
 import ink.flybird.quantum3d_legacy.draw.DrawMode;
 import ink.flybird.quantum3d_legacy.draw.OffHeapVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.client.render.chunk.layer.ChunkLayer;
@@ -14,13 +14,10 @@ import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.access.ChunkLoadAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
-import net.cubecraft.world.block.property.BlockPropertyDispatcher;
-import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -81,7 +78,7 @@ public interface ChunkCompiler {
                     if (Objects.equals(blockAccess.getBlockID(), BlockType.AIR)) {
                         continue;
                     }
-                    IBlockRenderer renderer = ClientRenderContext.BLOCK_RENDERER.get(blockAccess.getBlockID());
+                    IBlockRenderer renderer = net.cubecraft.client.context.ClientRenderContext.BLOCK_RENDERER.get(blockAccess.getBlockID());
                     if (renderer == null) {
                         continue;
                     }

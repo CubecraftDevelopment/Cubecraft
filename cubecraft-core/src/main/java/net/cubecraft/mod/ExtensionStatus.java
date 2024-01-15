@@ -1,4 +1,4 @@
-package net.cubecraft.extension;
+package net.cubecraft.mod;
 
 public enum ExtensionStatus {
     //scan

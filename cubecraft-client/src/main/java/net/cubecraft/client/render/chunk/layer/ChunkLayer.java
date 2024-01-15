@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.chunk.layer;
 
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.IRenderType;
 import net.cubecraft.client.render.LevelRenderContext;
 import net.cubecraft.client.render.RenderType;

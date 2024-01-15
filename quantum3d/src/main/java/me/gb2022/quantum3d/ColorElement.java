@@ -124,8 +124,8 @@ public class ColorElement {
         return RGB(Integer.parseInt(s));
     }
 
-    public double[] RGBA_F() {
-        return new double[]{this.red,this.green,this.blue,this.alpha};
+    public float[] RGBA_F() {
+        return new float[]{this.red,this.green,this.blue,this.alpha};
     }
     public double[] RGB_F() {
         return new double[]{this.red,this.green,this.blue};

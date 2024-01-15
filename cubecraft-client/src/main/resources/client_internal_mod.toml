@@ -1,13 +1,15 @@
 [meta]
 id = "cubecraft_client"
 version = "1.0.0"
-class = "net.cubecraft.client.internal.ClientInternalMod"
+class = "net.cubecraft.client.internal.CubecraftClientInternalMod"
+side = "client"
 
-[dependencies-shared]
-cubecraft-core = "__any__"
+[dependencies-client]
+cubecraft_core = "__any__"
+cubecraft_server="__any__"
 
 [info]
 name = "Cubecraft-Client"
 author = "GrassBlock2022"
 website = "https://github.com/CubecraftDevelopment"
-description = "Internal content for basic client framework."
+description = "Basic client framework."

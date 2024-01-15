@@ -1,41 +1,61 @@
-package net.cubecraft.client.gui;
+package net.cubecraft.client.context;
 
-import net.cubecraft.client.ClientRenderContext;
-import net.cubecraft.client.ClientSettingRegistry;
-import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.gui.base.DisplayScreenInfo;
-import net.cubecraft.client.gui.base.Popup;
-import net.cubecraft.client.gui.base.Text;
-import net.cubecraft.client.gui.layout.Layout;
-import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.gui.screen.Screen;
-import net.cubecraft.client.render.renderer.ComponentRendererPart;
-import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.client.resource.UIAsset;
-import net.cubecraft.event.resource.ResourceLoadStartEvent;
-import net.cubecraft.resource.ResourceLocation;
+import com.google.gson.JsonDeserializer;
 import ink.flybird.fcommon.container.CollectionUtil;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.fcommon.file.XmlReader;
+import ink.flybird.fcommon.registry.ConstructingMap;
+import ink.flybird.fcommon.registry.TypeItem;
+import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import me.gb2022.quantum3d.device.Window;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
-import ink.flybird.quantum3d_legacy.GLUtil;
+import net.cubecraft.SharedContext;
+import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.gui.ComponentRenderer;
+import net.cubecraft.client.gui.ScreenUtil;
+import net.cubecraft.client.gui.base.DisplayScreenInfo;
+import net.cubecraft.client.gui.base.Popup;
+import net.cubecraft.client.gui.base.Text;
+import net.cubecraft.client.gui.font.SmoothedFontRenderer;
+import net.cubecraft.client.gui.layout.Border;
+import net.cubecraft.client.gui.layout.Layout;
+import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.client.gui.screen.AnimationScreen;
+import net.cubecraft.client.gui.screen.HUDScreen;
+import net.cubecraft.client.gui.screen.LogoLoadingScreen;
+import net.cubecraft.client.gui.screen.Screen;
+import net.cubecraft.client.render.renderer.ComponentRendererPart;
+import net.cubecraft.client.resource.ModelAsset;
+import net.cubecraft.client.resource.TextureAsset;
+import net.cubecraft.client.resource.UIAsset;
+import net.cubecraft.event.resource.ResourceLoadStartEvent;
+import net.cubecraft.resource.ResourceLocation;
+import net.cubecraft.world.IWorld;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
-public final class GUIContext {
+public final class ClientGUIContext extends ClientContext implements TaskProgressUpdateListener {
+    public static final ConstructingMap<Node> NODE = new ConstructingMap<>(Node.class);
+    public static final ConstructingMap<Layout> LAYOUT = new ConstructingMap<>(Layout.class);
+    public static final HashMap<Class<? extends Node>, ComponentRenderer> COMPONENT_RENDERER = new HashMap<>();
+    public static final HashMap<String, Class<? extends ComponentRendererPart>> COMPONENT_RENDERER_PART = new HashMap<>();
+    public static final SmoothedFontRenderer SMOOTH_FONT_RENDERER = new SmoothedFontRenderer();
+    public static final SmoothedFontRenderer ICON_FONT_RENDERER = new SmoothedFontRenderer();
     private static final ILogger LOGGER = LogManager.getLogger("gui-context");
-
     private final XmlReader deserializer;
     private final CubecraftClient client;
     private final Window window;
@@ -47,21 +67,86 @@ public final class GUIContext {
     private boolean checked;
     private int fixedMouseX, fixedMouseY;
 
-    public GUIContext(XmlReader reader, CubecraftClient client, Window window) {
-        this.deserializer = reader;
+    private LogoLoadingScreen loadingScreen;
+
+    public ClientGUIContext(CubecraftClient client, Window window) {
+        super(client);
+        this.deserializer = SharedContext.FAML_READER;
         this.client = client;
         this.window = window;
         this.client.getDeviceEventBus().registerEventListener(this);
-        //basic
         this.deserializer.registerDeserializer(Text.class, new Text.XMLDeserializer());
         this.deserializer.registerDeserializer(Layout.class, new Layout.XMLDeserializer());
         ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(this);
     }
 
+
+    public static void registerComponent(Class<? extends Node> clazz) {
+        String id = clazz.getDeclaredAnnotation(TypeItem.class).value();
+        NODE.registerItem(id, clazz);
+        ModelAsset asset = new ModelAsset("cubecraft:/ui/" + id + ".json");
+        String resID = "cubecraft:" + id + "_render_controller";
+        ClientSharedContext.RESOURCE_MANAGER.registerResource("default", resID, asset);
+        ClientSharedContext.RESOURCE_MANAGER.loadResource(asset);
+        ComponentRenderer renderer = SharedContext.createJsonReader().fromJson(asset.getRawText(), ComponentRenderer.class);
+        COMPONENT_RENDERER.put(clazz, renderer);
+    }
+
+    public static void registerRendererComponentPart(Class<? extends ComponentRendererPart> clazz, JsonDeserializer<?> deserializer) {
+        String id = clazz.getDeclaredAnnotation(TypeItem.class).value();
+        COMPONENT_RENDERER_PART.put(id, clazz);
+        SharedContext.GSON_BUILDER.registerTypeAdapter(clazz, deserializer);
+    }
+
+    public static Layout createLayout(String content, String border) {
+        String type = content.split("/")[0];
+        String cont = content.split("/")[1];
+
+        Layout layout = LAYOUT.create(type);
+
+        layout.initialize(cont.split(","));
+
+        if (Objects.equals(border, "")) {
+            return layout;
+        }
+
+        layout.setBorder(new Border(
+                Integer.parseInt(border.split(",")[0]),
+                Integer.parseInt(border.split(",")[1]),
+                Integer.parseInt(border.split(",")[3]),
+                Integer.parseInt(border.split(",")[2])
+        ));
+        return layout;
+    }
+
+    public static Node createNode(String type, Element element) {
+        Node n = NODE.create(type);
+        n.init(element);
+
+        return n;
+    }
+
+    public static void initializeContext() {
+        SharedContext.GSON_BUILDER.registerTypeAdapter(ComponentRenderer.class, new ComponentRenderer.JDeserializer());
+        SharedContext.GSON_BUILDER.registerTypeAdapter(ComponentRendererPart.class, new ComponentRendererPart.JDeserializer());
+    }
+
+    public static Class<? extends ComponentRendererPart> getRendererPartClass(String id) {
+        return COMPONENT_RENDERER_PART.get(id);
+    }
+
+    public static ComponentRenderer getRenderController(Class<? extends Node> aClass) {
+        return COMPONENT_RENDERER.get(aClass);
+    }
+
+    public static Class<?> getLayoutClass(String type) {
+        return NODE.getMap().get(type);
+    }
+
+
     public void setScreen(UIAsset screen, @Nullable UIAsset parent) {
         Screen scr = new Screen(screen.getDom().getDocumentElement());
         Screen parentScr = parent != null ? new Screen(parent.getDom().getDocumentElement()) : null;
-
         scr.setParentScreen(parentScr);
 
         this.setScreen(scr);
@@ -79,28 +164,15 @@ public final class GUIContext {
         }
     }
 
-
     public void broadCastInitializeEvent(Screen screen) {
         for (Node p : screen.getNodes().values()) {
 
         }
     }
 
-    public static Class<?> getLayoutClass(String type) {
-        return GUIRegistry.layoutClassMapping.get(type);
-    }
-
-    public Class<? extends ComponentRendererPart> getRendererPartClass(String id) {
-        return GUIRegistry.COMPONENT_RENDERER_PART.get(id);
-    }
-
-    public ComponentRenderer getRenderController(Class<? extends Node> clazz) {
-        return GUIRegistry.COMPONENT_RENDERER.get(clazz);
-    }
-
     public void initialize() {
         Set<TextureAsset> locations = new HashSet<>();
-        CollectionUtil.iterateMap(GUIRegistry.COMPONENT_RENDERER, ((key, item) -> {
+        CollectionUtil.iterateMap(COMPONENT_RENDERER, ((key, item) -> {
             if (item == null) {
                 return;
             }
@@ -202,6 +274,16 @@ public final class GUIContext {
         return hoverScreen;
     }
 
+    public void setHoverScreen(Screen screen) {
+        if (this.hoverScreen != null) {
+            this.hoverScreen.release();
+        }
+        this.hoverScreen = screen;
+        this.hoverScreen.init();
+        String s = screen.getId();
+        this.broadCastInitializeEvent(this.hoverScreen);
+    }
+
     public void setHoverScreen(String location) {
         if (location.endsWith(".xml")) {
             Document dom = ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.uiScreen(location)).getAsDom();
@@ -213,16 +295,6 @@ public final class GUIContext {
         } else {
             throw new RuntimeException("loaded a none exist file!");
         }
-    }
-
-    public void setHoverScreen(Screen screen) {
-        if (this.hoverScreen != null) {
-            this.hoverScreen.release();
-        }
-        this.hoverScreen = screen;
-        this.hoverScreen.init();
-        String s = screen.getId();
-        this.broadCastInitializeEvent(this.hoverScreen);
     }
 
     public EventBus getEventBus() {
@@ -251,9 +323,56 @@ public final class GUIContext {
     @EventHandler
     public void onResourceReload(ResourceLoadStartEvent event) {
         initialize();
+        if(Objects.equals(event.getStage(), "client:startup")){
+            this.loadingScreen = new LogoLoadingScreen();
+        }
     }
 
     public EventBus getDeviceEventBus() {
         return this.client.getDeviceEventBus();
+    }
+
+    @Override
+    public void joinWorld(IWorld world) {
+        this.setScreen(new HUDScreen());
+    }
+
+    public void setHoverLoadingScreen() {
+        this.setHoverScreen(this.loadingScreen);
+    }
+
+    public void renderAnimationLoadingScreen() {
+        this.renderAnimationScreen(this.loadingScreen);
+    }
+
+    public void renderAnimationScreen(AnimationScreen screen) {
+        while (screen.isAnimationNotCompleted()) {
+            this.client.render();
+            this.getWindow().update();
+            Thread.yield();
+        }
+    }
+
+    public LogoLoadingScreen getLoadingScreen() {
+        return this.loadingScreen;
+    }
+
+
+    @Override
+    public void onProgressChange(int progress) {
+        this.loadingScreen.updateProgress(progress / 100f);
+    }
+
+    @Override
+    public void onProgressStageChanged(String newStage) {
+        this.loadingScreen.setText(newStage);
+    }
+
+    @Override
+    public void refreshScreen() {
+        this.client.shortTick();
+        if (System.currentTimeMillis() % 5 == 0) {
+            this.tick();
+        }
     }
 }

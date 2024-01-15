@@ -1,7 +1,7 @@
 package net.cubecraft.client.internal.handler;
 
-import net.cubecraft.client.ClientRenderContext;
-import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.resource.ResourceLocation;
 import ink.flybird.fcommon.event.EventHandler;
@@ -34,7 +34,7 @@ public class ParticleHandler {
                     double xp = (double) x + ((double) xx + 0.5F) / (double) SD;
                     double yp = (double) y + ((double) yy + 0.5F) / (double) SD;
                     double zp = (double) z + ((double) zz + 0.5F) / (double) SD;
-                    CubecraftClient.CLIENT.getParticleEngine().add(new BlockBrakeParticle(e.world(), xp, yp, zp, xp - (double) x - 0.5F, yp - (double) y - 0.5F, zp - (double) z - 0.5F, tex));
+                    ClientSharedContext.getClient().getParticleEngine().add(new BlockBrakeParticle(e.world(), xp, yp, zp, xp - (double) x - 0.5F, yp - (double) y - 0.5F, zp - (double) z - 0.5F, tex));
                 }
             }
         }

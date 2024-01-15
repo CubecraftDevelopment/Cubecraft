@@ -1,6 +1,6 @@
 package net.cubecraft.client.gui.node;
 
-import net.cubecraft.client.gui.GUIRegistry;
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.fcommon.math.MathHelper;
 import ink.flybird.fcommon.registry.TypeItem;
@@ -22,6 +22,6 @@ public class Icon extends Node {
 
     @Override
     public void render(float interpolationTime) {
-        GUIRegistry.ICON_FONT_RENDERER.render(String.valueOf(icon), getLayout().getAbsoluteX(), getLayout().getAbsoluteY(), color, this.layout.getAbsoluteHeight(), 0, alignment);
+        ClientGUIContext.ICON_FONT_RENDERER.render(String.valueOf(icon), getLayout().getAbsoluteX(), getLayout().getAbsoluteY(), color, this.layout.getAbsoluteHeight(), 0, alignment);
     }
 }

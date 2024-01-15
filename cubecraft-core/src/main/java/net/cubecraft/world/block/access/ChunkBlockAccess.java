@@ -7,6 +7,7 @@ import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
+import net.cubecraft.world.dimension.Dimension;
 
 public class ChunkBlockAccess extends IBlockAccess {
     private final WorldChunk chunk;
@@ -22,6 +23,12 @@ public class ChunkBlockAccess extends IBlockAccess {
         if (this.cachedBlockId != null) {
             return this.cachedBlockId;
         }
+
+        if (Dimension.outsideWorld(this.x, this.z) || Dimension.outsideWorldVertical(this.y)) {
+            this.cachedBlockId = this.world.getDimension().predictBlockID(this.world, this.x, this.y, this.z);
+            return this.cachedBlockId;
+        }
+
 
         String id = this.chunk.getBlockID((int) (this.x & 15), (int) y, (int) (this.z & 15));
         if (id != null) {

@@ -14,9 +14,9 @@ public class ChunkStatusCache {
 
     private final UpdateHandler handler;
 
-    private long centerX = Long.MIN_VALUE;
-    private long centerY = Long.MIN_VALUE;
-    private long centerZ = Long.MIN_VALUE;
+    private long centerX = Long.MIN_VALUE + 1024;
+    private long centerY = Long.MIN_VALUE + 1024;
+    private long centerZ = Long.MIN_VALUE + 1024;
 
     private int updateCount;
     private int successUpdateCount;
@@ -38,7 +38,8 @@ public class ChunkStatusCache {
         for (int x = 0; x < this.horizontalSize; x++) {
             for (int z = 0; z < this.horizontalSize; z++) {
                 for (int y = 0; y < this.verticalSize; y++) {
-                    this.chunkStatusCache[toArrayPos(x, y, z)] = generateStatus(toAbsY(y));
+                    toAbsY(y);
+                    this.chunkStatusCache[toArrayPos(x, y, z)] = ChunkUpdateStatus.UPDATE_REQUIRED;
                 }
             }
         }
@@ -70,16 +71,16 @@ public class ChunkStatusCache {
                     if (newX >= 0 && newX < this.horizontalSize
                             && newY >= 0 && newY < this.verticalSize
                             && newZ >= 0 && newZ < this.horizontalSize) {
-                        double distance = RenderChunkPos.distanceTo(toAbsX(x), toAbsY(y), toAbsZ(z), RenderChunkPos.toWorldPos(this.centerX, this.centerY, this.centerZ));
+                        double distance = RenderChunkPos.chunkDistanceTo(toAbsX(x), toAbsY(y), toAbsZ(z), RenderChunkPos.toWorldPos(this.centerX, this.centerY, this.centerZ));
                         int dist = ClientSettingRegistry.getFixedViewDistance() * 16;
                         if (distance >= dist) {
-                            this.chunkStatusCache[toArrayPos(x, y, z)] = generateStatus(toAbsY(y));
-                            this.generateCount++;
-                        }else{
+                            this.chunkStatusCache[toArrayPos(x, y, z)] = ChunkUpdateStatus.UPDATE_REQUIRED;
+                        } else {
                             this.chunkStatusCache[toArrayPos(x, y, z)] = this.cacheCopy[toArrayPos(newX, newY, newZ)];
                         }
                     } else {
-                        this.chunkStatusCache[toArrayPos(x, y, z)] = generateStatus(toAbsY(y));
+                        toAbsY(y);
+                        this.chunkStatusCache[toArrayPos(x, y, z)] = ChunkUpdateStatus.UPDATE_REQUIRED;
                         this.generateCount++;
                     }
                 }
@@ -87,17 +88,20 @@ public class ChunkStatusCache {
         }
     }
 
-    private ChunkUpdateStatus generateStatus(long y) {
-        if (y >= Chunk.SECTION_SIZE + 1 || y < -1) {
-            return ChunkUpdateStatus.OUTSIDE_WORLD;
-        }
-        return ChunkUpdateStatus.UPDATE_REQUIRED;
-    }
-
     public void set(RenderChunkPos pos, ChunkUpdateStatus status) {
         int x = toRelX(pos.getX());
         int y = toRelY(pos.getY());
         int z = toRelZ(pos.getZ());
+
+        if (x < 0 || x >= this.horizontalSize) {
+            return;
+        }
+        if (y < 0 || y >= this.verticalSize) {
+            return;
+        }
+        if (z < 0 || z >= this.horizontalSize) {
+            return;
+        }
 
         this.chunkStatusCache[toArrayPos(x, y, z)] = status;
     }
@@ -112,7 +116,7 @@ public class ChunkStatusCache {
                         continue;
                     }
                     RenderChunkPos pos = RenderChunkPos.create(toAbsX(x), toAbsY(y), toAbsZ(z));
-                    double distance = RenderChunkPos.distanceTo(toAbsX(x), toAbsY(y), toAbsZ(z), RenderChunkPos.toWorldPos(this.centerX, this.centerY, this.centerZ));
+                    double distance = pos.chunkDistanceTo(RenderChunkPos.toWorldPos(this.centerX, this.centerY, this.centerZ));
                     int dist = ClientSettingRegistry.getFixedViewDistance() * 16;
                     if (distance >= dist) {
                         continue;

@@ -1,5 +1,6 @@
 package net.cubecraft.client.internal.net;
 
+import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.net.ClientNetHandler;
 import net.cubecraft.internal.network.NetHandlerType;
@@ -16,7 +17,7 @@ import java.util.Objects;
 
 @TypeItem(NetHandlerType.CLIENT_DATA_RECEIVE)
 public class ClientHandlerDataReceive extends ClientNetHandler {
-    private final CubecraftClient client= CubecraftClient.CLIENT;
+    private final CubecraftClient client= ClientSharedContext.getClient();
 
     @PacketListener
     public void chunkDataReceived(PacketFullChunkData packet, NetHandlerContext context) {
@@ -25,18 +26,18 @@ public class ClientHandlerDataReceive extends ClientNetHandler {
 
     @PacketListener
     public void entityReceived(PacketEntityData packet, NetHandlerContext context) {
-        this.client.getClientWorld().addEntity(packet.getEntity());
+        this.client.getClientWorldContext().getWorld().addEntity(packet.getEntity());
     }
 
 
     @PacketListener
     public void clientLocationUpdate(PacketEntityPosition loc, NetHandlerContext ctx) {
-        Entity e = this.client.getClientWorld().getEntity(loc.getUuid());
-        if (Objects.equals(loc.getUuid(), this.client.getPlayer().getUuid())) {
+        Entity e = this.client.getClientWorldContext().getWorld().getEntity(loc.getUuid());
+        if (Objects.equals(loc.getUuid(), this.client.getClientWorldContext().getPlayer().getUuid())) {
 
         } else {
-            if (e != null && Objects.equals(loc.getNewLoc().getDim(), this.client.getClientWorld().getId())) {
-                e.setLocation(loc.getNewLoc(), CollectionUtil.wrap(this.client.getClientWorld().getId(), this.client.getClientWorld()));
+            if (e != null && Objects.equals(loc.getNewLoc().getDim(), this.client.getClientWorldContext().getWorld().getId())) {
+                e.setLocation(loc.getNewLoc(), CollectionUtil.wrap(this.client.getClientWorldContext().getWorld().getId(), this.client.getClientWorldContext().getWorld()));
             }
         }
     }

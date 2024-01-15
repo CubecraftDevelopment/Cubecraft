@@ -4,7 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import net.cubecraft.client.gui.GUIRegistry;
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.render.renderer.ComponentRendererPart;
@@ -23,9 +23,9 @@ public record Font(double x, double y, int size, int col, int yOffset, String qu
         Text text=node.queryText(query);
         int color=text.getColor()!=0xFFFFFF?text.getColor():col;
         if(text.isIcon()){
-            GUIRegistry.ICON_FONT_RENDERER.render(text.getText(),x, (int) (y+yOffset-size*((iconModifier-1)/2)),color, (int) (size*(iconModifier)), 0, text.getAlignment());
+            ClientGUIContext.ICON_FONT_RENDERER.render(text.getText(),x, (int) (y+yOffset-size*((iconModifier-1)/2)),color, (int) (size*(iconModifier)), 0, text.getAlignment());
         }else{
-            GUIRegistry.SMOOTH_FONT_RENDERER.render(text.getText(),x,y+yOffset, color, size, 0, text.getAlignment());
+            ClientGUIContext.SMOOTH_FONT_RENDERER.render(text.getText(),x,y+yOffset, color, size, 0, text.getAlignment());
         }
     }
 

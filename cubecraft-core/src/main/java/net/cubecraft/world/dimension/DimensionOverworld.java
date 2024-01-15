@@ -8,7 +8,7 @@ public final class DimensionOverworld implements Dimension {
 
     @Override
     public String predictBlockID(IWorld world, long x, long y, long z) {
-        if (this.outsideWorld(x, z)) {
+        if (Dimension.outsideWorld(x, z)) {
             return BlockType.STONE;
         }
 

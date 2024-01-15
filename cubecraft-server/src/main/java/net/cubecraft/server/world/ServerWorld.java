@@ -1,5 +1,8 @@
 package net.cubecraft.server.world;
 
+import ink.flybird.fcommon.container.CollectionUtil;
+import ink.flybird.fcommon.container.Vector3;
+import ink.flybird.fcommon.math.MathHelper;
 import net.cubecraft.event.chunk.ChunkUnloadEvent;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.level.Level;
@@ -14,9 +17,6 @@ import net.cubecraft.world.chunk.task.ChunkLoadLevel;
 import net.cubecraft.world.chunk.task.ChunkLoadTaskType;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.entity.Entity;
-import ink.flybird.fcommon.container.CollectionUtil;
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.math.MathHelper;
 
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -106,6 +106,7 @@ public class ServerWorld extends IWorld {
     }
 
     public void save() {
+        //todo leak
         Iterator<WorldChunk> it = ((HashMap<?, WorldChunk>) this.chunks.map.clone()).values().iterator();
         while (it.hasNext()) {
             WorldChunk chunk = it.next();

@@ -10,7 +10,6 @@ import net.cubecraft.ContentRegistries;
 import net.cubecraft.level.Level;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.access.NonLoadedBlockAccess;
-import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.ChunkLoader;
 import net.cubecraft.world.chunk.ChunkSaver;
@@ -32,6 +31,8 @@ import java.util.function.Predicate;
 
 //todo:world access
 public abstract class IWorld {
+    public static final long MAX_CHUNK_LOAD_RANGE = (9223372036854775807L>>4)-10;
+
     public final HashMap<Vector3<Long>, Integer> scheduledTickEvents = new HashMap<>();
     public final KeyMap<ChunkPos, WorldChunk> chunks = new KeyMap<>();
     public final HashMap<String, Entity> entities = new HashMap<>();
@@ -225,6 +226,10 @@ public abstract class IWorld {
     }
 
     public ChunkFuture loadChunk(ChunkPos p, ChunkLoadTicket ticket) {
+
+        if (p.getX() > MAX_CHUNK_LOAD_RANGE || p.getX() < -MAX_CHUNK_LOAD_RANGE ||p.getZ() > MAX_CHUNK_LOAD_RANGE || p.getZ() < -MAX_CHUNK_LOAD_RANGE) {
+            return new FutureChunkContainer(this, p);
+        }
         WorldChunk c = getChunk(p);
         if (c != null) {
             c.addTicket(ticket);

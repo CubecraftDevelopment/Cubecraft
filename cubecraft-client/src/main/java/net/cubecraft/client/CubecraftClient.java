@@ -3,85 +3,73 @@ package net.cubecraft.client;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.SimpleEventBus;
 import ink.flybird.fcommon.logging.LoggerContext;
-import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
 import ink.flybird.fcommon.timer.Timer;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
-import me.gb2022.quantum3d.GameApplication;
-import me.gb2022.quantum3d.device.DeviceContext;
-import me.gb2022.quantum3d.device.Keyboard;
-import me.gb2022.quantum3d.device.Mouse;
-import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.ContextManager;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.platform.Sync;
-import me.gb2022.quantum3d.device.adapter.KeyboardEventAdapter;
-import me.gb2022.quantum3d.device.adapter.MouseEventAdapter;
+import me.gb2022.quantum3d.GameApplication;
+import me.gb2022.quantum3d.device.DeviceContext;
+import me.gb2022.quantum3d.device.Window;
 import me.gb2022.quantum3d.device.adapter.WindowEventAdapter;
 import me.gb2022.quantum3d.render.RenderContext;
+import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
+import net.cubecraft.Side;
 import net.cubecraft.auth.Session;
+import net.cubecraft.client.context.ClientDeviceContext;
+import net.cubecraft.client.context.ClientGUIContext;
+import net.cubecraft.client.context.ClientRenderContext;
+import net.cubecraft.client.context.ClientWorldContext;
 import net.cubecraft.client.event.app.ClientDisposeEvent;
 import net.cubecraft.client.event.app.ClientPostSetupEvent;
 import net.cubecraft.client.event.app.ClientSetupEvent;
 import net.cubecraft.client.event.gui.context.GUIContextPreInitEvent;
-import net.cubecraft.client.gui.GUIContext;
-import net.cubecraft.client.gui.GUIRegistry;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
-import net.cubecraft.client.gui.screen.*;
+import net.cubecraft.client.gui.screen.Screen;
+import net.cubecraft.client.gui.screen.StudioLoadingScreen;
 import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.net.ClientIO;
 import net.cubecraft.client.net.RakNetClientIO;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.registry.TextureRegistry;
-import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.world.ClientWorldManager;
-import net.cubecraft.extension.ExtensionInitializationOperation;
-import net.cubecraft.extension.ModManager;
-import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.level.Level;
-import net.cubecraft.resource.ResourceLocation;
+import net.cubecraft.mod.ModLoader;
+import net.cubecraft.mod.ModManager;
 import net.cubecraft.util.SystemInfoQuery;
 import net.cubecraft.util.VersionInfo;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.entity.particle.ParticleEngine;
 import org.lwjgl.glfw.GLFW;
 
-//todo:add net support
-//todo:add inventory support
-//todo:fix smooth light engine
-//todo:quantum3d2
-
-public final class CubecraftClient extends GameApplication implements TaskProgressUpdateListener {
-    public static final VersionInfo VERSION = new VersionInfo("client-0.3.9-b3");
-
+public final class CubecraftClient extends GameApplication {
+    public static final VersionInfo VERSION = new VersionInfo("client-0.4.1-b2");
     private static final ILogger LOGGER = LogManager.getLogger("client-main");
-    public static CubecraftClient CLIENT;
+
+    private final ClientDeviceContext deviceContext = new ClientDeviceContext();
+    private final ClientRenderContext renderContext = new ClientRenderContext(this);
+    private final ClientWorldContext worldContext = new ClientWorldContext(this);
+    private final ClientGUIContext guiContext = new ClientGUIContext(this, this.getWindow());
+
     private final EventBus clientEventBus = new SimpleEventBus();
-    private final Session session = new Session("GrassBlock2022", "cubecraft:default");
+
     private final ClientIO clientIO = new RakNetClientIO();
-    private final EventBus deviceEventBus = new SimpleEventBus();
-    private final GUIContext guiManager = new GUIContext(SharedContext.FAML_READER, this, this.getWindow());
     private final ClientWorldManager clientWorldManager = new ClientWorldManager(this);
+    private final Session session = new Session("GrassBlock2022", "cubecraft:default");
+
     public int maxFPS = 60;
     public boolean isDebug;
-    private Keyboard keyboard;
-    private Mouse mouse;
-    private LevelRenderer levelRenderer;
-    private LogoLoadingScreen logoLoadingScreen;
-    private Level level;
-    private IWorld clientWorld;
-
-    private ParticleEngine particleEngine;
-    private EntityPlayer player;
     private PlayerController controller;
-
+    private ParticleEngine particleEngine;
     private long lastGCTime;
 
     public CubecraftClient(DeviceContext deviceContext, RenderContext renderContext, Timer timer) {
         super(deviceContext, renderContext, timer);
+        ClientSharedContext.CLIENT_INSTANCE.setObj(this);
         deviceContext.initContext();
     }
 
@@ -93,16 +81,16 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         this.maxFPS = ClientSettingRegistry.MAX_FPS.getValue();
         LOGGER.info("config initialized.");
 
+        ContextManager.createLegacyGLContext();
+        ContextManager.setGLContextVersion(4, 6);
+        VertexBuilderAllocator.PREFER_MODE.set(0);
+        LOGGER.info("render context started.");
+
         ClientSharedContext.RESOURCE_MANAGER.registerResources(ResourceRegistry.class);
         ClientSharedContext.RESOURCE_MANAGER.loadAsync("client:startup");
         LOGGER.info("pre-load resources loaded.");
 
-        this.keyboard = this.getDeviceContext().keyboard(window);
-        this.keyboard.create();
-        this.keyboard.addListener(new KeyboardEventAdapter(this.deviceEventBus));
-        this.mouse = this.getDeviceContext().mouse(window);
-        this.mouse.create();
-        this.mouse.addListener(new MouseEventAdapter(this.deviceEventBus));
+        this.deviceContext.init(window, this.getDeviceContext());
 
         window.setTitle("Cubecraft-" + CubecraftClient.VERSION.shortVersion());
         window.setSize(1280, 720);
@@ -121,77 +109,70 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
     public void initialize() {
         ModManager modManager = SharedContext.MOD;
 
-        modManager.registerInternalMod("/client_mod_info.properties");
-        modManager.registerInternalMod("/content_mod_info.properties");
-        modManager.registerInternalMod("/server_mod_info.properties");
-        modManager.loadMods(this);
+        ModLoader.loadClientInternalMod();
+        ModLoader.loadStandaloneMods(EnvironmentPath.getModFolder());
+
+        modManager.completeModRegister(Side.CLIENT);
+
+        modManager.constructMods(this.guiContext);
 
         LOGGER.info("mod initialized.");
 
         modManager.getModLoaderEventBus().callEvent(new ClientSetupEvent(this));
         long last = System.currentTimeMillis();
         LOGGER.info("initializing client");
-        CLIENT = this;
         this.timer = new Timer(20);
         LOGGER.info("initializing render system");
-        ContextManager.createLegacyGLContext();
-        ContextManager.setGLContextVersion(4, 6);
-        VertexBuilderAllocator.PREFER_MODE.set(0);
+
         if (!net.cubecraft.client.ClientSettingRegistry.SKIP_STUDIO_LOGO.getValue()) {
             StudioLoadingScreen scr = new StudioLoadingScreen();
-            this.guiManager.setScreen(scr);
-            this.renderAnimationScreen(scr);
+            this.guiContext.setScreen(scr);
+            this.guiContext.renderAnimationScreen(scr);
         }
-        GUIRegistry.initialize();
-        this.clientEventBus.callEvent(new GUIContextPreInitEvent(this.guiManager));
+        ClientGUIContext.initializeContext();
+        this.clientEventBus.callEvent(new GUIContextPreInitEvent(this.guiContext));
 
-        this.logoLoadingScreen = new LogoLoadingScreen();
-        this.guiManager.setHoverScreen(this.logoLoadingScreen);
-        this.guiManager.displayHoverScreen();
+        this.guiContext.setHoverLoadingScreen();
+        this.guiContext.displayHoverScreen();
         LOGGER.info("ui initialized.");
 
-        SharedContext.MOD.initialize(ExtensionInitializationOperation.getClientOperationList());
         LOGGER.info("client-side mod loaded.");
 
         modManager.getModLoaderEventBus().callEvent(new ClientPostSetupEvent(this));
 
         ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(TextureRegistry.class);
         ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(ResourceRegistry.class);
+
         ClientSharedContext.RESOURCE_MANAGER.reload();
+
         ClientSharedContext.RESOURCE_MANAGER.load("default");
 
         LOGGER.info("resource loaded.");
 
-        this.renderAnimationScreen(this.logoLoadingScreen);
+        this.guiContext.renderAnimationLoadingScreen();
 
         LOGGER.info("done,%dms", System.currentTimeMillis() - last);
 
-        this.guiManager.setScreen(ResourceRegistry.TITLE_SCREEN);
-        this.guiManager.disposeHoverScreen();
+        this.guiContext.setScreen(ResourceRegistry.TITLE_SCREEN);
+        this.guiContext.disposeHoverScreen();
     }
 
     @Override
     public void update() {
-        GUIRegistry.SMOOTH_FONT_RENDERER.update();
-        GUIRegistry.ICON_FONT_RENDERER.update();
+        ClientGUIContext.SMOOTH_FONT_RENDERER.update();
+        ClientGUIContext.ICON_FONT_RENDERER.update();
 
-        if (this.player != null) {
-            this.player.tick();
-        }
+        this.worldContext.tick();
+        this.renderContext.tick();
+        this.guiContext.tick();
+
         if (this.getParticleEngine() != null) {
             this.getParticleEngine().tick();
         }
 
-        if (this.levelRenderer != null) {
-            GLUtil.checkError("pre_world_render");
-            this.levelRenderer.tick();
-            GLUtil.checkError("post_world_render");
-        }
-
-        this.getGuiManager().tick();
         ScreenUtil.tickToasts();
-        if (this.getClientWorld() != null && this.clientWorldManager.isIntegrated()) {
-            this.getClientWorld().tick();
+        if (this.getClientWorldContext().getWorld() != null && this.clientWorldManager.isIntegrated()) {
+            this.getClientWorldContext().getWorld().tick();
         }
     }
 
@@ -214,9 +195,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         this.clientEventBus.callEvent(new ClientDisposeEvent(this));
         LOGGER.info("mod disposed.");
 
-
-        this.mouse.destroy();
-        this.keyboard.destroy();
+        this.deviceContext.destroy();
         LOGGER.info("game stopped...");
         LoggerContext.getSharedContext().allSave();
     }
@@ -226,11 +205,11 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         Window window = this.getWindow();
         DisplayScreenInfo screenInfo = getDisplaySize();
 
-        Screen scr = this.getGuiManager().getScreen();
+        Screen scr = this.getClientGUIContext().getScreen();
 
         if (scr != null && (scr.getBackgroundType().shouldRenderWorld())) {
             GLUtil.checkError("pre_world_render");
-            levelRenderer.render(this.timer.interpolatedTime);
+            this.getClientRenderContext().render(this.timer.interpolatedTime);
             GLUtil.checkError("post_world_render");
         }
 
@@ -239,7 +218,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         GLUtil.enableBlend();
         GLUtil.checkError("pre_screen_render");
         screenInfo = this.getDisplaySize();
-        this.guiManager.render(screenInfo, this.timer.interpolatedTime);
+        this.guiContext.render(screenInfo, this.timer.interpolatedTime);
         GLUtil.checkError("post_screen_render");
         GLUtil.disableBlend();
         Sync.sync(this.maxFPS);
@@ -248,32 +227,6 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
             SystemInfoQuery.update();
             System.gc();
             this.lastGCTime = System.currentTimeMillis();
-        }
-    }
-
-    @Override
-    public void onProgressChange(int progress) {
-        this.logoLoadingScreen.updateProgress(progress / 100f);
-    }
-
-    @Override
-    public void onProgressStageChanged(String newStage) {
-        this.logoLoadingScreen.setText(newStage);
-    }
-
-    @Override
-    public void refreshScreen() {
-        this.shortTick();
-        if (System.currentTimeMillis() % 5 == 0) {
-            this.guiManager.tick();
-        }
-    }
-
-    public void renderAnimationScreen(AnimationScreen screen) {
-        while (screen.isAnimationNotCompleted()) {
-            this.render();
-            this.getWindow().update();
-            Thread.yield();
         }
     }
 
@@ -289,7 +242,7 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
     }
 
     public EventBus getDeviceEventBus() {
-        return deviceEventBus;
+        return this.getClientDeviceContext().getEventBus();
     }
 
     public ClientIO getClientIO() {
@@ -300,60 +253,13 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
         return clientEventBus;
     }
 
-    public IWorld getClientWorld() {
-        return clientWorld;
-    }
-
-    public EntityPlayer getPlayer() {
-        return player;
-    }
-
     public ParticleEngine getParticleEngine() {
         return this.particleEngine;
     }
 
-    public GUIContext getGuiManager() {
-        return guiManager;
-    }
-
-    public void joinWorld(IWorld world) {
-        this.clientWorld = world;
-        this.player = new EntityPlayer(world, this.session);
-        this.particleEngine = new ParticleEngine(this.clientWorld);
-        this.levelRenderer = new LevelRenderer(this.getClientWorld(), this.player, this, ResourceLocation.worldRendererSetting(this.clientWorld.getId() + ".json"));
-        this.getClientWorld().addEntity(this.player);
-        this.controller = new PlayerController(this, this.player);
-        CLIENT.getGuiManager().setScreen(new HUDScreen());
-    }
-
-    public void leaveWorld() {
-        this.getDeviceEventBus().unregisterEventListener(this.controller);
-        this.clientWorld = null;
-        this.player = null;
-        this.levelRenderer.stop();
-        this.levelRenderer = null;
-        this.controller = null;
-        this.particleEngine = null;
-    }
-
-    public Keyboard getKeyboard() {
-        return this.keyboard;
-    }
-
-    public Mouse getMouse() {
-        return this.mouse;
-    }
 
     public PlayerController getPlayerController() {
         return this.controller;
-    }
-
-    public Level getLevel() {
-        return this.level;
-    }
-
-    public void setLevel(Level level) {
-        this.level = level;
     }
 
     public Session getSession() {
@@ -362,5 +268,45 @@ public final class CubecraftClient extends GameApplication implements TaskProgre
 
     public ClientWorldManager getClientWorldManager() {
         return this.clientWorldManager;
+    }
+
+
+    public void joinLevel(Level level) {
+        this.worldContext.joinLevel(level);
+        this.renderContext.joinLevel(level);
+    }
+
+    public void leaveLevel() {
+        this.getDeviceEventBus().unregisterEventListener(this.controller);
+        this.controller = null;
+        this.particleEngine = null;
+
+        this.worldContext.leaveLevel();
+        this.renderContext.leaveLevel();
+    }
+
+    public void setWorld(IWorld world) {
+        this.worldContext.joinWorld(world);
+        this.renderContext.joinWorld(world);
+
+        this.particleEngine = new ParticleEngine(this.getClientWorldContext().getWorld());
+        this.controller = new PlayerController(this, this.getClientWorldContext().getPlayer());
+    }
+
+
+    public ClientDeviceContext getClientDeviceContext() {
+        return deviceContext;
+    }
+
+    public ClientRenderContext getClientRenderContext() {
+        return renderContext;
+    }
+
+    public ClientWorldContext getClientWorldContext() {
+        return this.worldContext;
+    }
+
+    public ClientGUIContext getClientGUIContext() {
+        return guiContext;
     }
 }

@@ -1,6 +1,6 @@
 package net.cubecraft.client.world;
 
-import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import ink.flybird.fcommon.container.KeyMap;
 import net.cubecraft.internal.network.packet.PacketChunkGet;
@@ -33,7 +33,7 @@ public class ClientChunkProvider extends ChunkProvider {
 
     @Override
     public void generateChunk(IWorld world, ChunkPos pos) {
-        CubecraftClient.CLIENT.getClientIO().sendPacket(new PacketChunkGet(pos, world.getId()));
+        ClientSharedContext.getClient().getClientIO().sendPacket(new PacketChunkGet(pos, world.getId()));
     }
 
 

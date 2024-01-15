@@ -1,7 +1,6 @@
 package net.cubecraft.client.world;
 
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.internal.network.packet.PacketChunkGet;
 import net.cubecraft.level.Level;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.access.ChunkLoadAccess;
@@ -10,12 +9,10 @@ import net.cubecraft.world.chunk.task.ChunkLoadLevel;
 import net.cubecraft.world.chunk.task.ChunkLoadTaskType;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.entity.Entity;
-import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.concurrent.Future;
 
 public class ClientWorld extends IWorld {
     private static final int CLIENT_WORLD_SIMULATION_DISTANCE = 4;
@@ -34,7 +31,7 @@ public class ClientWorld extends IWorld {
         Iterator<Entity> it2 = this.entities.values().iterator();
         while (it2.hasNext()) {
             Entity e = it2.next();
-            if (e == this.client.getPlayer()) {
+            if (e == this.client.getClientWorldContext().getPlayer()) {
                 e.tick();
                 ChunkLoadAccess.loadChunkRange(this, ChunkPos.fromWorldPos((long) e.x, (long) e.z), CLIENT_WORLD_SIMULATION_DISTANCE, new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10));
             } else {

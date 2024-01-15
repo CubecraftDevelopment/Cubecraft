@@ -2,7 +2,7 @@ package net.cubecraft.client.gui.node;
 
 import com.google.gson.Gson;
 import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.gui.GUIRegistry;
+import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.font.FontAlignment;
 import ink.flybird.fcommon.file.DocumentUtil;
 import ink.flybird.fcommon.math.MathHelper;
@@ -39,7 +39,7 @@ public class SplashText extends Component {
             GL11.glScaled(sin, sin, sin);
         }
         GL11.glRotatef(this.rotation, 0, 0, 1);
-        GUIRegistry.SMOOTH_FONT_RENDERER.renderShadow(this.text, 0, 0, this.color, getLayout().getAbsoluteHeight(), FontAlignment.MIDDLE);
+        ClientGUIContext.SMOOTH_FONT_RENDERER.renderShadow(this.text, 0, 0, this.color, getLayout().getAbsoluteHeight(), FontAlignment.MIDDLE);
         GL11.glPopMatrix();
     }
 }

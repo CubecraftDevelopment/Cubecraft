@@ -1,4 +1,4 @@
-package net.cubecraft.extension;
+package net.cubecraft.mod;
 
 import java.util.HashMap;
 import java.util.Properties;

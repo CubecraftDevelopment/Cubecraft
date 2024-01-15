@@ -1,6 +1,6 @@
 package net.cubecraft.event.mod;
 
-import net.cubecraft.extension.ModManager;
+import net.cubecraft.mod.ModManager;
 
 public abstract class ModEvent {
     private final ModManager modManager;

@@ -1,7 +1,7 @@
 package net.cubecraft.client.internal.renderer.world.chunk;
 
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.client.render.chunk.layer.ChunkLayer;

@@ -1,16 +1,17 @@
 package net.cubecraft.client.gui.node;
 
-import net.cubecraft.client.ClientSettingRegistry;
-import net.cubecraft.client.CubecraftClient;
-import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.quantum3d_legacy.GLUtil;
-import me.gb2022.quantum3d.device.KeyboardButton;
-import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.fcommon.file.DocumentUtil;
 import ink.flybird.fcommon.file.FAMLDeserializer;
 import ink.flybird.fcommon.file.XmlReader;
 import ink.flybird.fcommon.math.MathHelper;
+import ink.flybird.fcommon.registry.TypeItem;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.quantum3d.device.KeyboardButton;
+import me.gb2022.quantum3d.device.event.MouseScrollEvent;
+import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.context.ClientGUIContext;
 import org.lwjgl.opengl.GL11;
 import org.w3c.dom.Element;
 
@@ -39,10 +40,9 @@ public class ScrollPanel extends Node {
     }
 
 
-
     @Override
     public void render(float interpolationTime) {
-        this.context.getRenderController(this.getClass()).render(this);
+        ClientGUIContext.getRenderController(this.getClass()).render(this);
 
         int x = (int) MathHelper.linearInterpolate(this.xo, this.xOffset, interpolationTime);
         int y = (int) MathHelper.linearInterpolate(this.yo, this.yOffset, interpolationTime);
@@ -83,7 +83,7 @@ public class ScrollPanel extends Node {
 
     @EventHandler
     public void onScroll(MouseScrollEvent event) {
-        if (CubecraftClient.CLIENT.getKeyboard().isKeyDown(KeyboardButton.KEY_LEFT_SHIFT)) {
+        if (ClientSharedContext.getClient().getClientDeviceContext().getKeyboard().isKeyDown(KeyboardButton.KEY_LEFT_SHIFT)) {
             if (this.horizontalEnabled) {
                 this.xd = 16 * -event.getYOffset();
             }

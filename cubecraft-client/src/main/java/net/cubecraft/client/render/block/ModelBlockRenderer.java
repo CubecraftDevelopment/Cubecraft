@@ -2,8 +2,8 @@ package net.cubecraft.client.render.block;
 
 import ink.flybird.fcommon.event.EventHandler;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.client.resource.ModelAsset;
 import net.cubecraft.client.resource.TextureAsset;
@@ -30,7 +30,7 @@ public final class ModelBlockRenderer implements IBlockRenderer {
     @Override
     public void renderBlock(IBlockAccess blockAccess, String layer, IWorld world, double renderX, double renderY, double renderZ, VertexBuilder builder) {
         if (this.blockModel == null) {
-            this.blockModel = ClientRenderContext.BLOCK_MODEL.get(this.model.getAbsolutePath());
+            this.blockModel = net.cubecraft.client.context.ClientRenderContext.BLOCK_MODEL.get(this.model.getAbsolutePath());
         }
         this.blockModel.render(blockAccess, builder, layer, world, renderX, renderY, renderZ);
     }
@@ -38,7 +38,7 @@ public final class ModelBlockRenderer implements IBlockRenderer {
     @Override
     public void initializeRenderer(Set<TextureAsset> textureList) {
 
-        ClientRenderContext.BLOCK_MODEL.load(this.model);
+        net.cubecraft.client.context.ClientRenderContext.BLOCK_MODEL.load(this.model);
         ClientRenderContext.BLOCK_MODEL.get(this.model.getAbsolutePath()).initializeModel(textureList);
     }
 

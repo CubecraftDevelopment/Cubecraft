@@ -1,8 +1,7 @@
 package net.cubecraft.client.internal.handler;
 
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.event.resource.ResourceReloadEvent;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.client.render.model.block.BlockModelComponent;
@@ -41,7 +40,7 @@ public class ClientAssetLoader {
         SharedContext.GSON_BUILDER.registerTypeAdapter(BlockModelComponent.class, new Cube.JDeserializer());
 
         try {
-            for (IBlockRenderer renderer : ((NameSpaceMap<? extends IBlockRenderer>) ClientRenderContext.BLOCK_RENDERER).itemList()) {
+            for (IBlockRenderer renderer : ((NameSpaceMap<? extends IBlockRenderer>) net.cubecraft.client.context.ClientRenderContext.BLOCK_RENDERER).itemList()) {
                 if (renderer != null) {
                     renderer.initializeRenderer(textureList);
                 }
@@ -64,12 +63,12 @@ public class ClientAssetLoader {
                 ClientSharedContext.RESOURCE_MANAGER.loadResource(r);
             }
 
-            Texture2DTileMap terrain = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().set(
+            Texture2DTileMap terrain = net.cubecraft.client.context.ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().set(
                     "cubecraft:terrain", Texture2DTileMap.autoGenerate(f, false)
             );
 
             terrain.generateTexture();
-            terrain.completePlannedLoad(CubecraftClient.CLIENT, 0, 100);
+            terrain.completePlannedLoad(ClientSharedContext.getClient().getClientGUIContext(), 0, 100);
 
             File f2 = new File(EnvironmentPath.CACHE_FOLDER+"/terrain.png");
             terrain.export(f2);
@@ -86,7 +85,7 @@ public class ClientAssetLoader {
     @ResourceLoadHandler(stage = ResourceLoadStage.COLOR_MAP)
     public void loadColorMap(ResourceReloadEvent e) {
         try {
-            Collection<String> s = ClientRenderContext.COLOR_MAP.idList();
+            Collection<String> s = net.cubecraft.client.context.ClientRenderContext.COLOR_MAP.idList();
             for (String s2 : s) {
                 ClientRenderContext.COLOR_MAP.get(s2).load();
             }

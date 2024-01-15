@@ -1,52 +1,102 @@
-package net.cubecraft.extension;
+package net.cubecraft.mod;
 
-import net.cubecraft.EnvironmentPath;
 import ink.flybird.fcommon.event.EventBus;
 import ink.flybird.fcommon.event.SimpleEventBus;
+import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
 import ink.flybird.jflogger.ILogger;
 import ink.flybird.jflogger.LogManager;
-import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
+import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
+import net.cubecraft.Side;
+import net.cubecraft.event.mod.ModConstructEvent;
+import net.cubecraft.mod.object.Mod;
 import org.jetbrains.annotations.Nullable;
-
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarFile;
 
 
 public class ModManager {
+    private static final ILogger LOGGER = LogManager.getLogger("ModManager");
     private final EventBus eventBus = new SimpleEventBus();
-    private final ILogger logger = LogManager.getLogger("ModManager");
-    private final HashMap<String, Object> mods = new HashMap<>();
+    // private final HashMap<String, Object> mods = new HashMap<>();
     private final ExtensionInfoMapping modMap = new ExtensionInfoMapping();
 
-    public static ModSide getExtensionSide(Class<?> clazz){
-        CubecraftMod extension=clazz.getAnnotation(CubecraftMod.class);
-        if(extension==null){
-            return null;
-        }
-        return extension.side();
-    }
+    private final List<String> modLoadList = new ArrayList<>(128);
+    private final HashMap<String, Mod> mods = new HashMap<>();
 
-    public static int getExtensionAPIVersion(Class<?> clazz){
-        CubecraftMod extension=clazz.getAnnotation(CubecraftMod.class);
-        if(extension==null){
-            return 0;
-        }
-        return extension.apiVersion();
-    }
+    private boolean registerCompleted = false;
+
 
     public Object getModByID(String modID) {
         return this.mods.get(modID);
     }
+
+    //register
+    public void registerMod(Mod mod) {
+        if (this.registerCompleted) {
+            LOGGER.warn("mod registration after register_completed is unstable and may cause issue.");
+        }
+        mod.loadDescriptionInfo();
+        this.mods.put(mod.getId(), mod);
+    }
+
+    public void completeModRegister(Side side) {
+        this.registerCompleted = true;
+        for (String id : this.mods.keySet()) {
+            this.addModToList(side, id);
+        }
+    }
+
+    private void addModToList(Side side, String id) {
+        Mod mod = this.mods.get(id);
+        if (mod == null) {
+            return;
+        }
+
+        if (!side.contains(mod.getSide())) {
+            return;
+        }
+        if (this.modLoadList.contains(id)) {
+            this.modLoadList.remove(id);
+            this.modLoadList.add(0, id);
+        } else {
+            this.modLoadList.add(0, id);
+        }
+
+        for (String s : mod.getDependencies()) {
+            addModToList(side, s);
+        }
+    }
+
+    //construct
+    public void constructMods(TaskProgressUpdateListener listener) {
+        int counter = 0;
+
+        for (String id : this.modLoadList) {
+            Mod mod = this.mods.get(id);
+            mod.construct();
+
+            EventBus eventBus = this.getModLoaderEventBus();
+
+            eventBus.registerEventListener(this.mods.get(id).getModClass());
+            eventBus.registerEventListener(this.mods.get(id).getModObject());
+
+            eventBus.callEvent(new ModConstructEvent(this, mod), id);
+
+            if (listener != null) {
+                listener.onProgressChange(counter / this.modLoadList.size() * 100);
+                listener.onProgressStageChanged("constructing mod: %s".formatted(id));
+                listener.refreshScreen();
+            }
+
+            counter++;
+        }
+    }
+
 
     private Properties readModInfo(JarFile file) {
         try {
@@ -54,7 +104,7 @@ public class ModManager {
             props.load(file.getInputStream(file.getEntry("content_mod_info.properties")));
             return props;
         } catch (IOException e) {
-            this.logger.error(e);
+            LOGGER.error(e);
         }
         return null;
     }
@@ -63,53 +113,22 @@ public class ModManager {
         return this.eventBus;
     }
 
-    public HashMap<String, Object> getLoadedMods() {
-        return this.mods;
+    public HashMap<String, Mod> getMods() {
+        return mods;
     }
 
-    public void registerInternalMod(String loc) {
-        try {
-            Properties modProps=new Properties();
-            modProps.load(this.getClass().getResourceAsStream(loc));
-            Object modObj;
-            Class<?> clazz;
-            clazz = Class.forName(modProps.getProperty("mod.class"));
-            Constructor<?> constructor = clazz.getDeclaredConstructor();
-            modObj = constructor.newInstance();
-            this.mods.put(modProps.getProperty("mod.id"), modObj);
-            this.registerToListener(modProps.getProperty("mod.id"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * the first step of mod loading:scan mod info.<br/>
-     * <p>
-     * function will simply return in these cases.
-     * <li>mod folder not exist.</li>
-     * <li>mod folder is empty</li>
-     * <p>
-     * also,in these cases loader will create warn and ignore/skip the mod:
-     * <li>mod is null.</li>
-     * <li>mod has no property.</li>
-     * <li>mod has no id in property.</li>
-     * <li>exception caught</li>
-     * <p>
-     * successfully scanned mod will be stored(property,status={@code ModStatus.NOT_INITIALIZED})
-     */
     public void scanMods(@Nullable TaskProgressUpdateListener listener) {
         File modFolder = EnvironmentPath.getModFolder();
 
         if (!modFolder.exists()) {
             modFolder.mkdirs();
-            this.logger.warn("can not find mod path(where is my content pack?)");
+            LOGGER.warn("can not find mod path(where is my content pack?)");
             return;
         }
 
         File[] mods = EnvironmentPath.getModFolder().listFiles();
         if (mods == null) {
-            this.logger.warn("can not find any installed mod->no game content.");
+            LOGGER.warn("can not find any installed mod->no game content.");
             return;
         }
 
@@ -122,7 +141,7 @@ public class ModManager {
                 throw new RuntimeException(e);
             }
             counter++;
-            if(listener!=null) {
+            if (listener != null) {
                 listener.onProgressChange(counter / mods.length * 100);
                 listener.onProgressStageChanged("scanning mod:%s".formatted(f.getName()));
                 listener.refreshScreen();
@@ -130,39 +149,28 @@ public class ModManager {
             try {
                 Properties modProps = this.readModInfo(new JarFile(f));
                 if (modProps == null) {
-                    this.logger.error("can nod read content_mod_info.properties for mod:%s,ignored it".formatted(f.getName()));
+                    LOGGER.error("can nod read content_mod_info.properties for mod:%s,ignored it".formatted(f.getName()));
                     continue;
                 }
 
                 String modID = modProps.getProperty("mod.id");
                 if (modID == null) {
-                    this.logger.error("can nod read id for mod:%s,ignored it".formatted(f.getName()));
+                    LOGGER.error("can nod read id for mod:%s,ignored it".formatted(f.getName()));
                     continue;
                 }
                 this.modMap.insertMod(modID, f.getName(), modProps);
             } catch (Exception e) {
-                this.logger.error("failed to load mod:%s,caused by exception:".formatted(f.getName()), e);
+                LOGGER.error("failed to load mod:%s,caused by exception:".formatted(f.getName()), e);
             }
         }
     }
 
-    /**
-     * the second step in mod loading:construct.<br/>
-     * <p>
-     * this step instance all mod-main-class into a listener,and register them on event bus.<br/>
-     * <p>
-     * in these cases mod will be marked as CONSTRUCTION_FAILED,and will not load in next step:
-     *
-     * <li>mod does not have 'mod.class' property in 'content_mod_info.properties'</li>
-     * <li>find exception finding mod constructor</li>
-     * <li>find exception when getting mod class(should not be happened)</li>
-     * <li>find exception when invoking mod constructor</li>
-     */
+    /*
     public void constructMods(@Nullable TaskProgressUpdateListener listener) {
         int counter = 0;
         for (String id : this.modMap.getModIDList()) {
             counter++;
-            if(listener!=null) {
+            if (listener != null) {
                 listener.onProgressChange(counter / this.modMap.getModIDList().size() * 100);
                 listener.onProgressStageChanged("constructing mod:%s".formatted(id));
                 listener.refreshScreen();
@@ -170,7 +178,7 @@ public class ModManager {
             Properties modProp = this.modMap.getModProperty(id);
             String modClass = modProp.getProperty("mod.class");
             if (modClass == null) {
-                this.logger.error("failed to construct mod %s : no 'mod.class' in content_mod_info.properties.".formatted(id));
+                LOGGER.error("failed to construct mod %s : no 'mod.class' in content_mod_info.properties.".formatted(id));
                 this.modMap.modifyStatus(id, ExtensionStatus.CONSTRUCTION_FAILED);
                 continue;
             }
@@ -183,16 +191,16 @@ public class ModManager {
                 modObj = constructor.newInstance();
             } catch (Exception e) {
                 if (e instanceof ClassNotFoundException) {
-                    this.logger.error("failed to construct mod %s : can not load mod class.".formatted(id));
+                    LOGGER.error("failed to construct mod %s : can not load mod class.".formatted(id));
                 }
                 if (e instanceof NoSuchMethodException) {
-                    this.logger.error("failed to construct mod %s : no constructor in mod class.".formatted(id));
+                    LOGGER.error("failed to construct mod %s : no constructor in mod class.".formatted(id));
                 }
                 if (e instanceof IllegalAccessException || e instanceof InstantiationException) {
-                    this.logger.error("failed to construct mod %s : can not construct mod.".formatted(id));
+                    LOGGER.error("failed to construct mod %s : can not construct mod.".formatted(id));
                 }
                 if (e instanceof InvocationTargetException) {
-                    this.logger.error("failed to construct mod %s : caught exception in construct(%s)".formatted(id, e.getMessage()));
+                    LOGGER.error("failed to construct mod %s : caught exception in construct(%s)".formatted(id, e.getMessage()));
                 }
                 this.modMap.modifyStatus(id, ExtensionStatus.CONSTRUCTION_FAILED);
                 continue;
@@ -201,6 +209,8 @@ public class ModManager {
             this.modMap.modifyStatus(id, ExtensionStatus.CONSTRUCTED);
         }
     }
+
+     */
 
     /**
      * a step before mod initialization.<br/>
@@ -218,7 +228,7 @@ public class ModManager {
                 continue;
             }
             Properties prop = this.modMap.getModProperty(id);
-            if(prop==null){
+            if (prop == null) {
                 return;
             }
             String dependLine = prop.getProperty("mod.dependencies");
@@ -246,7 +256,7 @@ public class ModManager {
         }
     }
 
-    public void registerToListener(String id){
+    public void registerToListener(String id) {
         this.getModLoaderEventBus().registerEventListener(this.mods.get(id));
         this.getModLoaderEventBus().registerEventListener(this.mods.get(id).getClass());
     }
@@ -256,17 +266,4 @@ public class ModManager {
         this.constructMods(listener);
         this.sortAndRegisterMods();
     }
-
-    public void initialize(ExtensionInitializationOperation[] operations) {
-        for (ExtensionInitializationOperation operation : operations) {
-            long last = System.currentTimeMillis();
-            this.logger.info("%s mods...".formatted(operation.getName()));
-            this.getModLoaderEventBus().callEvent(operation.createEvent());
-            this.logger.info("%s mods finished,in %d ms".formatted(operation.getName(), System.currentTimeMillis() - last));
-        }
-    }
-
-    public void initializeClientSide(){}
-
-
 }

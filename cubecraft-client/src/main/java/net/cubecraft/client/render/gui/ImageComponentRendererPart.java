@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.gui;
 
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.renderer.ComponentRendererPart;
 import net.cubecraft.client.resource.TextureAsset;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;

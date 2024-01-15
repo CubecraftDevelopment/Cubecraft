@@ -1,156 +1,100 @@
 package me.gb2022.quantum3d.camera;
 
 import ink.flybird.fcommon.math.AABB;
-import me.gb2022.quantum3d.FixedJOMLFrustum;
 import me.gb2022.quantum3d.render.RenderContext;
-import org.joml.Matrix4d;
-import org.joml.Matrix4dStack;
-import org.joml.Vector3d;
-import org.joml.Vector4i;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.joml.Math;
+import org.joml.*;
 
 public abstract class ICamera {
-    private final RenderContext context;
-    private final Vector3d position = new Vector3d();
-    private final Vector3d rotation = new Vector3d();
-    private final Vector3d relativePosition = new Vector3d();
     private final Vector4i viewport = new Vector4i(0, 0, 1280, 720);
-    private final AtomicInteger layer = new AtomicInteger();
-    private final Matrix4dStack matrix = new Matrix4dStack(16);
-    private final FixedJOMLFrustum frustum = new FixedJOMLFrustum();
 
-    protected ICamera(RenderContext context) {
-        this.context = context;
-        this.matrix.set(new Matrix4d().identity());
+    private final Vector3d position = new Vector3d();
+    private final Vector3f rotation = new Vector3f();
+    private final Vector3f relativePosition = new Vector3f();
+
+    public abstract Matrix4f getMVPMatrix();
+
+    private void attachGlobalTransform(Matrix4f mat) {
+        mat.rotate(new AxisAngle4f(Math.toRadians(this.rotation.x), 1, 0, 0));
+        mat.rotate(new AxisAngle4f(Math.toRadians(this.rotation.y), 0, 1, 0));
+        mat.rotate(new AxisAngle4f(Math.toRadians(this.rotation.z), 0, 0, 1));
     }
 
-    public abstract Matrix4d getMVPMatrix();
-
-
-    public void setGlobalCamera() {
-        //this.matrix.pushMatrix();
-        Matrix4d mat = this.getMVPMatrix();
-        /*
-        mat.translate(
-                -this.position.x(),
-                -this.position.y(),
-                -this.position.z()
-        );
-        mat.rotate(new Quaterniond(
-                this.rotation.x(),
-                this.rotation.y(),
-                this.rotation.z(),
-                1.0
-        ));
-        mat.translate(
-                -this.relativePosition.x(),
-                -this.relativePosition.y(),
-                -this.relativePosition.z()
-        );
-         */
-
-
-        this.context.setViewport(
-                this.viewport.x(),
-                this.viewport.y(),
-                this.viewport.z(),
-                this.viewport.w());
-        this.context.setMatrix(mat);
-        this.layer.incrementAndGet();
+    public final Matrix4f getRelativeCamera() {
+        Matrix4f mat = getMVPMatrix();
+        this.attachGlobalTransform(mat);
+        return mat;
     }
 
+    public final Matrix4f getGlobalCamera() {
+        Matrix4f mat = this.getRelativeCamera();
 
-    public void pushObjectCamera(Vector3d objectPosition) {
-        this.matrix.pushMatrix();
-        this.matrix.translate(objectPosition);
-        this.setMatrix(this.matrix);
-        this.layer.incrementAndGet();
+        float x = ((float) -this.position.x);
+        float y = ((float) -this.position.z);
+        float z = ((float) -this.position.z);
+
+        mat.transform(new Vector4f(x, y, z, 0f));
+        return mat;
     }
 
-    public void popObjectCamera() {
-        this.matrix.popMatrix();
-        this.setMatrix(this.matrix);
-        this.layer.decrementAndGet();
+    public final Matrix4f getObjectCamera(Vector3d objectPosition) {
+        Matrix4f mat = this.getRelativeCamera();
+
+        float x = (float) (objectPosition.x - this.position.x);
+        float y = (float) (objectPosition.y - this.position.y);
+        float z = (float) (objectPosition.z - this.position.z);
+
+        mat.transform(new Vector4f(x, y, z, 0f));
+        return mat;
     }
 
-    public void popGlobalCamera() {
-        this.matrix.popMatrix();
-        this.setMatrix(this.matrix);
-        this.layer.decrementAndGet();
+    public final void setCameraViewport(RenderContext context) {
+        context.setViewport(this.viewport.x(), this.viewport.y(), this.viewport.z(), this.viewport.w());
     }
 
 
-    public Vector3d getPosition() {
+    public final Vector3d getPosition() {
         return this.position;
     }
 
-    public Vector3d getRelativePosition() {
+    public final Vector3f getRelativePosition() {
         return this.relativePosition;
     }
 
-    public Vector3d getRotation() {
+    public final Vector3f getRotation() {
         return this.rotation;
     }
 
-    public Vector4i getViewport() {
+    public final Vector4i getViewport() {
         return viewport;
     }
 
 
-    public void setPosition(double x, double y, double z) {
+    public final void setPosition(double x, double y, double z) {
         this.position.set(this.position);
         this.position.set(x, y, z);
     }
 
-    public void setRelativePosition(double x, double y, double z) {
+    public final void setRelativePosition(double x, double y, double z) {
         this.relativePosition.set(x, y, z);
     }
 
-    public void setRotation(double x, double y, double z) {
+    public final void setRotation(double x, double y, double z) {
         this.rotation.set(x, y, z);
     }
 
-    public void setViewport(int x, int y, int width, int height) {
+    public final void setViewport(int x, int y, int width, int height) {
         this.viewport.set(x, y, width, height);
     }
 
-    public Matrix4dStack getMatrix() {
-        return this.matrix;
-    }
 
-    public void setMatrix(Matrix4d mat) {
-        this.context.setViewport(
-                this.viewport.x(),
-                this.viewport.y(),
-                this.viewport.z(),
-                this.viewport.w()
-        );
-        this.context.setMatrix(mat);
-        this.matrix.set(mat);
-        this.frustum.set(mat);
+    public AABB castAABB(AABB aabb) {
+        AABB aabb2 = new AABB(aabb);
+        aabb2.move(-this.position.x, -this.position.y, -this.position.z);
+        return aabb2;
     }
-
-    public AtomicInteger getLayer() {
-        return this.layer;
-    }
-
-    public RenderContext getContext() {
-        return this.context;
-    }
-
-    public FixedJOMLFrustum getFrustum() {
-        return frustum;
-    }
-
 
     public boolean visible(AABB aabb) {
-        return this.frustum.testAab(aabb.minPos(), null);//fixme:aabb.maxPos()
-    }
-
-    public void refresh() {
-        this.matrix.clear();
-        this.setMatrix(new Matrix4d().identity());
-        this.context.setMatrix(new Matrix4d().identity());
+        return true;
     }
 }
