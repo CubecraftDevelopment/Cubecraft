@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.chunk.layer;
 
 import net.cubecraft.client.render.chunk.RenderChunkPos;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.render.IRenderType;
 import net.cubecraft.client.render.RenderType;
 import org.lwjgl.opengl.GL11;

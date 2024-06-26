@@ -1,6 +1,6 @@
 package net.cubecraft.world.biome;
 
-import ink.flybird.fcommon.registry.RegisterMap;
+import me.gb2022.commons.registry.RegisterMap;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ public class BiomeMap extends RegisterMap<Biome> {
 
     public Biome match(double continental, double temperature, double humidity, double erosion, double altitude){
         ArrayList<Biome> biomes= new ArrayList<>();
-        for (String biome:this.idList()){
+        for (String biome:this.keySet()){
             biomes.add(this.get(biome));
         }
         biomes.sort((o1, o2) -> -Double.compare(

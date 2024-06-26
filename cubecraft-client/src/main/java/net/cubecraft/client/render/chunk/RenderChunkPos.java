@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.chunk;
 
-import ink.flybird.fcommon.container.Key;
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.container.Key;
+import me.gb2022.commons.math.AABB;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.render.DistanceComparable;
 import net.cubecraft.world.entity.Entity;

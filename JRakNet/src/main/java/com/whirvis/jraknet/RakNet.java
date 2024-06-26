@@ -50,8 +50,8 @@ import com.whirvis.jraknet.protocol.status.UnconnectedPong;
 
 
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -97,7 +97,7 @@ public final class RakNet {
 
 	}
 
-	private static final ILogger LOGGER  = LogManager.getLogger("RakNet");
+	private static final Logger LOGGER  = LogManager.getLogger("RakNet");
 
 	/**
 	 * The length of IPv4 addresses.

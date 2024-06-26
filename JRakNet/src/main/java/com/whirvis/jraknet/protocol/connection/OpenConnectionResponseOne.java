@@ -89,7 +89,7 @@ public final class OpenConnectionResponseOne extends RakNetPacket {
 
 	@Override
 	public void encode() {
-		this.useSecurity = false; // TODO: Not supported
+		this.useSecurity = false;
 		this.writeMagic();
 		this.writeLong(serverGuid);
 		this.writeBoolean(useSecurity);

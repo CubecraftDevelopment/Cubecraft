@@ -2,8 +2,8 @@ package ink.flybird.cubecraft.net.base;
 
 import ink.flybird.cubecraft.net.NetWorkEventBus;
 import ink.flybird.cubecraft.net.INetHandler;
-import ink.flybird.fcommon.event.CachedEventBus;
-import ink.flybird.fcommon.event.EventBus;
+import me.gb2022.commons.event.CachedEventBus;
+import me.gb2022.commons.event.EventBus;
 
 
 public abstract class AbstractNetworkPipeline {

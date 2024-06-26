@@ -6,7 +6,7 @@ import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
-import ink.flybird.fcommon.math.MathHelper;
+import me.gb2022.commons.math.MathHelper;
 
 import java.util.List;
 

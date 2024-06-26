@@ -1,10 +1,10 @@
 package net.cubecraft.mod;
 
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
+import me.gb2022.commons.threading.TaskProgressUpdateListener;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
 import net.cubecraft.Side;
@@ -20,7 +20,7 @@ import java.util.jar.JarFile;
 
 
 public class ModManager {
-    private static final ILogger LOGGER = LogManager.getLogger("ModManager");
+    private static final Logger LOGGER = LogManager.getLogger("ModManager");
     private final EventBus eventBus = new SimpleEventBus();
     // private final HashMap<String, Object> mods = new HashMap<>();
     private final ExtensionInfoMapping modMap = new ExtensionInfoMapping();

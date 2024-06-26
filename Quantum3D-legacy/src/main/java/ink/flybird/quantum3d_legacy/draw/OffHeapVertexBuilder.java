@@ -1,6 +1,6 @@
 package ink.flybird.quantum3d_legacy.draw;
 
-import ink.flybird.fcommon.context.LifetimeCounter;
+import me.gb2022.commons.context.LifetimeCounter;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import org.lwjgl.opengl.GL11;

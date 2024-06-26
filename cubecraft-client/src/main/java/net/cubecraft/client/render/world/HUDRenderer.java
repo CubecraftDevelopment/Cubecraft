@@ -1,9 +1,9 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.HitBox;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.HitBox;
+import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.DrawMode;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
@@ -25,14 +25,13 @@ public class HUDRenderer extends IWorldRenderer {
         if (type == RenderType.TRANSPARENT) {
             return;
         }
-        this.camera.setUpGlobalCamera();
+        this.setGlobalCamera(delta);
 
         this.renderSelectionBox();
         if (ClientSharedContext.getClient().isDebug && this.allowDebug) {
             GL11.glLineWidth(1.0f);
             this.renderChunkBorder();
             this.renderEntityBoundary();
-            //this.renderDroppedChunks();
         }
     }
 

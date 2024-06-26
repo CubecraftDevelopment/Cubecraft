@@ -1,9 +1,9 @@
 package net.cubecraft.internal;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.event.SubscribedEvent;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.event.SubscribedEvent;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.SharedContext;
 import net.cubecraft.Side;
@@ -24,7 +24,7 @@ import net.cubecraft.world.worldGen.generator.WorldGeneratorPipelineRegistry;
 @CubecraftMod(side = Side.SHARED)
 public class CubecraftCoreInternalMod {
     public static final String MOD_ID = "cubecraft_core";
-    public static final ILogger LOGGER = LogManager.getLogger("CoreInternalMod");
+    public static final Logger LOGGER = LogManager.getLogger("CoreInternalMod");
 
     @EventHandler
     @SubscribedEvent(MOD_ID)

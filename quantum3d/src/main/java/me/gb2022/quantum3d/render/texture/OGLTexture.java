@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.render.texture;
 
-import ink.flybird.fcommon.context.LifetimeCounter;
+import me.gb2022.commons.context.LifetimeCounter;
 import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
 import me.gb2022.quantum3d.render.texture.Texture;
 import org.lwjgl.opengl.GL11;

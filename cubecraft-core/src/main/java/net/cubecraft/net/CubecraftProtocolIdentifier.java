@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.whirvis.jraknet.identifier.Identifier;
-import ink.flybird.fcommon.math.NumberCodec;
+import me.gb2022.commons.math.NumberCodec;
 
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;

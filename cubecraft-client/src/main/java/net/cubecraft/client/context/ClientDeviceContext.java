@@ -1,7 +1,7 @@
 package net.cubecraft.client.context;
 
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.quantum3d.device.DeviceContext;
 import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.Mouse;

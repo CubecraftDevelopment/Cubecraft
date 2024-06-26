@@ -1,8 +1,8 @@
 package net.cubecraft.internal.item;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.event.register.BlockRegisterEvent;
 import net.cubecraft.world.item.EmptyItem;

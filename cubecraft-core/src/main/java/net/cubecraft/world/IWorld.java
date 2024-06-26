@@ -1,11 +1,11 @@
 package net.cubecraft.world;
 
-import ink.flybird.fcommon.container.KeyMap;
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.Hittable;
+import me.gb2022.commons.container.KeyMap;
+import me.gb2022.commons.container.Vector3;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.Hittable;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.level.Level;
 import net.cubecraft.world.block.access.IBlockAccess;
@@ -26,12 +26,12 @@ import net.cubecraft.world.entity.EntityLiving;
 import net.cubecraft.world.entity.EntityMap;
 import org.joml.Vector3d;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Predicate;
 
-//todo:world access
 public abstract class IWorld {
-    public static final long MAX_CHUNK_LOAD_RANGE = (9223372036854775807L>>4)-10;
+    public static final long MAX_CHUNK_LOAD_RANGE = (9223372036854775807L >> 4) - 10;
 
     public final HashMap<Vector3<Long>, Integer> scheduledTickEvents = new HashMap<>();
     public final KeyMap<ChunkPos, WorldChunk> chunks = new KeyMap<>();
@@ -227,7 +227,7 @@ public abstract class IWorld {
 
     public ChunkFuture loadChunk(ChunkPos p, ChunkLoadTicket ticket) {
 
-        if (p.getX() > MAX_CHUNK_LOAD_RANGE || p.getX() < -MAX_CHUNK_LOAD_RANGE ||p.getZ() > MAX_CHUNK_LOAD_RANGE || p.getZ() < -MAX_CHUNK_LOAD_RANGE) {
+        if (p.getX() > MAX_CHUNK_LOAD_RANGE || p.getX() < -MAX_CHUNK_LOAD_RANGE || p.getZ() > MAX_CHUNK_LOAD_RANGE || p.getZ() < -MAX_CHUNK_LOAD_RANGE) {
             return new FutureChunkContainer(this, p);
         }
         WorldChunk c = getChunk(p);
@@ -364,8 +364,14 @@ public abstract class IWorld {
     public void save() {
     }
 
-    //todo
     public <T extends Entity> T spawnEntity(Class<T> clazz) {
-        return null;
+        try {
+            T entity = clazz.getDeclaredConstructor(IWorld.class).newInstance(this);
+            this.addEntity(entity);
+            return entity;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

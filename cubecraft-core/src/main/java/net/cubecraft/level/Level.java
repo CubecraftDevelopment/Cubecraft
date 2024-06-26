@@ -7,9 +7,9 @@ import net.cubecraft.world.IWorld;
 import net.cubecraft.world.WorldFactory;
 import net.cubecraft.world.entity.Entity;
 import net.cubecraft.world.entity.EntityLocation;
-import ink.flybird.fcommon.container.MultiMap;
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
+import me.gb2022.commons.container.MultiMap;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
 import org.jetbrains.annotations.NotNull;
 
 public class Level {
@@ -21,7 +21,7 @@ public class Level {
 
     public Level(LevelInfo info, WorldFactory worldFactory) {
         this.worldFactory = worldFactory;
-        for (String id : ContentRegistries.DIMENSION.idList()) {
+        for (String id : ContentRegistries.DIMENSION.keySet()) {
             this.worlds.put(id, this.worldFactory.create(id, this));
         }
         this.levelInfo = info;
@@ -55,7 +55,7 @@ public class Level {
         if (entity == null) {
             return new Location("cubecraft:overworld", 8, 128, 8, 0, 0, 0);
         }
-        return new Location("cubecraft:overworld", 8, 160, 8, 0, 0, 0);
+        return new Location("cubecraft:overworld", 0, 160, 8, 0, 0, 0);
     }
 
     public IWorld getWorld(String id) {
@@ -86,7 +86,7 @@ public class Level {
     }
 
     public void save() {
-        for (String id : ContentRegistries.DIMENSION.idList()) {
+        for (String id : ContentRegistries.DIMENSION.keySet()) {
             this.worlds.get(id).save();
         }
     }

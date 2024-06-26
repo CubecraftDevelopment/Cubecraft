@@ -1,9 +1,9 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import me.gb2022.quantum3d.ColorElement;
@@ -108,8 +108,11 @@ public class CloudRenderer extends IWorldRenderer {
             return;
         }
         GLUtil.checkError("pre_cloud_render");
-        camera.setUpGlobalCamera();
+
+        GL11.glPushMatrix();
+        this.setGlobalCamera(delta);
         camera.updateFrustum();
+        GL11.glPopMatrix();
         this.parent.setFog(ClientSettingRegistry.getFixedViewDistance() * 16 * 10);
     }
 
@@ -125,7 +128,7 @@ public class CloudRenderer extends IWorldRenderer {
         float cloudSize = this.cfg.cloudSize;
         float cloudRadius = cloudSize / 2;
 
-        int range = (int) ((ClientSettingRegistry.getFixedViewDistance() * 16 * 5) / cloudSize);
+        int range = (int) ((ClientSettingRegistry.getFixedViewDistance() * 16 * 5) / cloudSize) - 3;
 
         long camCX = this.cameraGridX;
         long camCZ = this.cameraGridZ;
@@ -167,6 +170,7 @@ public class CloudRenderer extends IWorldRenderer {
             double cloudY = this.cfg.cloudHeight;
             double cloudZ = j * (int) cloudSize;
 
+            this.setGlobalCamera(delta);
             camera.setupObjectCamera(new Vector3d(cloudX, cloudY, cloudZ));
             this.renderLists[0].call();
             this.renderLists[1].call();

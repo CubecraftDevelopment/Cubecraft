@@ -56,8 +56,8 @@ import com.whirvis.jraknet.RakNet;
 import com.whirvis.jraknet.RakNetPacket;
 import com.whirvis.jraknet.map.concurrent.ConcurrentIntMap;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.DatagramPacket;
@@ -159,7 +159,7 @@ public abstract class RakNetPeer implements RakNetPeerMessenger {
 	 */
 	public static final long PEER_TIMEOUT = DETECTION_SEND_INTERVAL * 10;
 
-	private final ILogger logger;
+	private final Logger logger;
 	private final InetSocketAddress address;
 	private final long guid;
 	private final int maximumTransferUnit;
@@ -252,7 +252,7 @@ public abstract class RakNetPeer implements RakNetPeerMessenger {
 	 * 
 	 * @return the logger.
 	 */
-	protected final ILogger getLogger() {
+	protected final Logger getLogger() {
 		return this.logger;
 	}
 

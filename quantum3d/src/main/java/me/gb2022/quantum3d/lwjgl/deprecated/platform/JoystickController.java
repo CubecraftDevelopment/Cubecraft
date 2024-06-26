@@ -1,7 +1,7 @@
 package me.gb2022.quantum3d.lwjgl.deprecated.platform;
 
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWJoystickCallback;
 

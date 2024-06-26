@@ -1,23 +1,22 @@
 package net.cubecraft.server;
 
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.fcommon.logging.LoggerContext;
-import ink.flybird.fcommon.threading.LoopTickingThread;
-import ink.flybird.fcommon.timer.Timer;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
+import me.gb2022.commons.threading.LoopTickingThread;
+import me.gb2022.commons.timer.Timer;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
 import net.cubecraft.Side;
-import net.cubecraft.mod.ModLoader;
-import net.cubecraft.mod.ModManager;
 import net.cubecraft.level.Level;
 import net.cubecraft.level.LevelInfo;
+import net.cubecraft.mod.ModLoader;
+import net.cubecraft.mod.ModManager;
 import net.cubecraft.server.event.ServerSetupEvent;
 import net.cubecraft.server.event.world.ServerWorldInitializedEvent;
-import net.cubecraft.server.net.RakNetServerIO;
-import net.cubecraft.server.net.ServerIO;
+import net.cubecraft.server.net.base.NetworkServer;
+import net.cubecraft.server.net.kcp.KCPNetworkServer;
 import net.cubecraft.server.service.Service;
 import net.cubecraft.server.world.ServerWorldFactory;
 import net.cubecraft.util.VersionInfo;
@@ -29,10 +28,11 @@ import java.util.Map;
 
 public final class CubecraftServer extends LoopTickingThread {
     public static final VersionInfo VERSION = new VersionInfo("server-0.3.2-b2");
-    private static final ILogger LOGGER = LogManager.getLogger("Server");
+    private static final Logger LOGGER = LogManager.getLogger("Server");
+
     private final GameSetting setting = new GameSetting(EnvironmentPath.CONFIG_FOLDER + "/server_setting.toml");
     private final InetSocketAddress localAddress;
-    private final ServerIO serverIO = new RakNetServerIO();
+    private final NetworkServer networkServer = new KCPNetworkServer();
     private final PlayerTable playerTable = new PlayerTable();
     private final EventBus eventBus = new SimpleEventBus();
     private final boolean isIntegrated;
@@ -70,7 +70,7 @@ public final class CubecraftServer extends LoopTickingThread {
 
         modManager.getModLoaderEventBus().callEvent(new ServerSetupEvent(this));
 
-        this.serverIO.start(this.localAddress.getPort(), 128);
+        this.networkServer.start(this.localAddress);
         LOGGER.info("service started on %s.", this.localAddress);
 
         this.services = ServerSharedContext.SERVICE.createAll();
@@ -110,8 +110,7 @@ public final class CubecraftServer extends LoopTickingThread {
 
     @Override
     public void stop() {
-        this.serverIO.allCloseConnection();
-        this.serverIO.stop();
+        this.networkServer.stop();
         LOGGER.info("server net-core stopped.");
 
         this.level.save();
@@ -125,7 +124,6 @@ public final class CubecraftServer extends LoopTickingThread {
             service.postStop(this);
         }
 
-        LoggerContext.getSharedContext().allSave();
         LOGGER.info("server stopped.");
     }
 
@@ -146,8 +144,8 @@ public final class CubecraftServer extends LoopTickingThread {
         return eventBus;
     }
 
-    public ServerIO getServerIO() {
-        return serverIO;
+    public NetworkServer getNetworkServer() {
+        return this.networkServer;
     }
 
     public GameSetting getSetting() {

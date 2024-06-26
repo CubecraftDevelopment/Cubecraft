@@ -1,20 +1,19 @@
 package net.cubecraft.world.block.access;
 
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.HitBox;
-import ink.flybird.fcommon.math.hitting.Hittable;
+import me.gb2022.commons.container.Vector3;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.HitBox;
+import me.gb2022.commons.math.hitting.Hittable;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.EnumFacing;
+import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 public abstract class IBlockAccess implements Hittable {
-    private static final HashMap<String, Block> BLOCK_CACHE = new HashMap<>();
     protected final IWorld world;
     protected final long x;
     protected final long y;
@@ -60,6 +59,9 @@ public abstract class IBlockAccess implements Hittable {
             return this.block;
         }
         this.block = ContentRegistries.BLOCK.get(this.getBlockID());
+        if (this.block == null) {
+            this.block = BlockRegistry.UNKNOWN_BLOCK;
+        }
         return this.block;
     }
 

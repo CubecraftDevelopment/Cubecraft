@@ -1,7 +1,7 @@
 package net.cubecraft.world.item;
 
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.item.property.IntegerProperty;
 

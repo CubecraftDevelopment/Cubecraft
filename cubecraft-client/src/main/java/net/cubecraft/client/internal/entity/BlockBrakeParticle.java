@@ -2,7 +2,7 @@ package net.cubecraft.client.internal.entity;
 
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.entity.EntityParticle;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 
 @TypeItem("cubecraft:block_brake_particle")
 public class BlockBrakeParticle extends EntityParticle {

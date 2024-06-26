@@ -3,10 +3,10 @@ package net.cubecraft.client.gui.node;
 
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.event.gui.component.ButtonClickedEvent;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.event.MouseClickEvent;
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.event.EventHandler;
 import org.w3c.dom.Element;
 
 import java.util.Objects;

@@ -2,9 +2,9 @@ package net.cubecraft.client;
 
 import net.cubecraft.client.event.ScopedKeypressEvent;
 import net.cubecraft.event.SettingReloadEvent;
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.event.SimpleEventBus;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.adapter.KeyboardEventAdapter;

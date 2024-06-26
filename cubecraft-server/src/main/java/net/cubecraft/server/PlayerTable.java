@@ -1,7 +1,7 @@
 package net.cubecraft.server;
 
 import net.cubecraft.internal.entity.EntityPlayer;
-import ink.flybird.fcommon.container.MultiMap;
+import me.gb2022.commons.container.MultiMap;
 
 import java.net.InetSocketAddress;
 import java.util.HashSet;

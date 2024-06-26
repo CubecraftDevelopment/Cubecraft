@@ -1,7 +1,7 @@
 package net.cubecraft.world.block;
 
 import net.cubecraft.world.block.property.BlockProperty;
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 import com.google.gson.*;
 import net.cubecraft.world.block.property.attribute.SimpleBooleanProperty;
 

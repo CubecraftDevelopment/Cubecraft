@@ -8,6 +8,7 @@ public class VertexFormat {
     public static final VertexFormat V3F_C3F = new VertexFormat(DataFormat.FLOAT_3, null, DataFormat.FLOAT_3, null);
     public static final VertexFormat V3F_C4F_T2F = new VertexFormat(DataFormat.FLOAT_3, DataFormat.FLOAT_2, DataFormat.FLOAT_4, null);
     public static final VertexFormat V3F_C3F_T2F = new VertexFormat(DataFormat.FLOAT_3, DataFormat.FLOAT_2, DataFormat.FLOAT_3, null);
+    public static final VertexFormat V3F_T2F = new VertexFormat(DataFormat.FLOAT_3, DataFormat.FLOAT_2, null,null);
 
     private final DataFormat vertexFormat;
     private final DataFormat textureFormat;
@@ -26,8 +27,9 @@ public class VertexFormat {
             return;
         }
         if (data.length != format.getSize()) {
-            throw new IllegalArgumentException("non-match data size!");
+            throw new IllegalArgumentException("non-match data size:%s -> %s".formatted(data.length, format.getSize()));
         }
+
         for (double d : data) {
             switch (format.getType()) {
                 case BYTE, UNSIGNED_BYTE -> dataBuffer.put((byte) d);
@@ -38,6 +40,7 @@ public class VertexFormat {
                 case DOUBLE -> dataBuffer.putDouble(d);
             }
         }
+
     }
 
     //format

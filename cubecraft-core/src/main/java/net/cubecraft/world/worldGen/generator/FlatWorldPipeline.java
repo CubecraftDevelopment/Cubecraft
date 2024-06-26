@@ -7,7 +7,7 @@ import net.cubecraft.world.worldGen.pipeline.ChunkGenerateContext;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
 import net.cubecraft.world.worldGen.pipeline.WorldGenPipelineBuilder;
 import net.cubecraft.world.worldGen.pipeline.TerrainGeneratorHandler;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 
 @TypeItem("cubecraft:flat")
 public final class FlatWorldPipeline implements WorldGenPipelineBuilder {

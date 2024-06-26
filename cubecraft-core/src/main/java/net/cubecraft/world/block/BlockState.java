@@ -1,9 +1,9 @@
 package net.cubecraft.world.block;
 
-import ink.flybird.fcommon.math.hitting.HitBox;
-import ink.flybird.fcommon.math.hitting.Hittable;
-import ink.flybird.fcommon.nbt.NBTDataIO;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.math.hitting.HitBox;
+import me.gb2022.commons.math.hitting.Hittable;
+import me.gb2022.commons.nbt.NBTDataIO;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.ContentRegistries;
 
 import java.util.Collection;

@@ -6,7 +6,7 @@ import net.cubecraft.client.render.LevelRenderContext;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.WorldRenderObject;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;

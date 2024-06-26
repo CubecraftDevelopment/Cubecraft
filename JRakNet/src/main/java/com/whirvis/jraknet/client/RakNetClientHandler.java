@@ -33,8 +33,8 @@ import java.net.InetSocketAddress;
 
 
 import com.whirvis.jraknet.RakNetPacket;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.DatagramPacket;
@@ -49,7 +49,7 @@ import io.netty.channel.socket.DatagramPacket;
  */
 public final class RakNetClientHandler extends ChannelInboundHandlerAdapter {
 
-	private final ILogger logger;
+	private final Logger logger;
 	private final RakNetClient client;
 	private InetSocketAddress causeAddress;
 

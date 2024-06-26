@@ -48,6 +48,9 @@ public class ChunkBlockAccess extends IBlockAccess {
         if (this.chunk == null) {
             return;
         }
+
+        String old = getBlockID();
+
         this.chunk.setBlockID(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z), id);
         if (!sendUpdateEvent) {
             return;
@@ -57,7 +60,7 @@ public class ChunkBlockAccess extends IBlockAccess {
             blockAccess.getBlock().onBlockUpdate(blockAccess);
         }
         this.getBlock().onBlockUpdate(this);
-        this.world.getEventBus().callEvent(new BlockIDChangedEvent(this.world, this.x, this.y, this.z, getBlockID(), id));
+        this.world.getEventBus().callEvent(new BlockIDChangedEvent(this.world, this.x, this.y, this.z, old, id));
 
     }
 

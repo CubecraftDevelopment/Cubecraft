@@ -12,7 +12,7 @@ import net.cubecraft.world.worldGen.pipeline.ChunkGenerateContext;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
 import net.cubecraft.world.worldGen.pipeline.TerrainGeneratorHandler;
 import net.cubecraft.world.worldGen.pipeline.WorldGenPipelineBuilder;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 
 import java.util.Random;
 
@@ -89,7 +89,7 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
                     if (h < 0 || h >= Chunk.HEIGHT) {
                         continue;
                     }
-                    if (h >= 128.0&&h<350) {
+                    if (h >= 128.0&&h<270) {
                         chunk.setBlockID(x, h, z, BlockType.GRASS_BLOCK);
                         chunk.setBlockID(x, h - 1, z, BlockType.DIRT);
                         chunk.setBlockID(x, h - 2, z, BlockType.DIRT);

@@ -1,7 +1,7 @@
 package net.cubecraft.world.chunk.storage;
 
 
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.util.DynamicNameIdMap;
 
 public class SimpleStringStorage implements StringStorage {

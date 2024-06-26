@@ -2,8 +2,8 @@ package net.cubecraft.client.gui.node;
 
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.font.FontAlignment;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.registry.TypeItem;
 import org.w3c.dom.Element;
 
 @TypeItem("icon")

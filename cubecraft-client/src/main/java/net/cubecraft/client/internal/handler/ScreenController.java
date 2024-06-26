@@ -1,13 +1,14 @@
 package net.cubecraft.client.internal.handler;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.event.SubscribedEvent;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.SharedContext;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.gui.component.ButtonClickedEvent;
 import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
+import net.cubecraft.client.gui.ScreenBuilders;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.Popup;
 import net.cubecraft.client.gui.base.Text;
@@ -15,9 +16,11 @@ import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.node.Label;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.gui.screen.HUDScreen;
+import net.cubecraft.client.gui.screen.ScreenBuilder;
 import net.cubecraft.client.internal.gui.ScreenLocation;
 import net.cubecraft.client.internal.gui.ScreenType;
 import net.cubecraft.client.registry.ResourceRegistry;
+import net.cubecraft.client.util.IMBlocker;
 
 import java.util.Objects;
 
@@ -29,14 +32,8 @@ public class ScreenController {
         if (Objects.equals(e.getButton().getId(), "button_resume")) {
             ClientSharedContext.getClient().getClientGUIContext().setScreen(new HUDScreen());
         }
-        if (Objects.equals(e.getButton().getId(), "button_option")) {
-
-        }
-        if (Objects.equals(e.getButton().getId(), "button_achievement")) {
-            //todo:achievement screen
-        }
         if (Objects.equals(e.getButton().getId(), "button_quit")) {
-            ClientSharedContext.getClient().getClientGUIContext().setScreen(ResourceRegistry.TITLE_SCREEN);
+            ClientSharedContext.getClient().getClientGUIContext().setScreen(ScreenBuilders.TITLE_SCREEN);
             ClientSharedContext.getClient().getClientWorldManager().leaveWorld();
         }
     }
@@ -47,10 +44,10 @@ public class ScreenController {
         ClientGUIContext context = event.getContext();
         switch (event.getComponentID()) {
             case "button_singleplayer" ->
-                    context.setScreen(ResourceRegistry.SINGLE_PLAYER_SCREEN, ResourceRegistry.TITLE_SCREEN);
+                    context.setScreen(ScreenBuilder.xml(ResourceRegistry.SINGLE_PLAYER_SCREEN, ResourceRegistry.TITLE_SCREEN));
             case "button_multiplayer" ->
-                    context.setScreen(ResourceRegistry.MULTI_PLAYER_SCREEN, ResourceRegistry.TITLE_SCREEN);
-            case "button_option" -> context.setScreen(ScreenLocation.OPTION, ScreenLocation.TITLE);
+                    context.setScreen(ScreenBuilder.xml(ResourceRegistry.MULTI_PLAYER_SCREEN, ResourceRegistry.TITLE_SCREEN));
+            case "button_option" -> context.setScreen(ScreenBuilder.xml(ResourceRegistry.OPTIONS_SCREEN,ResourceRegistry.TITLE_SCREEN));
 
             case "button_check_version" -> {
                 ScreenUtil.createPopup(
@@ -59,8 +56,6 @@ public class ScreenController {
                         100, Popup.INFO
                 );
             }
-            case "button_account_setting" -> context.setScreen(ScreenLocation.ACCOUNT_SETTING, ScreenLocation.TITLE);
-
             case "button_quit" -> ClientSharedContext.getClient().setRunning(false);
         }
     }

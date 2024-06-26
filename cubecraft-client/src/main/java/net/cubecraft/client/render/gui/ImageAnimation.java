@@ -1,12 +1,13 @@
 package net.cubecraft.client.render.gui;
 
 import com.google.gson.*;
-import net.cubecraft.client.gui.node.Node;
-import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import me.gb2022.commons.registry.TypeItem;
+import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.client.util.DeserializedConstructor;
 
 import java.lang.reflect.Type;
 
@@ -19,6 +20,19 @@ public final class ImageAnimation extends ImageComponentRendererPart {
         super(x0, x1, y0, y1, textureLocation);
         this.interval = interval;
         this.frames = frames;
+    }
+
+    @DeserializedConstructor
+    public ImageAnimation(JsonObject root) {
+        this(
+                root.get("pos").getAsJsonArray().get(0).getAsDouble(),
+                root.get("pos").getAsJsonArray().get(1).getAsDouble(),
+                root.get("pos").getAsJsonArray().get(2).getAsDouble(),
+                root.get("pos").getAsJsonArray().get(3).getAsDouble(),
+                root.get("loc").getAsString(),
+                root.get("interval").getAsInt(),
+                root.get("frames").getAsInt()
+        );
     }
 
     @Override
@@ -42,20 +56,5 @@ public final class ImageAnimation extends ImageComponentRendererPart {
         builder.end();
         builder.uploadPointer();
         builder.free();
-    }
-
-    public static class JDeserializer implements JsonDeserializer<ImageAnimation> {
-        @Override
-        public ImageAnimation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject root = jsonElement.getAsJsonObject();
-            return new ImageAnimation(
-                    root.get("pos").getAsJsonArray().get(0).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(1).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(2).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(3).getAsDouble(),
-                    root.get("loc").getAsString(),
-                    root.get("interval").getAsInt(),
-                    root.get("frames").getAsInt());
-        }
     }
 }

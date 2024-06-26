@@ -1,8 +1,8 @@
 package net.cubecraft.world.block.property.hitbox;
 
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.HitBox;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.HitBox;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.world.block.access.IBlockAccess;
 
 import java.util.ArrayList;

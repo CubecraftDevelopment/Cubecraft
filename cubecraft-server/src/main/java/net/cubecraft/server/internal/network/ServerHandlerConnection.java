@@ -12,8 +12,8 @@ import net.cubecraft.server.event.PlayerKickEvent;
 import net.cubecraft.server.event.PlayerLeaveEvent;
 import net.cubecraft.server.event.ServerStopEvent;
 import net.cubecraft.server.net.ServerNetHandler;
-import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.commons.event.EventHandler;
 
 @TypeItem(NetHandlerType.SERVER_CONNECTION)
 public class ServerHandlerConnection extends ServerNetHandler {

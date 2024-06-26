@@ -1,12 +1,12 @@
 package net.cubecraft.server;
 
 
-import ink.flybird.fcommon.container.StartArguments;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.container.StartArguments;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public final class ServerMain {
-    private static final ILogger LOGGER = LogManager.getLogger("ServerMain");
+    private static final Logger LOGGER = LogManager.getLogger("ServerMain");
     public static CubecraftServer server;
 
     public static void main(String[] args) {

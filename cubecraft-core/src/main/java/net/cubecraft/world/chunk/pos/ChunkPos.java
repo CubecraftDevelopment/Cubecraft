@@ -1,6 +1,6 @@
 package net.cubecraft.world.chunk.pos;
 
-import ink.flybird.fcommon.container.Key;
+import me.gb2022.commons.container.Key;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.entity.Entity;
 
@@ -49,7 +49,6 @@ public final class ChunkPos implements Key {
         throw new IllegalArgumentException("position out of range:Z");
     }
 
-    //todo:常量池回收问题
     public static ChunkPos create(long x, long z) {
         return new ChunkPos(x, z);
     }

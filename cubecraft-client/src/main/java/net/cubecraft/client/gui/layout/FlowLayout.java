@@ -1,6 +1,6 @@
 package net.cubecraft.client.gui.layout;
 
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 
 @TypeItem("flow")
 public final class FlowLayout extends Layout {

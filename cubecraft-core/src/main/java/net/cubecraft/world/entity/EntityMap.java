@@ -1,7 +1,7 @@
 package net.cubecraft.world.entity;
 
 import net.cubecraft.world.IWorld;
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 
 import java.util.ArrayList;
 import java.util.HashMap;

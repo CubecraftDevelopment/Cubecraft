@@ -1,7 +1,7 @@
 package me.gb2022.quantum3d.render.texture;
 
-import ink.flybird.fcommon.math.AABB2D;
-import ink.flybird.fcommon.threading.TaskProgressCallback;
+import me.gb2022.commons.math.AABB2D;
+import me.gb2022.commons.threading.TaskProgressCallback;
 import me.gb2022.quantum3d.ITextureImage;
 import me.gb2022.quantum3d.lwjgl.deprecated.BufferAllocation;
 import me.gb2022.quantum3d.lwjgl.deprecated.textures.ImageUtil;

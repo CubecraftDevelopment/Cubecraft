@@ -1,10 +1,10 @@
 package net.cubecraft.world.entity;
 
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.Hittable;
-import ink.flybird.fcommon.nbt.NBTDataIO;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.Hittable;
+import me.gb2022.commons.nbt.NBTDataIO;
+import me.gb2022.commons.nbt.NBTTagCompound;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.world.IWorld;
 import org.joml.Vector3d;
 import org.joml.Vector3f;

@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d;
 
-import ink.flybird.fcommon.math.MathHelper;
+import me.gb2022.commons.math.MathHelper;
 
 import java.nio.FloatBuffer;
 

@@ -1,7 +1,7 @@
 package me.gb2022.quantum3d.lwjgl.deprecated.textures;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import me.gb2022.quantum3d.ITextureImage;
 import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
 import org.lwjgl.opengl.GL11;
@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL45;
 public abstract class Texture {
     protected final boolean multiSample;
     protected final boolean mipMap;
-    protected final ILogger logger = LogManager.getLogger("Texture");
+    protected final Logger logger = LogManager.getLogger("Texture");
     protected int glId;
     protected int width;
     protected int height;

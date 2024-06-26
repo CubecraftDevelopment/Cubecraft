@@ -1,6 +1,6 @@
 package net.cubecraft.content.block;
 
-import ink.flybird.fcommon.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistry;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.blocks.StoneBlock;
 

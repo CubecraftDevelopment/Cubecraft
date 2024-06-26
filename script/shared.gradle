@@ -1,7 +1,3 @@
-group 'ink.flybird'
-
-apply from: 'E:/Java/GlobalResources/GradleScripts/github_package_repo.gradle'
-
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 repositories {

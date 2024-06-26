@@ -1,6 +1,6 @@
 package net.cubecraft.world.chunk;
 
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTTagCompound;
 
 public interface ChunkCodec {
     static NBTTagCompound getChunkData(Chunk chunk) {
@@ -38,8 +38,6 @@ public interface ChunkCodec {
         tag.setTag("block_facing_section", chunk.blockFacingSections[i].getData());
         tag.setTag("block_meta_sections", chunk.blockMetaSections[i].getData());
         tag.setTag("light_section", chunk.lightSections[i].getData());
-        tag.setTag("humidity_section", chunk.humiditySections[i].getData());
-        tag.setTag("temperature_section", chunk.temperatureSections[i].getData());
         tag.setTag("biome_section", chunk.biomeSections[i].getData());
 
         return tag;
@@ -50,8 +48,6 @@ public interface ChunkCodec {
         chunk.blockFacingSections[i].setData(tag.getCompoundTag("block_facing_section"));
         chunk.blockMetaSections[i].setData(tag.getCompoundTag("block_meta_sections"));
         chunk.lightSections[i].setData(tag.getCompoundTag("light_section"));
-        chunk.humiditySections[i].setData(tag.getCompoundTag("humidity_section"));
-        chunk.temperatureSections[i].setData(tag.getCompoundTag("temperature_section"));
         chunk.biomeSections[i].setData(tag.getCompoundTag("biome_section"));
         chunk.compressSections(i);
     }

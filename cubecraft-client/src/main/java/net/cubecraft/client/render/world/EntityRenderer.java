@@ -6,16 +6,16 @@ import net.cubecraft.client.render.RenderType;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.IWorld;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
-import ink.flybird.fcommon.registry.TypeItem;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.Window;
 import ink.flybird.quantum3d_legacy.Camera;
 
 //todo: 实体加载
 @TypeItem(WorldRendererType.ENTITY)
 public final class EntityRenderer extends IWorldRenderer {
-    private final ILogger logger = LogManager.getLogger("entity-renderer");
+    private final Logger logger = LogManager.getLogger("entity-renderer");
 
     public void init() {
         this.world.getEventBus().registerEventListener(this);

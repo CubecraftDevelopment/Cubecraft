@@ -1,7 +1,7 @@
 package net.cubecraft.world.chunk.storage;
 
-import ink.flybird.fcommon.container.ArrayUtil;
-import ink.flybird.fcommon.nbt.NBTDataIO;
+import me.gb2022.commons.container.ArrayUtil;
+import me.gb2022.commons.nbt.NBTDataIO;
 import net.cubecraft.world.chunk.Chunk;
 
 public interface DataSection extends NBTDataIO {

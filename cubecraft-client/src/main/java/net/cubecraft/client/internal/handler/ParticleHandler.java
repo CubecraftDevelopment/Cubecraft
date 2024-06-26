@@ -3,11 +3,14 @@ package net.cubecraft.client.internal.handler;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.model.block.BlockModel;
+import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.resource.ResourceLocation;
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.event.EventHandler;
 
 import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.event.BlockIDChangedEvent;
+
+import java.util.Objects;
 
 public class ParticleHandler {
     @EventHandler
@@ -21,6 +24,9 @@ public class ParticleHandler {
         String id = e.old();
         BlockModel m = ClientRenderContext.BLOCK_MODEL.get(ResourceLocation.blockModel(id + ".json").format());
         if (m == null) {
+            return;
+        }
+        if(Objects.equals(id, BlockType.AIR)){
             return;
         }
         String tex = m.getParticleTexture();

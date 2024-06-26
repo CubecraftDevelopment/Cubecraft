@@ -1,7 +1,7 @@
 package net.cubecraft.mod;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import net.cubecraft.SharedContext;
 import net.cubecraft.mod.object.Mod;
 
@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.jar.JarFile;
 
 public interface ModLoader {
-    ILogger LOGGER = LogManager.getLogger("ModLoader");
+    Logger LOGGER = LogManager.getLogger("ModLoader");
 
     static void loadClientInternalMod() {
         ModManager modManager = SharedContext.MOD;
@@ -24,7 +24,6 @@ public interface ModLoader {
 
         modManager.registerMod(Mod.SHARED);
         modManager.registerMod(Mod.SERVER);
-        modManager.registerMod(Mod.CLIENT);
     }
 
     static void loadStandaloneMods(File folder) {
@@ -47,7 +46,7 @@ public interface ModLoader {
             try {
                 modManager.registerMod(Mod.standalone(new JarFile(f)));
             } catch (Exception e) {
-                LOGGER.exception(e);
+                LOGGER.error(e);
             }
         }
     }

@@ -1,10 +1,10 @@
 package net.cubecraft.client.registry;
 
-import net.cubecraft.client.render.model.block.IColorMap;
+import net.cubecraft.client.render.model.IColorMap;
 import net.cubecraft.resource.ResourceLocation;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.IWorld;
-import ink.flybird.fcommon.registry.ItemGetter;
+import me.gb2022.commons.registry.ItemGetter;
 
 public class ColorMapRegistry {
     @ItemGetter(id = "foliage", namespace = "cubecraft")

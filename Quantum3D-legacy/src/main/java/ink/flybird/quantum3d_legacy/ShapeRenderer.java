@@ -1,7 +1,7 @@
 package ink.flybird.quantum3d_legacy;
 
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 

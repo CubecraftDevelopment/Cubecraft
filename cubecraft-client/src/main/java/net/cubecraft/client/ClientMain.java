@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
-import ink.flybird.fcommon.timer.Timer;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.timer.Timer;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import me.gb2022.quantum3d.device.DeviceContext;
 import me.gb2022.quantum3d.lwjgl.context.CompactOGLRenderContext;
 import me.gb2022.quantum3d.lwjgl.device.GLFWDeviceContext;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class ClientMain {
-    private static final ILogger LOGGER= LogManager.getLogger("client-boot");
+    private static final Logger LOGGER= LogManager.getLogger("client-boot");
 
     public static void main(String[] args) {
         EnvironmentPath.allCreateFolder();

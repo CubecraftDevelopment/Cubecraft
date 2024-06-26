@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
 import me.gb2022.quantum3d.render.vertex.*;

@@ -1,7 +1,7 @@
 package ink.flybird.quantum3d_legacy;
 
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
@@ -16,7 +16,7 @@ public class Camera {
     private final Vector3d rotation = new Vector3d();
     private final Vector3d relativePosition = new Vector3d();
     private final FrustumCuller frustum = new FrustumCuller();
-    private float fov = 70.0f;
+    public float fov = 70.0f;
     private Matrix4f proj = new Matrix4f();
     private double lastRotX, lastRotY, lastRotZ;
 
@@ -35,7 +35,7 @@ public class Camera {
 
         this.proj = new Matrix4f();
         this.proj.rotate(new Quaternionf(this.rotation.x, this.rotation.y, this.rotation.z, 1.0f));
-        this.proj.mul(new Matrix4f().perspective((float) Math.toRadians(this.fov), 1280/720f, 0, 114514));
+        this.proj.mul(new Matrix4f().perspective((float) Math.toRadians(this.fov), 1280/720f, 0, 1));
         GLUtil.checkError("camera");
     }
 

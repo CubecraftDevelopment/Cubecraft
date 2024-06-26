@@ -1,12 +1,12 @@
 package net.cubecraft.internal.network.packet;
 
-import net.cubecraft.net.ByteBufUtil;
+import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.DataFragmentPacket;
 import net.cubecraft.net.packet.PacketConstructor;
 import net.cubecraft.world.chunk.Chunk;
-import ink.flybird.fcommon.nbt.NBT;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.nbt.NBT;
+import me.gb2022.commons.nbt.NBTTagCompound;
+import me.gb2022.commons.registry.TypeItem;
 import io.netty.buffer.ByteBuf;
 
 import java.io.ByteArrayInputStream;
@@ -16,7 +16,6 @@ import java.io.DataOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-//todo:send and receive chunk data->Blocked chunk client provider
 @TypeItem("cubecraft:packet_chunk_2d_data")
 public class PacketChunk2DData implements DataFragmentPacket<Chunk> {
     private String world;

@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.chunk;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
@@ -26,7 +26,7 @@ import java.util.*;
 @TypeItem("cubecraft:chunk_renderer")
 public final class ChunkRenderer extends IWorldRenderer {
     public static final String SETTING_NAMESPACE = "chunk_renderer";
-    public static final Map<String, ChunkLayer> DUMMY = net.cubecraft.client.context.ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(false, RenderChunkPos.create(0, 0, 0));
+    public static final Map<String, ChunkLayer> DUMMY = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(false, RenderChunkPos.create(0, 0, 0));
     private final FrustumCuller frustum = new FrustumCuller();
     private final RenderList renderListAlpha = new RenderList(RenderType.ALPHA);
     private final RenderList renderListTransparent = new RenderList(RenderType.TRANSPARENT);
@@ -127,7 +127,8 @@ public final class ChunkRenderer extends IWorldRenderer {
     @Override
     public void preRender(RenderType type, float delta) {
         ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().bind("cubecraft:terrain");
-        this.camera.setUpGlobalCamera();
+        this.setGlobalCamera(delta);
+
         this.frustum.calculateFrustum();
         if (type == RenderType.ALPHA) {
             this.renderListAlpha.updateVisibility(this::isChunkVisible);

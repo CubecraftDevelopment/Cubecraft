@@ -55,8 +55,8 @@ import com.whirvis.jraknet.peer.RakNetPeerMessenger;
 import com.whirvis.jraknet.peer.RakNetServerPeer;
 import com.whirvis.jraknet.peer.RakNetState;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -96,7 +96,7 @@ public class RakNetClient implements RakNetPeerMessenger, RakNetClientListener {
 
 	private final InetSocketAddress bindingAddress;
 	private final long guid;
-	private final ILogger logger;
+	private final Logger logger;
 	private final long timestamp;
 	private final ConcurrentLinkedQueue<RakNetClientListener> listeners;
 	private int eventThreadCount;

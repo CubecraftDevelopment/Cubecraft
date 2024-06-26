@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'idea'
 }
 
 apply from: "../script/build-base.gradle"
@@ -22,6 +23,8 @@ dependencies {
     implementation project(":quantum3d")
 
     implementation "com.twelvemonkeys.imageio:imageio-tga:3.9.4"
+    implementation 'net.java.dev.jna:jna:5.12.1'
+    implementation 'net.java.dev.jna:jna-platform:5.12.1'
 }
 
 jar {
@@ -30,7 +33,7 @@ jar {
     manifest {
         attributes(
                 "Manifest-Version": 1.0,
-                'Main-Class': 'ink.flybird.cubecraft.client.ClientMain'
+                'Main-Class': 'net.cubecraft.client.ClientMain'
         )
     }
 }

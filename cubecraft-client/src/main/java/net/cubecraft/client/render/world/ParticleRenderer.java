@@ -1,20 +1,17 @@
 package net.cubecraft.client.render.world;
 
-import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.internal.renderer.world.WorldRendererType;
-import net.cubecraft.client.render.RenderType;
-import net.cubecraft.internal.entity.EntityPlayer;
-import net.cubecraft.world.IWorld;
-import net.cubecraft.world.entity.EntityParticle;
-import net.cubecraft.world.entity.particle.ParticleEngine;
-import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
-import me.gb2022.quantum3d.device.Window;
-
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.registry.RegisterMap;
+import me.gb2022.commons.registry.TypeItem;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.internal.renderer.world.WorldRendererType;
+import net.cubecraft.client.render.RenderType;
+import net.cubecraft.client.render.renderer.IParticleRenderer;
+import net.cubecraft.world.entity.EntityParticle;
+import net.cubecraft.client.particle.ParticleEngine;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
@@ -24,24 +21,23 @@ import java.util.ArrayList;
 //todo:修复贴图丢失
 @TypeItem(WorldRendererType.PARTICLE)
 public class ParticleRenderer extends IWorldRenderer {
+    @SuppressWarnings("rawtypes")
+    public static final RegisterMap<IParticleRenderer> PARTICLE_RENDERERS = new RegisterMap<>(IParticleRenderer.class);
+
     private final FrustumCuller frustum;
-    private ParticleEngine particleEngine;
+    private final ParticleEngine particleEngine;
     private int successSize;
 
     public ParticleRenderer() {
         this.frustum = new FrustumCuller();
+        this.particleEngine = ClientSharedContext.getClient().getParticleEngine();
     }
-
-    public void setParticleEngine(ParticleEngine particleEngine) {
-        this.particleEngine = particleEngine;
-    }
-
 
     public void init() {
         this.world.getEventBus().registerEventListener(this);
         ClientSharedContext.QUERY_HANDLER.registerCallback(this.getID(), (arg -> switch (arg) {
             case "success_size" -> this.successSize;
-           // case "all_size" -> this.particleEngine.getParticles().size();
+            // case "all_size" -> this.particleEngine.getParticles().size();
             default -> 0;
         }));
     }
@@ -53,8 +49,8 @@ public class ParticleRenderer extends IWorldRenderer {
         this.frustum.calculateFrustum();
     }
 
-
-    public void render(RenderType type, float interpolationTime) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void render(RenderType type, float delta) {
         if (type != RenderType.ALPHA) {
             return;
         }
@@ -70,24 +66,31 @@ public class ParticleRenderer extends IWorldRenderer {
 
         int i = 0;
         GL11.glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        ArrayList<EntityParticle> particles = new ArrayList<>(/*this.particleEngine.getParticles()*/);
+
+        ArrayList<EntityParticle> particles = new ArrayList<>(this.particleEngine.getParticles());
         for (EntityParticle p : particles) {
+            String s=p.getID();
+            IParticleRenderer renderer = PARTICLE_RENDERERS.get(p.getID());
+            if (renderer == null) {
+                continue;
+            }
+
             AABB aabb = new AABB(p.x - 0.1, p.y - 0.1, p.z - 0.1, p.x + 0.1, p.y + 0.1, p.z + 0.1);
             if (this.frustum.aabbVisible(this.camera.castAABB(aabb))) {
                 i++;
                 VertexBuilder builder = VertexBuilderAllocator.createByPrefer(128);
                 builder.begin();
-                //p.render(builder, interpolationTime, xa, ya, za, xa2, za2);
+                renderer.render(p, builder, delta, xa, ya, za, xa2, za2);
                 builder.end();
                 GL11.glPushMatrix();
                 this.camera.setupObjectCamera(new Vector3d(p.x, p.y, p.z));
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
                 builder.uploadPointer();
                 builder.free();
                 GL11.glPopMatrix();
             }
         }
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        this.successSize=i;
+        this.successSize = i;
     }
 }

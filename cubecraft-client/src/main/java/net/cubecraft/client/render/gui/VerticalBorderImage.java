@@ -1,9 +1,10 @@
 package net.cubecraft.client.render.gui;
 
 import com.google.gson.*;
-import net.cubecraft.client.gui.node.Node;
-import ink.flybird.fcommon.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import me.gb2022.commons.registry.TypeItem;
+import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.client.util.DeserializedConstructor;
 
 import java.lang.reflect.Type;
 
@@ -16,26 +17,24 @@ public final class VerticalBorderImage extends ImageComponentRendererPart {
         this.border = border;
     }
 
+    @DeserializedConstructor
+    public VerticalBorderImage(JsonObject root) {
+        this(
+                root.get("pos").getAsJsonArray().get(0).getAsDouble(),
+                root.get("pos").getAsJsonArray().get(1).getAsDouble(),
+                root.get("pos").getAsJsonArray().get(2).getAsDouble(),
+                root.get("pos").getAsJsonArray().get(3).getAsDouble(),
+                root.get("boarder").getAsInt(),
+                root.get("loc").getAsString()
+        );
+    }
+
     @Override
     public void render(Node node) {
         //todo
-        Texture2D tex= this.getTexture();
+        Texture2D tex = this.getTexture();
         tex.bind();
 
         tex.unbind();
-    }
-
-    public static class JDeserializer implements JsonDeserializer<VerticalBorderImage> {
-        @Override
-        public VerticalBorderImage deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject root=jsonElement.getAsJsonObject();
-            return new VerticalBorderImage(
-                    root.get("pos").getAsJsonArray().get(0).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(1).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(2).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(3).getAsDouble(),
-                    root.get("boarder").getAsInt(),
-                    root.get("loc").getAsString());
-        }
     }
 }

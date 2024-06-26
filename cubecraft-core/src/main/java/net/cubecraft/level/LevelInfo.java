@@ -1,10 +1,10 @@
 package net.cubecraft.level;
 
 import net.cubecraft.EnvironmentPath;
-import ink.flybird.fcommon.nbt.NBT;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.nbt.NBT;
+import me.gb2022.commons.nbt.NBTTagCompound;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
 import java.util.Date;
@@ -13,7 +13,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class LevelInfo {
-    private static final ILogger LOGGER = LogManager.getLogger("level_info");
+    private static final Logger LOGGER = LogManager.getLogger("level_info");
 
     private final NBTTagCompound tag;
     private final Properties properties = new Properties();

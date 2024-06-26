@@ -1,8 +1,8 @@
 package net.cubecraft.world.chunk.storage;
 
-import ink.flybird.fcommon.nbt.NBTDataIO;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTDataIO;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.nbt.NBTTagCompound;
 
 public class ByteDataSection implements NBTDataIO,ByteStorage{
     private ByteStorage storage = new CompressedByteStorage((byte) 0);

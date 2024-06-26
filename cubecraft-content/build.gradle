@@ -4,13 +4,20 @@ plugins {
 
 version '0.0.1'
 
-apply from: rootDir.getAbsolutePath()+"/script/jar.gradle"
-apply from: rootDir.getAbsolutePath()+"/script/shared.gradle"
+apply from: "../script/build-base.gradle"
+
+version '1.0-SNAPSHOT'
+
+ext.applyScript("/jar.gradle")
+ext.applyScript("/shared.gradle")
+ext.applyScript("/lib/basic.gradle")
+ext.applyScript("/lib/cubecraft.gradle")
+
 
 dependencies {
-    compileOnly project(":cubecraft-client")
-    compileOnly project(":cubecraft-core")
-    compileOnly project(":cubecraft-server")
+    implementation project(":cubecraft-client")
+    implementation project(":cubecraft-core")
+    implementation project(":cubecraft-server")
 }
 
 jar {

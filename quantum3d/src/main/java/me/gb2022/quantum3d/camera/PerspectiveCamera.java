@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.camera;
 
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 import me.gb2022.quantum3d.FixedJOMLFrustum;
 import org.joml.Matrix4f;
 

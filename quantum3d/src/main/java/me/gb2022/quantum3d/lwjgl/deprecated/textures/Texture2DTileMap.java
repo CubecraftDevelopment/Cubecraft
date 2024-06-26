@@ -1,9 +1,9 @@
 package me.gb2022.quantum3d.lwjgl.deprecated.textures;
 
-import ink.flybird.fcommon.math.AABB2D;
-import ink.flybird.fcommon.threading.TaskProgressCallback;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.math.AABB2D;
+import me.gb2022.commons.threading.TaskProgressCallback;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import me.gb2022.quantum3d.ITextureImage;
 import me.gb2022.quantum3d.lwjgl.deprecated.BufferAllocation;
 import org.lwjgl.opengl.GL11;
@@ -20,7 +20,7 @@ import java.util.Objects;
 //todo:map
 @Deprecated
 public class Texture2DTileMap extends Texture2D {
-    public static final ILogger logger = LogManager.getLogger("texture_tilemap");
+    public static final Logger logger = LogManager.getLogger("texture_tilemap");
     public final ArrayList<Section> sections = new ArrayList<>();
     public final int minStepX, minStepY;
     private final HashMap<String, Section> map = new HashMap<>();

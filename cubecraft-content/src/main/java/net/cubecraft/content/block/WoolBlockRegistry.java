@@ -2,8 +2,8 @@ package net.cubecraft.content.block;
 
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.blocks.WoolBlock;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
 
 @FieldRegistryHolder("cubecraft")
 public interface WoolBlockRegistry {

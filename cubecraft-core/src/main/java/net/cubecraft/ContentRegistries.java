@@ -1,23 +1,23 @@
 package net.cubecraft;
 
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.fcommon.registry.ConstructingMap;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
-import ink.flybird.fcommon.registry.RegisterMap;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
+import me.gb2022.commons.registry.ConstructingMap;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
+import me.gb2022.commons.registry.RegisterMap;
 import net.cubecraft.internal.item.ItemRegistry;
-import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.biome.BiomeMap;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.behavior.BlockBehavior;
+import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.block.property.BlockProperty;
 import net.cubecraft.world.dimension.Dimension;
 import net.cubecraft.world.entity.Entity;
-import net.cubecraft.world.item.container.Inventory;
 import net.cubecraft.world.item.Item;
 import net.cubecraft.world.item.behavior.ItemBehavior;
+import net.cubecraft.world.item.container.Inventory;
 import net.cubecraft.world.worldGen.pipeline.WorldGenPipelineBuilder;
 
 @FieldRegistryHolder("cubecraft")
@@ -29,31 +29,32 @@ public interface ContentRegistries {
     ConstructingMap<Inventory> INVENTORY = new ConstructingMap<>(Inventory.class);
 
     @FieldRegistry("item_behavior")
-    RegisterMap<ItemBehavior> ITEM_BEHAVIOR = new RegisterMap<>();
+    RegisterMap<ItemBehavior> ITEM_BEHAVIOR = new RegisterMap<>(ItemBehavior.class);
 
     @FieldRegistry("item")
-    RegisterMap<Item> ITEM = new RegisterMap<>(ItemRegistry.DUMMY);
+    RegisterMap<Item> ITEM = new RegisterMap<>(ItemRegistry.DUMMY, Item.class);
 
     //block
     @FieldRegistry("block")
-    RegisterMap<Block> BLOCK = new RegisterMap<>(BlockRegistry.UNKNOWN_BLOCK);
+    RegisterMap<Block> BLOCK = new RegisterMap<>(BlockRegistry.UNKNOWN_BLOCK, Block.class);
 
+    @SuppressWarnings("rawtypes")
     @FieldRegistry("block_property")
-    RegisterMap<BlockProperty<?>> BLOCK_PROPERTY = new RegisterMap<>();
+    RegisterMap<BlockProperty> BLOCK_PROPERTY = new RegisterMap<>(BlockProperty.class);
 
     @FieldRegistry("block_behavior")
-    RegisterMap<BlockBehavior> BLOCK_BEHAVIOR = new RegisterMap<>();
+    RegisterMap<BlockBehavior> BLOCK_BEHAVIOR = new RegisterMap<>(BlockBehavior.class);
 
 
     //world
     @FieldRegistry("dimension")
-    RegisterMap<Dimension> DIMENSION = new RegisterMap<>();
+    RegisterMap<Dimension> DIMENSION = new RegisterMap<>(Dimension.class);
 
     @FieldRegistry("biome")
     BiomeMap BIOME = new BiomeMap();
 
     @FieldRegistry("world_generator_pipeline")
-    RegisterMap<WorldGenPipelineBuilder> CHUNK_GENERATE_PIPELINE = new RegisterMap<>();
+    RegisterMap<WorldGenPipelineBuilder> CHUNK_GENERATE_PIPELINE = new RegisterMap<>(WorldGenPipelineBuilder.class);
 
     //entity
     @FieldRegistry("entity")

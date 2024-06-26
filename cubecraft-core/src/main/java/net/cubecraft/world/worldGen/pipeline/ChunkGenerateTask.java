@@ -1,7 +1,7 @@
 package net.cubecraft.world.worldGen.pipeline;
 
 import net.cubecraft.world.chunk.ProviderChunk;
-import ink.flybird.fcommon.container.ArrayQueue;
+import me.gb2022.commons.container.ArrayQueue;
 
 import java.util.List;
 

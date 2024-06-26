@@ -1,6 +1,6 @@
 package net.cubecraft.internal.network.packet.chunk;
 
-import net.cubecraft.net.ByteBufUtil;
+import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import io.netty.buffer.ByteBuf;
 

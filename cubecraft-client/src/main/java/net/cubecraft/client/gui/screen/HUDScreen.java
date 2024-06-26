@@ -1,6 +1,6 @@
 package net.cubecraft.client.gui.screen;
 
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.event.EventHandler;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
@@ -118,7 +118,7 @@ public final class HUDScreen extends Screen {
     public void onKeyEventPressed(KeyboardPressEvent event) {
         if (event.getKey() == KeyboardButton.KEY_ESCAPE) {
             this.client.getClientDeviceContext().getMouse().setMouseGrabbed(false);
-            this.client.getClientGUIContext().setScreen(ResourceRegistry.PAUSE_SCREEN);
+            this.client.getClientGUIContext().setScreen(ScreenBuilder.xml(ResourceRegistry.PAUSE_SCREEN));
         }
         if (event.getKey() == KeyboardButton.KEY_F1) {
             this.showGUI = !this.showGUI;

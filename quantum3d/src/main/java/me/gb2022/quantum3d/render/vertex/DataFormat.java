@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.render.vertex;
 
-import ink.flybird.fcommon.memory.BufferAllocator;
+import me.gb2022.commons.memory.BufferAllocator;
 
 import java.nio.ByteBuffer;
 
@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 public final class DataFormat {
     public static final DataFormat EMPTY = null;
 
-    public static final DataFormat FLOAT_2 = new DataFormat(3, DataType.FLOAT);
+    public static final DataFormat FLOAT_2 = new DataFormat(2, DataType.FLOAT);
     public static final DataFormat FLOAT_3 = new DataFormat(3, DataType.FLOAT);
     public static final DataFormat FLOAT_4 = new DataFormat(4, DataType.FLOAT);
 

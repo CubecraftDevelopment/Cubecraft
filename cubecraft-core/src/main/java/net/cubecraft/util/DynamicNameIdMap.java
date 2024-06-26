@@ -5,10 +5,10 @@
 
 package net.cubecraft.util;
 
-import ink.flybird.fcommon.container.ArrayUtil;
-import ink.flybird.fcommon.container.CollectionUtil;
-import ink.flybird.fcommon.container.MultiMap;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.container.ArrayUtil;
+import me.gb2022.commons.container.CollectionUtil;
+import me.gb2022.commons.container.MultiMap;
+import me.gb2022.commons.nbt.NBTTagCompound;
 
 public class DynamicNameIdMap {
     public final MultiMap<String, Short> mapping = new MultiMap<>();

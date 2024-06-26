@@ -1,11 +1,11 @@
 package ink.flybird.quantum3d_legacy.textures;
 
-import ink.flybird.fcommon.threading.TaskProgressUpdateListener;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.threading.TaskProgressUpdateListener;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.fcommon.math.AABB2D;
-import ink.flybird.fcommon.math.MathHelper;
+import me.gb2022.commons.math.AABB2D;
+import me.gb2022.commons.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Texture2DTileMap extends Texture2D {
-    public static final ILogger logger = LogManager.getLogger("texture_tilemap");
+    public static final Logger logger = LogManager.getLogger("texture_tilemap");
     public final ArrayList<Section> sections = new ArrayList<>();
     public final int minStepX, minStepY;
     private final HashMap<String, Section> map = new HashMap<>();

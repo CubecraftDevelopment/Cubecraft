@@ -1,16 +1,16 @@
 package net.cubecraft.client.render.chunk.compile;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import net.cubecraft.client.render.chunk.ChunkRenderer;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.world.IWorld;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Queue;
 
 public abstract class ChunkCompilerTask implements Runnable {
-    private static final ILogger LOGGER = LogManager.getLogger("chunk-compiler-task");
+    public static final Logger LOGGER = LogManager.getLogger("Client/ChunkCompilerTask");
 
     protected final Queue<ChunkCompileResult> resultQueue;
     protected final Queue<ChunkCompileRequest> requestQueue;
@@ -38,7 +38,7 @@ public abstract class ChunkCompilerTask implements Runnable {
         String layerId = request.getLayerId();
 
         ChunkCompileResult result;
-        if(this.parent.isChunkOutOfRange(request.getPos())){
+        if (this.parent.isChunkOutOfRange(request.getPos())) {
             return;
         }
 
@@ -92,9 +92,17 @@ public abstract class ChunkCompilerTask implements Runnable {
         public void run() {
             while (this.isRunning()) {
                 try {
-                    while (BufferAllocation.getAllocSize() > 67108864 * 8) {
+                    while (BufferAllocation.getAllocSize() > Integer.MAX_VALUE) {
+                        Thread.onSpinWait();
+                        Thread.sleep(50);
                         Thread.yield();
                     }
+                    while (this.requestQueue.isEmpty()) {
+                        Thread.onSpinWait();
+                        Thread.sleep(50);
+                        Thread.yield();
+                    }
+
                     for (int i = 0; i < 40; i++) {
                         ChunkCompileRequest request;
                         if (this.requestQueue.isEmpty()) {

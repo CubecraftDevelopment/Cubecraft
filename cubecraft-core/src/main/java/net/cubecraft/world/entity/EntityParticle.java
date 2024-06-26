@@ -1,15 +1,15 @@
 package net.cubecraft.world.entity;
 
+import me.gb2022.commons.math.AABB;
 import net.cubecraft.world.IWorld;
-import ink.flybird.fcommon.math.AABB;
 
 public abstract class EntityParticle extends EntityNonLiving {
     protected final String tex;
     protected final float uo;
     protected final float vo;
-    protected int age;
     protected final int lifetime;
     protected final float size;
+    protected int age;
 
     public EntityParticle(IWorld world, double x, double y, double z, double xa, double ya, double za, String tex) {
         super(world);
@@ -32,17 +32,17 @@ public abstract class EntityParticle extends EntityNonLiving {
 
     @Override
     public AABB getCollisionBoxSize() {
-        return new AABB(-0.1,-0.1,-0.1,0.1,0.1,0.1);
+        return new AABB(-0.1, -0.1, -0.1, 0.1, 0.1, 0.1);
     }
 
     @Override
     public void tick() {
-        this.xo=x;
-        this.yo=y;
-        this.zo=z;
+        this.xo = x;
+        this.yo = y;
+        this.zo = z;
         this.age++;
         this.yd = (this.yd - 0.04);
-        this.move(xd,yd,zd);
+        this.move(xd, yd, zd);
         this.xd *= 0.98f;
         this.yd *= 0.98f;
         this.zd *= 0.98f;
@@ -53,7 +53,7 @@ public abstract class EntityParticle extends EntityNonLiving {
     }
 
     public int getLife() {
-        return this.lifetime-this.age;
+        return this.lifetime - this.age;
     }
 
     @Override

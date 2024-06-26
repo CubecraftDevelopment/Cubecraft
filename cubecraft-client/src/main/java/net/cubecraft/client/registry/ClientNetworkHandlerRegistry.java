@@ -4,8 +4,8 @@ import net.cubecraft.client.internal.net.ClientHandlerConnection;
 import net.cubecraft.client.internal.net.ClientHandlerDataReceive;
 import net.cubecraft.client.internal.net.ClientHandlerWorldListener;
 import net.cubecraft.client.net.ClientNetHandler;
-import ink.flybird.fcommon.registry.ItemRegisterFunc;
-import ink.flybird.fcommon.registry.ConstructingMap;
+import me.gb2022.commons.registry.ItemRegisterFunc;
+import me.gb2022.commons.registry.ConstructingMap;
 
 public class ClientNetworkHandlerRegistry {
     @ItemRegisterFunc(ClientNetHandler.class)

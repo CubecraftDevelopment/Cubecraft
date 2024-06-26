@@ -1,9 +1,9 @@
 package net.cubecraft.world.chunk.task;
 
-import ink.flybird.fcommon.nbt.NBTDataIO;
+import me.gb2022.commons.nbt.NBTDataIO;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.world.block.BlockState;
 
 import java.util.HashMap;

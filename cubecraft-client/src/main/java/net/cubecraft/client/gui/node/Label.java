@@ -6,8 +6,8 @@ import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.layout.Layout;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.registry.TypeItem;
 import org.w3c.dom.Element;
 
 @TypeItem("label")
@@ -31,7 +31,7 @@ public class Label extends Node {
     @Override
     public void render(float interpolationTime) {
         Layout layout = this.getLayout();
-        ClientGUIContext.SMOOTH_FONT_RENDERER.render(this.text, layout.getAbsoluteX() + layout.getAbsoluteWidth() / 2, layout.getAbsoluteY(), this.color, layout.getAbsoluteHeight(), layout.layer, this.alignment);
+        ClientGUIContext.FONT_RENDERER.render(this.text, layout.getAbsoluteX() + layout.getAbsoluteWidth() / 2, layout.getAbsoluteY(), this.color, layout.getAbsoluteHeight(), layout.layer, this.alignment);
     }
 
     @Override

@@ -5,8 +5,8 @@ import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.IBlockAccess;
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.math.MathHelper;
+import me.gb2022.commons.container.Vector3;
+import me.gb2022.commons.math.MathHelper;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import org.joml.Vector3d;
 

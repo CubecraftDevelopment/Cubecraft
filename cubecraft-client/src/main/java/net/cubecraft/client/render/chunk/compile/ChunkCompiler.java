@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.chunk.compile;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import ink.flybird.quantum3d_legacy.draw.DrawMode;
 import ink.flybird.quantum3d_legacy.draw.OffHeapVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
@@ -22,11 +22,14 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public interface ChunkCompiler {
-    ILogger LOGGER = LogManager.getLogger("chunk-layer-compiler");
+    Logger LOGGER = LogManager.getLogger("chunk-layer-compiler");
 
     static ChunkCompileResult rebuild(String id, IWorld world, RenderChunkPos pos, ChunkLayer layer) {
         ChunkPos p = ChunkPos.create(pos.getX(), pos.getZ());
-        if (testForDiscard(world, pos)) {
+
+        IBlockAccess[][][] compileRegion = generateCompileRegion(world, pos);
+
+        if (compileRegion == null) {
             return ChunkCompileResult.failed(pos, id);
         }
 
@@ -35,7 +38,7 @@ public interface ChunkCompiler {
         VertexBuilder builder = new OffHeapVertexBuilder(131072, DrawMode.QUADS);
         try {
             builder.begin();
-            boolean filled = compileBlocks(id, world, pos, builder);
+            boolean filled = compileBlocks(compileRegion, id, world, pos, builder);
             builder.end();
             layer.setFilled(filled);
             ChunkLoadAccess.removeChunkLockRange(world, p, 1, pos);
@@ -60,25 +63,21 @@ public interface ChunkCompiler {
         return rebuild(id, world, pos, layer);
     }
 
-    static boolean compileBlocks(String layerID, IWorld world, RenderChunkPos pos, VertexBuilder builder) {
+    static boolean compileBlocks(IBlockAccess[][][] compileRegion,String layerID, IWorld world, RenderChunkPos pos, VertexBuilder builder) {
         builder.begin();
 
         long x = pos.getX();
         long y = pos.getY();
         long z = pos.getZ();
 
-        for (long cx = 0; cx < 16; ++cx) {
-            for (long cz = 0; cz < 16; ++cz) {
-                for (long cy = 0; cy < 16; ++cy) {
-                    long globalX = cx + x * 16;
-                    long globalY = cy + y * 16;
-                    long globalZ = cz + z * 16;
-
-                    IBlockAccess blockAccess = world.getBlockAccess(globalX, globalY, globalZ);
+        for (int cx = 0; cx < 16; ++cx) {
+            for (int cz = 0; cz < 16; ++cz) {
+                for (int cy = 0; cy < 16; ++cy) {
+                    IBlockAccess blockAccess = compileRegion[cx][cy][cz];
                     if (Objects.equals(blockAccess.getBlockID(), BlockType.AIR)) {
                         continue;
                     }
-                    IBlockRenderer renderer = net.cubecraft.client.context.ClientRenderContext.BLOCK_RENDERER.get(blockAccess.getBlockID());
+                    IBlockRenderer renderer = ClientRenderContext.BLOCK_RENDERER.get(blockAccess.getBlockID());
                     if (renderer == null) {
                         continue;
                     }
@@ -90,7 +89,7 @@ public interface ChunkCompiler {
         return builder.getCount() > 0;
     }
 
-    static boolean testForDiscard(IWorld world, RenderChunkPos pos) {
+    static IBlockAccess[][][] generateCompileRegion(IWorld world, RenderChunkPos pos) {
         long x = pos.getX();
         long y = pos.getY();
         long z = pos.getZ();
@@ -100,44 +99,42 @@ public interface ChunkCompiler {
         long y0 = y * 16, y1 = y0 + 15;
         long z0 = z * 16, z1 = z0 + 15;
 
-        boolean discard = true;
         WorldChunk c;
         try {
             c = (WorldChunk) world.loadChunk(p, ChunkLoadTicket.LOAD_DATA).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+
+        IBlockAccess[][][] compileRegion = new IBlockAccess[16][16][16];
         c.getDataLock().addLock(pos);
-        IBlockAccess[] list = c.getAllBlockInRange(x0, y0, z0, x1, y1, z1);
-        for (IBlockAccess access : list) {
-            if (!Objects.equals(access.getBlockID(), BlockType.AIR)) {
-                discard = false;
-                break;
+        for (int cx = 0; cx < 16; ++cx) {
+            for (int cz = 0; cz < 16; ++cz) {
+                for (int cy = 0; cy < 16; ++cy) {
+                    IBlockAccess block = c.getBlockAccess(x * 16 + cx, y * 16 + cy, z * 16 + cz);
+                    compileRegion[cx][cy][cz] = block;
+                }
             }
         }
-        if (discard) {
-            c.getDataLock().removeLock(pos);
-            return true;
-        }
+        c.getDataLock().removeLock(pos);
 
+        boolean discard = true;
 
-        discard = true;
-        ChunkLoadAccess.addChunkLockRange(world, p, 1, pos);
-        list = world.getAllBlockInRange(x0 - 1, y0 - 1, z0 - 1, x1 + 1, y1 + 1, z1 + 1);
-        return false;
-        /*
-        for (IBlockAccess access : list) {
-            if (!BlockPropertyDispatcher.isSolid(access)) {
-                discard = false;
-                break;
+        for (int cx = 0; cx < 16; ++cx) {
+            for (int cz = 0; cz < 16; ++cz) {
+                for (int cy = 0; cy < 16; ++cy) {
+                    if (!compileRegion[cx][cy][cz].getBlockID().equals(BlockType.AIR)) {
+                        discard = false;
+                        break;
+                    }
+                }
             }
         }
-        if (discard) {
-            ChunkLoadAccess.removeChunkLockRange(world, p, 1, pos);
-            return true;
-        }
-        return false;
 
-         */
+        if (!discard) {
+            ChunkLoadAccess.addChunkLockRange(world, p, 1, pos);
+            return compileRegion;
+        }
+        return null;
     }
 }

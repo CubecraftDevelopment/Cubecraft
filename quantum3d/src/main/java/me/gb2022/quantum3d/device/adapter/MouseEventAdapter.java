@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.device.adapter;
 
-import ink.flybird.fcommon.event.EventBus;
+import me.gb2022.commons.event.EventBus;
 import me.gb2022.quantum3d.device.Mouse;
 import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.Window;

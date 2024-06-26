@@ -1,8 +1,8 @@
 package net.cubecraft.internal.block;
 
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.SimpleBlock;

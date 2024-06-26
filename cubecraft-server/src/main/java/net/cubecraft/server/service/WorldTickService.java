@@ -1,70 +1,68 @@
 package net.cubecraft.server.service;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.commons.threading.LoopTickingThread;
 import net.cubecraft.SharedContext;
 import net.cubecraft.server.CubecraftServer;
 import net.cubecraft.server.world.ServerWorld;
 import net.cubecraft.world.IWorld;
-import ink.flybird.fcommon.timer.Timer;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
-import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.fcommon.threading.LoopTickingThread;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 @TypeItem("cubecraft:world_tick")
 public final class WorldTickService implements Service {
-    private static final ILogger LOGGER = LogManager.getLogger("server_world_tick");
+    private static final Logger LOGGER = LogManager.getLogger("server_world_tick");
     private WorldTickingThread[] threads;
 
+
     @Override
-    public void postInitialize(CubecraftServer server){
+    public void postInitialize(CubecraftServer server) {
         this.threads = new WorldTickingThread[server.getLevel().getWorldCount()];
         IWorld[] worlds = server.getLevel().getWorlds().values().toArray(new IWorld[0]);
         for (int i = 0; i < server.getLevel().getWorldCount(); i++) {
             this.threads[i] = new WorldTickingThread((ServerWorld) worlds[i]);
-            SharedContext.THREAD_INITIALIZER.makeThread("server_world_tick_" + i, this.threads[i]).start();
+            this.threads[i].start();
         }
     }
 
     @Override
     public void stop(CubecraftServer server) {
         for (int i = 0; i < server.getLevel().getWorldCount(); i++) {
-            this.threads[i].setRunning(false);
-        }
-        while (Arrays.stream(this.threads).anyMatch(LoopTickingThread::isRunning)) {
-            Thread.yield();
+            this.threads[i].stop();
         }
     }
 
-    public static final class WorldTickingThread extends LoopTickingThread {
-        private static final ILogger LOGGER = LogManager.getLogger("server-world-tick");
+
+    public static final class WorldTickingThread {
+        private static final Logger LOGGER = LogManager.getLogger("server-world-tick");
+        private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         private final ServerWorld world;
+        private ScheduledFuture<?> future;
 
         public WorldTickingThread(ServerWorld world) {
             this.world = world;
         }
 
-        @Override
-        public void init() {
-            this.timer=new Timer(20.0f);
+        public void start() {
+            this.future = this.scheduler.scheduleAtFixedRate(this.world::tick, 0, 50, TimeUnit.MILLISECONDS);
         }
 
-        @Override
-        public void tick() {
-            this.world.tick();
-        }
-
-        @Override
-        public boolean onException(Exception exception) {
-            LOGGER.error(exception);
-            return false;
-        }
-
-        @Override
-        public boolean onError(Error error) {
-            LOGGER.error(error);
-            return false;
+        public void stop() {
+            if (this.future == null || this.future.isCancelled()) {
+                return;
+            }
+            this.future.cancel(true); // Cancel the scheduled task
+            while (!this.future.isDone()) {
+                Thread.onSpinWait();
+                Thread.yield();
+            }
+            this.scheduler.shutdownNow();
         }
     }
 }

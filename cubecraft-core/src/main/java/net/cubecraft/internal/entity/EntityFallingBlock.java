@@ -2,7 +2,7 @@ package net.cubecraft.internal.entity;
 
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.IWorld;
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 import net.cubecraft.world.entity.EntityNonLiving;
 
 public class EntityFallingBlock extends EntityNonLiving {

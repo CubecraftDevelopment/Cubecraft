@@ -1,7 +1,7 @@
 package net.cubecraft.world.chunk;
 
 import net.cubecraft.world.chunk.pos.ChunkPos;
-import ink.flybird.fcommon.threading.SimpleThreadFactory;
+import me.gb2022.commons.threading.SimpleThreadFactory;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.level.Level;
 

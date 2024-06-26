@@ -10,13 +10,13 @@ import net.cubecraft.resource.item.IResource;
 import net.cubecraft.resource.provider.InternalResourceLoader;
 import net.cubecraft.resource.provider.ModResourceLoader;
 import net.cubecraft.resource.provider.ResourceLoader;
-import ink.flybird.fcommon.event.EventBus;
-import ink.flybird.fcommon.event.SimpleEventBus;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
-import ink.flybird.fcommon.registry.RegisterMap;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
+import me.gb2022.commons.registry.RegisterMap;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResourceManager {
-    private static final ILogger LOGGER = LogManager.getLogger("resource_manager");
+    private static final Logger LOGGER = LogManager.getLogger("resource_manager");
 
     public final ArrayList<ResourcePack> resourcePacks = new ArrayList<>();
     protected final ArrayList<Object> listeners = new ArrayList<>();
@@ -83,7 +83,7 @@ public class ResourceManager {
     }
 
     public void registerResource(String loadStage, String namespace, String id, IResource resource) {
-        this.resourceObjectCache.computeIfAbsent(loadStage, K -> new RegisterMap<>())
+        this.resourceObjectCache.computeIfAbsent(loadStage, K -> new RegisterMap<>(IResource.class))
                 .registerItem(namespace, id, resource);
     }
 
@@ -93,7 +93,7 @@ public class ResourceManager {
         if (map == null) {
             return null;
         }
-        return new ArrayList<>(map.idList());
+        return new ArrayList<>(map.keySet());
     }
 
     private List<ResourceLoader> getSortedLoaders() {

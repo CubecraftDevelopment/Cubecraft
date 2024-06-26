@@ -48,8 +48,8 @@ import com.whirvis.jraknet.protocol.connection.OpenConnectionRequestTwo;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseOne;
 import com.whirvis.jraknet.protocol.connection.OpenConnectionResponseTwo;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -90,7 +90,7 @@ public final class PeerFactory {
 	private static final int STATE_PEER_ASSEMBLED = 2;
 
 	private int factoryState;
-	private final ILogger logger;
+	private final Logger logger;
 	private final RakNetClient client;
 	private final InetSocketAddress address;
 	private final Bootstrap bootstrap;

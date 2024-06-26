@@ -1,8 +1,8 @@
 package net.cubecraft.world.chunk;
 
-import ink.flybird.fcommon.container.KeyGetter;
-import ink.flybird.fcommon.nbt.NBTDataIO;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.container.KeyGetter;
+import me.gb2022.commons.nbt.NBTDataIO;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.BlockState;
 import net.cubecraft.world.block.EnumFacing;
@@ -15,7 +15,6 @@ import net.cubecraft.world.chunk.storage.StringDataSection;
 import java.util.Collection;
 import java.util.HashMap;
 
-//todo swap data to storage
 public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
     public static final int HEIGHT = 512;
     public static final int WIDTH = 16;
@@ -26,8 +25,6 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
     protected final ByteDataSection[] blockMetaSections = new ByteDataSection[SECTION_SIZE];
     protected final ByteDataSection[] lightSections = new ByteDataSection[SECTION_SIZE];
     protected final StringDataSection[] biomeSections = new StringDataSection[SECTION_SIZE];
-    protected final ByteDataSection[] temperatureSections = new ByteDataSection[SECTION_SIZE];
-    protected final ByteDataSection[] humiditySections = new ByteDataSection[SECTION_SIZE];
 
 
     protected final long x, z;
@@ -42,8 +39,6 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
             this.blockMetaSections[i] = new ByteDataSection();
             this.lightSections[i] = new ByteDataSection();
             this.biomeSections[i] = new StringDataSection();
-            this.temperatureSections[i] = new ByteDataSection();
-            this.humiditySections[i] = new ByteDataSection();
         }
     }
 
@@ -73,29 +68,9 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
         return this.biomeSections[y / WIDTH].get(x, y % WIDTH, z);
     }
 
-    public byte getTemperature(int x, int y, int z) {
-        ChunkPos.checkChunkRelativePosition(x, y, z);
-        return this.temperatureSections[y / WIDTH].get(x, y % WIDTH, z);
-    }
-
-    public byte getHumidity(int x, int y, int z) {
-        ChunkPos.checkChunkRelativePosition(x, y, z);
-        return this.humiditySections[y / WIDTH].get(x, y % WIDTH, z);
-    }
-
     public void setBiome(int x, int y, int z, String biome) {
         ChunkPos.checkChunkRelativePosition(x, y, z);
         this.biomeSections[y / WIDTH].set(x, y % WIDTH, z, biome);
-    }
-
-    public void setTemperature(int x, int y, int z, byte temperature) {
-        ChunkPos.checkChunkRelativePosition(x, y, z);
-        this.temperatureSections[y / WIDTH].set(x, y % WIDTH, z, temperature);
-    }
-
-    public void setHumidity(int x, int y, int z, byte humidity) {
-        ChunkPos.checkChunkRelativePosition(x, y, z);
-        this.humiditySections[y / WIDTH].set(x, y % WIDTH, z, humidity);
     }
 
     public String getBlockID(int x, int y, int z) {
@@ -176,8 +151,6 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
             tag.setTag("block_facing_section_" + i, this.blockFacingSections[i].getData());
             tag.setTag("block_meta_sections_" + i, this.blockMetaSections[i].getData());
             tag.setTag("light_section_" + i, this.lightSections[i].getData());
-            tag.setTag("humidity_section_" + i, this.humiditySections[i].getData());
-            tag.setTag("temperature_section_" + i, this.temperatureSections[i].getData());
             tag.setTag("biome_section_" + i, this.biomeSections[i].getData());
         }
 
@@ -196,8 +169,6 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
         this.blockMetaSections[i].tryCompress();
         this.lightSections[i].tryCompress();
         this.biomeSections[i].tryCompress();
-        this.temperatureSections[i].tryCompress();
-        this.humiditySections[i].tryCompress();
     }
 
     public StringDataSection[] getBlockIdSections() {
@@ -214,14 +185,6 @@ public abstract class Chunk implements KeyGetter<ChunkPos>, NBTDataIO {
 
     public ByteDataSection[] getLightSections() {
         return lightSections;
-    }
-
-    public ByteDataSection[] getHumiditySections() {
-        return humiditySections;
-    }
-
-    public ByteDataSection[] getTemperatureSections() {
-        return temperatureSections;
     }
 
     public StringDataSection[] getBiomeSections() {

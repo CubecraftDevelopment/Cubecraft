@@ -4,8 +4,8 @@ import net.cubecraft.internal.network.packet.join.PacketPlayerJoinRequest;
 import net.cubecraft.internal.network.packet.join.PacketPlayerJoinResponse;
 import net.cubecraft.internal.network.packet.join.PacketPlayerJoinWorld;
 import net.cubecraft.internal.network.packet.join.PacketPlayerJoinWorldResponse;
-import ink.flybird.fcommon.registry.ItemRegisterFunc;
-import ink.flybird.fcommon.registry.ConstructingMap;
+import me.gb2022.commons.registry.ItemRegisterFunc;
+import me.gb2022.commons.registry.ConstructingMap;
 import net.cubecraft.internal.network.packet.*;
 import net.cubecraft.net.packet.Packet;
 

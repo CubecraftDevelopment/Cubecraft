@@ -1,7 +1,7 @@
 package ink.flybird.quantum3d_legacy.culling;
 
 import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;

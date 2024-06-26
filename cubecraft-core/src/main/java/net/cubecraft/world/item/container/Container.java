@@ -1,6 +1,6 @@
 package net.cubecraft.world.item.container;
 
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.internal.item.ItemRegistry;
 import net.cubecraft.world.item.Item;

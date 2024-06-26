@@ -3,7 +3,7 @@ package net.cubecraft.client.gui.node;
 
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.resource.TextureAsset;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import org.w3c.dom.Element;

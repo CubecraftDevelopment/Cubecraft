@@ -1,10 +1,10 @@
 package net.cubecraft.client.internal.handler;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.math.hitting.HitResult;
-import ink.flybird.fcommon.math.hitting.Hittable;
-import ink.flybird.fcommon.nbt.NBT;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.math.hitting.HitResult;
+import me.gb2022.commons.math.hitting.Hittable;
+import me.gb2022.commons.nbt.NBT;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.MouseButton;

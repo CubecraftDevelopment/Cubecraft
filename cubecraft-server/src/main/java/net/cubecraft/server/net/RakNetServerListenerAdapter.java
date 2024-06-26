@@ -9,7 +9,7 @@ import com.whirvis.jraknet.server.RakNetServerListener;
 import com.whirvis.jraknet.server.ServerPing;
 import net.cubecraft.net.NetHandlerContext;
 import net.cubecraft.net.NetworkListenerAdapter;
-import ink.flybird.fcommon.registry.ConstructingMap;
+import me.gb2022.commons.registry.ConstructingMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import net.cubecraft.net.packet.*;

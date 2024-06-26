@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d;
 
-import ink.flybird.fcommon.memory.BufferAllocator;
+import me.gb2022.commons.memory.BufferAllocator;
 
 public class Quantum3d {
 

@@ -1,8 +1,8 @@
 package net.cubecraft.world.block;
 
 
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.math.RotationMatrixConstants;
+import me.gb2022.commons.container.Vector3;
+import me.gb2022.commons.math.RotationMatrixConstants;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
@@ -108,7 +108,6 @@ public enum EnumFacing {
     private static final int[][] faceMapping = new int[6][6];
 
     static {
-        //todo:fix face mapping(culling and texture picking)
         faceMapping[0] = new int[]{0, 1, 2, 3, 4, 5};//up(default)
         faceMapping[1] = new int[]{5, 0, 1, 2, 3, 4};//down
         faceMapping[2] = new int[]{4, 5, 0, 1, 2, 3};//front

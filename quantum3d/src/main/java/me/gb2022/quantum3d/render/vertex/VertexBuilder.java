@@ -1,7 +1,7 @@
 package me.gb2022.quantum3d.render.vertex;
 
-import ink.flybird.fcommon.context.LifetimeCounter;
-import ink.flybird.fcommon.memory.BufferAllocator;
+import me.gb2022.commons.context.LifetimeCounter;
+import me.gb2022.commons.memory.BufferAllocator;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ public class VertexBuilder {
     private final DrawMode drawMode;
     private final int capacity;
 
-    private BufferAllocator allocator;
+    private final BufferAllocator allocator;
     private ByteBuffer vertexBuffer;
     private ByteBuffer colorBuffer;
     private ByteBuffer textureBuffer;
@@ -55,6 +55,9 @@ public class VertexBuilder {
             this.normalCache = new double[this.format.getNormalFormat().getSize()];
         }
 
+        if (this.colorCache == null) {
+            return;
+        }
         Arrays.fill(this.colorCache, 1.0f);
     }
 
@@ -100,6 +103,16 @@ public class VertexBuilder {
 
     public int getCapacity() {
         return this.capacity;
+    }
+
+    public void reset() {
+        this.vertexCount.set(0);
+        Arrays.fill(this.colorCache, 1.0f);
+        this.vertexBuffer.clear().position(0);
+        this.textureBuffer.clear().position(0);
+        this.colorBuffer.clear().position(0);
+        this.normalBuffer.clear().position(0);
+        this.rawBuffer.clear().position(0);
     }
 
     public VertexFormat getFormat() {

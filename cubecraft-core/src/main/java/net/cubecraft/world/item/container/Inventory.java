@@ -1,6 +1,6 @@
 package net.cubecraft.world.item.container;
 
-import ink.flybird.fcommon.math.hitting.Hittable;
+import me.gb2022.commons.math.hitting.Hittable;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.entity.Entity;
 import net.cubecraft.world.item.ItemStack;

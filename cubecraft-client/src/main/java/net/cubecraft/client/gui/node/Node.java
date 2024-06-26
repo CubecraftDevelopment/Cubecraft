@@ -3,14 +3,15 @@ package net.cubecraft.client.gui.node;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
 import net.cubecraft.client.gui.ComponentRenderer;
+import net.cubecraft.client.gui.GUIBuilder;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.client.gui.layout.Scale;
 import net.cubecraft.client.gui.screen.Screen;
-import ink.flybird.fcommon.container.MultiMap;
-import ink.flybird.fcommon.file.DocumentUtil;
-import ink.flybird.fcommon.file.XmlReader;
+import me.gb2022.commons.container.MultiMap;
+import me.gb2022.commons.file.DocumentUtil;
+import me.gb2022.commons.file.XmlReader;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -33,7 +34,7 @@ public abstract class Node {
         this.element = element;
         this.id = DocumentUtil.getAttribute(element, "id", String.valueOf(element.hashCode()));
         this.style = DocumentUtil.getAttribute(element, "style", "default");
-        this.layout = ClientGUIContext.createLayout(element.getAttribute("layout"), element.getAttribute("border"));
+        this.layout = GUIBuilder.createLayout(element.getAttribute("layout"), element.getAttribute("border"));
 
         if (element.hasAttribute("scale")) {
             this.layout.setScale(new Scale(
@@ -126,7 +127,7 @@ public abstract class Node {
     }
 
     public void render(float interpolationTime) {
-        ComponentRenderer renderer = this.context.getRenderController(this.getClass());
+        ComponentRenderer renderer = ClientGUIContext.COMPONENT_RENDERER.get(this.getClass());
         if (renderer != null) {
             renderer.render(this);
         }
@@ -164,7 +165,7 @@ public abstract class Node {
     }
 
     public void deserializeChild(Element element) {
-        for (String type : ClientGUIContext.NODE.getMap().keySet()) {
+        for (String type : ClientGUIContext.NODE.keySet()) {
             NodeList elementList = element.getElementsByTagName(type);
 
             for (int i = 0; i < elementList.getLength(); i++) {
@@ -172,7 +173,7 @@ public abstract class Node {
                 if (subElement.getParentNode() != element) {
                     continue;
                 }
-                Node n = ClientGUIContext.createNode(type, subElement);
+                Node n = GUIBuilder.createNode(type, subElement);
                 this.nodes.put(n.id, n);
             }
         }
@@ -193,12 +194,12 @@ public abstract class Node {
     }
 
     public Node cloneComponent() {
-        return ClientGUIContext.createNode(element.getTagName(), element);
+        return GUIBuilder.createNode(element.getTagName(), element);
     }
 
     public Node copyComponent(String elementName) {
         Element ele = null;
-        for (String type : ClientGUIContext.NODE.getMap().keySet()) {
+        for (String type : ClientGUIContext.NODE.keySet()) {
             NodeList elementList = element.getElementsByTagName(type);
             if (ele != null) {
                 break;
@@ -215,6 +216,6 @@ public abstract class Node {
         if (ele == null) {
             return null;
         }
-        return ClientGUIContext.createNode(ele.getTagName(), ele);
+        return GUIBuilder.createNode(ele.getTagName(), ele);
     }
 }

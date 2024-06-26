@@ -1,6 +1,6 @@
 package net.cubecraft.internal.inventory;
 
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.world.item.container.Inventory;
 
 @TypeItem("cubecraft:player")

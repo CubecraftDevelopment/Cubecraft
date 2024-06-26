@@ -1,6 +1,6 @@
 package net.cubecraft.world.block.property.hitbox;
 
-import ink.flybird.fcommon.math.hitting.HitBox;
+import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.world.block.property.BlockProperty;
 
 import java.util.Collection;

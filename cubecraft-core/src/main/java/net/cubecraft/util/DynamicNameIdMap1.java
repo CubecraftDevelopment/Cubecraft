@@ -1,8 +1,8 @@
 package net.cubecraft.util;
 
-import ink.flybird.fcommon.container.ArrayUtil;
-import ink.flybird.fcommon.container.CollectionUtil;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.container.ArrayUtil;
+import me.gb2022.commons.container.CollectionUtil;
+import me.gb2022.commons.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.HashMap;

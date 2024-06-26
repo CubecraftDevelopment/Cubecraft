@@ -1,6 +1,6 @@
 package net.cubecraft.client.gui.screen;
 
-import ink.flybird.fcommon.JVMInfo;
+import me.gb2022.commons.JVMInfo;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;

@@ -6,9 +6,9 @@ import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.resource.UIAsset;
 import net.cubecraft.event.resource.ResourceLoadFinishEvent;
 import net.cubecraft.resource.Load;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
 import ink.flybird.quantum3d_legacy.textures.ITextureImage;
 
 import java.util.Objects;
@@ -38,7 +38,7 @@ public interface ResourceRegistry {
     TextureAsset ASCII_PAGE = new TextureAsset("cubecraft:/font/unicode_page_00.png");
 
     @FieldRegistry("text_font")
-    FontAsset TEXT_FONT = new FontAsset("cubecraft:/text.ttf");
+    FontAsset TEXT_FONT = new FontAsset("cubecraft:/source.otf");
 
     @FieldRegistry("icon_font")
     FontAsset ICON_FONT = new FontAsset("cubecraft:/icon.ttf");
@@ -63,13 +63,16 @@ public interface ResourceRegistry {
     @FieldRegistry("pause_screen")
     UIAsset PAUSE_SCREEN = new UIAsset("cubecraft:/pause_screen.xml");
 
+    @FieldRegistry("options_screen")
+    UIAsset OPTIONS_SCREEN = new UIAsset("cubecraft:/setting_screen.xml");;
+
 
     @EventHandler
     static void onResourceLoadComplete(ResourceLoadFinishEvent event) {
         if (!Objects.equals(event.getStage(), "default")) {
             return;
         }
-        ClientGUIContext.SMOOTH_FONT_RENDERER.setFontFamily(TEXT_FONT.getFont());
+        ClientGUIContext.FONT_RENDERER.setFontFamily(TEXT_FONT.getFont());
         ClientGUIContext.ICON_FONT_RENDERER.setFontFamily(ICON_FONT.getFont());
     }
 }

@@ -2,7 +2,7 @@ package net.cubecraft.server.net;
 
 import net.cubecraft.net.NetworkListenerAdapter;
 import net.cubecraft.net.packet.Packet;
-import ink.flybird.fcommon.registry.ConstructingMap;
+import me.gb2022.commons.registry.ConstructingMap;
 
 public abstract class ServerListenerAdapter extends NetworkListenerAdapter {
 

@@ -2,17 +2,18 @@ package net.cubecraft.client.render;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import ink.flybird.fcommon.ColorUtil;
-import ink.flybird.fcommon.container.MultiMap;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.memory.BufferAllocator;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.commons.ColorUtil;
+import me.gb2022.commons.container.MultiMap;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.memory.BufferAllocator;
 import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.KeyboardReleaseEvent;
+import me.gb2022.quantum3d.lwjgl.FrameBuffer;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
@@ -36,8 +37,9 @@ public final class LevelRenderer {
     public final IWorld world;
     public final EntityPlayer player;
     public final Camera camera = new Camera();
+    private final FrameBuffer buffer = new FrameBuffer();
+    private final FloatBuffer fogColor;
     private ColorElement fogColorElement;
-    private FloatBuffer fogColor;
 
     public LevelRenderer(IWorld w, EntityPlayer p, ResourceLocation cfgLoc) {
         CubecraftClient client = ClientSharedContext.getClient();
@@ -55,6 +57,8 @@ public final class LevelRenderer {
         for (IWorldRenderer renderer : this.renderers.values()) {
             renderer.init();
         }
+
+        this.buffer.allocate();
     }
 
     public void setFog(double dist) {
@@ -69,7 +73,7 @@ public final class LevelRenderer {
     public void initialize(JsonObject config) {
         CubecraftClient client = ClientSharedContext.getClient();
 
-        this.fogColorElement=ColorElement.parseFromString(config.get("fog_color").getAsString());
+        this.fogColorElement = ColorElement.parseFromString(config.get("fog_color").getAsString());
         this.fogColorElement.toFloatRGBA(this.fogColor);
 
         JsonObject renderers = config.get("renderers").getAsJsonObject();
@@ -104,7 +108,7 @@ public final class LevelRenderer {
             renderer.preRender();
         }
 
-        //GL11.glShadeModel(GL11.GL_SMOOTH);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
         GL11.glEnable(GL11.GL_CULL_FACE);
 
         GLUtil.disableBlend();
@@ -164,6 +168,7 @@ public final class LevelRenderer {
         for (IWorldRenderer renderer : this.renderers.values()) {
             renderer.stop();
         }
+        this.buffer.free();
     }
 
     public void refresh() {

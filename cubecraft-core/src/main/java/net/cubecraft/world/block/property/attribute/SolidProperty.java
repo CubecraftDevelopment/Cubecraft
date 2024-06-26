@@ -1,6 +1,6 @@
 package net.cubecraft.world.block.property.attribute;
 
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.property.BooleanProperty;
 

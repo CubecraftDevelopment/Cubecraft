@@ -1,5 +1,11 @@
 package net.cubecraft.server.service;
 
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.nbt.NBT;
+import me.gb2022.commons.nbt.NBTTagCompound;
+import me.gb2022.commons.registry.TypeItem;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
@@ -8,22 +14,14 @@ import net.cubecraft.server.CubecraftServer;
 import net.cubecraft.server.ServerStartupFailedException;
 import net.cubecraft.server.event.world.ServerWorldInitializedEvent;
 import net.cubecraft.server.internal.registries.ServerSettingRegistries;
-import net.cubecraft.world.chunk.ChunkLoader;
-import net.cubecraft.world.chunk.ChunkSaver;
 import net.cubecraft.world.IWorld;
+import net.cubecraft.world.chunk.*;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.pos.WorldChunkPos;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.worldGen.pipeline.ChunkGenerateTask;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
 import net.cubecraft.world.worldGen.pipeline.WorldGenPipelineBuilder;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.nbt.NBT;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
-import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
-import net.cubecraft.world.chunk.*;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
@@ -38,7 +36,7 @@ import java.util.zip.GZIPOutputStream;
 @TypeItem("cubecraft:chunk_service")
 public class ChunkService implements Service, ChunkSaver, ChunkLoader {
     public static final Options DEFAULT_LEVELDB_OPTIONS = new Options().createIfMissing(true).blockSize(1024);
-    private static final ILogger LOGGER = LogManager.getLogger("server/chunk_service");
+    private static final Logger LOGGER = LogManager.getLogger("server/chunk_service");
     private final HashMap<String, ChunkGeneratorPipeline> pipelineCache = new HashMap<>();
     private DB db;
     private ExecutorService saveTaskPool;
@@ -74,7 +72,6 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
         this.saveDataBase();
     }
 
-
     public void saveDataBase() {
         if (this.db == null) {
             return;
@@ -102,7 +99,7 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
     }
 
     public NBTTagCompound loadChunkFromDB(WorldChunkPos pos) {
-        while (this.db==null){
+        while (this.db == null) {
             Thread.yield();
         }
         try {
@@ -137,11 +134,10 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
         this.pipelineCache.put(world.getId(), pipeline);
     }
 
-
     @Override
     public void save(WorldChunk chunk) {
         this.saveTaskPool.submit(() -> {
-            while (this.db==null){
+            while (this.db == null) {
                 Thread.yield();
             }
             try {
@@ -167,7 +163,6 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
     public void load(IWorld world, ChunkPos pos, ChunkLoadTicket ticket) {
         this.loadTaskPool.submit(() -> {
             NBTTagCompound tag = this.loadChunkFromDB(new WorldChunkPos(world.getId(), pos));
-           // NBTTagCompound tag=null;
             if (tag != null) {
                 WorldChunk chunk = new WorldChunk(world, pos);
                 ChunkCodec.setWorldChunkData(chunk, tag);

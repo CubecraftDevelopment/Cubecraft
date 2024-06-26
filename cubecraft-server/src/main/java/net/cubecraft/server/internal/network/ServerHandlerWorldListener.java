@@ -6,8 +6,8 @@ import net.cubecraft.internal.network.packet.PacketEntityPosition;
 import net.cubecraft.server.net.ServerNetHandler;
 import net.cubecraft.event.block.BlockChangeEvent;
 import net.cubecraft.event.entity.EntityMoveEvent;
-import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.commons.event.EventHandler;
 
 @TypeItem(NetHandlerType.SERVER_WORLD_LISTENER)
 public class ServerHandlerWorldListener extends ServerNetHandler {

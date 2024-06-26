@@ -1,6 +1,6 @@
 package ink.flybird.quantum3d_legacy.draw;
 
-import ink.flybird.fcommon.context.LifetimeCounter;
+import me.gb2022.commons.context.LifetimeCounter;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;

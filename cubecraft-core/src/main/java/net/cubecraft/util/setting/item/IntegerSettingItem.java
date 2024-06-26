@@ -21,6 +21,10 @@ public final class IntegerSettingItem extends SettingItem<Integer> {
 
     @Override
     public void setValue(Object value) {
+        if (value instanceof Integer val) {
+            this.value = val;
+            return;
+        }
         this.value = ((Long) value).intValue();
     }
 }

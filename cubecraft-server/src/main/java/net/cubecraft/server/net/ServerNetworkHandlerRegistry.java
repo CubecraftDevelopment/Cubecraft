@@ -2,8 +2,8 @@ package net.cubecraft.server.net;
 
 import net.cubecraft.server.internal.network.ServerHandlerConnection;
 import net.cubecraft.server.internal.network.ServerHandlerDataFetch;
-import ink.flybird.fcommon.registry.ItemRegisterFunc;
-import ink.flybird.fcommon.registry.ConstructingMap;
+import me.gb2022.commons.registry.ItemRegisterFunc;
+import me.gb2022.commons.registry.ConstructingMap;
 
 public class ServerNetworkHandlerRegistry {
     @ItemRegisterFunc(ServerNetHandler.class)

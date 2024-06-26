@@ -1,7 +1,7 @@
 package net.cubecraft.client.gui.screen;
 
-import ink.flybird.fcommon.JVMInfo;
-import ink.flybird.fcommon.container.OrderedHashMap;
+import me.gb2022.commons.JVMInfo;
+import me.gb2022.commons.container.OrderedHashMap;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
@@ -17,10 +17,12 @@ import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.node.Container;
 import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.client.util.IMBlocker;
 import net.cubecraft.util.SystemInfoQuery;
 import org.w3c.dom.Element;
 
 public class Screen extends Container {
+
     protected final OrderedHashMap<String, String> debugInfoLeft = new OrderedHashMap<>();
     protected final OrderedHashMap<String, String> debugInfoRight = new OrderedHashMap<>();
     protected final boolean grabMouse;
@@ -54,6 +56,7 @@ public class Screen extends Container {
         this.backgroundType = ScreenBackgroundType.from(element.getAttribute("bg"));
         this.id = element.getAttribute("id");
         this.deserializeChild(element);
+        IMBlocker.set(false);
     }
 
     public void init() {
@@ -67,12 +70,12 @@ public class Screen extends Container {
     public void renderDebug(DisplayScreenInfo info) {
         int pos = 2;
         for (String s : this.debugInfoLeft.values()) {
-            ClientGUIContext.SMOOTH_FONT_RENDERER.renderShadow(s, 2, pos, 16777215, 8, FontAlignment.LEFT);
+            ClientGUIContext.FONT_RENDERER.renderShadow(s, 2, pos, 16777215, 8, FontAlignment.LEFT);
             pos += 10;
         }
         pos = 2;
         for (String s : this.debugInfoRight.values()) {
-            ClientGUIContext.SMOOTH_FONT_RENDERER.renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
+            ClientGUIContext.FONT_RENDERER.renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
             pos += 10;
         }
     }

@@ -3,13 +3,14 @@ package net.cubecraft.client.gui.node;
 import net.cubecraft.client.event.gui.component.TextBarSubmitEvent;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontAlignment;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardCharEvent;
 import me.gb2022.quantum3d.device.event.KeyboardHoldEvent;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.MouseClickEvent;
+import net.cubecraft.client.util.IMBlocker;
 import org.w3c.dom.Element;
 
 import java.util.Objects;
@@ -95,6 +96,7 @@ public class TextBar extends Component {
         int y0 = this.getLayout().getAbsoluteY();
         int y1 = y0 + this.getLayout().getAbsoluteHeight();
         this.focus = xm > x0 && xm < x1 && ym > y0 && ym < y1;
+        IMBlocker.set(this.focus);
         if (!this.focus) {
             this.context.getEventBus().callEvent(new TextBarSubmitEvent(this, this.screen, this.context, this.text.toString()), this.screen.getId());
         }

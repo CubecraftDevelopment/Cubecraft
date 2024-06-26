@@ -4,7 +4,6 @@ plugins {
 
 apply from: "../script/build-base.gradle"
 
-group 'ink.flybird'
 version '1.0-SNAPSHOT'
 
 ext.applyScript("/lib/basic.gradle")

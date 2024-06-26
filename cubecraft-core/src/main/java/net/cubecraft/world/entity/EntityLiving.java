@@ -1,11 +1,11 @@
 package net.cubecraft.world.entity;
 
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.math.hitting.HitBox;
-import ink.flybird.fcommon.math.hitting.HitResult;
-import ink.flybird.fcommon.math.hitting.RayTest;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.math.hitting.HitBox;
+import me.gb2022.commons.math.hitting.HitResult;
+import me.gb2022.commons.math.hitting.RayTest;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.access.IBlockAccess;
@@ -23,6 +23,9 @@ public abstract class EntityLiving extends Entity {
     public boolean sprinting;
     public boolean sneaking = false;
     protected boolean flying;
+
+    private double walkedDistance;
+    private double lastWalkedDistance;
 
     private float health;
 
@@ -42,7 +45,23 @@ public abstract class EntityLiving extends Entity {
         this.hitResult = null;
         Vector3d from = getCameraPosition().add(x, y, z);
         this.hitResult = RayTest.trace(getWorld().getSelectionBox(this, from, getLookingAt()), from, getLookingAt());
+
+        this.lastWalkedDistance = walkedDistance;
         super.tick();
+
+        float dx = (float) (this.x - this.xo);
+        float dz = (float) (this.z - this.zo);
+        double delta = Math.sqrt(dx * dx + dz * dz);
+
+        if (this.isFlying()) {
+            this.walkedDistance = 0;
+        } else {
+            if (this.isOnGround()) {
+                this.walkedDistance += delta * 0.6d;
+            } else {
+                this.walkedDistance += delta * 0.06d;
+            }
+        }
     }
 
     public Vector3d getCameraPosition() {
@@ -152,5 +171,14 @@ public abstract class EntityLiving extends Entity {
                 }
             }
         }
+    }
+
+
+    public double getWalkedDistance() {
+        return walkedDistance;
+    }
+
+    public double getLastWalkedDistance() {
+        return lastWalkedDistance;
     }
 }

@@ -4,7 +4,7 @@ import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.ChunkBlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 
 import java.util.Objects;
 

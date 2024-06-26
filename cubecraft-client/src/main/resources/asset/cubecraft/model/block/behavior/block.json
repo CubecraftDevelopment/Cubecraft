@@ -1,4 +1,5 @@
 {
+  "type": "cubecraft:component_block",
   "particle_texture": "#texture",
   "inventory_projection": "isometric",
   "models": [

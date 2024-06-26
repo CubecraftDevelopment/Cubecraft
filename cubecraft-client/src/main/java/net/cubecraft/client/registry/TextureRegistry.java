@@ -1,10 +1,10 @@
 package net.cubecraft.client.registry;
 
 import net.cubecraft.event.resource.ResourceLoadFinishEvent;
-import ink.flybird.fcommon.container.Vector;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
+import me.gb2022.commons.container.Vector;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 

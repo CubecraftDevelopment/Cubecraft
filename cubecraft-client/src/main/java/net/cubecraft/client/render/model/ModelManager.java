@@ -7,7 +7,7 @@ import net.cubecraft.client.resource.ModelAsset;
 
 import java.util.HashMap;
 
-public class ModelManager<I extends Model> {
+public final class ModelManager<I extends Model> {
     private final Class<I> clazz;
     private final ModelAsset fallback;
     private final HashMap<String, I> models = new HashMap<>();

@@ -4,8 +4,8 @@ import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.world.chunk.WorldChunk;
-import ink.flybird.fcommon.registry.FieldRegistry;
-import ink.flybird.fcommon.registry.FieldRegistryHolder;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
 
 @FieldRegistryHolder(value = "cubecraft")
 public class BiomesRegistry {

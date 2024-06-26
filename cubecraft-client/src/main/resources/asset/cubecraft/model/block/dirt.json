@@ -1,11 +1,7 @@
 {
-  "cover_json": {
-    "import": "cubecraft:behavior/solid.json",
-    "replacement": [
-      {
-        "from": "#texture",
-        "to": "cubecraft:/block/dirt.png"
-      }
-    ]
-  }
+  "type": "cubecraft:simple_block",
+  "layer": "cubecraft:alpha_block",
+  "culling": "solid",
+  "color": "none",
+  "texture": "cubecraft:/block/dirt.png"
 }

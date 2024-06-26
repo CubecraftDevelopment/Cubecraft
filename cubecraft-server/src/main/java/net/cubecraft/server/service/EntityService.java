@@ -9,10 +9,10 @@ import net.cubecraft.server.event.world.ServerWorldInitializedEvent;
 import net.cubecraft.server.internal.registries.ServerSettingRegistries;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.registry.TypeItem;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 @TypeItem("cubecraft:entity_service")
 public class EntityService implements Service{
     public static final Options DEFAULT_LEVELDB_OPTIONS = new Options().createIfMissing(true).blockSize(1024);
-    private static final ILogger LOGGER = LogManager.getLogger("server/entity_service");
+    private static final Logger LOGGER = LogManager.getLogger("server/entity_service");
     private final HashMap<String, ChunkGeneratorPipeline> pipelineCache = new HashMap<>();
     private DB db;
     private ExecutorService saveTaskPool;

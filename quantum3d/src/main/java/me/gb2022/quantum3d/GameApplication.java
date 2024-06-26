@@ -1,7 +1,7 @@
 package me.gb2022.quantum3d;
 
-import ink.flybird.fcommon.threading.LoopTickingThread;
-import ink.flybird.fcommon.timer.Timer;
+import me.gb2022.commons.threading.LoopTickingThread;
+import me.gb2022.commons.timer.Timer;
 import me.gb2022.quantum3d.device.DeviceContext;
 import me.gb2022.quantum3d.device.Window;
 import me.gb2022.quantum3d.render.RenderContext;

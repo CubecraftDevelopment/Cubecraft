@@ -84,7 +84,7 @@ public final class ConnectionRequest extends RakNetPacket {
 
 	@Override
 	public void encode() {
-		this.useSecurity = false; // TODO: Not supported
+		this.useSecurity = false;
 		this.writeLong(clientGuid);
 		this.writeLong(timestamp);
 		this.writeBoolean(useSecurity);

@@ -1,38 +1,40 @@
 package net.cubecraft.client.registry;
 
-import ink.flybird.fcommon.registry.ConstructingMap;
-import ink.flybird.fcommon.registry.ItemRegisterFunc;
-import net.cubecraft.client.context.ClientGUIContext;
+import me.gb2022.commons.registry.ConstructingMap;
+import me.gb2022.commons.registry.ItemRegisterFunc;
 import net.cubecraft.client.gui.layout.FlowLayout;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.client.gui.layout.OriginLayout;
 import net.cubecraft.client.gui.layout.ViewportLayout;
 import net.cubecraft.client.gui.node.*;
 import net.cubecraft.client.render.gui.*;
+import net.cubecraft.client.render.renderer.ComponentRendererPart;
 
 public class GUIRegistry {
-    public static void registerComponentRenderers() {
-        ClientGUIContext.registerRendererComponentPart(BorderImage.class, new BorderImage.JDeserializer());
-        ClientGUIContext.registerRendererComponentPart(HorizontalBoarderImage.class, new HorizontalBoarderImage.JDeserializer());
-        ClientGUIContext.registerRendererComponentPart(VerticalBorderImage.class, new VerticalBorderImage.JDeserializer());
-        ClientGUIContext.registerRendererComponentPart(Font.class, new Font.JDeserializer());
-        ClientGUIContext.registerRendererComponentPart(ImageAnimation.class, new ImageAnimation.JDeserializer());
-        ClientGUIContext.registerRendererComponentPart(Color.class, new Color.JDeserializer());
+    @ItemRegisterFunc(ComponentRendererPart.class)
+    public static void registerComponentRenderers(ConstructingMap<ComponentRendererPart> parts) {
+        parts.registerItem(BorderImage.class);
+        parts.registerItem(HorizontalBoarderImage.class);
+        parts.registerItem(VerticalBorderImage.class);
+        parts.registerItem(Font.class);
+        parts.registerItem(ImageAnimation.class);
+        parts.registerItem(Color.class);
     }
 
-    public static void registerComponents() {
-        ClientGUIContext.registerComponent(Label.class);
-        ClientGUIContext.registerComponent(Button.class);
-        ClientGUIContext.registerComponent(Panel.class);
-        ClientGUIContext.registerComponent(Image.class);
-        ClientGUIContext.registerComponent(Icon.class);
+    @ItemRegisterFunc(Node.class)
+    public static void registerComponents(ConstructingMap<Node> nodes) {
+        nodes.registerItem(Label.class);
+        nodes.registerItem(Button.class);
+        nodes.registerItem(Panel.class);
+        nodes.registerItem(Image.class);
+        nodes.registerItem(Icon.class);
 
-        ClientGUIContext.registerComponent(ScrollPanel.class);
-        ClientGUIContext.registerComponent(CardPanel.class);
-        ClientGUIContext.registerComponent(SplashText.class);
-        ClientGUIContext.registerComponent(TopBar.class);
-        ClientGUIContext.registerComponent(TextBar.class);
-        ClientGUIContext.registerComponent(ToggleButton.class);
+        nodes.registerItem(ScrollPanel.class);
+        nodes.registerItem(CardPanel.class);
+        nodes.registerItem(SplashText.class);
+        nodes.registerItem(TopBar.class);
+        nodes.registerItem(TextBar.class);
+        nodes.registerItem(ToggleButton.class);
     }
 
     @ItemRegisterFunc(Layout.class)

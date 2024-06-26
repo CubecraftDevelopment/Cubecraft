@@ -1,7 +1,7 @@
 package net.cubecraft.world.worldGen.templete;
 
 import net.cubecraft.world.worldGen.noiseGenerator.Noise;
-import ink.flybird.fcommon.math.MathHelper;
+import me.gb2022.commons.math.MathHelper;
 
 public class Select extends Noise {
     private final Noise high,low,select;

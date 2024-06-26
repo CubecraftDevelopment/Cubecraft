@@ -2,7 +2,7 @@ package net.cubecraft.content;
 
 import net.cubecraft.mod.CubecraftMod;
 import net.cubecraft.Side;
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.event.EventHandler;
 
 @CubecraftMod(side = Side.SHARED)
 public final class CubecraftContentMod {

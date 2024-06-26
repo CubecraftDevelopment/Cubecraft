@@ -1,11 +1,11 @@
 package net.cubecraft.client.gui.node;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.file.DocumentUtil;
-import ink.flybird.fcommon.file.FAMLDeserializer;
-import ink.flybird.fcommon.file.XmlReader;
-import ink.flybird.fcommon.math.MathHelper;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.file.DocumentUtil;
+import me.gb2022.commons.file.FAMLDeserializer;
+import me.gb2022.commons.file.XmlReader;
+import me.gb2022.commons.math.MathHelper;
+import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
@@ -42,7 +42,7 @@ public class ScrollPanel extends Node {
 
     @Override
     public void render(float interpolationTime) {
-        ClientGUIContext.getRenderController(this.getClass()).render(this);
+        ClientGUIContext.COMPONENT_RENDERER.get(this.getClass()).render(this);
 
         int x = (int) MathHelper.linearInterpolate(this.xo, this.xOffset, interpolationTime);
         int y = (int) MathHelper.linearInterpolate(this.yo, this.yOffset, interpolationTime);

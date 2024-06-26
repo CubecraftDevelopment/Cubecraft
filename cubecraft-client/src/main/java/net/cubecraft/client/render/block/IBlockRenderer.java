@@ -7,7 +7,7 @@ import net.cubecraft.client.render.BlockBakery;
 import net.cubecraft.event.resource.ResourceLoadFinishEvent;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.access.IBlockAccess;
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.event.EventHandler;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import org.joml.Vector2d;

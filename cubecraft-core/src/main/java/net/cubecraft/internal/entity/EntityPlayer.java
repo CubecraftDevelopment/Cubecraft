@@ -1,6 +1,6 @@
 package net.cubecraft.internal.entity;
 
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.SharedContext;
 import net.cubecraft.auth.Session;
 import net.cubecraft.world.IWorld;

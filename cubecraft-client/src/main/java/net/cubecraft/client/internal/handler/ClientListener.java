@@ -1,6 +1,6 @@
 package net.cubecraft.client.internal.handler;
 
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.event.EventHandler;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.WindowFocusEvent;
@@ -24,7 +24,6 @@ public class ClientListener {
     @EventHandler
     public void onClientRendererInitialize(ClientRendererInitializeEvent e) {
         e.renderer().world.getEventBus().registerEventListener(new ParticleHandler());
-        ((ParticleRenderer) e.renderer().renderers.get("cubecraft:particle_renderer")).setParticleEngine(e.client().getParticleEngine());
     }
 
     @EventHandler

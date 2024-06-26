@@ -1,7 +1,7 @@
 package net.cubecraft.world.block.property;
 
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.HitBox;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.property.collision.CollisionProperty;
@@ -12,7 +12,12 @@ import java.util.List;
 
 public interface BlockPropertyDispatcher {
     static Collection<AABB> getCollisionBox(IBlockAccess block) {
-        CollisionProperty property = block.getBlock().getBlockProperty("cubecraft:collision", CollisionProperty.class);
+        Block b = block.getBlock();
+        if (b == null) {
+            return List.of();
+        }
+
+        CollisionProperty property = b.getBlockProperty("cubecraft:collision", CollisionProperty.class);
         if (property == null) {
             return List.of();
         }
@@ -20,7 +25,12 @@ public interface BlockPropertyDispatcher {
     }
 
     static Collection<HitBox> getHitBox(IBlockAccess block) {
-        HitBoxProperty property = block.getBlock().getBlockProperty("cubecraft:hitbox", HitBoxProperty.class);
+        Block b = block.getBlock();
+        if (b == null) {
+            return List.of();
+        }
+
+        HitBoxProperty property = b.getBlockProperty("cubecraft:hitbox", HitBoxProperty.class);
         if (property == null) {
             return List.of();
         }
@@ -28,15 +38,20 @@ public interface BlockPropertyDispatcher {
     }
 
     static boolean isSolid(IBlockAccess block) {
+        if (block.getBlock() == null) {
+            return false;
+        }
         return block.getBlock().isSolid();
     }
 
     static Collection<AABB> getCollisionBox(Block block, IBlockAccess access) {
+        if (block == null) {
+            return List.of();
+        }
         CollisionProperty property = block.getBlockProperty("cubecraft:collision", CollisionProperty.class);
         if (property == null) {
             return List.of();
         }
         return property.get(access);
     }
-
 }

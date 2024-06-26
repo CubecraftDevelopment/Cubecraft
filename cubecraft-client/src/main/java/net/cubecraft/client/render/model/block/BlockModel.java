@@ -1,67 +1,34 @@
 package net.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import me.gb2022.commons.container.Pair;
+import me.gb2022.commons.registry.ConstructingMap;
 import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.resource.ResourceLocation;
-import ink.flybird.fcommon.container.Pair;
 import net.cubecraft.client.render.model.object.Model;
+import net.cubecraft.resource.ResourceLocation;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.access.IBlockAccess;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
 
 
-public final class BlockModel implements Model {
-    private final String particleTex;
+public abstract class BlockModel implements Model {
+    public static final ConstructingMap<BlockModel> REGISTRY = new ConstructingMap<>(BlockModel.class, JsonObject.class);
 
-    private final HashMap<String, ArrayList<BlockModelComponent>> statementModels;
-
-    public BlockModel(HashMap<String, ArrayList<BlockModelComponent>> models, String particleTexture) {
-        this.statementModels = models;
-        this.particleTex = particleTexture;
-    }
-
-    public void render(IBlockAccess blockAccess, VertexBuilder builder, String layer, IWorld world, double renderX, double renderY, double renderZ) {
-        Set<String> set = this.statementModels.keySet();
-        for (String s : set) {
-            if (!blockAccess.getBlock().queryBoolean(s, blockAccess)) {
-                continue;
-            }
-            ArrayList<BlockModelComponent> components;
-            components = this.statementModels.get(s);
-            if (components == null) {
-                components = this.statementModels.get("default");
-            }
-            for (BlockModelComponent component : components) {
-                if (!Objects.equals(layer, component.getRenderLayer())) {
-                    continue;
-                }
-                component.render(builder, layer, world, blockAccess, renderX, renderY, renderZ);
-            }
-        }
+    static {
+        REGISTRY.registerItem(SimpleBlockModel.class);
+        REGISTRY.registerItem(ComponentBlockModel.class);
     }
 
     public void renderAsItem(VertexBuilder builder, double renderX, double renderY, double renderZ) {
 
     }
 
-    @Override
-    public void initializeModel(Set<TextureAsset> textureList) {
-        for (String state : this.statementModels.keySet()) {
-            for (BlockModelComponent component : this.statementModels.get(state)) {
-                component.initializeModel(textureList);
-            }
-        }
-    }
+    public abstract void render(IBlockAccess blockAccess, VertexBuilder builder, String layer, IWorld world, double renderX, double renderY, double renderZ);
 
-
-    @Deprecated
-    public String getParticleTexture() {
-        return !Objects.equals(this.particleTex, "cubecraft:_EMPTY_") ? ResourceLocation.blockTexture(this.particleTex).format() : null;
-    }
+    public abstract String getParticleTexture();
 
 
     public static class JDeserializer implements JsonDeserializer<BlockModel> {
@@ -91,25 +58,8 @@ public final class BlockModel implements Model {
 
         @Override
         public BlockModel deserialize(JsonElement element, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            element = processReplacement(element, new ArrayList<>());
-
-            HashMap<String, ArrayList<BlockModelComponent>> components = new HashMap<>();
-
-            JsonArray models = element.getAsJsonObject().get("models").getAsJsonArray();
-            for (JsonElement e : models) {
-                JsonObject object = e.getAsJsonObject();
-                JsonArray comp = object.get("components").getAsJsonArray();
-
-                ArrayList<BlockModelComponent> component = new ArrayList<>();
-
-                for (int i = 0; i < comp.size(); i++) {
-                    component.add(jsonDeserializationContext.deserialize(comp.get(i), BlockModelComponent.class));
-                }
-
-                components.put(object.get("statement").getAsString(), component);
-
-            }
-            return new BlockModel(components, element.getAsJsonObject().get("particle_texture").getAsString());
+            JsonObject root = processReplacement(element, new ArrayList<>()).getAsJsonObject();
+            return REGISTRY.create(root.get("type").getAsString(), root);
         }
     }
 }

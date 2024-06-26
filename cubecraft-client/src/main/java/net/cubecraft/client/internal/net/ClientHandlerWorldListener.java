@@ -7,8 +7,8 @@ import net.cubecraft.event.block.BlockChangeEvent;
 import net.cubecraft.event.entity.EntityAttackEvent;
 import net.cubecraft.event.entity.EntityMoveEvent;
 import net.cubecraft.event.world.ChunkLoadEvent;
-import ink.flybird.fcommon.registry.TypeItem;
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.commons.event.EventHandler;
 import net.cubecraft.internal.network.packet.*;
 
 @TypeItem(NetHandlerType.CLIENT_WORLD_LISTENER)

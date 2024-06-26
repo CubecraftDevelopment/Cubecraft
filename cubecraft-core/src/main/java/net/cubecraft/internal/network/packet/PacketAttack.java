@@ -1,7 +1,7 @@
 package net.cubecraft.internal.network.packet;
 
-import ink.flybird.fcommon.registry.TypeItem;
-import net.cubecraft.net.ByteBufUtil;
+import me.gb2022.commons.registry.TypeItem;
+import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.net.packet.PacketConstructor;
 import io.netty.buffer.ByteBuf;

@@ -1,5 +1,6 @@
 package net.cubecraft.client;
 
+import net.cubecraft.client.control.InputSettingItem;
 import net.cubecraft.util.setting.SettingItemRegistry;
 import net.cubecraft.util.setting.item.BooleanSettingItem;
 import net.cubecraft.util.setting.item.DoubleSettingItem;
@@ -52,6 +53,9 @@ public interface ClientSettingRegistry {
     DoubleSettingItem GUI_SCALE = new DoubleSettingItem("gui", "scale", 2.0);
 
     @SettingItemRegistry
+    IntegerSettingItem GUI_RENDER_INTERVAL_COUNT = new IntegerSettingItem("gui", "render_interval_count",24);
+
+    @SettingItemRegistry
     BooleanSettingItem SKIP_STUDIO_LOGO = new BooleanSettingItem("gui", "skip_studio_logo", false);
 
     @SettingItemRegistry
@@ -63,5 +67,4 @@ public interface ClientSettingRegistry {
     static int getFixedViewDistance() {
         return CHUNK_RENDER_DISTANCE.getValue() + 2;
     }
-
 }

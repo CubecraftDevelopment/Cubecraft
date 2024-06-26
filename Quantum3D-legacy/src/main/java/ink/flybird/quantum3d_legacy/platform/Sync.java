@@ -36,6 +36,7 @@ public class Sync {
 
                 for(t0 = getTime(); nextFrame - t0 > yieldDurations.avg(); t0 = t1) {
                     Thread.yield();
+                    Thread.sleep(1L);
                     yieldDurations.add((t1 = getTime()) - t0);
                 }
             } catch (InterruptedException ignored) {

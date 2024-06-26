@@ -5,7 +5,7 @@ import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.chunk.Chunk;
 
 public interface Dimension {
-    long VALID_WORLD_RADIUS = 140737488355328L;
+    long VALID_WORLD_RADIUS = Long.MAX_VALUE;
 
     String predictBlockID(IWorld world, long x, long y, long z);
 

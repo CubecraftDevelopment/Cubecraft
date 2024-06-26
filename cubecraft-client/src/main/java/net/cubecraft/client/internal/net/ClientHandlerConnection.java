@@ -8,7 +8,7 @@ import net.cubecraft.net.packet.ConnectSuccessPacket;
 import net.cubecraft.net.packet.PacketListener;
 import net.cubecraft.internal.network.packet.join.PacketPlayerJoinWorld;
 import net.cubecraft.internal.network.packet.join.PacketPlayerJoinWorldResponse;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 
 @TypeItem(NetHandlerType.CLIENT_CONNECTION)
 public class ClientHandlerConnection extends ClientNetHandler {

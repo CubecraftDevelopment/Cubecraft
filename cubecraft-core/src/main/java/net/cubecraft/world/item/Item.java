@@ -1,7 +1,7 @@
 package net.cubecraft.world.item;
 
-import ink.flybird.fcommon.Initializable;
-import ink.flybird.fcommon.math.hitting.HitResult;
+import me.gb2022.commons.Initializable;
+import me.gb2022.commons.math.hitting.HitResult;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.entity.Entity;

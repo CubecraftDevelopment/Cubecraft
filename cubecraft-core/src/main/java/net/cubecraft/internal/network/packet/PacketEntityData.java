@@ -1,11 +1,11 @@
 package net.cubecraft.internal.network.packet;
 
 import net.cubecraft.ContentRegistries;
-import net.cubecraft.net.ByteBufUtil;
+import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.world.entity.Entity;
-import ink.flybird.fcommon.nbt.NBT;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBT;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import io.netty.buffer.ByteBuf;
 
 import java.io.ByteArrayInputStream;

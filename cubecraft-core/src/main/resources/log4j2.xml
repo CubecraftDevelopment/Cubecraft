@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <properties>
+        <!--Customize-->
+        <property name="date">%d{yyyy-MM-dd HH:mm:ss}</property>
+
+        <!--Line Format-->
+        <property name="line">[${date}] [${level}] %logger: %msg%n%xEx{full}</property>
+        <property name="line_color">[${date}] [${level_color}] %logger: %msg%n%xEx{full}</property>
+
+        <!--Compose-->
+        <property name="level_color">%highlight{%-1level{length=1}}</property>
+        <property name="level">%-1level{length=1}</property>
+    </properties>
+
+
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${line_color}" styleMap="DEBUG=blue, INFO=green, WARN=yellow, ERROR=red, FATAL=magenta, TRACE=cyan"/>
+        </Console>
+
+        <!-- File Appender -->
+        <RollingFile name="File" fileName="logs/latest.log"
+                     filePattern="logs/%d{yyyy-MM-dd-HH-mm-ss}.log">
+            <PatternLayout>
+                <Pattern>${line}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>

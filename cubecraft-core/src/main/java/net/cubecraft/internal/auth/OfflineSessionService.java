@@ -1,6 +1,6 @@
 package net.cubecraft.internal.auth;
 
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.auth.Session;
 import net.cubecraft.auth.SessionService;
 

@@ -4,7 +4,7 @@ import com.google.gson.*;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.render.renderer.ComponentRendererPart;
 import net.cubecraft.client.resource.TextureAsset;
-import ink.flybird.fcommon.container.CollectionUtil;
+import me.gb2022.commons.container.CollectionUtil;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

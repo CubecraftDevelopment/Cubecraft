@@ -1,6 +1,6 @@
 package net.cubecraft.world.worldGen.pipeline;
 
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;

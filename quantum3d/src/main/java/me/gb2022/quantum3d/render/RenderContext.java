@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.render;
 
-import ink.flybird.fcommon.container.ArrayQueue;
+import me.gb2022.commons.container.ArrayQueue;
 import me.gb2022.quantum3d.render.command.RenderCall;
 import me.gb2022.quantum3d.render.texture.SimpleTexture2D;
 import me.gb2022.quantum3d.render.texture.TilemapTexture2D;

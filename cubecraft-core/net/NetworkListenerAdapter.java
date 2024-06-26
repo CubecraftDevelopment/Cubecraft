@@ -1,13 +1,13 @@
 package ink.flybird.cubecraft.net;
 
 import ink.flybird.cubecraft.net.packet.Packet;
-import ink.flybird.fcommon.event.EventBus;
+import me.gb2022.commons.event.EventBus;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
-import ink.flybird.fcommon.logging.SimpleLogger;
-import ink.flybird.fcommon.registry.ConstructingMap;
-import ink.flybird.fcommon.registry.TypeItem;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import me.gb2022.commons.logging.SimpleLogger;
+import me.gb2022.commons.registry.ConstructingMap;
+import me.gb2022.commons.registry.TypeItem;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  */
 public abstract class NetworkListenerAdapter extends NetWorkEventBus {
     public static final ExecutorService HANDLER_POOL = Executors.newFixedThreadPool(8);
-    protected final ILogger logger=LogManager.getLogger("NetworkListenerAdapter");
+    protected final Logger logger=LogManager.getLogger("NetworkListenerAdapter");
     protected final ConstructingMap<Packet> packetConstructor;
 
     /**
@@ -42,7 +42,6 @@ public abstract class NetworkListenerAdapter extends NetWorkEventBus {
      * @param buffer target buffer
      */
     public final void encode(Packet pkt, ByteBuf buffer) {
-        buffer.resetReaderIndex();
         buffer.resetWriterIndex();
 
         //confuse jraknet

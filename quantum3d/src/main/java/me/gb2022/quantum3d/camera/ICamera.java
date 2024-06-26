@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.camera;
 
-import ink.flybird.fcommon.math.AABB;
+import me.gb2022.commons.math.AABB;
 import me.gb2022.quantum3d.render.RenderContext;
 import org.joml.Math;
 import org.joml.*;

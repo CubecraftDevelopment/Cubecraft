@@ -1,6 +1,6 @@
 package net.cubecraft.client.internal.gui;
 
-import ink.flybird.fcommon.event.EventHandler;
+import me.gb2022.commons.event.EventHandler;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.gui.component.ButtonClickedEvent;

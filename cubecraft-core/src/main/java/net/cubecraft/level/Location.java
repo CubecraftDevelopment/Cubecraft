@@ -2,7 +2,7 @@ package net.cubecraft.level;
 
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.chunk.pos.ChunkPos;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTTagCompound;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 

@@ -1,7 +1,7 @@
 package net.cubecraft.internal.entity;
 
-import ink.flybird.fcommon.registry.ConstructingMap;
-import ink.flybird.fcommon.registry.ItemRegisterFunc;
+import me.gb2022.commons.registry.ConstructingMap;
+import me.gb2022.commons.registry.ItemRegisterFunc;
 import net.cubecraft.world.entity.Entity;
 
 public class EntityRegistry {

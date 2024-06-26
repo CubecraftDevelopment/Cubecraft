@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.render.texture;
 
-import ink.flybird.fcommon.threading.TaskProgressCallback;
+import me.gb2022.commons.threading.TaskProgressCallback;
 import me.gb2022.quantum3d.ITextureImage;
 
 import java.awt.image.BufferedImage;

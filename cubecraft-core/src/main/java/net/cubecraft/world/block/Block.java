@@ -1,9 +1,9 @@
 package net.cubecraft.world.block;
 
-import ink.flybird.fcommon.Initializable;
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.HitBox;
+import me.gb2022.commons.Initializable;
+import me.gb2022.commons.container.Vector3;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.event.register.BlockRegisterEvent;
 import net.cubecraft.world.IWorld;
@@ -122,18 +122,6 @@ public abstract class Block implements Initializable {
             result.add(new HitBox("default", copied));
         }
         return result;
-    }
-
-    public void onInteract(Entity from, IWorld world, long x, long y, long z, byte f) {
-        //todo:use inventory
-        Vector3<Long> pos = EnumFacing.findNear(x, y, z, 1, f);
-        if (world.isFree(BlockPropertyDispatcher.getCollisionBox(world.getBlockAccess(x, y, z)))) {
-            world.getBlockAccess(pos.x(), pos.y(), pos.z()).setBlockID(from.getSelectBlock(), true);
-        }
-    }
-
-    public void onHit(Entity from, IWorld world, long x, long y, long z, byte f) {
-        world.getBlockAccess(x, y, z).setBlockID("cubecraft:air", true);
     }
 
     public BlockState defaultState(long x, long y, long z) {

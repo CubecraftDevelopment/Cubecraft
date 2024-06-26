@@ -1,11 +1,11 @@
 package net.cubecraft.client.world;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.fcommon.event.SubscribedEvent;
-import ink.flybird.fcommon.file.FileUtil;
-import ink.flybird.fcommon.threading.ThreadState;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.event.SubscribedEvent;
+import me.gb2022.commons.file.FileUtil;
+import me.gb2022.commons.threading.ThreadState;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedObjects;
 import net.cubecraft.client.CubecraftClient;
@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ClientWorldManager extends ClientNetHandler {
-    private static final ILogger LOGGER = LogManager.getLogger("client-world-manager");
+    private static final Logger LOGGER = LogManager.getLogger("client-world-manager");
     private final CubecraftClient client;
     private final HashMap<String, LevelInfo> levels = new HashMap<>();
     private final ArrayList<LevelInfo> showedInfoList = new ArrayList<>();
@@ -48,7 +48,6 @@ public class ClientWorldManager extends ClientNetHandler {
 
     public ClientWorldManager(CubecraftClient client) {
         this.client = client;
-        this.client.getClientIO().getListener().registerEventListener(this);
         this.client.getClientGUIContext().getEventBus().registerEventListener(this);
     }
 

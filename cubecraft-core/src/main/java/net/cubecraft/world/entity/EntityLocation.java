@@ -1,7 +1,7 @@
 package net.cubecraft.world.entity;
 
-import ink.flybird.fcommon.nbt.NBTDataIO;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTDataIO;
+import me.gb2022.commons.nbt.NBTTagCompound;
 
 public class EntityLocation implements NBTDataIO {
     private double x;

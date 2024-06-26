@@ -60,7 +60,7 @@ public record ResourceLocation(ResourceType type, String namespace, ResourceLocT
     }
 
     enum ResourceLocType {
-        BLOCK_TEXTURE("/texture/block/"),
+        BLOCK_TEXTURE("/texture/"),
         BLOCK_MODEL("/model/block/"),
         ENTITY_TEXTURE("/texture/entity/"),
         ENTITY_MODEL("/model/entity/"),

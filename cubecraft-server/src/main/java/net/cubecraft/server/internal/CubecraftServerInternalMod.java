@@ -1,8 +1,8 @@
 package net.cubecraft.server.internal;
 
-import ink.flybird.fcommon.event.EventHandler;
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import me.gb2022.commons.event.EventHandler;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import net.cubecraft.event.mod.ModConstructEvent;
 import net.cubecraft.mod.CubecraftMod;
 import net.cubecraft.server.ServerSharedContext;
@@ -16,7 +16,7 @@ import net.cubecraft.server.service.WorldTickService;
 
 @CubecraftMod
 public class CubecraftServerInternalMod {
-    public static final ILogger LOGGER= LogManager.getLogger("ServerInternalMod");
+    public static final Logger LOGGER= LogManager.getLogger("ServerInternalMod");
 
     @EventHandler
     public static void registerNetworkHandler(ModConstructEvent event) {

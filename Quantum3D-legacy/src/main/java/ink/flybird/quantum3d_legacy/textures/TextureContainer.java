@@ -1,9 +1,10 @@
 package ink.flybird.quantum3d_legacy.textures;
 
-import ink.flybird.fcommon.registry.RegisterMap;
+import me.gb2022.commons.registry.RegisterMap;
 
+@SuppressWarnings("unchecked")
 public class TextureContainer<T extends Texture> {
-    final RegisterMap<T> mapping = new RegisterMap<>();
+    final RegisterMap<T> mapping = (RegisterMap<T>) new RegisterMap<>(Texture.class);
 
     public T get(String name) {
         return this.mapping.get(name);

@@ -1,7 +1,7 @@
 package net.cubecraft.world.block.property.hitbox;
 
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.registry.TypeItem;
 
 @TypeItem("cubecraft:cube_collision")
 public class BlockHitBoxProperty extends FixedHitBoxProperty {

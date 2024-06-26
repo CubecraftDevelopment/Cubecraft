@@ -1,7 +1,7 @@
 package net.cubecraft.world.chunk;
 
-import ink.flybird.fcommon.nbt.NBTDataIO;
-import ink.flybird.fcommon.threading.ThreadLock;
+import me.gb2022.commons.nbt.NBTDataIO;
+import me.gb2022.commons.threading.ThreadLock;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.access.ChunkBlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
@@ -29,8 +29,6 @@ public final class WorldChunk extends Chunk implements NBTDataIO {
         System.arraycopy(providerChunk.blockFacingSections, 0, this.blockFacingSections, 0, Chunk.SECTION_SIZE);
         System.arraycopy(providerChunk.blockMetaSections, 0, this.blockMetaSections, 0, Chunk.SECTION_SIZE);
         System.arraycopy(providerChunk.biomeSections, 0, this.biomeSections, 0, Chunk.SECTION_SIZE);
-        System.arraycopy(providerChunk.temperatureSections, 0, this.temperatureSections, 0, Chunk.SECTION_SIZE);
-        System.arraycopy(providerChunk.humiditySections, 0, this.humiditySections, 0, Chunk.SECTION_SIZE);
         System.arraycopy(providerChunk.lightSections, 0, this.lightSections, 0, Chunk.SECTION_SIZE);
     }
 

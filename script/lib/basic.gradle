@@ -5,4 +5,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:24.0.1'
     implementation local("fcommon-1.0.5")
     implementation local("jflogger-0.0.2-1")
+
+    implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
 }

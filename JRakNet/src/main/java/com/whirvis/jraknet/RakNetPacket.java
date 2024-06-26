@@ -46,8 +46,8 @@ import com.whirvis.jraknet.protocol.message.acknowledge.NotAcknowledgedPacket;
 import com.whirvis.jraknet.protocol.status.*;
 
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.socket.DatagramPacket;
@@ -846,7 +846,7 @@ public class RakNetPacket extends Packet {
 	 */
 	private static void mapNameIds() {
 		if (mappedNameIds == false) {
-			ILogger log = LogManager.getLogger("RakNetPacket");
+			Logger log = LogManager.getLogger("RakNetPacket");
 			for (Field field : RakNetPacket.class.getFields()) {
 				if (field.getType().equals(short.class)) {
 					try {

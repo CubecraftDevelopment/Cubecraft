@@ -35,4 +35,22 @@ public interface ShapeRenderer {
         builder.addVertex(x1, y1, z0);
         builder.addVertex(x1, y1, z1);
     }
+
+    static void drawRect(VertexBuilder builder, double x0, double x1, double y0, double y1, double z0, double z1) {
+        builder.addVertex((float) x0, (float) y1, (float) z1);
+        builder.addVertex((float) x1, (float) y1, (float) z0);
+        builder.addVertex((float) x1, (float) y0, (float) z0);
+        builder.addVertex((float) x0, (float) y0, (float) z1);
+    }
+
+    static void drawRectUV(VertexBuilder builder, double x0, double x1, double y0, double y1, double z0, double u0, double u1, double v0, double v1) {
+        builder.setTextureCoordinate((float) u1, (float) v0);
+        builder.addVertex(x1, y0, z0);
+        builder.setTextureCoordinate((float) u0, (float) v0);
+        builder.addVertex(x0, y0, z0);
+        builder.setTextureCoordinate((float) u0, (float) v1);
+        builder.addVertex(x0, y1, z0);
+        builder.setTextureCoordinate((float) u1, (float) v1);
+        builder.addVertex(x1, y1, z0);
+    }
 }

@@ -10,19 +10,19 @@ import java.net.InetSocketAddress;
 public abstract class ServerNetHandler implements INetHandler {
     protected final CubecraftServer server= ServerSharedContext.SERVER;
 
-    protected final void sendPacket(InetSocketAddress address, Packet pkt){
-        this.server.getServerIO().sendPacket(pkt, address);
+    protected final void sendPacket(InetSocketAddress address, Packet packet){
+        this.server.getNetworkServer().sendPacket(address, packet);
     }
 
     protected final void closeConnection(InetSocketAddress address){
-        this.server.getServerIO().closeConnection(address);
+        this.server.getNetworkServer().disconnect(address);
     }
 
     protected final void allCloseConnection() {
-        this.server.getServerIO().allCloseConnection();
+        this.server.getNetworkServer().stop();
     }
 
     protected final void broadcastPacket(Packet pkt){
-        this.server.getServerIO().broadcastPacket(pkt);
+        this.server.getNetworkServer().stop();
     }
 }

@@ -112,7 +112,7 @@ public final class OpenConnectionResponseTwo extends RakNetPacket implements Fai
 	@Override
 	public void encode() {
 		try {
-			this.encryptionEnabled = false; // TODO: Not supported
+			this.encryptionEnabled = false;
 			this.writeMagic();
 			this.writeLong(serverGuid);
 			this.writeAddress(clientAddress);

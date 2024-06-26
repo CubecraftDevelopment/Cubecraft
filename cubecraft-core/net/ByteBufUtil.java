@@ -1,7 +1,7 @@
 package ink.flybird.cubecraft.net;
 
-import ink.flybird.fcommon.nbt.NBT;
-import ink.flybird.fcommon.nbt.NBTBase;
+import me.gb2022.commons.nbt.NBT;
+import me.gb2022.commons.nbt.NBTBase;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;

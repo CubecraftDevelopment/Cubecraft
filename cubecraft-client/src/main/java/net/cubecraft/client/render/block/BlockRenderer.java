@@ -2,9 +2,9 @@ package net.cubecraft.client.render.block;
 
 import com.google.gson.JsonObject;
 import net.cubecraft.client.resource.TextureAsset;
-import ink.flybird.fcommon.container.Vector3;
-import ink.flybird.fcommon.registry.RegisteredConstructor;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.container.Vector3;
+import me.gb2022.commons.registry.RegisteredConstructor;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.world.IWorld;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.IBlockAccess;

@@ -10,8 +10,8 @@ import net.cubecraft.internal.network.packet.PacketFullChunkData;
 import net.cubecraft.net.NetHandlerContext;
 import net.cubecraft.net.packet.PacketListener;
 import net.cubecraft.world.entity.Entity;
-import ink.flybird.fcommon.container.CollectionUtil;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.container.CollectionUtil;
+import me.gb2022.commons.registry.TypeItem;
 
 import java.util.Objects;
 

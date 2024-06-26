@@ -1,6 +1,6 @@
 package net.cubecraft.auth;
 
-import ink.flybird.fcommon.nbt.NBTTagCompound;
+import me.gb2022.commons.nbt.NBTTagCompound;
 
 public interface SessionService {
     boolean validSession(Session session);

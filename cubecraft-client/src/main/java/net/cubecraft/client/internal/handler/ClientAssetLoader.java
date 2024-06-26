@@ -5,8 +5,6 @@ import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.event.resource.ResourceReloadEvent;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.client.render.model.block.BlockModelComponent;
-import net.cubecraft.client.render.model.block.BlockModelFace;
-import net.cubecraft.client.render.model.block.Cube;
 import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.resource.ResourceLoadHandler;
@@ -20,27 +18,24 @@ import net.cubecraft.SharedContext;
 
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import ink.flybird.quantum3d_legacy.textures.TextureStateManager;
-import ink.flybird.fcommon.I18nHelper;
-import ink.flybird.fcommon.container.NameSpaceMap;
+import me.gb2022.commons.I18nHelper;
+import me.gb2022.commons.container.NameSpaceMap;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.util.*;
 
 public class ClientAssetLoader {
     public final HashSet<TextureAsset> textureList = new HashSet<>();
-    final ILogger logger = LogManager.getLogger("client_asset_loader");
+    final Logger logger = LogManager.getLogger("client_asset_loader");
 
     @ResourceLoadHandler(stage = ResourceLoadStage.BLOCK_MODEL)
     public void loadBlockModel(ResourceReloadEvent e) {
         SharedContext.GSON_BUILDER.registerTypeAdapter(BlockModel.class, new BlockModel.JDeserializer());
-        SharedContext.GSON_BUILDER.registerTypeAdapter(BlockModelFace.class, new BlockModelFace.JDeserializer());
-        SharedContext.GSON_BUILDER.registerTypeAdapter(BlockModelComponent.class, new Cube.JDeserializer());
-
         try {
-            for (IBlockRenderer renderer : ((NameSpaceMap<? extends IBlockRenderer>) net.cubecraft.client.context.ClientRenderContext.BLOCK_RENDERER).itemList()) {
+            for (IBlockRenderer renderer : ((NameSpaceMap<? extends IBlockRenderer>) ClientRenderContext.BLOCK_RENDERER).values()) {
                 if (renderer != null) {
                     renderer.initializeRenderer(textureList);
                 }
@@ -85,7 +80,7 @@ public class ClientAssetLoader {
     @ResourceLoadHandler(stage = ResourceLoadStage.COLOR_MAP)
     public void loadColorMap(ResourceReloadEvent e) {
         try {
-            Collection<String> s = net.cubecraft.client.context.ClientRenderContext.COLOR_MAP.idList();
+            Collection<String> s = net.cubecraft.client.context.ClientRenderContext.COLOR_MAP.keySet();
             for (String s2 : s) {
                 ClientRenderContext.COLOR_MAP.get(s2).load();
             }

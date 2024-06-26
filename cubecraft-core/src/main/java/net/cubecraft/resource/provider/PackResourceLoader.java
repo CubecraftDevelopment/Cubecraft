@@ -3,9 +3,9 @@ package net.cubecraft.resource.provider;
 import net.cubecraft.resource.ResourcePack;
 import net.cubecraft.resource.item.IResource;
 
+import java.io.IOException;
 import java.io.InputStream;
 
-//todo:resource loader,resource pack
 public final class PackResourceLoader extends ResourceLoader {
     private final int priority;
     private final ResourcePack pack;
@@ -21,7 +21,11 @@ public final class PackResourceLoader extends ResourceLoader {
 
     @Override
     public InputStream getStream(IResource resource) {
-        return null;
+        try {
+            return this.pack.getInput(resource.getAbsolutePath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

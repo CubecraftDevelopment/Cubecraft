@@ -1,7 +1,7 @@
 package net.cubecraft.client;
 
-import ink.flybird.fcommon.query.SimpleQueryHandler;
-import ink.flybird.fcommon.registry.ConstructingMap;
+import me.gb2022.commons.query.SimpleQueryHandler;
+import me.gb2022.commons.registry.ConstructingMap;
 import net.cubecraft.client.net.ClientNetHandler;
 import net.cubecraft.resource.ResourceManager;
 import net.cubecraft.util.ObjectContainer;

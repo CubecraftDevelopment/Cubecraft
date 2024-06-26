@@ -1,9 +1,9 @@
 package net.cubecraft.internal.network.packet.join;
 
-import net.cubecraft.net.ByteBufUtil;
+import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.net.packet.PacketConstructor;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;

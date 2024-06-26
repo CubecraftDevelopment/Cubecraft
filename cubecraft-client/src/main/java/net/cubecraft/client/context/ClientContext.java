@@ -14,6 +14,9 @@ public abstract class ClientContext {
     public void joinLevel(Level level) {
     }
 
+    public void init(){
+    }
+
     public void joinWorld(IWorld world) {
     }
 

@@ -1,15 +1,15 @@
 package ink.flybird.quantum3d_legacy.textures;
 
-import ink.flybird.jflogger.ILogger;
-import ink.flybird.jflogger.LogManager;
 import ink.flybird.quantum3d_legacy.GLUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL45;
 
 public abstract class Texture {
     protected final boolean multiSample;
     protected final boolean mipMap;
-    protected final ILogger logger = LogManager.getLogger("Texture");
+    protected final Logger logger = LogManager.getLogger("Texture");
     protected int glId;
     protected int width;
     protected int height;

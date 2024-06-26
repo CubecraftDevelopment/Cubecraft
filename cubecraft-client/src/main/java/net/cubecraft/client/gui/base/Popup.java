@@ -5,7 +5,7 @@ import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.registry.TextureRegistry;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.fcommon.math.MathHelper;
+import me.gb2022.commons.math.MathHelper;
 
 public class Popup {
     private int xo;
@@ -44,8 +44,8 @@ public class Popup {
                 ,168/198f,1
         );
         TextureRegistry.TOAST.unbind();
-        ClientGUIContext.SMOOTH_FONT_RENDERER.render(title,40,12,0xffffff,12,0, FontAlignment.LEFT);
-        ClientGUIContext.SMOOTH_FONT_RENDERER.render(subTitle,40,28,0xffffff,8,0, FontAlignment.LEFT);
+        ClientGUIContext.FONT_RENDERER.render(title,40,12,0xffffff,12,0, FontAlignment.LEFT);
+        ClientGUIContext.FONT_RENDERER.render(subTitle,40,28,0xffffff,8,0, FontAlignment.LEFT);
     }
 
     public int getTime() {

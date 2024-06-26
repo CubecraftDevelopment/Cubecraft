@@ -1,7 +1,7 @@
 package net.cubecraft.world.entity;
 
-import ink.flybird.fcommon.math.AABB;
-import ink.flybird.fcommon.math.hitting.HitBox;
+import me.gb2022.commons.math.AABB;
+import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.world.IWorld;
 import java.util.Collection;
 import java.util.List;

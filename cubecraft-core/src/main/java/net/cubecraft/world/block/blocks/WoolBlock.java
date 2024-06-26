@@ -8,7 +8,6 @@ import net.cubecraft.world.block.property.hitbox.BlockHitBoxProperty;
 
 import java.util.Map;
 
-//todo
 public class WoolBlock extends Block {
     public WoolBlock(String id) {
         super(id);

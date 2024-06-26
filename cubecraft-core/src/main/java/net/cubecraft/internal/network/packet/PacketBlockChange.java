@@ -1,8 +1,8 @@
 package net.cubecraft.internal.network.packet;
 
-import ink.flybird.fcommon.nbt.NBT;
-import ink.flybird.fcommon.nbt.NBTTagCompound;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.nbt.NBT;
+import me.gb2022.commons.nbt.NBTTagCompound;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.net.packet.PacketConstructor;
 import net.cubecraft.world.block.BlockState;

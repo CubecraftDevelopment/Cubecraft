@@ -2,7 +2,7 @@ package net.cubecraft.util.setting;
 
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
-import ink.flybird.fcommon.event.EventBus;
+import me.gb2022.commons.event.EventBus;
 import net.cubecraft.event.SettingReloadEvent;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.util.setting.item.SettingItem;

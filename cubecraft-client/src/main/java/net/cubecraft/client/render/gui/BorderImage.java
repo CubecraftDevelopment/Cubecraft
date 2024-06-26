@@ -1,14 +1,13 @@
 package net.cubecraft.client.render.gui;
 
 import com.google.gson.*;
-import net.cubecraft.client.gui.node.Node;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
-
-import java.lang.reflect.Type;
+import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.client.util.DeserializedConstructor;
 
 @TypeItem("border_image")
 public final class BorderImage extends ImageComponentRendererPart {
@@ -19,6 +18,19 @@ public final class BorderImage extends ImageComponentRendererPart {
         super(x0, x1, y0, y1, textureLocation);
         this.boarderH = boarderH;
         this.boarderV = boarderV;
+    }
+
+    @DeserializedConstructor
+    public BorderImage(JsonObject json) {
+        this(
+                json.get("pos").getAsJsonArray().get(0).getAsDouble(),
+                json.get("pos").getAsJsonArray().get(1).getAsDouble(),
+                json.get("pos").getAsJsonArray().get(2).getAsDouble(),
+                json.get("pos").getAsJsonArray().get(3).getAsDouble(),
+                json.get("boarderH").getAsInt(),
+                json.get("boarderV").getAsInt(),
+                json.get("loc").getAsString()
+        );
     }
 
     @Override
@@ -59,20 +71,5 @@ public final class BorderImage extends ImageComponentRendererPart {
         builder.end();
         builder.uploadPointer();
         builder.free();
-    }
-
-    public static class JDeserializer implements JsonDeserializer<BorderImage> {
-        @Override
-        public BorderImage deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject root = jsonElement.getAsJsonObject();
-            return new BorderImage(
-                    root.get("pos").getAsJsonArray().get(0).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(1).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(2).getAsDouble(),
-                    root.get("pos").getAsJsonArray().get(3).getAsDouble(),
-                    root.get("boarderH").getAsInt(),
-                    root.get("boarderV").getAsInt(),
-                    root.get("loc").getAsString());
-        }
     }
 }

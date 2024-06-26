@@ -1,10 +1,10 @@
 package net.cubecraft.internal.network.packet;
 
-import net.cubecraft.net.ByteBufUtil;
+import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.net.packet.PacketConstructor;
 import net.cubecraft.world.chunk.pos.ChunkPos;
-import ink.flybird.fcommon.registry.TypeItem;
+import me.gb2022.commons.registry.TypeItem;
 import io.netty.buffer.ByteBuf;
 
 @TypeItem("cubecraft:chunk_get")
