@@ -10,6 +10,15 @@ public interface StoneBlocks {
     String GRANITE_BLOCK_ID = "cubecraft:granite";
     String BASALT_BLOCK_ID = "cubecraft:basalt";
 
+
+
+
+
+
+
+
+
+
     @FieldRegistry(value = "andesite")
     Block ANDESITE = new StoneBlock(ANDESITE_BLOCK_ID);
 

@@ -11,7 +11,7 @@ import me.gb2022.quantum3d.device.adapter.MouseEventAdapter;
 import me.gb2022.quantum3d.device.adapter.WindowEventAdapter;
 
 public final class ClientDeviceContext {
-    private final EventBus eventBus = new SimpleEventBus();
+    private final SimpleEventBus eventBus = new SimpleEventBus();
     private DeviceContext deviceContext;
     private Window window;
     private Mouse mouse;
@@ -29,7 +29,7 @@ public final class ClientDeviceContext {
         this.mouse.addListener(new MouseEventAdapter(this.eventBus));
     }
 
-    public EventBus getEventBus() {
+    public SimpleEventBus getEventBus() {
         return eventBus;
     }
 

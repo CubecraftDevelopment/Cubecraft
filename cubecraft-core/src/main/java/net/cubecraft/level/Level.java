@@ -1,45 +1,52 @@
 package net.cubecraft.level;
 
-import net.cubecraft.ContentRegistries;
+import me.gb2022.commons.container.MultiMap;
+import me.gb2022.commons.event.SimpleEventBus;
 import net.cubecraft.event.world.EntityJoinLevelEvent;
 import net.cubecraft.event.world.EntityLeaveLevelEvent;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.internal.entity.EntityPlayer;
+import net.cubecraft.world.World;
 import net.cubecraft.world.WorldFactory;
 import net.cubecraft.world.entity.Entity;
-import net.cubecraft.world.entity.EntityLocation;
-import me.gb2022.commons.container.MultiMap;
-import me.gb2022.commons.event.EventBus;
-import me.gb2022.commons.event.SimpleEventBus;
+import net.cubecraft.world.storage.PersistentEntityHolder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 public class Level {
-    public final MultiMap<String, IWorld> worlds = new MultiMap<>();
+    public static final Logger LOGGER = LogManager.getLogger("Level");
 
-    private final EventBus eventBus = new SimpleEventBus();
+    public final MultiMap<String, World> worlds = new MultiMap<>();
+    private final SimpleEventBus eventBus = new SimpleEventBus();
     private final LevelInfo levelInfo;
     private final WorldFactory worldFactory;
+    private PersistentEntityHolder persistentEntityHolder;
 
     public Level(LevelInfo info, WorldFactory worldFactory) {
         this.worldFactory = worldFactory;
-        for (String id : ContentRegistries.DIMENSION.keySet()) {
+        this.levelInfo = info;
+
+        for (String id : new String[]{"cubecraft:overworld"}) {
             this.worlds.put(id, this.worldFactory.create(id, this));
         }
-        this.levelInfo = info;
     }
 
-    public EntityLocation getSpawnPoint(String uid) {
-        return new EntityLocation(0, 128, 0, 0, 0, 0, "cubecraft:overworld");
+    public Location getSpawnPoint() {
+        var w = worlds.get("cubecraft:overworld");
+        var h = w.getChunkSafely(0, 0).getHighestBlockAt(0, 0);
+
+        return new Location("cubecraft:overworld", 0.5, h + 1, 0.5, 0, 0, 0);
     }
 
     public LevelInfo getLevelInfo() {
         return this.levelInfo;
     }
 
-    public MultiMap<String, IWorld> getWorlds() {
+    public MultiMap<String, World> getWorlds() {
         return worlds;
     }
 
-    public IWorld getDimension(String worldID) {
+    public World getDimension(String worldID) {
         return this.worlds.get(worldID);
     }
 
@@ -53,41 +60,72 @@ public class Level {
 
     public Location getLocation(Entity entity) {
         if (entity == null) {
-            return new Location("cubecraft:overworld", 8, 128, 8, 0, 0, 0);
+            return getSpawnPoint();
         }
-        return new Location("cubecraft:overworld", 0, 160, 8, 0, 0, 0);
+        return getSpawnPoint();
     }
 
-    public IWorld getWorld(String id) {
+    public World getWorld(String id) {
         return this.worlds.get(id);
     }
 
-    public EventBus getEventBus() {
+    public SimpleEventBus getEventBus() {
         return eventBus;
     }
 
 
     public void join(@NotNull Entity entity) {
         Location entitySpawnLocation = this.getLocation(entity);
-        IWorld world = entitySpawnLocation.getWorld(this);
 
-        entity.setWorld(world);
-        entity.setPos(entitySpawnLocation.getPosition());
-        entity.setRotation(entitySpawnLocation.getRotation());
+        if (!this.persistentEntityHolder.load(entity)) {
+            entity.setWorld(entitySpawnLocation.getWorld(this));
+            entity.setPos(entitySpawnLocation.getPosition());
+            entity.setRotation(entitySpawnLocation.getRotation());
+        }
 
-        world.addEntity(entity);
-        this.eventBus.callEvent(new EntityJoinLevelEvent(this, world, entity));
+        if (entity instanceof EntityPlayer player) {
+            LOGGER.info(
+                    "player {} joined in {} at {} {} {} with uuid {}",
+                    player.getSession().getName(),
+                    entity.getWorld().getId(),
+                    entity.x,
+                    entity.y,
+                    entity.z,
+                    entity.getUuid()
+            );
+        }
+
+        entitySpawnLocation.getWorld(this).addEntity(entity);
+        this.eventBus.callEvent(new EntityJoinLevelEvent(this, entitySpawnLocation.getWorld(this), entity));
     }
 
     public void leave(@NotNull Entity entity, String reason) {
-        IWorld world = entity.getWorld();
+        World world = entity.getWorld();
         world.removeEntity(entity);
+
+        if (entity.shouldSave()) {
+            this.persistentEntityHolder.save(entity);
+        }
+
         this.getEventBus().callEvent(new EntityLeaveLevelEvent(this, world, entity, reason));
     }
 
     public void save() {
-        for (String id : ContentRegistries.DIMENSION.keySet()) {
-            this.worlds.get(id).save();
+        for (String id : this.worlds.keySet()) {
+            try {
+                this.worlds.get(id).save();
+            } catch (Throwable t) {
+                LOGGER.error("failed to save level {}", id);
+                LOGGER.catching(t);
+            }
         }
+    }
+
+    public PersistentEntityHolder getPersistentEntityHolder() {
+        return persistentEntityHolder;
+    }
+
+    public void setPersistentEntityHolder(PersistentEntityHolder persistentEntityHolder) {
+        this.persistentEntityHolder = persistentEntityHolder;
     }
 }

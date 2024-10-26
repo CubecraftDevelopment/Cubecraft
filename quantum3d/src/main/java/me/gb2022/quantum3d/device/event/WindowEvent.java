@@ -1,12 +1,13 @@
 package me.gb2022.quantum3d.device.event;
 
+import me.gb2022.commons.event.CancellableEvent;
 import me.gb2022.quantum3d.device.Window;
 
 /**
  * An abstract base class representing events related to a window.
  * This class serves as a foundation for window-related event classes.
  */
-public abstract class WindowEvent {
+public abstract class WindowEvent extends CancellableEvent {
 
     private final Window window; // The window associated with this event.
 

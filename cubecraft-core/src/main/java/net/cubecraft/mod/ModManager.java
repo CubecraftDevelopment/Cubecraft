@@ -104,7 +104,7 @@ public class ModManager {
             props.load(file.getInputStream(file.getEntry("content_mod_info.properties")));
             return props;
         } catch (IOException e) {
-            LOGGER.error(e);
+            LOGGER.throwing(e);
         }
         return null;
     }

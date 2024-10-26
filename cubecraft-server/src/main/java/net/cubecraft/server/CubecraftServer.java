@@ -1,11 +1,8 @@
 package net.cubecraft.server;
 
-import me.gb2022.commons.event.EventBus;
 import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.commons.threading.LoopTickingThread;
 import me.gb2022.commons.timer.Timer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
 import net.cubecraft.Side;
@@ -21,7 +18,9 @@ import net.cubecraft.server.service.Service;
 import net.cubecraft.server.world.ServerWorldFactory;
 import net.cubecraft.util.VersionInfo;
 import net.cubecraft.util.setting.GameSetting;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -34,7 +33,7 @@ public final class CubecraftServer extends LoopTickingThread {
     private final InetSocketAddress localAddress;
     private final NetworkServer networkServer = new KCPNetworkServer();
     private final PlayerTable playerTable = new PlayerTable();
-    private final EventBus eventBus = new SimpleEventBus();
+    private final SimpleEventBus eventBus = new SimpleEventBus();
     private final boolean isIntegrated;
     private final Level level;
     private Map<String, Service> services;
@@ -71,7 +70,7 @@ public final class CubecraftServer extends LoopTickingThread {
         modManager.getModLoaderEventBus().callEvent(new ServerSetupEvent(this));
 
         this.networkServer.start(this.localAddress);
-        LOGGER.info("service started on %s.", this.localAddress);
+        LOGGER.info("service started on {}.", this.localAddress);
 
         this.services = ServerSharedContext.SERVICE.createAll();
         for (Service service : this.services.values()) {
@@ -82,23 +81,23 @@ public final class CubecraftServer extends LoopTickingThread {
                 return;
             } catch (Exception e) {
                 LOGGER.error("find error when initializing service :(");
-                LOGGER.error(e);
+                LOGGER.throwing(e);
             }
         }
         LOGGER.info("services initialized.");
 
-        for (IWorld world : this.level.getWorlds().values()) {
+        for (World world : this.level.getWorlds().values()) {
             this.getEventBus().callEvent(new ServerWorldInitializedEvent(this, world));
         }
-        LOGGER.info("world loaded.");
+        LOGGER.info("loaded level {}",this.level.getLevelInfo().getLevelName());
         for (Service service : this.services.values()) {
             try {
                 service.postInitialize(this);
             } catch (Exception e) {
-                LOGGER.error(e);
+                LOGGER.throwing(e);
             }
         }
-        LOGGER.info("server started in %d ms.", ((System.currentTimeMillis() - startTime)));
+        LOGGER.info("server started in {} ms.", ((System.currentTimeMillis() - startTime)));
     }
 
     @Override
@@ -129,18 +128,18 @@ public final class CubecraftServer extends LoopTickingThread {
 
     @Override
     public boolean onException(Exception error) {
-        LOGGER.error(error);
+        LOGGER.throwing(error);
         return true;
     }
 
     @Override
     public boolean onError(Error error) {
-        LOGGER.error(error);
+        LOGGER.throwing(error);
         return true;
     }
 
 
-    public EventBus getEventBus() {
+    public SimpleEventBus getEventBus() {
         return eventBus;
     }
 

@@ -69,7 +69,7 @@ public class LevelInfo {
             zis.close();
             fis.close();
         } catch (IOException e) {
-            LOGGER.error(e);
+            LOGGER.throwing(e);
         }
         return levelInfo;
     }
@@ -90,7 +90,7 @@ public class LevelInfo {
             zos.close();
             fos.close();
         } catch (IOException e) {
-            LOGGER.error(e);
+            LOGGER.throwing(e);
         }
     }
 

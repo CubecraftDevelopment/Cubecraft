@@ -6,14 +6,19 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 public abstract class VertexBuilder {
+    public static final AsyncFinalizeThread FINALIZE_THREAD = new AsyncFinalizeThread();
+
+    static {
+        //FINALIZE_THREAD.start();
+    }
+
     protected final int size;
     protected final DrawMode drawMode;
+    private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
     protected int count;
     protected float u = 0.0f, v = 0.0f;
     protected float r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
     protected float n = 1.0f, f = 1.0f, l = 1.0f;
-
-    private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
 
     protected VertexBuilder(int size, DrawMode drawMode) {
         VertexBuilderAllocator.ALLOCATED_COUNT.addAndGet(1);
@@ -25,17 +30,22 @@ public abstract class VertexBuilder {
 
     //context
     public void begin() {
+        this.clear();
     }
 
     public void end() {
     }
 
     public void free() {
-        if(!this.lifetimeCounter.isAllocated()){
+        if (!this.lifetimeCounter.isAllocated()) {
             return;
         }
         this.lifetimeCounter.release();
         VertexBuilderAllocator.ALLOCATED_COUNT.addAndGet(-1);
+    }
+
+    public void freeAsync() {
+        free();
     }
 
 
@@ -128,9 +138,13 @@ public abstract class VertexBuilder {
 
     @Override
     protected void finalize() {
-        if(!this.lifetimeCounter.isAllocated()){
+        if (!this.lifetimeCounter.isAllocated()) {
             return;
         }
         this.free();
+    }
+
+    public void clear() {
+        this.count = 0;
     }
 }

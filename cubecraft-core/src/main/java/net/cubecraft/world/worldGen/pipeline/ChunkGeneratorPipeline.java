@@ -1,85 +1,80 @@
 package net.cubecraft.world.worldGen.pipeline;
 
-import me.gb2022.commons.registry.TypeItem;
+import net.cubecraft.world.chunk.*;
+import net.cubecraft.world.chunk.pos.ChunkPos;
+import net.cubecraft.world.worldGen.WorldGenerator;
+import net.cubecraft.world.worldGen.structure.StructureController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class ChunkGeneratorPipeline {
-    private final HashMap<String, TerrainGeneratorHandler> handlers = new HashMap<>();
-    private final ArrayList<String> idList = new ArrayList<>();
-    private final long seed;
+    private final ChunkCache<Chunk> generatorCache = new ChunkCache<>();
+    private final Set<ChunkPos> fullGenerated = new HashSet<>();
+
+    private final PipelineStorage beforeStructure = new PipelineStorage(this);
+    private final PipelineStorage afterStructure = new PipelineStorage(this);
+
+    private final Set<StructureController> structureControllers = new HashSet<>();
+
+    private final PipelineContext context;
 
     public ChunkGeneratorPipeline(long seed) {
-        this.seed = seed;
+        this.context = new PipelineContext(seed);
     }
 
-    public ChunkGeneratorPipeline addFirst(String id, TerrainGeneratorHandler handler) {
-        this.idList.remove(id);
-        this.idList.add(0, id);
-        this.handlers.put(id, handler);
+    public PipelineStorage beforeStructure() {
+        return beforeStructure;
+    }
+
+    public PipelineStorage afterStructure() {
+        return afterStructure;
+    }
+
+    public ChunkGeneratorPipeline addStructure(StructureController controller) {
+        structureControllers.add(controller);
         return this;
     }
 
-    public ChunkGeneratorPipeline addLast(String id, TerrainGeneratorHandler handler) {
-        this.idList.remove(id);
-        this.idList.add(id);
-        this.handlers.put(id, handler);
-        return this;
-    }
+    private void genChunkBeforeStructure(ChunkPos p) {
+        PrimerChunk chunk = new PrimerChunk(p);
 
-    public ChunkGeneratorPipeline addBefore(String target, String id, TerrainGeneratorHandler handler) {
-        if (!this.idList.contains(target)) {
-            return this;
+        for (TerrainGeneratorHandler handler : this.beforeStructure.getHandlerList()) {
+            handler.generate(chunk, this.context, chunk.getContext());
         }
-        this.idList.remove(id);
-        this.idList.add(this.idList.indexOf(target) - 1, id);
-        this.handlers.put(id, handler);
-        return this;
+
+        chunk.calcHeightMap();
+
+        this.generatorCache.add(chunk);
     }
 
-    public ChunkGeneratorPipeline addAfter(String target, String id, TerrainGeneratorHandler handler) {
-        if (!this.idList.contains(target)) {
-            return this;
+    public PrimerChunk run(ChunkPos pos) {
+        PrimerChunk chunk = new PrimerChunk(pos);
+
+        for (TerrainGeneratorHandler handler : this.beforeStructure.getHandlerList()) {
+            handler.generate(chunk, this.context, chunk.getContext());
         }
-        this.idList.remove(id);
-        this.idList.add(this.idList.indexOf(target) + 1, id);
-        this.handlers.put(id, handler);
-        return this;
+
+        chunk.calcHeightMap();
+
+        return chunk;
     }
 
-    public ChunkGeneratorPipeline addFirst(TerrainGeneratorHandler handler) {
-        return this.addFirst(handler.getClass().getAnnotation(TypeItem.class).value(), handler);
-    }
+    public void completeChunk(WorldChunk chunk, WorldGenerator generator) {
+        var cache = chunk.getWorld().getChunkCache();
+        var pos = chunk.getKey();
 
-    public ChunkGeneratorPipeline addLast(TerrainGeneratorHandler handler) {
-        return this.addLast(handler.getClass().getAnnotation(TypeItem.class).value(), handler);
-    }
+        chunk.calcHeightMap();
 
-    public ChunkGeneratorPipeline addBefore(String target, TerrainGeneratorHandler handler) {
-        return this.addBefore(target, handler.getClass().getAnnotation(TypeItem.class).value(), handler);
-    }
-
-    public ChunkGeneratorPipeline addAfter(String target, TerrainGeneratorHandler handler) {
-        return this.addAfter(target, handler.getClass().getAnnotation(TypeItem.class).value(), handler);
-    }
-
-    public ChunkGeneratorPipeline remove(String id) {
-        this.idList.remove(id);
-        this.handlers.remove(id);
-        return this;
-    }
-
-    public List<TerrainGeneratorHandler> getHandlerList() {
-        List<TerrainGeneratorHandler> handlers = new ArrayList<>();
-        for (String s : this.idList) {
-            handlers.add(this.handlers.get(s));
+        for (ChunkPos p : pos.getNearSquared()) {
+            if (cache.contains(p)) {
+                continue;
+            }
+            generator.load(p.getX(),p.getZ(),ChunkState.STRUCTURE);
         }
-        return handlers;
-    }
 
-    public long getSeed() {
-        return this.seed;
+        for (StructureController controller : this.structureControllers) {
+            controller.generateChunk(chunk, cache);
+        }
     }
 }

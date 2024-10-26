@@ -46,7 +46,7 @@ public interface ModLoader {
             try {
                 modManager.registerMod(Mod.standalone(new JarFile(f)));
             } catch (Exception e) {
-                LOGGER.error(e);
+                LOGGER.throwing(e);
             }
         }
     }

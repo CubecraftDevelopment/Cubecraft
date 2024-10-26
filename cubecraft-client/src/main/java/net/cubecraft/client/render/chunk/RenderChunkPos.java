@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.chunk;
 
-import me.gb2022.commons.container.Key;
+import me.gb2022.commons.container.keymap.Key;
 import me.gb2022.commons.math.AABB;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.render.DistanceComparable;

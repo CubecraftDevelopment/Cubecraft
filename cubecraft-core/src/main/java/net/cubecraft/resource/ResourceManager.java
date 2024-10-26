@@ -29,13 +29,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResourceManager {
-    private static final Logger LOGGER = LogManager.getLogger("resource_manager");
+    private static final Logger LOGGER = LogManager.getLogger("ResourceManager");
 
     public final ArrayList<ResourcePack> resourcePacks = new ArrayList<>();
     protected final ArrayList<Object> listeners = new ArrayList<>();
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
     private final Map<String, ResourceLoader> loaders = new HashMap<>();
-    private final EventBus eventBus = new SimpleEventBus();
+    private final SimpleEventBus eventBus = new SimpleEventBus();
     private final HashMap<String, RegisterMap<IResource>> resourceObjectCache = new HashMap<>(512);
 
     private final ArrayList<String> namespaces = new ArrayList<>();
@@ -46,7 +46,7 @@ public class ResourceManager {
         this.loaders.put("cubecraft:mod", new ModResourceLoader());
     }
 
-    public EventBus getEventBus() {
+    public SimpleEventBus getEventBus() {
         return this.eventBus;
     }
 
@@ -110,7 +110,7 @@ public class ResourceManager {
             this.eventBus.callEvent(new ResourceLoadItemEvent(stage, resource, id));
             return;
         }
-        LOGGER.warn("failed to load resource:" + resource.toString());
+        LOGGER.warn("failed to load resource:{}", resource.toString());
     }
 
     public void loadResource(IResource resource) {

@@ -1,6 +1,6 @@
 package net.cubecraft.world.entity;
 
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import me.gb2022.commons.math.AABB;
 
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ public final class EntityMap {
     private final HashMap<String, List<String>> locations = new HashMap<>();
 
 
-    private final IWorld world;
+    private final World world;
 
-    public EntityMap(IWorld world) {
+    public EntityMap(World world) {
         this.world = world;
     }
 
@@ -122,7 +122,7 @@ public final class EntityMap {
         this.add(e.getCollisionBox(), e.getUuid());
     }
 
-    public IWorld getWorld() {
+    public World getWorld() {
         return this.world;
     }
 }

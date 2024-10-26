@@ -7,7 +7,7 @@ import me.gb2022.commons.registry.ConstructingMap;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.render.model.object.Model;
 import net.cubecraft.resource.ResourceLocation;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.IBlockAccess;
 
 import java.lang.reflect.Type;
@@ -19,6 +19,7 @@ public abstract class BlockModel implements Model {
 
     static {
         REGISTRY.registerItem(SimpleBlockModel.class);
+        REGISTRY.registerItem(LogBlockModel.class);
         REGISTRY.registerItem(ComponentBlockModel.class);
     }
 
@@ -26,9 +27,9 @@ public abstract class BlockModel implements Model {
 
     }
 
-    public abstract void render(IBlockAccess blockAccess, VertexBuilder builder, String layer, IWorld world, double renderX, double renderY, double renderZ);
-
     public abstract String getParticleTexture();
+
+    public abstract void renderBlock(IBlockAccess block, String layer, BlockAccessor world, int face, double renderX, double renderY, double renderZ, VertexBuilder builder);
 
 
     public static class JDeserializer implements JsonDeserializer<BlockModel> {
@@ -49,7 +50,7 @@ public abstract class BlockModel implements Model {
 
             if (!JsonParser.parseString(src).getAsJsonObject().has("cover_json")) {
                 for (Pair<String, String> p : list) {
-                    src = src.replace(p.t1(), p.t2());
+                    src = src.replace(p.getLeft(), p.getRight());
                 }
                 return JsonParser.parseString(src);
             }

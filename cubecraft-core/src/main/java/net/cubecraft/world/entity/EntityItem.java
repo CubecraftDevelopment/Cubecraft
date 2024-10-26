@@ -1,12 +1,12 @@
 package net.cubecraft.world.entity;
 
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.item.ItemStack;
 
 public abstract class EntityItem extends Entity {
     public ItemStack stack;
 
-    public EntityItem(IWorld world) {
+    public EntityItem(World world) {
         super(world);
     }
 }

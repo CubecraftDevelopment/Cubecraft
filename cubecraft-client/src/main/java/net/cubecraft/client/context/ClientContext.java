@@ -2,7 +2,7 @@ package net.cubecraft.client.context;
 
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.level.Level;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 
 public abstract class ClientContext {
     protected final CubecraftClient client;
@@ -17,7 +17,7 @@ public abstract class ClientContext {
     public void init(){
     }
 
-    public void joinWorld(IWorld world) {
+    public void joinWorld(World world) {
     }
 
     public void leaveLevel() {

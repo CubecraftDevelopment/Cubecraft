@@ -1,0 +1,7 @@
+{
+  "type": "cubecraft:simple_block",
+  "layer": "cubecraft:alpha_block",
+  "culling": "solid",
+  "color": "none",
+  "texture": "cubecraft:/block/snow.png"
+}

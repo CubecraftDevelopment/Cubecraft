@@ -1,15 +1,16 @@
 package net.cubecraft.client.registry;
 
+import ink.flybird.quantum3d_legacy.textures.ITextureImage;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.event.SubscribedEvent;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.resource.FontAsset;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.resource.UIAsset;
 import net.cubecraft.event.resource.ResourceLoadFinishEvent;
 import net.cubecraft.resource.Load;
-import me.gb2022.commons.event.EventHandler;
-import me.gb2022.commons.registry.FieldRegistry;
-import me.gb2022.commons.registry.FieldRegistryHolder;
-import ink.flybird.quantum3d_legacy.textures.ITextureImage;
 
 import java.util.Objects;
 
@@ -27,6 +28,10 @@ public interface ResourceRegistry {
     @FieldRegistry("game_icon")
     TextureAsset GAME_ICON = new TextureAsset("cubecraft:/gui/logo/game_icon.png");
 
+    @FieldRegistry("sun")
+    TextureAsset SUN = new TextureAsset("cubecraft:/environment/sun.png");
+
+
     //screen
     @FieldRegistry("image_bg")
     TextureAsset IMAGE_BG = new TextureAsset("cubecraft:/gui/bg.png");
@@ -34,12 +39,15 @@ public interface ResourceRegistry {
     @FieldRegistry("toast")
     ITextureImage TOAST = new TextureAsset("cubecraft:/gui/controls/toast.png");
 
+    @Load("client:startup")
     @FieldRegistry("ascii_page")
     TextureAsset ASCII_PAGE = new TextureAsset("cubecraft:/font/unicode_page_00.png");
 
+    @Load("client:startup")
     @FieldRegistry("text_font")
     FontAsset TEXT_FONT = new FontAsset("cubecraft:/source.otf");
 
+    @Load("client:startup")
     @FieldRegistry("icon_font")
     FontAsset ICON_FONT = new FontAsset("cubecraft:/icon.ttf");
 
@@ -64,15 +72,19 @@ public interface ResourceRegistry {
     UIAsset PAUSE_SCREEN = new UIAsset("cubecraft:/pause_screen.xml");
 
     @FieldRegistry("options_screen")
-    UIAsset OPTIONS_SCREEN = new UIAsset("cubecraft:/setting_screen.xml");;
+    UIAsset OPTIONS_SCREEN = new UIAsset("cubecraft:/setting_screen.xml");
 
 
     @EventHandler
+    @SubscribedEvent("default")
     static void onResourceLoadComplete(ResourceLoadFinishEvent event) {
         if (!Objects.equals(event.getStage(), "default")) {
             return;
         }
         ClientGUIContext.FONT_RENDERER.setFontFamily(TEXT_FONT.getFont());
         ClientGUIContext.ICON_FONT_RENDERER.setFontFamily(ICON_FONT.getFont());
+
+        TextureRegistry.TOAST.load(ResourceRegistry.TOAST);
+        TextureRegistry.IMAGE_BG.load(ResourceRegistry.IMAGE_BG);
     }
 }

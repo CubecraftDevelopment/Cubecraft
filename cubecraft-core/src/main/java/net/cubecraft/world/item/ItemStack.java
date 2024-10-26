@@ -3,6 +3,7 @@ package net.cubecraft.world.item;
 import me.gb2022.commons.math.MathHelper;
 import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.ContentRegistries;
+import net.cubecraft.CoreRegistries;
 import net.cubecraft.world.item.property.IntegerProperty;
 
 import java.util.Objects;
@@ -33,9 +34,9 @@ public final class ItemStack {
             return;
         }
 
-        Item item = ContentRegistries.ITEM.get(this.type);
-        int i = MathHelper.clamp(another.getAmount(), 0,
-                item.getProperty("cubecraft:max_stack_count", IntegerProperty.class).get(this));
+        Item item = CoreRegistries.ITEMS.object(this.type);
+        int i = (int) MathHelper.clamp(another.getAmount(), 0,
+                                       item.getProperty("cubecraft:max_stack_count", IntegerProperty.class).get(this));
         another.amount -= (64 - i);
         this.amount += 64 - i;
     }
@@ -68,7 +69,10 @@ public final class ItemStack {
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString("type", this.type);
         tag.setInteger("count", this.amount);
-        tag.setCompoundTag("nbt", this.nbt);
+        if(this.nbt != null) {
+            tag.setCompoundTag("nbt", this.nbt);
+        }
+
         return tag;
     }
 

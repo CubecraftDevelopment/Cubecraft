@@ -2,7 +2,7 @@ package net.cubecraft.world.chunk;
 
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import me.gb2022.commons.threading.SimpleThreadFactory;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.level.Level;
 
 import java.util.concurrent.ExecutorService;
@@ -17,7 +17,7 @@ public abstract class ChunkProvider {
         this.level = level;
     }
 
-    public abstract void generateChunk(IWorld world, ChunkPos pos);
+    public abstract void generateChunk(World world, ChunkPos pos);
 
     public void loadChunk(String worldID,ChunkPos... pos){
         for (ChunkPos p:pos){
@@ -32,7 +32,7 @@ public abstract class ChunkProvider {
     record Task(ChunkPos pos, ChunkProvider provider, String worldID) implements Runnable {
         @Override
         public void run() {
-            IWorld world = this.provider.getLevel().getDimension(this.worldID);
+            World world = this.provider.getLevel().getDimension(this.worldID);
             this.provider.generateChunk(world, this.pos);
         }
     }

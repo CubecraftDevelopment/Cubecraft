@@ -4,51 +4,49 @@ import me.gb2022.commons.nbt.NBTTagCompound;
 
 public interface ChunkCodec {
     static NBTTagCompound getChunkData(Chunk chunk) {
-        NBTTagCompound tag = new NBTTagCompound();
+        var tag = new NBTTagCompound();
 
         for (int i = 0; i < Chunk.SECTION_SIZE; i++) {
-            tag.setCompoundTag("section" + i, getChunkSection(chunk, i));
+            NBTTagCompound sect = new NBTTagCompound();
+
+            chunk.compressSections(i);
+
+            sect.setTag("meta", chunk.blockMetaSections[i].getData());
+            sect.setTag("light", chunk.lightSections[i].getData());
+
+            tag.setCompoundTag("section_" + i, sect);
         }
+
+        tag.setCompoundTag("blocks", chunk.blocks.getData());
+        tag.setCompoundTag("biomes", chunk.biomes.getData());
 
         return tag;
     }
 
     static void setChunkData(Chunk chunk, NBTTagCompound tag) {
         for (int i = 0; i < Chunk.SECTION_SIZE; i++) {
-            setChunkSection(chunk, i, tag.getCompoundTag("section" + i));
+            NBTTagCompound sect = tag.getCompoundTag("section_" + i);
+
+            chunk.compressSections(i);
+
+            chunk.blockMetaSections[i].setData(sect.getCompoundTag("meta"));
+            chunk.lightSections[i].setData(sect.getCompoundTag("light"));
         }
+
+        chunk.blocks.setData(tag.getCompoundTag("blocks"));
+        chunk.biomes.setData(tag.getCompoundTag("biomes"));
     }
 
     static NBTTagCompound getWorldChunkData(WorldChunk chunk) {
         NBTTagCompound tag = getChunkData(chunk);
         tag.setCompoundTag("task", chunk.getTask().getData());
+        tag.setEnum("state", chunk.getState());
         return tag;
     }
 
     static void setWorldChunkData(WorldChunk chunk, NBTTagCompound tag) {
         setChunkData(chunk, tag);
         chunk.getTask().setData(tag.getCompoundTag("task"));
-    }
-
-    static NBTTagCompound getChunkSection(Chunk chunk, int i) {
-        NBTTagCompound tag = new NBTTagCompound();
-
-        chunk.compressSections(i);
-        tag.setTag("block_id_section", chunk.blockIdSections[i].getData());
-        tag.setTag("block_facing_section", chunk.blockFacingSections[i].getData());
-        tag.setTag("block_meta_sections", chunk.blockMetaSections[i].getData());
-        tag.setTag("light_section", chunk.lightSections[i].getData());
-        tag.setTag("biome_section", chunk.biomeSections[i].getData());
-
-        return tag;
-    }
-
-    static void setChunkSection(Chunk chunk, int i, NBTTagCompound tag) {
-        chunk.blockIdSections[i].setData(tag.getCompoundTag("block_id_section"));
-        chunk.blockFacingSections[i].setData(tag.getCompoundTag("block_facing_section"));
-        chunk.blockMetaSections[i].setData(tag.getCompoundTag("block_meta_sections"));
-        chunk.lightSections[i].setData(tag.getCompoundTag("light_section"));
-        chunk.biomeSections[i].setData(tag.getCompoundTag("biome_section"));
-        chunk.compressSections(i);
+        chunk.setState(tag.getEnum("state", ChunkState.class));
     }
 }

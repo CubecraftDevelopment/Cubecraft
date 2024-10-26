@@ -5,7 +5,6 @@ import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.net.packet.PacketConstructor;
 import net.cubecraft.world.chunk.Chunk;
-import net.cubecraft.world.chunk.ChunkCodec;
 import me.gb2022.commons.nbt.NBT;
 import me.gb2022.commons.nbt.NBTTagCompound;
 import me.gb2022.commons.registry.TypeItem;
@@ -34,7 +33,15 @@ public class PacketChunkSection implements Packet {
         this.world = world;
         this.x = x;
         this.z = z;
-        this.data = ChunkCodec.getChunkSection(chunk, y);
+        NBTTagCompound tag = new NBTTagCompound();
+
+        chunk.compressSections(y);
+        tag.setTag("blocks", chunk.blocks.getData());
+        tag.setTag("biomes", chunk.biomes.getData());
+        tag.setTag("meta", chunk.blockMetaSections[y].getData());
+        tag.setTag("light", chunk.lightSections[y].getData());
+
+        this.data = tag;
         this.y = y;
     }
 

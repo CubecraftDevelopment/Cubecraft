@@ -2,15 +2,15 @@ package net.cubecraft.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.cubecraft.EnvironmentPath;
-import net.cubecraft.SharedContext;
 import me.gb2022.commons.timer.Timer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import me.gb2022.quantum3d.device.DeviceContext;
 import me.gb2022.quantum3d.lwjgl.context.CompactOGLRenderContext;
 import me.gb2022.quantum3d.lwjgl.device.GLFWDeviceContext;
 import me.gb2022.quantum3d.render.RenderContext;
+import net.cubecraft.EnvironmentPath;
+import net.cubecraft.SharedContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class ClientMain {
-    private static final Logger LOGGER= LogManager.getLogger("client-boot");
+    private static final Logger LOGGER = LogManager.getLogger("ClientBootstrap");
 
     public static void main(String[] args) {
         EnvironmentPath.allCreateFolder();
@@ -42,14 +42,10 @@ public final class ClientMain {
             LOGGER.warn("failed to exact native library.");
         }
 
-        PlatformSolution solution=PlatformSolutionProvider.getPlatformSolution();
+        PlatformSolution solution = PlatformSolutionProvider.getPlatformSolution();
 
         Thread.currentThread().setContextClassLoader(SharedContext.CLASS_LOADER);
-        CubecraftClient client = new CubecraftClient(
-                solution.deviceContext(),
-                solution.renderContext(),
-                new Timer(20.0f)
-        );
+        CubecraftClient client = new CubecraftClient(solution.deviceContext(), solution.renderContext(), new Timer(20.0f));
         LOGGER.info("client started.");
         client.run();
         LOGGER.info("client thread stopped.");
@@ -66,7 +62,7 @@ public final class ClientMain {
             object = JsonParser.parseString(new String(stream.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
             stream.close();
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.throwing(e);
             return false;
         }
 
@@ -101,7 +97,7 @@ public final class ClientMain {
                 outputStream.close();
                 stream.close();
             } catch (Exception e) {
-                LOGGER.error(e);
+                LOGGER.throwing(e);
                 LOGGER.error("could not load native library. system will exit");
                 System.exit(0);
             }
@@ -137,10 +133,7 @@ public final class ClientMain {
         }
 
         static PlatformSolution getLWJGLPlatformSolution() {
-            return new PlatformSolution(
-                    new GLFWDeviceContext(),
-                    new CompactOGLRenderContext(3, 1)
-            );
+            return new PlatformSolution(new GLFWDeviceContext(), new CompactOGLRenderContext(3, 1));
         }
     }
 

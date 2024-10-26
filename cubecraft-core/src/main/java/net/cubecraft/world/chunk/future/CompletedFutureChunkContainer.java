@@ -30,7 +30,7 @@ public class CompletedFutureChunkContainer implements ChunkFuture {
     }
 
     @Override
-    public Chunk get() throws InterruptedException, ExecutionException {
+    public Chunk get(){
         return this.chunk;
     }
 

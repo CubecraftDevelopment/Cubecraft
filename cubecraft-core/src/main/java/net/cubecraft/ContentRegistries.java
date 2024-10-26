@@ -1,14 +1,12 @@
 package net.cubecraft;
 
-import me.gb2022.commons.event.EventBus;
 import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.commons.registry.ConstructingMap;
 import me.gb2022.commons.registry.FieldRegistry;
 import me.gb2022.commons.registry.FieldRegistryHolder;
 import me.gb2022.commons.registry.RegisterMap;
 import net.cubecraft.internal.item.ItemRegistry;
-import net.cubecraft.world.IWorld;
-import net.cubecraft.world.biome.BiomeMap;
+import net.cubecraft.world.World;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.behavior.BlockBehavior;
 import net.cubecraft.world.block.blocks.BlockRegistry;
@@ -22,7 +20,7 @@ import net.cubecraft.world.worldGen.pipeline.WorldGenPipelineBuilder;
 
 @FieldRegistryHolder("cubecraft")
 public interface ContentRegistries {
-    EventBus EVENT_BUS = new SimpleEventBus();
+    SimpleEventBus EVENT_BUS = new SimpleEventBus();
 
     //item
     @FieldRegistry("inventory")
@@ -50,13 +48,10 @@ public interface ContentRegistries {
     @FieldRegistry("dimension")
     RegisterMap<Dimension> DIMENSION = new RegisterMap<>(Dimension.class);
 
-    @FieldRegistry("biome")
-    BiomeMap BIOME = new BiomeMap();
-
     @FieldRegistry("world_generator_pipeline")
     RegisterMap<WorldGenPipelineBuilder> CHUNK_GENERATE_PIPELINE = new RegisterMap<>(WorldGenPipelineBuilder.class);
 
     //entity
     @FieldRegistry("entity")
-    ConstructingMap<Entity> ENTITY = new ConstructingMap<>(Entity.class, IWorld.class);
+    ConstructingMap<Entity> ENTITY = new ConstructingMap<>(Entity.class, World.class);
 }

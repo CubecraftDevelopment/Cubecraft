@@ -121,6 +121,7 @@ public class ChunkStatusCache {
                     if (distance >= dist) {
                         continue;
                     }
+
                     this.updateCount++;
                     if (this.handler.apply(pos)) {
                         this.chunkStatusCache[toArrayPos(x, y, z)] = ChunkUpdateStatus.UPDATING;

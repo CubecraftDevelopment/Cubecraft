@@ -28,17 +28,4 @@ public class ClientHandlerDataReceive extends ClientNetHandler {
     public void entityReceived(PacketEntityData packet, NetHandlerContext context) {
         this.client.getClientWorldContext().getWorld().addEntity(packet.getEntity());
     }
-
-
-    @PacketListener
-    public void clientLocationUpdate(PacketEntityPosition loc, NetHandlerContext ctx) {
-        Entity e = this.client.getClientWorldContext().getWorld().getEntity(loc.getUuid());
-        if (Objects.equals(loc.getUuid(), this.client.getClientWorldContext().getPlayer().getUuid())) {
-
-        } else {
-            if (e != null && Objects.equals(loc.getNewLoc().getDim(), this.client.getClientWorldContext().getWorld().getId())) {
-                e.setLocation(loc.getNewLoc(), CollectionUtil.wrap(this.client.getClientWorldContext().getWorld().getId(), this.client.getClientWorldContext().getWorld()));
-            }
-        }
-    }
 }

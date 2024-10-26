@@ -1,41 +1,39 @@
 package net.cubecraft.world.worldGen.pipeline;
 
-import net.cubecraft.world.chunk.ProviderChunk;
-import me.gb2022.commons.container.ArrayQueue;
+import net.cubecraft.world.chunk.PrimerChunk;
+import net.cubecraft.world.chunk.pos.ChunkPos;
 
-import java.util.List;
+import java.util.ArrayDeque;
 
 public final class ChunkGenerateTask {
     private final ChunkGeneratorPipeline pipeline;
-    private final ProviderChunk chunk;
-    private final ChunkGenerateContext context;
+    private final ChunkPos position;
 
-    public ChunkGenerateTask(ChunkGeneratorPipeline pipeline, ProviderChunk chunk) {
+    public ChunkGenerateTask(ChunkGeneratorPipeline pipeline, ChunkPos pos) {
         this.pipeline = pipeline;
-        this.chunk = chunk;
-        this.context = new ChunkGenerateContext(chunk, pipeline);
+        this.position = pos;
     }
 
-    public static ChunkGenerateTask createTask(ChunkGeneratorPipeline pipeline, ProviderChunk chunk) {
-        return new ChunkGenerateTask(pipeline, chunk);
+    public static ChunkGenerateTask createTask(ChunkGeneratorPipeline pipeline, ChunkPos pos) {
+        return new ChunkGenerateTask(pipeline, pos);
     }
 
-    public static Runnable createTask(ChunkGeneratorPipeline pipeline, ProviderChunk chunk, ArrayQueue<ProviderChunk> dest) {
+    public static Runnable createTask(ChunkGeneratorPipeline pipeline, ChunkPos pos, ArrayDeque<PrimerChunk> dest) {
         return () -> {
-            ChunkGenerateTask t = createTask(pipeline, chunk);
+            ChunkGenerateTask t = createTask(pipeline, pos);
             dest.add(t.generateChunk());
         };
     }
 
-    public ProviderChunk getChunk() {
-        return chunk;
+    public ChunkPos getPosition() {
+        return position;
     }
 
-    public ProviderChunk generateChunk() {
-        List<TerrainGeneratorHandler> handlers = this.pipeline.getHandlerList();
-        for (TerrainGeneratorHandler handler : handlers) {
-            handler.generate(this.context);
-        }
-        return this.context.getChunk();
+    public PrimerChunk generateChunk() {
+        return this.pipeline.run(this.position);
+    }
+
+    public void completeChunk() {
+        //this.pipeline.run(this.position);
     }
 }

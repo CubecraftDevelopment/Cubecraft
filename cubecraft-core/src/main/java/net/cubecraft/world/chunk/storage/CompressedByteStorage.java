@@ -1,6 +1,6 @@
 package net.cubecraft.world.chunk.storage;
 
-public class CompressedByteStorage implements ByteStorage {
+public final class CompressedByteStorage implements ByteStorage {
     private final byte data;
 
     public CompressedByteStorage(byte data) {

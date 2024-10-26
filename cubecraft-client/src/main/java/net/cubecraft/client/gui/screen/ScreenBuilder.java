@@ -1,6 +1,10 @@
 package net.cubecraft.client.gui.screen;
 
 import net.cubecraft.client.resource.UIAsset;
+import org.xml.sax.SAXException;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 public interface ScreenBuilder {
     static ScreenBuilder xml(UIAsset screen) {
@@ -39,7 +43,8 @@ public interface ScreenBuilder {
 
         @Override
         public Screen build() {
-            Screen scr = new Screen(screen.getDom().getDocumentElement());
+            Screen scr = new Screen(this.screen.getDom().getDocumentElement());
+
             if (this.parent != null) {
                 scr.setParentScreen(new Screen(this.parent.getDom().getDocumentElement()));
             }

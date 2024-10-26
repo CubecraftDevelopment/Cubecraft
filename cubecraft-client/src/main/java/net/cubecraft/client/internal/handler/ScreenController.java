@@ -26,6 +26,8 @@ import java.util.Objects;
 
 
 public class ScreenController {
+
+
     @EventHandler
     @SubscribedEvent("cubecraft:pause_screen")
     public void buttonClicked_PauseScreen(ButtonClickedEvent e) {
@@ -49,13 +51,11 @@ public class ScreenController {
                     context.setScreen(ScreenBuilder.xml(ResourceRegistry.MULTI_PLAYER_SCREEN, ResourceRegistry.TITLE_SCREEN));
             case "button_option" -> context.setScreen(ScreenBuilder.xml(ResourceRegistry.OPTIONS_SCREEN,ResourceRegistry.TITLE_SCREEN));
 
-            case "button_check_version" -> {
-                ScreenUtil.createPopup(
-                        SharedContext.I18N.get("version_check.start"),
-                        SharedContext.I18N.get("version_check.start_detail"),
-                        100, Popup.INFO
-                );
-            }
+            case "button_check_version" -> ScreenUtil.createPopup(
+                    SharedContext.I18N.get("version_check.start"),
+                    SharedContext.I18N.get("version_check.start_detail"),
+                    100, Popup.INFO
+            );
             case "button_quit" -> ClientSharedContext.getClient().setRunning(false);
         }
     }

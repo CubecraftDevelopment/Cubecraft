@@ -6,10 +6,6 @@ import net.cubecraft.internal.block.BlockBehaviorRegistry;
 import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.OverwrittenBlock;
-import net.cubecraft.world.block.property.BlockProperty;
-import net.cubecraft.world.block.property.attribute.SimpleBooleanProperty;
-
-import java.util.Map;
 
 /**
  * block registry,auto register with field registry,
@@ -27,10 +23,10 @@ public interface BlockRegistry {
     Block STONE = new StoneBlock("cubecraft:stone");
 
     @FieldRegistry(value = "oak_leaves")
-    Block OAK_LEAVES = new OverwrittenBlock(BlockType.OAK_LEAVES, BlockBehaviorRegistry.LEAVES);
+    Block OAK_LEAVES = new StoneBlock(BlockType.OAK_LEAVES);
 
     @FieldRegistry(value = "oak_log")
-    Block OAK_LOG = new OverwrittenBlock(BlockType.OAK_LOG, BlockBehaviorRegistry.LOG);
+    Block OAK_LOG = new StoneBlock(BlockType.OAK_LOG);
 
     @FieldRegistry(value = "dirt")
     Block DIRT = new DirtBlock(BlockType.DIRT);
@@ -41,6 +37,17 @@ public interface BlockRegistry {
     @FieldRegistry(value = "calm_water")
     Block CALM_WATER = new LiquidBlock("cubecraft:calm_water");
 
+    @FieldRegistry("snow")
+    Block SNOW = new DirtBlock("cubecraft:snow");
+
+    @FieldRegistry("ice")
+    Block ICE = new IceBlock("cubecraft:ice");
+
+    @FieldRegistry("sand")
+    Block SAND = new DirtBlock("cubecraft:sand");
+
+    @FieldRegistry("gravel")
+    Block GRAVEL = new DirtBlock("cubecraft:gravel");
 
     //extra blocks
     @FieldRegistry(value = "coarse_dirt")
@@ -72,22 +79,4 @@ public interface BlockRegistry {
     Block UNKNOWN_BLOCK = new OverwrittenBlock("cubecraft:fallback", BlockBehaviorRegistry.STONE);
 
 
-
-
-
-    class BlockAir extends Block {
-        public BlockAir() {
-            super("cubecraft:air");
-        }
-
-        @Override
-        public void initPropertyMap(Map<String, BlockProperty<?>> map) {
-            map.put("cubecraft:solid",new SimpleBooleanProperty(false));
-        }
-
-        @Override
-        public String[] getBehaviorList() {
-            return new String[0];
-        }
-    }
 }

@@ -34,7 +34,7 @@ import net.cubecraft.client.render.renderer.ComponentRendererPart;
 import net.cubecraft.client.resource.ModelAsset;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.event.resource.ResourceLoadStartEvent;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +62,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
 
     private final CubecraftClient client;
     private final Window window;
-    private final EventBus eventBus = new SimpleEventBus();
+    private final SimpleEventBus eventBus = new SimpleEventBus();
     private final FrameBuffer buffer = new FrameBuffer();
     private Screen screen;
     private Screen hoverScreen;
@@ -88,6 +88,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     @Override
     public void init() {
         this.client.getClientEventBus().callEvent(new GUIContextInitEvent(this.client, this));
+        this.loadingScreen=new LogoLoadingScreen();
     }
 
     public void tick() {
@@ -224,7 +225,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
         String s = screen.getId();
     }
 
-    public EventBus getEventBus() {
+    public SimpleEventBus getEventBus() {
         return eventBus;
     }
 
@@ -271,7 +272,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     }
 
     @Override
-    public void joinWorld(IWorld world) {
+    public void joinWorld(World world) {
         this.setScreen(new HUDScreen());
     }
 

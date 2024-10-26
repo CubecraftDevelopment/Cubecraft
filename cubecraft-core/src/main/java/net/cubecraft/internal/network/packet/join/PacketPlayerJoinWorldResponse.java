@@ -32,21 +32,13 @@ public class PacketPlayerJoinWorldResponse implements Packet {
         NBTTagCompound tag=new NBTTagCompound();
         tag.setCompoundTag("level",this.levelInfo.getTag());
         tag.setCompoundTag("entity",this.tag);
-        try {
-            NBT.write(tag,new ByteBufOutputStream(buffer));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        NBT.write(tag,new ByteBufOutputStream(buffer));
     }
 
     @Override
     public void readPacketData(ByteBuf buffer) {
         NBTTagCompound tag;
-        try {
-            tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
         this.levelInfo=new LevelInfo(tag.getCompoundTag("level"));
         this.tag=tag.getCompoundTag("entity");
     }

@@ -2,7 +2,7 @@ package net.cubecraft.world.chunk.storage;
 
 import java.util.Arrays;
 
-public class SimpleByteStorage implements ByteStorage {
+public final class SimpleByteStorage implements ByteStorage {
     private final byte[] data;
 
     public SimpleByteStorage(ByteStorage storage) {

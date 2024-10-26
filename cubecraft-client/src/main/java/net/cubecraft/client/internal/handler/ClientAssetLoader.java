@@ -1,31 +1,30 @@
 package net.cubecraft.client.internal.handler;
 
-import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.context.ClientRenderContext;
-import net.cubecraft.event.resource.ResourceReloadEvent;
-import net.cubecraft.client.render.model.block.BlockModel;
-import net.cubecraft.client.render.model.block.BlockModelComponent;
-import net.cubecraft.client.render.block.IBlockRenderer;
-import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.resource.ResourceLoadHandler;
-import net.cubecraft.resource.ResourceLoadStage;
-import net.cubecraft.resource.ResourceLocation;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import net.cubecraft.EnvironmentPath;
-import net.cubecraft.SharedContext;
-
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import ink.flybird.quantum3d_legacy.textures.TextureStateManager;
 import me.gb2022.commons.I18nHelper;
-import me.gb2022.commons.container.NameSpaceMap;
-
-import org.apache.logging.log4j.Logger;
+import net.cubecraft.EnvironmentPath;
+import net.cubecraft.SharedContext;
+import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.context.ClientRenderContext;
+import net.cubecraft.client.render.block.IBlockRenderer;
+import net.cubecraft.client.render.model.block.BlockModel;
+import net.cubecraft.client.resource.TextureAsset;
+import net.cubecraft.event.resource.ResourceReloadEvent;
+import net.cubecraft.resource.ResourceLoadHandler;
+import net.cubecraft.resource.ResourceLoadStage;
+import net.cubecraft.resource.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Objects;
 
 public class ClientAssetLoader {
     public final HashSet<TextureAsset> textureList = new HashSet<>();
@@ -35,13 +34,15 @@ public class ClientAssetLoader {
     public void loadBlockModel(ResourceReloadEvent e) {
         SharedContext.GSON_BUILDER.registerTypeAdapter(BlockModel.class, new BlockModel.JDeserializer());
         try {
-            for (IBlockRenderer renderer : ((NameSpaceMap<? extends IBlockRenderer>) ClientRenderContext.BLOCK_RENDERER).values()) {
+            var values = ClientRenderContext.BLOCK_RENDERERS.values();
+
+            for (IBlockRenderer renderer :values) {
                 if (renderer != null) {
                     renderer.initializeRenderer(textureList);
                 }
             }
         } catch (Exception ex) {
-            this.logger.error(ex);
+            this.logger.throwing(ex);
         }
     }
 
@@ -52,7 +53,7 @@ public class ClientAssetLoader {
             TextureAsset[] f = textureList.toArray(new TextureAsset[0]);
 
             for (TextureAsset r : f) {
-                if(r==null){
+                if (r == null) {
                     continue;
                 }
                 ClientSharedContext.RESOURCE_MANAGER.loadResource(r);
@@ -65,7 +66,7 @@ public class ClientAssetLoader {
             terrain.generateTexture();
             terrain.completePlannedLoad(ClientSharedContext.getClient().getClientGUIContext(), 0, 100);
 
-            File f2 = new File(EnvironmentPath.CACHE_FOLDER+"/terrain.png");
+            File f2 = new File(EnvironmentPath.CACHE_FOLDER + "/terrain.png");
             terrain.export(f2);
 
             terrain.upload();
@@ -73,7 +74,7 @@ public class ClientAssetLoader {
             TextureStateManager.setTextureMipMap(terrain, true);
             TextureStateManager.setTextureClamp(terrain, true);
         } catch (Exception ex) {
-            this.logger.error(ex);
+            this.logger.throwing(ex);
         }
     }
 
@@ -85,7 +86,7 @@ public class ClientAssetLoader {
                 ClientRenderContext.COLOR_MAP.get(s2).load();
             }
         } catch (Exception ex) {
-            this.logger.error(ex);
+            this.logger.throwing(ex);
         }
     }
 
@@ -102,14 +103,18 @@ public class ClientAssetLoader {
         SharedContext.I18N.setCurrentType(f);
         try {
             for (String s : e.resourceManager().getNameSpaces()) {
-                JsonArray arr = JsonParser.parseString(e.resourceManager().getResource(ResourceLocation.language(s, "language_index.json")).getAsText()).getAsJsonArray();
+                JsonArray arr = JsonParser.parseString(e.resourceManager()
+                                                               .getResource(ResourceLocation.language(s, "language_index.json"))
+                                                               .getAsText()).getAsJsonArray();
                 for (JsonElement registry : arr) {
                     String type = registry.getAsJsonObject().get("type").getAsString();
                     String author = registry.getAsJsonObject().get("author").getAsString();
                     String display = registry.getAsJsonObject().get("author").getAsString();
                     String file = registry.getAsJsonObject().get("file").getAsString();
 
-                    String data = e.resourceManager().getResource(ResourceLocation.language(file.split(":")[0], file.split(":")[1])).getAsText();
+                    String data = e.resourceManager()
+                            .getResource(ResourceLocation.language(file.split(":")[0], file.split(":")[1]))
+                            .getAsText();
 
                     if (!SharedContext.I18N.has(type)) {
                         SharedContext.I18N.createNew(type, display);
@@ -119,7 +124,7 @@ public class ClientAssetLoader {
                 }
             }
         } catch (Exception ex) {
-            this.logger.error(ex);
+            this.logger.throwing(ex);
         }
     }
 

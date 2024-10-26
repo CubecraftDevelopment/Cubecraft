@@ -2,6 +2,9 @@ package net.cubecraft.internal;
 
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
+import net.cubecraft.CoreRegistries;
+import net.cubecraft.internal.item.BlockItem;
+import net.cubecraft.world.block.blocks.Blocks;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import net.cubecraft.ContentRegistries;
@@ -13,13 +16,11 @@ import net.cubecraft.internal.block.BlockBehaviorRegistry;
 import net.cubecraft.internal.entity.EntityRegistry;
 import net.cubecraft.internal.inventory.InventoryRegistry;
 import net.cubecraft.internal.item.ItemRegistry;
-import net.cubecraft.internal.network.PacketRegistry;
-import net.cubecraft.internal.world.biome.BiomesRegistry;
 import net.cubecraft.mod.CubecraftMod;
 import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.dimension.DimensionRegistry;
 import net.cubecraft.world.item.behavior.ItemBehaviorRegistry;
-import net.cubecraft.world.worldGen.generator.WorldGeneratorPipelineRegistry;
+import net.cubecraft.world.worldGen.pipeline.pipelines.WorldGeneratorPipelineRegistry;
 
 @CubecraftMod(side = Side.SHARED)
 public class CubecraftCoreInternalMod {
@@ -29,12 +30,19 @@ public class CubecraftCoreInternalMod {
     @EventHandler
     @SubscribedEvent(MOD_ID)
     public static void onModConstruct(ModConstructEvent event){
+        CoreRegistries.BLOCKS.handle(Blocks.class);
+        CoreRegistries.BLOCKS.withShadow((reg)-> CoreRegistries.ITEMS.register(reg.getName(), new BlockItem(reg.getName())));
+
+
+
+
+
         ContentRegistries.EVENT_BUS.registerEventListener(ItemRegistry.class);
 
         ContentRegistries.ENTITY.registerGetFunctionProvider(EntityRegistry.class);
         ContentRegistries.INVENTORY.registerGetFunctionProvider(InventoryRegistry.class);
-        ContentRegistries.BIOME.registerFieldHolder(BiomesRegistry.class);
-        SharedContext.PACKET.registerGetFunctionProvider(PacketRegistry.class);
+        //ContentRegistries.BIOME.registerFieldHolder(BiomesRegistry.class);
+        //SharedContext.PACKET.registerGetFunctionProvider(PacketRegistry.class);
         SharedContext.SESSION_SERVICE.registerItem("cubecraft:default", new OfflineSessionService());
 
 
@@ -42,6 +50,11 @@ public class CubecraftCoreInternalMod {
         ContentRegistries.CHUNK_GENERATE_PIPELINE.registerFieldHolder(WorldGeneratorPipelineRegistry.class);
         ContentRegistries.ITEM_BEHAVIOR.registerFieldHolder(ItemBehaviorRegistry.class);
         ContentRegistries.ITEM.registerFieldHolder(ItemRegistry.class);
+
+
+
+
+
 
         ContentRegistries.BLOCK_BEHAVIOR.registerFieldHolder(BlockBehaviorRegistry.class);
         ContentRegistries.BLOCK.registerFieldHolder(BlockRegistry.class);

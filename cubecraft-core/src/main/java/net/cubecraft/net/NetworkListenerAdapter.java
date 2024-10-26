@@ -66,7 +66,7 @@ public abstract class NetworkListenerAdapter extends NetWorkEventBus {
             buffer.writeBytes(data);
         } catch (Exception e) {
             this.logger.error("find exception when writing packet:" + e.getMessage());
-            this.logger.error(e);
+            this.logger.throwing(e);
         }
     }
 
@@ -98,7 +98,7 @@ public abstract class NetworkListenerAdapter extends NetWorkEventBus {
             pkt.readPacketData(data);
         } catch (Exception e) {
             this.logger.error("find exception when decoding packet:" + e.getMessage());
-            this.logger.error(e);
+            this.logger.throwing(e);
         }
         data.release();
 

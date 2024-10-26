@@ -1,15 +1,15 @@
 package net.cubecraft.event.chunk;
 
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.Chunk;
 
 public abstract class ChunkEvent {
     private final Chunk chunk;
-    private final IWorld world;
+    private final World world;
     private final long x;
     private final long z;
 
-    protected ChunkEvent(Chunk chunk, IWorld world, long x, long z) {
+    protected ChunkEvent(Chunk chunk, World world, long x, long z) {
         this.chunk = chunk;
         this.world = world;
         this.x = x;
@@ -20,7 +20,7 @@ public abstract class ChunkEvent {
         return this.chunk;
     }
 
-    public IWorld getWorld() {
+    public World getWorld() {
         return this.world;
     }
 

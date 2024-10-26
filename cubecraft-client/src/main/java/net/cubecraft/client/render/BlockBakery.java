@@ -2,7 +2,8 @@ package net.cubecraft.client.render;
 
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.render.model.object.Vertex;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.BlockAccessor;
+import net.cubecraft.world.World;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.IBlockAccess;
 import me.gb2022.commons.container.Vector3;
@@ -83,7 +84,7 @@ public interface BlockBakery {
      */
 
 
-    static float[] getTopAO(IWorld world, long x, long y, long z) {
+    static float[] getTopAO(World world, long x, long y, long z) {
         //00,01,10,11
         float[] result = new float[4];
 
@@ -116,7 +117,7 @@ public interface BlockBakery {
     }
 
 
-    static float[] getAOModelModifier(IWorld world, long x, long y, long z) {
+    static float[] getAOModelModifier(World world, long x, long y, long z) {
         float[] result = new float[8];
         Arrays.fill(result, 1.0f);
 
@@ -173,7 +174,7 @@ public interface BlockBakery {
     }
 
 
-    static double getSmoothedLight(IWorld world, long x, long y, long z, Vector3d relativePos) {
+    static double getSmoothedLight(BlockAccessor world, long x, long y, long z, Vector3d relativePos) {
 
 
         float[] cornerResults = new float[8];
@@ -271,7 +272,7 @@ public interface BlockBakery {
     }
 
 
-    static Vertex bakeVertex(Vertex v, Vector3d pos, IWorld w, long x, long y, long z, int face) {
+    static Vertex bakeVertex(Vertex v, Vector3d pos, BlockAccessor w, long x, long y, long z, int face) {
         if (ClientSettingRegistry.CHUNK_USE_AO.getValue()) {
             v.multiplyColor(getSmoothedLight(w, x, y, z, pos) / 128d);
         } else {

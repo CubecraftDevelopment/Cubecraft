@@ -1,46 +1,45 @@
 package net.cubecraft.client.render.chunk.compile;
 
+import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
-import net.cubecraft.client.render.chunk.layer.ChunkLayer;
-import net.cubecraft.world.IWorld;
-
-import java.util.Objects;
+import net.cubecraft.world.World;
 
 public final class ChunkCompileRequest {
     private final RenderChunkPos pos;
-    private final ChunkLayer layer;
-    private final IWorld world;
-    private final String layerId;
+    private final World world;
 
-    private ChunkCompileRequest(IWorld world, RenderChunkPos pos, String layerId, ChunkLayer layer) {
+    private final ChunkLayerCompilation[] compilations;
+
+
+    private ChunkCompileRequest(World world, RenderChunkPos pos, ChunkLayerCompilation... compilations) {
+        this.compilations = compilations;
         this.pos = pos;
-        this.layerId = layerId;
-        this.layer = layer;
         this.world = world;
     }
 
-    public static ChunkCompileRequest buildAt(IWorld world, RenderChunkPos pos, String layerId) {
-        return new ChunkCompileRequest(world, pos, layerId, null);
+    public static ChunkCompileRequest build(World world, RenderChunkPos pos) {
+        return build(world, pos, ClientRenderContext.CHUNK_LAYER_RENDERER.keySet().toArray(new String[0]));
     }
 
-    public static ChunkCompileRequest rebuildAt(IWorld world, RenderChunkPos pos, ChunkLayer layer) {
-        return new ChunkCompileRequest(world, pos, layer.getID(), layer);
+    public static ChunkCompileRequest build(World world, RenderChunkPos pos, String... layers) {
+        return new ChunkCompileRequest(world, pos, ChunkLayerCompilation.ofLayers(pos, layers));
     }
 
-    public ChunkLayer getLayer() {
-        return this.layer;
+    public static ChunkCompileRequest build(World world, RenderChunkPos pos, String layer) {
+        return new ChunkCompileRequest(world, pos, ChunkLayerCompilation.ofLayers(pos, layer));
+    }
+
+
+    public ChunkLayerCompilation[] getCompilations() {
+        return compilations;
     }
 
     public RenderChunkPos getPos() {
         return this.pos;
     }
 
-    public IWorld getWorld() {
+    public World getWorld() {
         return this.world;
-    }
-
-    public String getLayerId() {
-        return this.layerId;
     }
 
     @Override
@@ -51,6 +50,6 @@ public final class ChunkCompileRequest {
         if (!(obj instanceof ChunkCompileRequest req)) {
             return false;
         }
-        return req.getPos().equals(this.getPos()) && Objects.equals(req.getLayerId(), this.layerId);
+        return req.getPos().equals(this.getPos()) && req.getWorld().equals(this.getWorld());
     }
 }

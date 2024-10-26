@@ -67,4 +67,13 @@ public interface EnvironmentPath {
     static File getConfigFile(String name) {
         return new File(CONFIG_FOLDER + "/" + name);
     }
+
+    static File getEntityDBFile(String sid) {
+        String path="%s/%s/%s".formatted(SAVE_FOLDER, sid, "entities");
+        File f = new File(path);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return f;
+    }
 }

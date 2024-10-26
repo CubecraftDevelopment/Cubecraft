@@ -2,12 +2,12 @@ package net.cubecraft.world.entity;
 
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import java.util.Collection;
 import java.util.List;
 
 public abstract class EntityNonLiving extends Entity {
-    public EntityNonLiving(IWorld world) {
+    public EntityNonLiving(World world) {
         super(world);
     }
 

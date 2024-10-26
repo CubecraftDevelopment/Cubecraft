@@ -1,11 +1,11 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
+import ink.flybird.quantum3d_legacy.BufferAllocation;
+import ink.flybird.quantum3d_legacy.GLUtil;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.MathHelper;
 import me.gb2022.commons.registry.TypeItem;
-import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.quantum3d_legacy.GLUtil;
 import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
 import me.gb2022.quantum3d.render.vertex.DrawMode;
@@ -16,7 +16,7 @@ import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
-import net.cubecraft.world.worldGen.noiseGenerator.PerlinNoise;
+import net.cubecraft.world.worldGen.noise.PerlinNoise;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
@@ -26,11 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
-//todo:区块压缩16个section共享一张表并整体传输
-
 @TypeItem(WorldRendererType.CLOUD)
-public class CloudRenderer extends IWorldRenderer {
+public final class CloudRenderer extends IWorldRenderer {
     public static final VertexBuilderAllocator ALLOCATOR = new VertexBuilderAllocator(LevelRenderer.ALLOCATOR);
 
     public static final float CLASSIC_LIGHT_Z = 0.8f;
@@ -122,38 +119,49 @@ public class CloudRenderer extends IWorldRenderer {
             return;
         }
 
-        int d2 = this.cloudRenderDistance;
+        var d2 = this.cloudRenderDistance;
         List<Vector2d> list = new ArrayList<>();
 
-        float cloudSize = this.cfg.cloudSize;
-        float cloudRadius = cloudSize / 2;
+        var size = this.cfg.cloudSize;
+        var radius = size / 2;
 
-        int range = (int) ((ClientSettingRegistry.getFixedViewDistance() * 16 * 5) / cloudSize) - 3;
+        int range = (int) ((ClientSettingRegistry.getFixedViewDistance() * 16 * 5) / size) - 3;
 
-        long camCX = this.cameraGridX;
-        long camCZ = this.cameraGridZ;
+        var ox = 0;
+        var oz = this.world.getTime() * 0.05f;
 
+        var gx = (long) (this.cameraGridX + ox / size);
+        var gz = (long) (this.cameraGridZ + oz / size);
 
-        for (long cx = camCX - range; cx < camCX + range; cx++) {
-            for (long cz = camCZ - range; cz < camCZ + range; cz++) {
-                if (!this.regionCache.getValue(cx, cz)) {
+        this.regionCache.moveTo(gx, gz);
+
+        this.camera.setUpGlobalCamera();
+
+        for (var x = gx - range; x <= gx + range; x++) {
+            for (var z = gz - range; z <= gz + range; z++) {
+                if (!this.regionCache.getValue(x, z)) {
                     continue;
                 }
-                double cloudX = cx * (int) cloudSize;
-                double cloudZ = cz * (int) cloudSize;
-                double cloudY = this.cfg.cloudHeight;
-                AABB cloudAABB = new AABB(cloudX, cloudY, cloudZ, cloudX + cloudSize, cloudY + this.cfg.cloudThick, cloudZ + cloudSize);
-                if (!this.camera.aabbInFrustum(cloudAABB)) {
+
+                var cx = x * (int) size;
+                var cz = z * (int) size;
+                var cy = this.cfg.cloudHeight;
+
+
+                var aabb = new AABB(cx - radius - ox, cy, cz - radius - oz, cx + radius - ox, cy + this.cfg.cloudThick, cz + radius - oz);
+
+                if (!this.camera.aabbInFrustum(aabb)) {
                     continue;
                 }
-                list.add(new Vector2d(cx, cz));
+
+                list.add(new Vector2d(x, z));
             }
         }
 
         list.sort((o1, o2) -> {
             float centeredHeight = cfg.cloudHeight + cfg.cloudThick / 2;
-            Vector3d vec1 = new Vector3d(o1.x * cloudSize + cloudRadius, centeredHeight, o1.y * cloudSize + cloudRadius);
-            Vector3d vec2 = new Vector3d(o2.x * cloudSize + cloudRadius, centeredHeight, o2.y * cloudSize + cloudRadius);
+            Vector3d vec1 = new Vector3d(o1.x * size + radius+ox, centeredHeight, o1.y * size + radius+oz);
+            Vector3d vec2 = new Vector3d(o2.x * size + radius+ox, centeredHeight, o2.y * size + radius+oz);
 
             return -Double.compare(vec1.distance(this.camera.getPosition()), vec2.distance(this.camera.getPosition()));
         });
@@ -161,17 +169,20 @@ public class CloudRenderer extends IWorldRenderer {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_CULL_FACE);
 
+        this.setGlobalCamera(delta);
+
         for (Vector2d vec : list) {
+
             GL11.glPushMatrix();
             long i = (long) vec.x();
             long j = (long) vec.y();
 
-            double cloudX = i * (int) cloudSize;
-            double cloudY = this.cfg.cloudHeight;
-            double cloudZ = j * (int) cloudSize;
+            double x = i * (int) size;
+            double y = this.cfg.cloudHeight;
+            double z = j * (int) size;
 
-            this.setGlobalCamera(delta);
-            camera.setupObjectCamera(new Vector3d(cloudX, cloudY, cloudZ));
+
+            camera.setupObjectCamera(new Vector3d(x - ox, y, z-oz));
             this.renderLists[0].call();
             this.renderLists[1].call();
             if (this.shouldDiscard(i, j - 1)) {
@@ -189,7 +200,7 @@ public class CloudRenderer extends IWorldRenderer {
             GL11.glPopMatrix();
         }
 
-        double d3 = d2 * cloudSize;
+        double d3 = d2 * size;
         double a = Math.sqrt(d3) * d3;
         GLUtil.setupFog(a, this.parent.getFogColor());
 
@@ -206,16 +217,7 @@ public class CloudRenderer extends IWorldRenderer {
         if (this.cameraGridX != cx || this.cameraGridZ != cz) {
             this.cameraGridX = cx;
             this.cameraGridZ = cz;
-            this.regionCache.moveTo(cx, cz);
         }
-    }
-
-    @Override
-    public void postRender(RenderType type, float delta) {
-        if (type != RenderType.TRANSPARENT) {
-            return;
-        }
-        GLUtil.checkError("post_cloud_render");
     }
 
     public void generateData(int face) {
@@ -294,33 +296,22 @@ public class CloudRenderer extends IWorldRenderer {
         return !this.regionCache.getValue(x, z);
     }
 
-    record Config(
-            int cloudColor,
-            float cloudThick,
-            float cloudSize,
-            boolean useClassLighting,
-            boolean effectByWorldLight,
+    record Config(int cloudColor, float cloudThick, float cloudSize, boolean useClassLighting, boolean effectByWorldLight,
 
-            float cloudDense,
-            float cloudHeight,
-            float motionX,
-            float motionZ
-    ) {
+                  float cloudDense, float cloudHeight, float motionX, float motionZ) {
     }
 
     private static class CloudRegionCache {
-        private final CloudRenderer parent;
         private final PerlinNoise noise;
         private final boolean[] noiseCache;
         private final boolean[] noiseCacheCopied;
         private final int cloudRenderDistance;
         private final int dataSize;
-        private long centerX = Long.MIN_VALUE + 1024;
-        private long centerZ = Long.MIN_VALUE + 1024;
+        private long centerX = 0;
+        private long centerZ = 0;
 
         public CloudRegionCache(CloudRenderer parent) {
-            this.parent = parent;
-            this.cloudRenderDistance = (int) ((ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16 * 5) / this.parent.cfg.cloudSize) + 1;
+            this.cloudRenderDistance = (int) ((ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16 * 5) / parent.cfg.cloudSize) + 4;
             this.dataSize = this.cloudRenderDistance * 2 + 1;
             this.noiseCache = new boolean[dataSize * dataSize];
             this.noiseCacheCopied = new boolean[dataSize * dataSize];
@@ -359,8 +350,7 @@ public class CloudRenderer extends IWorldRenderer {
                     int newX = x + offsetX;
                     int newZ = z + offsetZ;
 
-                    if (newX >= 0 && newX < this.dataSize
-                            && newZ >= 0 && newZ < this.dataSize) {
+                    if (newX >= 0 && newX < this.dataSize && newZ >= 0 && newZ < this.dataSize) {
                         this.noiseCache[toArrayPos(x, z)] = this.noiseCacheCopied[toArrayPos(newX, newZ)];
                     } else {
                         this.noiseCache[toArrayPos(x, z)] = generateNoiseValue(toAbsX(x), toAbsZ(z));
@@ -370,19 +360,19 @@ public class CloudRenderer extends IWorldRenderer {
         }
 
         public long toAbsX(int x) {
-            return x + this.centerX - this.cloudRenderDistance - 2;
+            return x + this.centerX - this.cloudRenderDistance;
         }
 
         public long toAbsZ(int z) {
-            return z + this.centerZ - this.cloudRenderDistance - 2;
+            return z + this.centerZ - this.cloudRenderDistance;
         }
 
         public int toRelX(long x) {
-            return (int) (x - this.centerX + this.cloudRenderDistance + 2);
+            return (int) (x - this.centerX + this.cloudRenderDistance);
         }
 
         public int toRelZ(long z) {
-            return (int) (z - this.centerZ + this.cloudRenderDistance + 2);
+            return (int) (z - this.centerZ + this.cloudRenderDistance);
         }
 
         public boolean getValue(long x, long z) {

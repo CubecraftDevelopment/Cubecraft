@@ -1,8 +1,8 @@
 package ink.flybird.quantum3d_legacy.draw;
 
-import me.gb2022.commons.context.LifetimeCounter;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.commons.context.LifetimeCounter;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
@@ -10,9 +10,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.ByteBuffer;
 
 public final class OffHeapVertexBuilder extends VertexBuilder {
-    public static final int ALLOCATED = 1;
-    public static final int RELEASED = 2;
-
+    private final Exception callerRef = new RuntimeException("reference");
 
     private final ByteBuffer vertexArray;
     private final ByteBuffer texCoordArray;
@@ -136,9 +134,31 @@ public final class OffHeapVertexBuilder extends VertexBuilder {
         if (!this.counter.isAllocated()) {
             return;
         }
+
+        this.free();
+
         try {
-            this.free();
+            //System.out.println("[-----leak-----]");
+            //for (var e:this.callerRef.getStackTrace()){
+            //    System.out.println(e);
+            //}
         } catch (Exception ignored) {
         }
     }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.colorArray.clear();
+        this.colorArray.position(0);
+        this.normalArray.clear();
+        this.normalArray.position(0);
+        this.rawArray.clear();
+        this.rawArray.position(0);
+        this.vertexArray.clear();
+        this.vertexArray.position(0);
+        this.texCoordArray.clear();
+        this.texCoordArray.position(0);
+    }
+
 }

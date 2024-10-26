@@ -1,13 +1,12 @@
 package net.cubecraft.world.entity;
 
 import me.gb2022.commons.math.AABB;
-import me.gb2022.commons.math.MathHelper;
 import me.gb2022.commons.math.hitting.HitBox;
 import me.gb2022.commons.math.hitting.HitResult;
 import me.gb2022.commons.math.hitting.RayTest;
 import me.gb2022.commons.nbt.NBTTagCompound;
 import net.cubecraft.ContentRegistries;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.level.Level;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.item.container.Container;
 import net.cubecraft.world.item.container.Inventory;
@@ -29,14 +28,22 @@ public abstract class EntityLiving extends Entity {
 
     private float health;
 
-    public EntityLiving(IWorld world) {
+    public EntityLiving(Level world) {
         super(world);
         this.inventory = ContentRegistries.INVENTORY.create(this.getID());
     }
 
+    static Vector3d getVectorForRotation(float pitch, float yaw) {
+        float f = (float) Math.cos(-yaw * 0.017453292F - 3.1415927F);
+        float f1 = (float) Math.sin(-yaw * 0.017453292F - 3.1415927F);
+        float f2 = (float) (-Math.cos(-pitch * 0.017453292F));
+        float f3 = (float) Math.sin(-pitch * 0.017453292F);
+        return new Vector3d(f1 * f2, (double) f3, (double) (f * f2));
+    }
+
     public Vector3d getLookingAt() {
         Vector3d from = new Vector3d(x, y + 1.62, z);
-        Vector3d to = MathHelper.getVectorForRotation(xRot, yRot - 180);
+        Vector3d to = getVectorForRotation(xRot, yRot - 180);
         return to.mul(getReachDistance()).add(from);
     }
 
@@ -59,7 +66,7 @@ public abstract class EntityLiving extends Entity {
             if (this.isOnGround()) {
                 this.walkedDistance += delta * 0.6d;
             } else {
-                this.walkedDistance += delta * 0.06d;
+                this.walkedDistance += delta * 0.006d;
             }
         }
     }
@@ -90,13 +97,18 @@ public abstract class EntityLiving extends Entity {
     public NBTTagCompound getData() {
         NBTTagCompound tag = super.getData();
         tag.setBoolean("flying", this.flying);
+        tag.setBoolean("sprinting", this.sprinting);
+        tag.setBoolean("sneaking", this.sneaking);
+
         tag.setCompoundTag("inventory", this.inventory.serialize());
         return tag;
     }
 
+
     @Override
     public void setData(NBTTagCompound tag) {
         this.flying = tag.getBoolean("flying");
+        this.sprinting = tag.getBoolean("sprinting");
         this.inventory.setData(tag.getCompoundTag("inventory"));
         super.setData(tag);
     }
@@ -116,10 +128,17 @@ public abstract class EntityLiving extends Entity {
         if (this.hitResult == null) {
             return;
         }
+
+        var item = Container.getItem(this.inventory.getActive());
+
+        if (item == null) {
+            return;
+        }
+
         if (this.hitResult.instanceOf(EntityLiving.class)) {
-            Container.getItem(this.inventory.getActive()).onUse(this.hitResult, this.hitResult.getObject(EntityLiving.class));
+            item.onUse(this.hitResult, this.hitResult.getObject(EntityLiving.class));
         } else {
-            Container.getItem(this.inventory.getActive()).onUse(this.hitResult, this.hitResult.getObject(IBlockAccess.class));
+            item.onUse(this.hitResult, this.hitResult.getObject(IBlockAccess.class));
         }
     }
 

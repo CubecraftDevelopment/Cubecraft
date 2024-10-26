@@ -1,14 +1,13 @@
 package net.cubecraft.client.particle;
 
 import me.gb2022.commons.event.EventHandler;
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.resource.ResourceLocation;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.entity.EntityParticle;
 
 import java.util.ArrayList;
@@ -17,10 +16,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class ParticleEngine {
-    protected final IWorld world;
+    protected final World world;
     private final List<EntityParticle> particles = new ArrayList<>();
 
-    public ParticleEngine(IWorld world) {
+    public ParticleEngine(World world) {
         this.world = world;
     }
 

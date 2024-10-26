@@ -165,7 +165,9 @@ public abstract class Node {
     }
 
     public void deserializeChild(Element element) {
-        for (String type : ClientGUIContext.NODE.keySet()) {
+        var s=ClientGUIContext.NODE;
+
+        for (String type : s.keySet()) {
             NodeList elementList = element.getElementsByTagName(type);
 
             for (int i = 0; i < elementList.getLength(); i++) {

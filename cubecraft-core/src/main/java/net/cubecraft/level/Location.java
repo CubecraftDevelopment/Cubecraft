@@ -1,6 +1,6 @@
 package net.cubecraft.level;
 
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import me.gb2022.commons.nbt.NBTTagCompound;
 import org.joml.Vector3d;
@@ -99,7 +99,7 @@ public final class Location {
     }
 
 
-    public IWorld getWorld(Level level) {
+    public World getWorld(Level level) {
         return level.getWorld(this.getWorldId());
     }
 

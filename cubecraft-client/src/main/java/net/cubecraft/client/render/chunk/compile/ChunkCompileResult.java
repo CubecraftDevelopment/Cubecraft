@@ -1,28 +1,29 @@
 package net.cubecraft.client.render.chunk.compile;
 
-import net.cubecraft.client.render.chunk.RenderChunkPos;
-import net.cubecraft.client.render.chunk.layer.ChunkLayer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
+import net.cubecraft.client.render.chunk.ChunkRenderer;
+import net.cubecraft.client.render.chunk.RenderChunkPos;
+import net.cubecraft.client.render.chunk.layer.ChunkLayer;
 
 public final class ChunkCompileResult {
     private final RenderChunkPos pos;
     private final ChunkLayer layer;
-    private final VertexBuilder builder;
+    private final VertexBuilder[] builders;
     private final String layerId;
 
-    private ChunkCompileResult(RenderChunkPos pos, ChunkLayer layer, VertexBuilder builder,String layerID) {
+    private ChunkCompileResult(RenderChunkPos pos, ChunkLayer layer, VertexBuilder[] builders, String layerID) {
         this.pos = pos;
         this.layer = layer;
-        this.builder = builder;
-        this.layerId=layerID;
+        this.builders = builders;
+        this.layerId = layerID;
     }
 
-    public static ChunkCompileResult failed(RenderChunkPos pos,String layer) {
-        return new ChunkCompileResult(pos, null, null,layer);
+    public static ChunkCompileResult failed(RenderChunkPos pos, String layer) {
+        return new ChunkCompileResult(pos, null, null, layer);
     }
 
-    public static ChunkCompileResult success(RenderChunkPos pos, ChunkLayer layer, VertexBuilder builder) {
+    public static ChunkCompileResult success(RenderChunkPos pos, ChunkLayer layer, VertexBuilder[] builder) {
         return new ChunkCompileResult(pos, layer, builder, layer.getID());
     }
 
@@ -34,8 +35,8 @@ public final class ChunkCompileResult {
         return this.pos;
     }
 
-    public VertexBuilder getBuilder() {
-        return this.builder;
+    public VertexBuilder[] getBuilders() {
+        return this.builders;
     }
 
     public boolean isSuccess() {
@@ -46,12 +47,21 @@ public final class ChunkCompileResult {
         return this.layerId;
     }
 
-    public void upload() {
-        IRenderCall renderCall=this.layer.getRenderCall();
-        if(!renderCall.isAllocated()){
-            renderCall.allocate();
+    public void destroy(){
+        for (int i = 0; i < 7; i++) {
+            this.builders[i].freeAsync();
         }
-        renderCall.upload(this.getBuilder());
-        this.builder.free();
+    }
+
+    public void upload() {
+        for (int i = 0; i < 7; i++) {
+            IRenderCall call = this.layer.getBatches()[i];
+            if (!call.isAllocated()) {
+                call.allocate();
+            }
+
+            call.upload(this.builders[i]);
+        }
+        destroy();
     }
 }

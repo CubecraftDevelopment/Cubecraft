@@ -3,13 +3,10 @@ package net.cubecraft.server.service;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import me.gb2022.commons.registry.TypeItem;
-import me.gb2022.commons.threading.LoopTickingThread;
-import net.cubecraft.SharedContext;
 import net.cubecraft.server.CubecraftServer;
 import net.cubecraft.server.world.ServerWorld;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -24,7 +21,7 @@ public final class WorldTickService implements Service {
     @Override
     public void postInitialize(CubecraftServer server) {
         this.threads = new WorldTickingThread[server.getLevel().getWorldCount()];
-        IWorld[] worlds = server.getLevel().getWorlds().values().toArray(new IWorld[0]);
+        World[] worlds = server.getLevel().getWorlds().values().toArray(new World[0]);
         for (int i = 0; i < server.getLevel().getWorldCount(); i++) {
             this.threads[i] = new WorldTickingThread((ServerWorld) worlds[i]);
             this.threads[i].start();

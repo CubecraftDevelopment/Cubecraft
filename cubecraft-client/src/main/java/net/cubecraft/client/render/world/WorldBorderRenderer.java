@@ -1,14 +1,10 @@
 package net.cubecraft.client.render.world;
 
 import net.cubecraft.client.render.RenderType;
-import net.cubecraft.internal.entity.EntityPlayer;
-import net.cubecraft.world.IWorld;
 import net.cubecraft.world.dimension.Dimension;
 
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.registry.TypeItem;
-import me.gb2022.quantum3d.device.Window;
-import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;

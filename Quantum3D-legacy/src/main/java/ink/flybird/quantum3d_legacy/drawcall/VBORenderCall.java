@@ -48,7 +48,6 @@ public class VBORenderCall implements IRenderCall {
         this.count = builder.getCount();
         builder.uploadBuffer(this.vbo);
         this.uploaded = true;
-
     }
 
     @Override

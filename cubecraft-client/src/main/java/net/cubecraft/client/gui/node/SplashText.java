@@ -18,6 +18,7 @@ public class SplashText extends Component {
     boolean bobbing;
     String text;
     int color;
+    FontAlignment alignment;
 
     @Override
     public void init(Element element) {
@@ -28,6 +29,7 @@ public class SplashText extends Component {
         this.bobbing = DocumentUtil.getAttributeB(element, "bobbing", false);
         this.rotation = DocumentUtil.getAttributeI(element, "rotation", 0);
         this.color = MathHelper.hex2Int(DocumentUtil.getAttribute(element, "color", "ffffff"));
+        this.alignment = FontAlignment.valueOf(DocumentUtil.getAttribute(element, "alignment", "left").toUpperCase());
     }
 
     @Override
@@ -39,7 +41,7 @@ public class SplashText extends Component {
             GL11.glScaled(sin, sin, sin);
         }
         GL11.glRotatef(this.rotation, 0, 0, 1);
-        ClientGUIContext.FONT_RENDERER.renderShadow(this.text, 0, 0, this.color, getLayout().getAbsoluteHeight(), FontAlignment.MIDDLE);
+        ClientGUIContext.FONT_RENDERER.renderShadow(this.text, 0, 0, this.color, getLayout().getAbsoluteHeight(), this.alignment);
         GL11.glPopMatrix();
     }
 }

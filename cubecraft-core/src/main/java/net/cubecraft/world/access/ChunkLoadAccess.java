@@ -1,12 +1,12 @@
 package net.cubecraft.world.access;
 
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 
 public interface ChunkLoadAccess {
     //load
-    static void loadChunkRange(IWorld world, ChunkPos pos, int range, ChunkLoadTicket ticket) {
+    static void loadChunkRange(World world, ChunkPos pos, int range, ChunkLoadTicket ticket) {
         long centerCX = pos.getX();
         long centerCZ = pos.getZ();
         for (long x = centerCX - range; x <= centerCX + range; x++) {
@@ -16,7 +16,7 @@ public interface ChunkLoadAccess {
         }
     }
 
-    static void loadChunkAndNear(IWorld world, ChunkPos pos, ChunkLoadTicket ticket) {
+    static void loadChunkAndNear(World world, ChunkPos pos, ChunkLoadTicket ticket) {
         world.loadChunk(pos, ticket);
         for (ChunkPos p : pos.getAllNear()) {
             world.loadChunk(p, ticket);
@@ -25,7 +25,7 @@ public interface ChunkLoadAccess {
 
 
     //lock
-    static void addChunkLockAndNear(IWorld world, ChunkPos pos,Object caller) {
+    static void addChunkLockAndNear(World world, ChunkPos pos, Object caller) {
         waitUntilChunkExistAndNear(world, pos);
         world.getChunk(pos).getDataLock().addLock(caller);
         for (ChunkPos p : pos.getAllNear()) {
@@ -33,7 +33,7 @@ public interface ChunkLoadAccess {
         }
     }
 
-    static void removeChunkLockAndNear(IWorld world, ChunkPos pos,Object caller) {
+    static void removeChunkLockAndNear(World world, ChunkPos pos, Object caller) {
         waitUntilChunkExistAndNear(world, pos);
         world.getChunk(pos).getDataLock().removeLock(caller);
         for (ChunkPos p : pos.getAllNear()) {
@@ -41,7 +41,7 @@ public interface ChunkLoadAccess {
         }
     }
 
-    static void waitUntilChunkExistAndNear(IWorld world, ChunkPos pos) {
+    static void waitUntilChunkExistAndNear(World world, ChunkPos pos) {
         while (true) {
             boolean b = true;
             if (!world.isChunkLoaded(pos)) {
@@ -59,7 +59,7 @@ public interface ChunkLoadAccess {
         }
     }
 
-    static void addChunkLockRange(IWorld world, ChunkPos pos, int range,Object caller) {
+    static void addChunkLockRange(World world, ChunkPos pos, int range, Object caller) {
         long centerCX = pos.getX();
         long centerCZ = pos.getZ();
         for (long x = centerCX - range; x <= centerCX + range; x++) {
@@ -67,20 +67,20 @@ public interface ChunkLoadAccess {
                 ChunkPos p=ChunkPos.create(x, z);
                 world.loadChunk(p,ChunkLoadTicket.LOAD_DATA);
                 //todo:hotspot
-                world.waitUntilChunkExist(p);
+                world.waitUntilChunkExist(p.getX(),p.getZ());
                 world.addChunkLock(p,caller);
             }
         }
     }
 
-    static void removeChunkLockRange(IWorld world, ChunkPos pos, int range,Object caller) {
+    static void removeChunkLockRange(World world, ChunkPos pos, int range, Object caller) {
         long centerCX = pos.getX();
         long centerCZ = pos.getZ();
         for (long x = centerCX - range; x <= centerCX + range; x++) {
             for (long z = centerCZ - range; z <= centerCZ + range; z++) {
                 ChunkPos p=ChunkPos.create(x, z);
                 world.loadChunk(p,ChunkLoadTicket.LOAD_DATA);
-                world.waitUntilChunkExist(p);
+                world.waitUntilChunkExist(p.getX(),p.getZ());
                 world.removeChunkLock(p,caller);
             }
         }

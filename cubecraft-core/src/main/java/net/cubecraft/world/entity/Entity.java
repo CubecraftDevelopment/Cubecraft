@@ -2,50 +2,51 @@ package net.cubecraft.world.entity;
 
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.Hittable;
-import me.gb2022.commons.nbt.NBTDataIO;
 import me.gb2022.commons.nbt.NBTTagCompound;
 import me.gb2022.commons.registry.TypeItem;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.level.Level;
+import net.cubecraft.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class Entity implements Hittable, NBTDataIO {
+public abstract class Entity implements Hittable {
     public static final String AUTO_REGISTER_SPAWN_EGG_ID = "_spawn_egg";
     private final AABB lastCollisionBox = new AABB(0, 0, 0, 0, 0, 0);
-
+    private final Level level;
     public double xo;
     public double yo;
     public double zo;
     public double x;
     public double y;
     public double z;
-
     public double xd;
     public double yd;
     public double zd;
-
     public float yRot;
     public float xRot;
     public float zRot;
     public boolean horizontalCollision = false;
     public String selectedBlockID = "cubecraft:air";
     public float distanceWalked;
-
-    private IWorld world;
-
+    private World world;
     private AABB collisionBox = new AABB(0, 0, 0, 0, 0, 0);
     private boolean onGround = false;
     private String uuid;
 
-    public Entity(IWorld world) {
-        this.world = world;
+    public Entity(Level level) {
+        this.world = level.getSpawnPoint().getWorld(level);
+        this.level = level;
         this.resetPos();
-        this.uuid = UUID.nameUUIDFromBytes(String.valueOf(System.currentTimeMillis() ^ this.hashCode()).getBytes(StandardCharsets.UTF_8)).toString();
+        this.uuid = UUID.nameUUIDFromBytes(String.valueOf(System.currentTimeMillis() ^ this.hashCode()).getBytes(StandardCharsets.UTF_8))
+                .toString();
+    }
+
+    public Entity(World world) {
+        this(world.getLevel());
     }
 
 
@@ -123,15 +124,21 @@ public abstract class Entity implements Hittable, NBTDataIO {
         double zaOrg = za;
         ArrayList<AABB> aABBs = this.world.getCollisionBoxInbound(this.collisionBox.expand(xa, ya, za));
         for (i = 0; i < aABBs.size(); ++i) {
-            if (aABBs.get(i) != null) ya = aABBs.get(i).clipYCollide(this.collisionBox, ya);
+            if (aABBs.get(i) != null) {
+                ya = aABBs.get(i).clipYCollide(this.collisionBox, ya);
+            }
         }
         this.collisionBox.move(0.0f, ya, 0.0f);
         for (i = 0; i < aABBs.size(); ++i) {
-            if (aABBs.get(i) != null) xa = aABBs.get(i).clipXCollide(this.collisionBox, xa);
+            if (aABBs.get(i) != null) {
+                xa = aABBs.get(i).clipXCollide(this.collisionBox, xa);
+            }
         }
         this.collisionBox.move(xa, 0.0f, 0.0f);
         for (i = 0; i < aABBs.size(); ++i) {
-            if (aABBs.get(i) != null) za = aABBs.get(i).clipZCollide(this.collisionBox, za);
+            if (aABBs.get(i) != null) {
+                za = aABBs.get(i).clipZCollide(this.collisionBox, za);
+            }
         }
         this.collisionBox.move(0.0f, 0.0f, za);
         //this.horizontalCollision = xaOrg != xa || zaOrg != za;
@@ -152,7 +159,7 @@ public abstract class Entity implements Hittable, NBTDataIO {
 
 
     public void moveRelative(double xa, double za) {
-        float speed=this.getSpeed();
+        float speed = this.getSpeed();
 
         this.distanceWalked += speed;
         double dist = xa * xa + za * za;
@@ -248,15 +255,13 @@ public abstract class Entity implements Hittable, NBTDataIO {
         return true;
     }
 
-    @Override
+
     public NBTTagCompound getData() {
         NBTTagCompound compound = new NBTTagCompound();
 
-        //basic
         compound.setString("uuid", this.uuid);
+        compound.setString("world", this.world.getId());
 
-
-        //physics
         NBTTagCompound physics = new NBTTagCompound();
         physics.setDouble("motion-x", this.xd);
         physics.setDouble("motion-y", this.yd);
@@ -271,7 +276,6 @@ public abstract class Entity implements Hittable, NBTDataIO {
         return compound;
     }
 
-    @Override
     public void setData(NBTTagCompound tag) {
         //basic
         this.uuid = tag.getString("uuid");
@@ -287,6 +291,10 @@ public abstract class Entity implements Hittable, NBTDataIO {
         this.xRot = physics.getFloat("yaw");
         this.yRot = physics.getFloat("pitch");
         this.zRot = physics.getFloat("roll");
+
+        this.setPos(this.x, this.y, this.z);
+        var world = this.level.getWorld(tag.getString("world"));
+        world.addEntity(this);
     }
 
     @Deprecated
@@ -294,26 +302,16 @@ public abstract class Entity implements Hittable, NBTDataIO {
         return selectedBlockID;
     }
 
-    public void setLocation(EntityLocation location, HashMap<String, IWorld> worlds) {
-        this.x = location.getX();
-        this.y = location.getY();
-        this.z = location.getZ();
-        this.xRot = (float) location.getXRot();
-        this.yRot = (float) location.getYRot();
-        this.zRot = (float) location.getZRot();
-        this.setWorld(worlds.get(location.getDim()));
-    }
-
     public Vector3d getPosition() {
         return new Vector3d(this.x, this.y, this.z);
     }
 
-    public IWorld getWorld() {
+    public World getWorld() {
         return world;
     }
 
-    public void setWorld(IWorld world) {
-        if (this.world != null) {
+    public void setWorld(World world) {
+        if (this.world != null && this.world != world) {
             this.world.removeEntity(this);
         }
         this.world = world;
@@ -351,11 +349,11 @@ public abstract class Entity implements Hittable, NBTDataIO {
         this.yd = v;
     }
 
-    public boolean shouldBeEffectedByGravity(){
+    public boolean shouldBeEffectedByGravity() {
         return true;
     }
 
-    public float getSpeed(){
+    public float getSpeed() {
         return 0.1f;
     }
 }

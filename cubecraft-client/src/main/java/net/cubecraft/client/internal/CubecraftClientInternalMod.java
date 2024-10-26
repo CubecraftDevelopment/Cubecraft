@@ -3,6 +3,7 @@ package net.cubecraft.client.internal;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.ContentRegistries;
+import net.cubecraft.CoreRegistries;
 import net.cubecraft.Side;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
@@ -65,22 +66,34 @@ public final class CubecraftClientInternalMod {
         ClientSharedContext.RESOURCE_MANAGER.registerEventListener(new ClientAssetLoader());
     }
 
+
     @EventHandler
     public static void onRenderContextInit(ClientRenderContextInitEvent event) {
         ClientRenderContext.WORLD_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
         ClientRenderContext.CHUNK_LAYER_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
-
-        for (String id : ContentRegistries.BLOCK.keySet()) {
-            String namespace = NSStringDispatcher.getNameSpace(id);
-            String localId = NSStringDispatcher.getId(id);
-            if (ClientRenderContext.BLOCK_RENDERER.get(id) != null) {
-                continue;
-            }
-            ClientRenderContext.BLOCK_RENDERER.registerItem(id, new ModelBlockRenderer(new ModelAsset(namespace + ":/block/" + localId + ".json")));
-        }
-        ClientRenderContext.BLOCK_RENDERER.registerItem("cubecraft:calm_water", new LiquidRenderer(new TextureAsset("cubecraft:/block/water_still.png"), new TextureAsset("cubecraft:/block/water_flow.png")));
-
         ParticleRenderer.PARTICLE_RENDERERS.registerFieldHolder(ParticleRenderers.class);
+
+        CoreRegistries.BLOCKS.withShadow((reg) -> {
+            var id = reg.getName();
+            var namespace = NSStringDispatcher.getNameSpace(id);
+            var localId = NSStringDispatcher.getId(id);
+
+            if (ClientRenderContext.BLOCK_RENDERERS.isPresent(id)) {
+                return;
+            }
+
+            var object = CoreRegistries.BLOCKS.object(id);
+
+            if (object.isLiquid()) {
+                var still = new TextureAsset("cubecraft:/block/water_still.png");
+                var flow = new TextureAsset("cubecraft:/block/water_flow.png");
+
+                ClientRenderContext.BLOCK_RENDERERS.register(id, new LiquidRenderer(still, flow));
+                return;
+            }
+
+            ClientRenderContext.BLOCK_RENDERERS.register(id, new ModelBlockRenderer(new ModelAsset(namespace + ":/block/" + localId + ".json")));
+        });
     }
 
     @EventHandler

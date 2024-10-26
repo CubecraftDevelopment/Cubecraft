@@ -1,6 +1,7 @@
 package me.gb2022.quantum3d.device.adapter;
 
 import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.quantum3d.device.Mouse;
 import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.Window;
@@ -21,7 +22,7 @@ public final class MouseEventAdapter extends EventAdapter implements MouseListen
      *
      * @param eventBus The EventBus instance used to publish events.
      */
-    public MouseEventAdapter(EventBus eventBus) {
+    public MouseEventAdapter(SimpleEventBus eventBus) {
         super(eventBus);
     }
 

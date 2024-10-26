@@ -1,16 +1,16 @@
 package me.gb2022.quantum3d.lwjgl.deprecated.textures;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import me.gb2022.quantum3d.ITextureImage;
+import me.gb2022.quantum3d.Q3DLoggerContext;
 import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL45;
+import org.slf4j.Logger;
 
 public abstract class Texture {
     protected final boolean multiSample;
     protected final boolean mipMap;
-    protected final Logger logger = LogManager.getLogger("Texture");
+    protected final Logger logger = Q3DLoggerContext.getLogger("Texture");
     protected int glId;
     protected int width;
     protected int height;

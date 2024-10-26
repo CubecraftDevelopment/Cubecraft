@@ -30,21 +30,13 @@ public class PacketPlayerJoinRequest implements Packet {
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString("type", this.session.getType());
         tag.setCompoundTag("data", SharedContext.SESSION_SERVICE.get(this.session.getType()).write(session));
-        try {
-            NBT.write(tag,new ByteBufOutputStream(buffer));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        NBT.write(tag,new ByteBufOutputStream(buffer));
     }
 
     @Override
     public void readPacketData(ByteBuf buffer) {
         NBTTagCompound tag;
-        try {
-            tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
         SharedContext.SESSION_SERVICE.get(tag.getString("type")).read(session, tag.getCompoundTag("data"));
     }
 

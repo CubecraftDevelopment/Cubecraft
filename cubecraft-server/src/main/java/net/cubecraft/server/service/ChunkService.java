@@ -4,9 +4,6 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.nbt.NBT;
 import me.gb2022.commons.nbt.NBTTagCompound;
 import me.gb2022.commons.registry.TypeItem;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import net.cubecraft.ContentRegistries;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
 import net.cubecraft.level.Level;
@@ -14,14 +11,15 @@ import net.cubecraft.server.CubecraftServer;
 import net.cubecraft.server.ServerStartupFailedException;
 import net.cubecraft.server.event.world.ServerWorldInitializedEvent;
 import net.cubecraft.server.internal.registries.ServerSettingRegistries;
-import net.cubecraft.world.IWorld;
-import net.cubecraft.world.chunk.*;
+import net.cubecraft.world.World;
+import net.cubecraft.world.chunk.ChunkCodec;
+import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.pos.WorldChunkPos;
-import net.cubecraft.world.chunk.task.ChunkLoadTicket;
-import net.cubecraft.world.worldGen.pipeline.ChunkGenerateTask;
+import net.cubecraft.world.storage.PersistentChunkHolder;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
-import net.cubecraft.world.worldGen.pipeline.WorldGenPipelineBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
@@ -31,16 +29,14 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 @TypeItem("cubecraft:chunk_service")
-public class ChunkService implements Service, ChunkSaver, ChunkLoader {
+public final class ChunkService implements Service, PersistentChunkHolder {
     public static final Options DEFAULT_LEVELDB_OPTIONS = new Options().createIfMissing(true).blockSize(1024);
     private static final Logger LOGGER = LogManager.getLogger("server/chunk_service");
     private final HashMap<String, ChunkGeneratorPipeline> pipelineCache = new HashMap<>();
     private DB db;
     private ExecutorService saveTaskPool;
-    private ExecutorService loadTaskPool;
     private String serverLevelName;
     private long lastSaved;
 
@@ -49,7 +45,6 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
         Level level = server.getLevel();
         this.serverLevelName = level.getLevelInfo().getLevelName();
         this.saveTaskPool = Executors.newFixedThreadPool(ServerSettingRegistries.CHUNK_SAVE_THREAD.getValue());
-        this.loadTaskPool = Executors.newFixedThreadPool(ServerSettingRegistries.CHUNK_LOAD_THREAD.getValue());
         server.getEventBus().registerEventListener(this);
         this.loadDataBase();
     }
@@ -117,22 +112,17 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
 
             return tag;
         } catch (Exception error) {
-            LOGGER.error(error);
+            LOGGER.throwing(error);
             return null;
         }
     }
 
     @EventHandler
     public void onServerWorldInitialized(ServerWorldInitializedEvent e) {
-        IWorld world = e.getWorld();
-        world.setChunkSaver(this);
-        world.setChunkLoader(this);
-        WorldGenPipelineBuilder builder = ContentRegistries.CHUNK_GENERATE_PIPELINE.get(world.getId());
-
-        long seed = world.getLevel().getLevelInfo().getSeed();
-        ChunkGeneratorPipeline pipeline = builder.build(world.getId(), seed);
-        this.pipelineCache.put(world.getId(), pipeline);
+        World world = e.getWorld();
+        world.getWorldGenerator().setPersistentChunkProvider(this);
     }
+
 
     @Override
     public void save(WorldChunk chunk) {
@@ -144,36 +134,33 @@ public class ChunkService implements Service, ChunkSaver, ChunkLoader {
                 NBTTagCompound tag = ChunkCodec.getWorldChunkData(chunk);
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream(4096);
-                GZIPOutputStream zipOutput = new GZIPOutputStream(stream);
-                NBT.write(tag, new DataOutputStream(zipOutput));
-                zipOutput.close();
+                NBT.writeZipped(tag, new DataOutputStream(stream));
                 stream.close();
 
                 byte[] data = stream.toByteArray();
-                byte[] key = (chunk.getWorld().getId() + "@" + chunk.getKey().toString()).getBytes(StandardCharsets.UTF_8);
+                byte[] key = (chunk.getWorld().getId() + "@" + chunk.getKey().pack()).getBytes(StandardCharsets.UTF_8);
 
                 this.db.put(key, data);
             } catch (Exception error) {
-                LOGGER.error(error);
+                LOGGER.throwing(error);
             }
         });
     }
 
     @Override
-    public void load(IWorld world, ChunkPos pos, ChunkLoadTicket ticket) {
-        this.loadTaskPool.submit(() -> {
-            NBTTagCompound tag = this.loadChunkFromDB(new WorldChunkPos(world.getId(), pos));
-            if (tag != null) {
-                WorldChunk chunk = new WorldChunk(world, pos);
-                ChunkCodec.setWorldChunkData(chunk, tag);
-                world.chunks.add(chunk).addTicket(ticket);
-                return;
-            }
+    public WorldChunk load(World world, int x, int z) {
+        while (this.db == null) {
+            Thread.yield();
+        }
+        var data = this.db.get((world.getId() + "@" + ChunkPos.encode(x, z)).getBytes(StandardCharsets.UTF_8));
 
-            ProviderChunk chunk = new ProviderChunk(pos);
-            ChunkGeneratorPipeline pipeline = this.pipelineCache.get(world.getId());
-            WorldChunk _chunk = new WorldChunk(world, ChunkGenerateTask.createTask(pipeline, chunk).generateChunk());
-            world.chunks.add(_chunk).addTicket(ticket);
-        });
+        if (data == null) {
+            return null;
+        }
+
+        var chunk = new WorldChunk(world, new ChunkPos(x, z));
+        ChunkCodec.setWorldChunkData(chunk, (NBTTagCompound) NBT.readZipped(new ByteArrayInputStream(data)));
+        return chunk;
     }
+
 }

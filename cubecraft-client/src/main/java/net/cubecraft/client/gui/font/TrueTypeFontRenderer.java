@@ -53,8 +53,10 @@ public final class TrueTypeFontRenderer implements FontRenderer {
         if (text == null || text.isEmpty()) {
             return;
         }
+        TextComponent start = text.getFirst();
 
-        int width = this._width(text, 0);
+        int width = this._width(start, 0);
+
 
         int startX = -1;
         switch (alignment) {
@@ -63,7 +65,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
             case RIGHT -> startX = x - width;
         }
 
-        _renderComponent(text, startX, y);
+        _renderComponent(start, startX, y);
     }
 
     private int _width(TextComponent text, int current) {
@@ -75,7 +77,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
             return current;
         }
 
-        return _width(text, current);
+        return _width(text.getNext(), current);
     }
 
     private CompiledComponent getCompiled(TextComponent text) {
@@ -94,7 +96,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
             return;
         }
 
-        _renderComponent(text.getNext(), x + compiled.width(), y);
+        _renderComponent(text.getNext(), x + compiled.width() / RESOLUTION_SCALE, y);
     }
 
 

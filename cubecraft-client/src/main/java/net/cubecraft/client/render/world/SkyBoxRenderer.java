@@ -1,32 +1,44 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
+import ink.flybird.quantum3d_legacy.GLUtil;
+import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
 import me.gb2022.quantum3d.render.vertex.*;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
+import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
+import net.cubecraft.client.resource.TextureAsset;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+
+import java.awt.image.BufferedImage;
 
 @TypeItem(WorldRendererType.SKY_BOX)
 public final class SkyBoxRenderer extends IWorldRenderer {
     private static final VertexBuilderAllocator ALLOCATOR = new VertexBuilderAllocator(LevelRenderer.ALLOCATOR);
     private final GLRenderList skyRenderBatch = new GLRenderList();
-
+    private Texture2D sunTexture;
     private ColorElement skyColor;
     private ColorElement skyFogColor;
 
     @Override
     public void stop() {
         this.skyRenderBatch.free();
+        this.sunTexture.destroy();
     }
 
     @Override
     public void init() {
         this.build();
+        this.sunTexture = new Texture2D(false, false);
+        TextureAsset asset = ResourceRegistry.SUN;
+        BufferedImage img = asset.getAsImage();
+        this.sunTexture.load(img);
     }
 
     public void build() {
@@ -90,7 +102,7 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         if (type != RenderType.ALPHA) {
             return;
         }
-        this.camera.setUpGlobalCamera();
+        this.setGlobalCamera(delta);
     }
 
     @Override
@@ -100,10 +112,68 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         if (type != RenderType.ALPHA) {
             return;
         }
-        GL11.glDisable(GL11.GL_FOG);
+
+        if(!parent.isInBlock()){
+            GL11.glDisable(GL11.GL_FOG);
+        }else{
+            this.parent.setFog(ClientSettingRegistry.getFixedViewDistance() * 16);
+        }
+
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_CULL_FACE);
         this.skyRenderBatch.call();
+
+
+        long time = world.getTime();
+
+        VertexBuilder builder = ALLOCATOR.allocate(VertexFormat.V3F_T2F, DrawMode.QUADS, 16);
+        builder.allocate();
+
+
+        double distance = ClientSettingRegistry.getFixedViewDistance() * 16 * 6;
+
+        double r = distance;
+        double size = distance / 1.3f;
+
+
+        double angle = 0.5;
+
+        double vertAngle = Math.acos((2 * r * r - size * size) / (2 * r * r));
+
+        double x0 = r * Math.cos(angle - vertAngle / 2f);
+        double x1 = r * Math.cos(angle + vertAngle / 2f);
+
+        double y0 = r * Math.sin(angle - vertAngle / 2f);
+        double y1 = r * Math.sin(angle + vertAngle / 2f);
+
+        double z = 0;
+
+        double z0 = z - size / 2, z1 = z + size / 2;
+
+
+        builder.addVertex(x0, y0, z1);
+        builder.setTextureCoordinate(1, 0);
+        builder.addVertex(x0, y0, z0);
+        builder.setTextureCoordinate(1, 1);
+        builder.addVertex(x1, y1, z0);
+        builder.setTextureCoordinate(0, 1);
+        builder.addVertex(x1, y1, z1);
+        builder.setTextureCoordinate(0, 0);
+
+
+        GLUtil.enableBlend();
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO);
+
+        this.sunTexture.bind();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        VertexBuilderUploader.uploadPointer(builder);
+        this.sunTexture.unbind();
+
+        ALLOCATOR.free(builder);
+
+        GLUtil.disableBlend();
+
+
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_FOG);
     }

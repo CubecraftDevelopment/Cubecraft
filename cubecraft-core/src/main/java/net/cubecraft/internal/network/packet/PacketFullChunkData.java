@@ -3,11 +3,11 @@ package net.cubecraft.internal.network.packet;
 import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.net.packet.PacketConstructor;
+import net.cubecraft.world.chunk.ChunkCodec;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.WorldChunk;
 import me.gb2022.commons.nbt.NBT;
 import me.gb2022.commons.nbt.NBTTagCompound;
-import me.gb2022.commons.registry.TypeItem;
 import io.netty.buffer.ByteBuf;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +17,6 @@ import java.io.DataOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-@TypeItem("cubecraft:full_chunk_data")
 public class PacketFullChunkData implements Packet {
     private WorldChunk chunk;
     private String world;
@@ -39,7 +38,7 @@ public class PacketFullChunkData implements Packet {
         ByteBufUtil.writeString(this.world, buffer);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         GZIPOutputStream g = new GZIPOutputStream(out);
-        NBT.write(chunk.getData(), new DataOutputStream(g));
+        NBT.write(ChunkCodec.getChunkData(this.chunk), new DataOutputStream(g));
         g.close();
         ByteBufUtil.writeArray(out.toByteArray(), buffer);
     }
@@ -54,7 +53,7 @@ public class PacketFullChunkData implements Packet {
 
         NBTTagCompound tag = (NBTTagCompound) NBT.read(new DataInputStream(in));
         in.close();
-        this.chunk.setData(tag);
+        //this.chunk.setData(tag);
     }
 
     public String getWorld() {

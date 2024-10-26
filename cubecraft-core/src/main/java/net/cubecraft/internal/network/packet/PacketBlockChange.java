@@ -40,11 +40,7 @@ public class PacketBlockChange implements Packet {
         NBTTagCompound tag=new NBTTagCompound();
         tag.setString("world",this.world);
         tag.setCompoundTag("state",state.getData());
-        try {
-            NBT.write(tag,new ByteBufOutputStream(buffer));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        NBT.write(tag,new ByteBufOutputStream(buffer));
     }
 
     @Override
@@ -54,11 +50,7 @@ public class PacketBlockChange implements Packet {
         z=buffer.readLong();
 
         NBTTagCompound tag;
-        try {
-            tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
         this.world=tag.getString("world");
         this.state.setData(tag.getCompoundTag("state"));
     }

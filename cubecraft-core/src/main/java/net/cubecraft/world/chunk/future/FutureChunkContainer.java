@@ -1,6 +1,6 @@
 package net.cubecraft.world.chunk.future;
 
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import org.jetbrains.annotations.NotNull;
@@ -9,11 +9,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class FutureChunkContainer implements ChunkFuture {
-    private final IWorld world;
+public final class FutureChunkContainer implements ChunkFuture {
+    private final World world;
     private final ChunkPos pos;
 
-    public FutureChunkContainer(IWorld world, ChunkPos pos) {
+    public FutureChunkContainer(World world, ChunkPos pos) {
         this.world = world;
         this.pos = pos;
     }
@@ -34,8 +34,8 @@ public class FutureChunkContainer implements ChunkFuture {
     }
 
     @Override
-    public Chunk get() throws InterruptedException, ExecutionException {
-        this.world.waitUntilChunkExist(pos);
+    public Chunk get(){
+        this.world.waitUntilChunkExist(pos.getX(), pos.getZ());
         return this.world.getChunk(this.pos);
     }
 

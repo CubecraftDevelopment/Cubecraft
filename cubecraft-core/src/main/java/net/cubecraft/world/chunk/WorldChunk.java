@@ -1,8 +1,7 @@
 package net.cubecraft.world.chunk;
 
-import me.gb2022.commons.nbt.NBTDataIO;
 import me.gb2022.commons.threading.ThreadLock;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.block.access.ChunkBlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.access.NonLoadedBlockAccess;
@@ -12,24 +11,30 @@ import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.chunk.task.ChunkProcessTask;
 
 //todo:task|add dynamic chunk height
-public final class WorldChunk extends Chunk implements NBTDataIO {
+public final class WorldChunk extends Chunk {
     public final ChunkProcessTask task = new ChunkProcessTask(this);
     private final ThreadLock dataLock = new ThreadLock();
-    private IWorld world;
+    private ChunkState state;
+    private World world;
 
-    public WorldChunk(IWorld world, ChunkPos p) {
+    public WorldChunk(World world, ChunkPos p) {
         super(p);
         this.world = world;
         this.task.addTime(ChunkLoadTaskType.DATA_KEEP, 40);
+        this.state = ChunkState.EMPTY;
     }
 
-    public WorldChunk(IWorld world, ProviderChunk providerChunk) {
-        this(world, providerChunk.getKey());
-        System.arraycopy(providerChunk.blockIdSections, 0, this.blockIdSections, 0, Chunk.SECTION_SIZE);
-        System.arraycopy(providerChunk.blockFacingSections, 0, this.blockFacingSections, 0, Chunk.SECTION_SIZE);
-        System.arraycopy(providerChunk.blockMetaSections, 0, this.blockMetaSections, 0, Chunk.SECTION_SIZE);
-        System.arraycopy(providerChunk.biomeSections, 0, this.biomeSections, 0, Chunk.SECTION_SIZE);
-        System.arraycopy(providerChunk.lightSections, 0, this.lightSections, 0, Chunk.SECTION_SIZE);
+    public WorldChunk(World world, PrimerChunk providerChunk) {
+        super(
+                providerChunk.getKey(),
+                providerChunk.blocks,
+                providerChunk.biomes,
+                providerChunk.blockMetaSections,
+                providerChunk.lightSections,
+                providerChunk.blockFacingSections
+        );
+        this.world = world;
+        this.state = ChunkState.TERRAIN;
     }
 
     public void tick() {
@@ -39,7 +44,6 @@ public final class WorldChunk extends Chunk implements NBTDataIO {
     public void addTicket(ChunkLoadTicket ticket) {
         ticket.addToTask(this.task);
     }
-
 
         /*
         NBTTagCompound blockEntities = tag.getCompoundTag("block_entities");
@@ -61,11 +65,11 @@ public final class WorldChunk extends Chunk implements NBTDataIO {
         return dataLock;
     }
 
-    public IWorld getWorld() {
+    public World getWorld() {
         return world;
     }
 
-    public void setWorld(IWorld world) {
+    public void setWorld(World world) {
         this.world = world;
     }
 
@@ -78,7 +82,7 @@ public final class WorldChunk extends Chunk implements NBTDataIO {
         if (x >> 4 != this.x || z >> 4 != this.z) {
             return new NonLoadedBlockAccess(this.getWorld(), x, y, z);
         }
-        //todo:hotspot
+
         return new ChunkBlockAccess(this.getWorld(), x, y, z, this);
     }
 
@@ -94,5 +98,17 @@ public final class WorldChunk extends Chunk implements NBTDataIO {
             }
         }
         return result;
+    }
+
+    public ChunkState getState() {
+        return state;
+    }
+
+    public void setState(ChunkState state) {
+        this.state = state;
+    }
+
+    public IBlockAccess getBlockAccessRelative(int x, long y, int z) {
+        return new ChunkBlockAccess(this.getWorld(), x + this.x * 16, y, z + this.z * 16, this);
     }
 }

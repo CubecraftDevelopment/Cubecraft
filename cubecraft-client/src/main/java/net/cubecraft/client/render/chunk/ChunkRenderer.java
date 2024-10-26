@@ -1,10 +1,17 @@
 package net.cubecraft.client.render.chunk;
 
-import me.gb2022.commons.event.EventHandler;
-import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
+import ink.flybird.quantum3d_legacy.draw.DrawMode;
+import ink.flybird.quantum3d_legacy.draw.OffHeapVertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import me.gb2022.commons.container.Pool;
+import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.memory.BufferAllocator;
+import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
+import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientRenderContext;
@@ -19,28 +26,49 @@ import net.cubecraft.client.render.chunk.sort.ChunkSorter;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.event.SettingReloadEvent;
+import net.cubecraft.world.chunk.Chunk;
 import org.joml.Vector3d;
 
 import java.util.*;
 
 @TypeItem("cubecraft:chunk_renderer")
 public final class ChunkRenderer extends IWorldRenderer {
+    /*
+    public static final Pool<VertexBuilder> BUILDER_POOL = new Pool<>(
+            Pool.cfg(1024, 0.1f, 1.5f, 256, 512),
+            new BufferResourceHandler()
+    ) {
+        @Override
+        public VertexBuilder create() {
+            return this.handler.create();
+        }
+
+        @Override
+        public void release(VertexBuilder item) {
+            this.handler.release(item);
+        }
+    };
+
+     */
     public static final String SETTING_NAMESPACE = "chunk_renderer";
     public static final Map<String, ChunkLayer> DUMMY = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(false, RenderChunkPos.create(0, 0, 0));
+
+    private final BufferAllocator memoryAllocator = new LWJGLBufferAllocator();
+    private final VertexBuilderAllocator chunkBuilderAllocator = new VertexBuilderAllocator(this.memoryAllocator);
+
     private final FrustumCuller frustum = new FrustumCuller();
     private final RenderList renderListAlpha = new RenderList(RenderType.ALPHA);
     private final RenderList renderListTransparent = new RenderList(RenderType.TRANSPARENT);
-
     private final Queue<ChunkCompileResult> resultQueue;
     private final Queue<ChunkCompileRequest> requestQueue;
+    private final Queue<ChunkCompileResult> pendingUploadQueue;
+
     private final ChunkSorter chunkSorter;
     private final ChunkCompileRequestSorter chunkCompileRequestSorter;
     private final ChunkCompileResultSorter chunkCompileResultSorter;
     private Daemon daemon;
     private ChunkCompilerTask[] compilers;
-
     private ChunkStatusCache chunkStatusCache;
-
 
     public ChunkRenderer() {
         this.chunkSorter = new ChunkSorter();
@@ -49,6 +77,7 @@ public final class ChunkRenderer extends IWorldRenderer {
 
         this.requestQueue = new PriorityQueue<>(this.chunkCompileRequestSorter);
         this.resultQueue = new PriorityQueue<>(this.chunkCompileResultSorter);
+        this.pendingUploadQueue = new PriorityQueue<>(this.chunkCompileResultSorter);
     }
 
     @Override
@@ -60,6 +89,7 @@ public final class ChunkRenderer extends IWorldRenderer {
             ChunkCompilerTask task = ChunkCompilerTask.daemon(this, this.requestQueue, this.resultQueue);
             this.compilers[i] = task;
             Thread t = new Thread(task);
+            t.setName("ChunkCompiler-" + i);
             t.setDaemon(true);
             t.setPriority(1);
             t.start();
@@ -95,9 +125,6 @@ public final class ChunkRenderer extends IWorldRenderer {
     public void preRender() {
         int successCount = 0;
         for (int i = 0; i < ClientSettingRegistry.MAX_RECEIVE_COUNT.getValue(); i++) {
-            if (successCount >= ClientSettingRegistry.MAX_UPLOAD_COUNT.getValue()) {
-                return;
-            }
             if (this.resultQueue.isEmpty()) {
                 return;
             }
@@ -105,6 +132,7 @@ public final class ChunkRenderer extends IWorldRenderer {
             if (result == null) {
                 continue;
             }
+
             ChunkLayer layer = result.getLayer();
             RenderList renderList;
             if (DUMMY.get(result.getLayerId()).getRenderType() == RenderType.ALPHA) {
@@ -113,14 +141,46 @@ public final class ChunkRenderer extends IWorldRenderer {
                 renderList = this.renderListTransparent;
             }
             if (result.isSuccess()) {
-                result.upload();
-                successCount++;
-                renderList.putLayer(layer);
-                this.chunkStatusCache.set(result.getPos(), ChunkUpdateStatus.UPDATE_SUCCESS);
+                if (successCount >= ClientSettingRegistry.MAX_UPLOAD_COUNT.getValue()) {
+                    this.pendingUploadQueue.add(result);
+                } else {
+                    result.upload();
+                    successCount++;
+                    renderList.putLayer(layer);
+                    this.chunkStatusCache.set(result.getPos(), ChunkUpdateStatus.UPDATE_SUCCESS);
+                }
             } else {
                 renderList.removeLayer(result.getLayerId(), result.getPos());
                 this.chunkStatusCache.set(result.getPos(), ChunkUpdateStatus.UPDATE_FAILED);
             }
+        }
+        for (int i = 0; i < ClientSettingRegistry.MAX_UPLOAD_COUNT.getValue() / 1.3; i++) {
+            if (this.pendingUploadQueue.isEmpty()) {
+                break;
+            }
+            var result = this.pendingUploadQueue.poll();
+
+            if (result == null) {
+                break;
+            }
+
+            RenderList renderList;
+            ChunkLayer layer = result.getLayer();
+
+            if (layer == null) {
+                result.destroy();
+                continue;
+            }
+
+            if (DUMMY.get(result.getLayerId()).getRenderType() == RenderType.ALPHA) {
+                renderList = this.renderListAlpha;
+            } else {
+                renderList = this.renderListTransparent;
+            }
+
+            result.upload();
+            renderList.putLayer(layer);
+            this.chunkStatusCache.set(result.getPos(), ChunkUpdateStatus.UPDATE_SUCCESS);
         }
     }
 
@@ -192,14 +252,12 @@ public final class ChunkRenderer extends IWorldRenderer {
     }
 
     public void setUpdate(long x, long y, long z, boolean immediate) {
-        setUpdate("cubecraft:alpha_block", x, y, z, immediate);
-        setUpdate("cubecraft:transparent_block", x, y, z, immediate);
+        setUpdate(x, y, z, immediate, "cubecraft:alpha_block", "cubecraft:transparent_block");
     }
 
-    public void setUpdate(String layer, long x, long y, long z, boolean immediate) {
-        RenderChunkPos pos = RenderChunkPos.create(x, y, z);
-        ChunkCompileRequest request;
-        request = ChunkCompileRequest.buildAt(this.world, pos, layer);
+    public void setUpdate(long x, long y, long z, boolean immediate, String... layers) {
+        ChunkCompileRequest request = ChunkCompileRequest.build(this.world, RenderChunkPos.create(x, y, z), layers);
+
         if (immediate) {
             ChunkCompilerTask.task(this, request, this.resultQueue).run();
             return;
@@ -208,6 +266,11 @@ public final class ChunkRenderer extends IWorldRenderer {
     }
 
     public boolean isChunkOutOfRange(RenderChunkPos pos) {
+        long cy = pos.getY();
+
+        if (cy < -1 || cy > (Chunk.HEIGHT >> 4) + 1) {
+            return true;
+        }
         int dist = ClientSettingRegistry.getFixedViewDistance() * 16;
         return pos.chunkDistanceTo(this.player.getPosition()) > dist;
     }
@@ -252,6 +315,27 @@ public final class ChunkRenderer extends IWorldRenderer {
         this.refresh();
     }
 
+    public static final class BufferResourceHandler implements Pool.PoolResourceHandler<VertexBuilder> {
+        @Override
+        public VertexBuilder create() {
+            return new OffHeapVertexBuilder(16384, DrawMode.QUADS);
+        }
+
+        @Override
+        public void onReleaseToPool(VertexBuilder builder) {
+            builder.clear();
+        }
+
+        @Override
+        public void onPoolAllocated(VertexBuilder builder) {
+            builder.clear();
+        }
+
+        @Override
+        public void release(VertexBuilder builder) {
+            builder.free();
+        }
+    }
 
     @SuppressWarnings("BusyWait")
     private static class Daemon extends Thread {
@@ -317,7 +401,7 @@ public final class ChunkRenderer extends IWorldRenderer {
             long z = (long) (this.camera.getPosition().z) >> 4;
 
             if (ClientSettingRegistry.FORCE_REBUILD_NEAREST_CHUNK.getValue()) {
-                this.parent.setUpdate(x, y, z, true);
+                //this.parent.setUpdate(x, y, z, true);
             }
 
             boolean check = false;

@@ -3,7 +3,8 @@ package net.cubecraft.internal.entity;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.SharedContext;
 import net.cubecraft.auth.Session;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.level.Level;
+import net.cubecraft.world.World;
 import net.cubecraft.world.entity.EntityItem;
 import net.cubecraft.world.entity.EntityLiving;
 import org.joml.Vector3d;
@@ -12,11 +13,11 @@ import org.joml.Vector3d;
 public class EntityPlayer extends EntityLiving {
     private final Session session;
 
-    public EntityPlayer(IWorld world, Session session) {
-        super(world);
+    public EntityPlayer(Level level, Session session) {
+        super(level);
         this.session = session;
         this.setUuid(SharedContext.SESSION_SERVICE.get(session.getType()).genUUID(session));
-        this.flying = true;
+        this.flying = false;
     }
 
     @Override

@@ -13,11 +13,11 @@ import me.gb2022.quantum3d.device.event.MouseClickEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import net.cubecraft.EnvironmentPath;
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.chunk.ChunkCodec;
 import net.cubecraft.world.chunk.WorldChunk;
+import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.entity.EntityLiving;
 import net.cubecraft.world.entity.controller.EntityController;
 import net.cubecraft.world.item.container.Inventory;
@@ -107,9 +107,28 @@ public class PlayerController extends EntityController<EntityPlayer> {
         }
 
 
-        if (e.getKey() == KeyboardButton.KEY_F8) {
-            ClientSharedContext.CLIENT_SETTING.load();
+        if (e.getKey() == KeyboardButton.KEY_F5) {
+            var tag = ChunkCodec.getWorldChunkData(this.entity.getWorld().getChunk(ChunkPos.fromWorldPos(this.entity.x, this.entity.z)));
+
+            try {
+                NBT.writeZipped(tag, new FileOutputStream("E:/chunk.dat"));
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
         }
+        if (e.getKey() == KeyboardButton.KEY_F6) {
+            try {
+                var tag = NBT.readZipped(new FileInputStream("E:/chunk.dat"));
+
+                ChunkCodec.setWorldChunkData(this.entity.getWorld().getChunk(ChunkPos.fromWorldPos(this.entity.x, this.entity.z)),
+                                             (NBTTagCompound) tag
+                );
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+
         if (e.getKey() == KeyboardButton.KEY_O) {
             WorldChunk chunk = this.entity.getWorld().getChunk(0, 0);
             NBTTagCompound tag = ChunkCodec.getWorldChunkData(chunk);

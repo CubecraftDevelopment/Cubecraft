@@ -1,43 +1,46 @@
 package net.cubecraft.world.block.access;
 
+import net.cubecraft.CoreRegistries;
 import net.cubecraft.event.BlockIDChangedEvent;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.util.register.Registered;
+import net.cubecraft.world.World;
+import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.EnumFacing;
-import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
-import net.cubecraft.world.dimension.Dimension;
 
 public class ChunkBlockAccess extends IBlockAccess {
     private final WorldChunk chunk;
     private String cachedBlockId;
 
-    public ChunkBlockAccess(IWorld world, long x, long y, long z, WorldChunk chunk) {
+    public ChunkBlockAccess(World world, long x, long y, long z, WorldChunk chunk) {
         super(world, x, y, z);
         this.chunk = chunk;
     }
 
+
+    public int getBlockId() {
+        return this.world.getBlockId(this.x, this.y, this.z);
+    }
+
+    @Override
+    public byte getBlockMeta() {
+        return this.world.getBlockMetadata(this.x, this.y, this.z);
+    }
+
+    @Override
+    public byte getBlockLight() {
+        return this.world.getBlockLight(this.x, this.y, this.z);
+    }
+
+
+
     @Override
     public String getBlockID() {
-        if (this.cachedBlockId != null) {
-            return this.cachedBlockId;
-        }
-
-        if (Dimension.outsideWorld(this.x, this.z) || Dimension.outsideWorldVertical(this.y)) {
-            this.cachedBlockId = this.world.getDimension().predictBlockID(this.world, this.x, this.y, this.z);
-            return this.cachedBlockId;
-        }
-
-
-        String id = this.chunk.getBlockID((int) (this.x & 15), (int) y, (int) (this.z & 15));
-        if (id != null) {
-            this.cachedBlockId = id;
-        } else {
-            this.cachedBlockId = this.world.getDimension().predictBlockID(this.world, this.x, this.y, this.z);
-        }
-        return this.cachedBlockId;
+        return CoreRegistries.BLOCKS.name(getBlockId());
     }
+
 
     @Override
     public void setBlockID(String id, boolean sendUpdateEvent) {
@@ -87,16 +90,6 @@ public class ChunkBlockAccess extends IBlockAccess {
         this.chunk.setBlockFacing(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z), facing);
     }
 
-    @Override
-    public byte getBlockMeta() {
-        Byte m = this.world.getDimension().predictBlockMetaAt(this.world, this.x, this.y, this.z);
-        if (m != null) {
-            return m;
-        } else {
-            ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-            return this.chunk.getBlockMeta(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z));
-        }
-    }
 
     @Override
     public void setBlockMeta(byte meta, boolean sendUpdateEvent) {
@@ -108,22 +101,6 @@ public class ChunkBlockAccess extends IBlockAccess {
             return;
         }
         this.chunk.setBlockMeta(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z), meta);
-    }
-
-    @Override
-    public byte getBlockLight() {
-        Byte predictedLight = this.world.getDimension().predictLightAt(this.world, this.x, this.y, this.z);
-        if (predictedLight != null) {
-            return predictedLight;
-        } else {
-            if (this.y >= 128) {
-                return (byte) (BlockPropertyDispatcher.isSolid(this) ? 0 : 127);
-            }
-            return (byte) (Math.max(128 - (128 - this.y) * 4, 8));
-
-            //ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-            //return this.chunk.getBlockLight(pos.getRelativePosX(this.x), (int) this.y, pos.getRelativePosZ(this.z));
-        }
     }
 
     @Override
@@ -139,17 +116,16 @@ public class ChunkBlockAccess extends IBlockAccess {
     }
 
     @Override
-    public String getBiome() {
-        ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-        return this.chunk.getBiome(pos.getRelativePosX(x), (int) this.y, pos.getRelativePosZ(z));
+    public Biome getBiome() {
+        return CoreRegistries.BIOMES.object(this.chunk.getBiome((int) (this.x & 15), (int) this.y, (int) (this.z & 15)));
     }
 
     @Override
-    public void setBiome(String biome, boolean sendUpdateEvent) {
+    public void setBiome(Registered<Biome> biome, boolean sendUpdateEvent) {
         ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
         if (this.chunk == null) {
             return;
         }
-        this.chunk.setBiome(pos.getRelativePosX(x), (int) this.y, pos.getRelativePosZ(z), biome);
+        this.chunk.setBiome(pos.getRelativePosX(x), (int) this.y, pos.getRelativePosZ(z), biome.getId());
     }
 }

@@ -6,6 +6,10 @@ version '0.0.1'
 
 apply from: "../script/build-base.gradle"
 
+apply from: "E:/Java/GradleScripts/build-base.gradle"
+
+applyGlobalScript("Dependencies.gradle")
+
 version '1.0-SNAPSHOT'
 
 ext.applyScript("/jar.gradle")
@@ -18,6 +22,18 @@ dependencies {
     implementation project(":cubecraft-client")
     implementation project(":cubecraft-core")
     implementation project(":cubecraft-server")
+
+    compileOnly localStorage("me.gb2022.commons-nbt")
+    compileOnly localStorage("me.gb2022.commons-math")
+    compileOnly localStorage("me.gb2022.commons-container")
+    compileOnly localStorage("me.gb2022.commons-general")
+    compileOnly localStorage("me.gb2022.commons-event")
+
+    compileOnly projectLocal("terraforged-noise")
+
+    compileOnly local("jflogger-0.0.2-1")
+    compileOnly local("fcommon-1.0.5")
+
 }
 
 jar {

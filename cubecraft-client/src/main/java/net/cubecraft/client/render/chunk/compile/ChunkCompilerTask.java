@@ -1,9 +1,6 @@
 package net.cubecraft.client.render.chunk.compile;
 
-import ink.flybird.quantum3d_legacy.BufferAllocation;
 import net.cubecraft.client.render.chunk.ChunkRenderer;
-import net.cubecraft.client.render.chunk.RenderChunkPos;
-import net.cubecraft.world.IWorld;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,26 +30,19 @@ public abstract class ChunkCompilerTask implements Runnable {
     }
 
     public void processRequest(ChunkCompileRequest request) {
-        IWorld world = request.getWorld();
-        RenderChunkPos pos = request.getPos();
-        String layerId = request.getLayerId();
-
-        ChunkCompileResult result;
         if (this.parent.isChunkOutOfRange(request.getPos())) {
             return;
         }
 
+        ChunkCompiler.build(this.resultQueue, request.getWorld(), request.getPos(), request.getCompilations());
+
+        /*
         if (request.getLayer() == null) {
             result = ChunkCompiler.build(layerId, world, pos);
         } else {
             result = ChunkCompiler.rebuild(layerId, world, pos, request.getLayer());
         }
-
-        if ((!this.running) && result.isSuccess()) {
-            result.getBuilder().free();
-            return;
-        }
-        this.resultQueue.add(result);
+         */
     }
 
     public boolean isRunning() {
@@ -92,11 +82,6 @@ public abstract class ChunkCompilerTask implements Runnable {
         public void run() {
             while (this.isRunning()) {
                 try {
-                    while (BufferAllocation.getAllocSize() > Integer.MAX_VALUE) {
-                        Thread.onSpinWait();
-                        Thread.sleep(50);
-                        Thread.yield();
-                    }
                     while (this.requestQueue.isEmpty()) {
                         Thread.onSpinWait();
                         Thread.sleep(50);
@@ -124,7 +109,7 @@ public abstract class ChunkCompilerTask implements Runnable {
                     }
                     Thread.sleep(5);
                 } catch (Exception e) {
-                    LOGGER.error(e);
+                    LOGGER.throwing(e);
                 }
                 Thread.yield();
             }

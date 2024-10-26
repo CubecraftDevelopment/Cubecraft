@@ -4,28 +4,57 @@ plugins {
     id 'idea'
 }
 
-apply from: "../script/build-base.gradle"
-
 group= "net.cubecraft"
 version '0.3.2'
 
-ext.applyScript("/jar.gradle")
+apply from: "../script/build-base.gradle"
+
 ext.applyScript("/lib/basic.gradle")
 ext.applyScript("/lib/cubecraft.gradle")
 ext.applyScript("/lib/lwjgl.gradle")
 
+apply from: "E:/Java/GradleScripts/build-base.gradle"
+
+applyGlobalScript("Dependencies.gradle")
+
+group 'net.cubecraft'
+version '0.2.0-beta'
+
+apply from:"../script/build-base.gradle"
+
+
 dependencies {
     implementation project(":cubecraft-core")
     implementation project(":cubecraft-server")
-    implementation project(':Quantum3D-legacy')
-    implementation project(":JRakNet")
-
     implementation project(":quantum3d")
 
-    implementation "com.twelvemonkeys.imageio:imageio-tga:3.9.4"
-    implementation 'net.java.dev.jna:jna:5.12.1'
-    implementation 'net.java.dev.jna:jna-platform:5.12.1'
+    implementation project(":Quantum3D-legacy")
 }
+
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'it.unimi.dsi:fastutil-core:8.5.9'
+    implementation 'org.iq80.leveldb:leveldb:0.12'
+    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+
+    implementation 'io.netty:netty-buffer:4.1.90.Final'
+    implementation 'io.netty:netty-transport:4.1.90.Final'
+    implementation 'net.java.dev.jna:jna:4.5.2'
+    implementation 'com.github.oshi:oshi-core:5.7.1'
+    implementation project(":JRakNet")
+    implementation "org.beykery:jkcp:1.3.1"
+    implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
+
+    implementation localStorage("me.gb2022.commons-nbt")
+    implementation localStorage("me.gb2022.commons-math")
+    implementation localStorage("me.gb2022.commons-container")
+    implementation localStorage("me.gb2022.commons-general")
+    implementation localStorage("me.gb2022.commons-event")
+    implementation projectLocal("fcommon-1.0.5")
+}
+
 
 jar {
     archivesBaseName = 'cubecraft-client'

@@ -4,8 +4,6 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import me.gb2022.commons.file.FileUtil;
 import me.gb2022.commons.threading.ThreadState;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedObjects;
 import net.cubecraft.client.CubecraftClient;
@@ -26,6 +24,8 @@ import net.cubecraft.level.Level;
 import net.cubecraft.level.LevelInfo;
 import net.cubecraft.server.CubecraftServer;
 import net.cubecraft.server.ServerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,6 +63,7 @@ public class ClientWorldManager extends ClientNetHandler {
 
         Level level = this.getIntegratedServer().getLevel();
         this.client.joinLevel(level);
+        this.client.setWorld(this.client.getClientWorldContext().getWorld());
     }
 
     public void setConnectionScreenText(String statement, String reason, Object... reasonArgs) {
@@ -81,11 +82,7 @@ public class ClientWorldManager extends ClientNetHandler {
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
-            this.setConnectionScreenText(
-                    "connection.statement.failed",
-                    "connection.detail.failed_client",
-                    e.getMessage()
-            );
+            this.setConnectionScreenText("connection.statement.failed", "connection.detail.failed_client", e.getMessage());
             return true;
         }
         Thread.yield();
@@ -169,12 +166,12 @@ public class ClientWorldManager extends ClientNetHandler {
                     this.panel.addNode(name, panel);
                     ((Label) panel.getNode("title")).setText(name);
                     ((Label) panel.getNode("created_time")).setText(SharedObjects.DATE_FORMAT.format(info.getCreatedTime()));
-                    ((Label) panel.getNode("size")).setText(FileUtil.folderSize(info.getFolder()) / 1000f + "MB");
+                    ((Label) panel.getNode("size")).setText(SharedObjects.SHORT_DECIMAL_FORMAT.format(FileUtil.folderSize(info.getFolder()) / 1000000f) + "MB");
 
                     h += ((OriginLayout) panel.getLayout()).getRelativeHeight();
                     this.showedInfoList.add(this.levels.get(name));
                 } catch (Exception e) {
-                    LOGGER.error(e);
+                    LOGGER.throwing(e);
                 }
             }
         }
@@ -240,9 +237,15 @@ public class ClientWorldManager extends ClientNetHandler {
     }
 
     public void leaveWorld() {
+        if (this.getIntegratedServer() == null) {
+            return;
+        }
+
         this.getIntegratedServer().setRunning(false);
         this.client.leaveLevel();
-        while (this.getIntegratedServer().getState() != ThreadState.TERMINATED) {
+
+        while (!(this.getIntegratedServer().getState() == ThreadState.TERMINATED || this.getIntegratedServer()
+                .getState() == ThreadState.TERMINATING_FAILED)) {
             Thread.yield();
         }
     }

@@ -1,7 +1,7 @@
 package net.cubecraft.world.entity;
 
 import me.gb2022.commons.math.AABB;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 
 public abstract class EntityParticle extends EntityNonLiving {
     protected final String tex;
@@ -11,7 +11,7 @@ public abstract class EntityParticle extends EntityNonLiving {
     protected final float size;
     protected int age;
 
-    public EntityParticle(IWorld world, double x, double y, double z, double xa, double ya, double za, String tex) {
+    public EntityParticle(World world, double x, double y, double z, double xa, double ya, double za, String tex) {
         super(world);
         this.tex = tex;
         this.setPos(x, y, z);

@@ -2,6 +2,9 @@ package net.cubecraft.world.chunk.task;
 
 public class ChunkLoadTicket {
     public static final ChunkLoadTicket LOAD_DATA = new ChunkLoadTicket(ChunkLoadLevel.None_TICKING,10);
+    public static final ChunkLoadTicket ENTITY = new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 10);
+
+
     private ChunkLoadLevel chunkLoadLevel;
     private int time;
 

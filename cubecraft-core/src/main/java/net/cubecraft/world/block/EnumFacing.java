@@ -14,14 +14,21 @@ public enum EnumFacing {
     North(4),
     South(5);
 
+    private static final int[][] faceMapping = new int[6][6];
+
+    static {
+        faceMapping[0] = new int[]{0, 1, 2, 3, 4, 5};//up(default)
+        faceMapping[1] = new int[]{5, 0, 1, 2, 3, 4};//down
+        faceMapping[2] = new int[]{4, 5, 0, 1, 2, 3};//front
+        faceMapping[3] = new int[]{3, 4, 5, 0, 1, 2};//back
+        faceMapping[4] = new int[]{2, 3, 4, 5, 1, 1};//left
+        faceMapping[5] = new int[]{1, 2, 3, 4, 5, 0};//right
+    }
+
     final byte numID;
 
     EnumFacing(int id) {
         this.numID = (byte) id;
-    }
-
-    public byte getNumID() {
-        return numID;
     }
 
     public static EnumFacing fromId(int id) {
@@ -36,27 +43,28 @@ public enum EnumFacing {
         };
     }
 
-    public Vector3<Long> findNear(long x, long y, long z, int radius) {
-        switch (this.numID) {
-            case 0 -> y += radius;
-            case 1 -> y -= radius;
-            case 2 -> z += radius;
-            case 3 -> z -= radius;
-            case 4 -> x += radius;
-            case 5 -> x -= radius;
-        }
-        return new Vector3<>(x, y, z);
-    }
-
     public static Vector3<Long> findNear(long x, long y, long z, int radius, int id) {
-        switch (id) {
-            case 0 -> y += radius;
-            case 1 -> y -= radius;
-            case 2 -> z += radius;
-            case 3 -> z -= radius;
-            case 4 -> x += radius;
-            case 5 -> x -= radius;
+        if (id == 0) {
+            return new Vector3<>(x, y + radius, z);
         }
+        if (id == 1) {
+            return new Vector3<>(x, y - radius, z);
+        }
+        if (id == 2) {
+            return new Vector3<>(x, y, z + radius);
+        }
+        if (id == 3) {
+            return new Vector3<>(x, y, z - radius);
+        }
+
+        if (id == 4) {
+            return new Vector3<>(x + radius, y, z);
+        }
+
+        if (id == 5) {
+            return new Vector3<>(x - radius, y, z);
+        }
+
         return new Vector3<>(x, y, z);
     }
 
@@ -105,25 +113,35 @@ public enum EnumFacing {
         return faceMapping[facing][face];
     }
 
-    private static final int[][] faceMapping = new int[6][6];
+    public byte getNumID() {
+        return numID;
+    }
 
-    static {
-        faceMapping[0] = new int[]{0, 1, 2, 3, 4, 5};//up(default)
-        faceMapping[1] = new int[]{5, 0, 1, 2, 3, 4};//down
-        faceMapping[2] = new int[]{4, 5, 0, 1, 2, 3};//front
-        faceMapping[3] = new int[]{3, 4, 5, 0, 1, 2};//back
-        faceMapping[4] = new int[]{2, 3, 4, 5, 1, 1};//left
-        faceMapping[5] = new int[]{1, 2, 3, 4, 5, 0};//right
+    public Vector3<Long> findNear(long x, long y, long z, int radius) {
+        switch (this.numID) {
+            case 0 -> y += radius;
+            case 1 -> y -= radius;
+            case 2 -> z += radius;
+            case 3 -> z -= radius;
+            case 4 -> x += radius;
+            case 5 -> x -= radius;
+        }
+        return new Vector3<>(x, y, z);
     }
 
     public Vector3d clipVec(Vector3d vec) {
         return switch (this) {
             case Up -> new Vector3d(vec);
-            case Down -> new Vector3d(vec).add(-0.5,-0.5,-0.5).mulProject(RotationMatrixConstants.FACE_BOTTOM).add(0.5,0.5,0.5);
-            case South -> new Vector3d(vec).add(-0.5,-0.5,-0.5).mulProject(RotationMatrixConstants.FACE_BACK).add(0.5,0.5,0.5);
-            case North -> new Vector3d(vec).add(-0.5,-0.5,-0.5).mulProject(RotationMatrixConstants.FACE_FRONT).add(0.5,0.5,0.5);
-            case West -> new Vector3d(vec).add(-0.5,-0.5,-0.5).mulProject(RotationMatrixConstants.FACE_RIGHT).add(0.5,0.5,0.5);
-            case East -> new Vector3d(vec).add(-0.5,-0.5,-0.5).mulProject(RotationMatrixConstants.FACE_LEFT).add(0.5,0.5,0.5);
+            case Down ->
+                    new Vector3d(vec).add(-0.5, -0.5, -0.5).mulProject(RotationMatrixConstants.FACE_BOTTOM).add(0.5, 0.5, 0.5);
+            case South ->
+                    new Vector3d(vec).add(-0.5, -0.5, -0.5).mulProject(RotationMatrixConstants.FACE_BACK).add(0.5, 0.5, 0.5);
+            case North ->
+                    new Vector3d(vec).add(-0.5, -0.5, -0.5).mulProject(RotationMatrixConstants.FACE_FRONT).add(0.5, 0.5, 0.5);
+            case West ->
+                    new Vector3d(vec).add(-0.5, -0.5, -0.5).mulProject(RotationMatrixConstants.FACE_RIGHT).add(0.5, 0.5, 0.5);
+            case East ->
+                    new Vector3d(vec).add(-0.5, -0.5, -0.5).mulProject(RotationMatrixConstants.FACE_LEFT).add(0.5, 0.5, 0.5);
         };
 
         /*

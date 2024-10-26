@@ -36,10 +36,12 @@ public final class HUDScreen extends Screen {
         if (showGUI) {
             this.renderActionBar(info);
             this.pointer.bind();
-            GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_DST_COLOR);
+
+            GLUtil.enableBlend();
+            GL11.glBlendFunc(GL11.GL_SRC_COLOR, GL11.GL_ONE_MINUS_DST_COLOR);
             ShapeRenderer.drawRectUV(
-                    info.getCenterX() - 8, info.getCenterX() + 8,
-                    info.getCenterY() - 8, info.getCenterY() + 8,
+                    info.getCenterX() - 14, info.getCenterX() + 14,
+                    info.getCenterY() - 14, info.getCenterY() + 14,
                     0, 0, 1, 0, 1
             );
             GLUtil.disableBlend();
@@ -84,7 +86,6 @@ public final class HUDScreen extends Screen {
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_success_size_transparent", int.class),
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_size_transparent", int.class),
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "status_cache", String.class)
-
         ));
         this.debugInfoLeft.put("entity_renderer", "E: %d/%d".formatted(
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "success_size", int.class),
@@ -110,7 +111,7 @@ public final class HUDScreen extends Screen {
         CubecraftClient client2 = this.getClient();
         this.debugInfoLeft.put("world", "World: %s (c=%s)".formatted(
                 client2.getClientWorldContext().getWorld().getId(),
-                client1.getClientWorldContext().getWorld().chunks.size()
+                client1.getClientWorldContext().getWorld().getChunkCache().map().size()
         ));
     }
 

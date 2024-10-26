@@ -115,7 +115,7 @@ public final class RenderList {
 
             GL11.glPushMatrix();
             GL11.glTranslated(translation.x, translation.y, translation.z);
-            layer.render();
+            layer.render(viewBase.x, viewBase.y, viewBase.z);
             count++;
             GL11.glPopMatrix();
         }

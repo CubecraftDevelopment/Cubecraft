@@ -1,22 +1,19 @@
 package net.cubecraft.world.block;
 
 import me.gb2022.commons.Initializable;
-import me.gb2022.commons.container.Vector3;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.event.register.BlockRegisterEvent;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.util.register.Named;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.behavior.BlockBehavior;
 import net.cubecraft.world.block.property.BlockProperty;
-import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import net.cubecraft.world.block.property.BooleanProperty;
-import net.cubecraft.world.entity.Entity;
 
 import java.util.*;
 
-public abstract class Block implements Initializable {
+public abstract class Block implements Initializable, Named {
     private final HashMap<String, BlockProperty<?>> properties = new HashMap<>(64);
     private final HashMap<String, BlockBehavior> behaviors = new HashMap<>(64);
     private final String id;
@@ -155,5 +152,11 @@ public abstract class Block implements Initializable {
 
     public boolean isSolid() {
         return this.cachedSolidValue;
+    }
+
+
+    @Override
+    public String getName() {
+        return this.id;
     }
 }

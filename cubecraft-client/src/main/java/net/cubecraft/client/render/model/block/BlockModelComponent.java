@@ -1,6 +1,7 @@
 package net.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
+import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import me.gb2022.commons.ColorUtil;
 import me.gb2022.commons.container.Vector3;
@@ -9,10 +10,9 @@ import net.cubecraft.client.render.BlockBakery;
 import net.cubecraft.client.render.model.CullingMethod;
 import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.IBlockAccess;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
@@ -47,7 +47,7 @@ public abstract class BlockModelComponent {
 
 
     //abstract method
-    public abstract void render(VertexBuilder builder, String layer, IWorld world, IBlockAccess blockAccess, double renderX, double renderY, double renderZ);
+    public abstract void render(VertexBuilder builder, String layer, BlockAccessor world, IBlockAccess blockAccess, double renderX, double renderY, double renderZ);
 
     public abstract void renderAsItem(VertexBuilder builder, double renderX, double renderY, double renderZ);
 
@@ -96,7 +96,7 @@ public abstract class BlockModelComponent {
 
         //implement
         @Override
-        public void render(VertexBuilder builder, String layer, IWorld world, IBlockAccess blockAccess, double renderX, double renderY, double renderZ) {
+        public void render(VertexBuilder builder, String layer, BlockAccessor world, IBlockAccess blockAccess, double renderX, double renderY, double renderZ) {
             long x = blockAccess.getX();
             long y = blockAccess.getY();
             long z = blockAccess.getZ();
@@ -140,21 +140,22 @@ public abstract class BlockModelComponent {
             };
         }
 
-        public boolean shouldRender(int f, IBlockAccess blockAccess, IWorld world, long x, long y, long z) {
+        public boolean shouldRender(int f, IBlockAccess blockAccess, BlockAccessor world, long x, long y, long z) {
             BlockModelFace face = this.getFace(f);
             Vector3<Long> pos = EnumFacing.findNear(x, y, z, 1, f);
             return switch (face.culling()) {
                 case NEVER -> false;
                 case SOLID -> !BlockPropertyDispatcher.isSolid(world.getBlockAccess(pos.x(), pos.y(), pos.z()));
                 case ALWAYS -> true;
-                case SOLID_OR_EQUALS -> !BlockPropertyDispatcher.isSolid(world.getBlockAccess(pos.x(), pos.y(), pos.z())) &&
-                        !(Objects.equals(world.getBlockAccess(pos.x(), pos.y(), pos.z()).getBlockID(), blockAccess.getBlockID()));
+                case SOLID_OR_EQUALS ->
+                        !BlockPropertyDispatcher.isSolid(world.getBlockAccess(pos.x(), pos.y(), pos.z())) &&
+                                !(Objects.equals(world.getBlockAccess(pos.x(), pos.y(), pos.z()).getBlockID(), blockAccess.getBlockID()));
                 case EQUALS ->
                         !(Objects.equals(world.getBlockAccess(pos.x(), pos.y(), pos.z()).getBlockID(), blockAccess.getBlockID()));
             };
         }
 
-        public void renderFace(BlockModelFace f, int face, VertexBuilder builder, IWorld w, IBlockAccess blockAccess, long x, long y, long z, double renderX, double renderY, double renderZ) {
+        public void renderFace(BlockModelFace f, int face, VertexBuilder builder, BlockAccessor w, IBlockAccess blockAccess, long x, long y, long z, double renderX, double renderY, double renderZ) {
             Texture2DTileMap terrain = net.cubecraft.client.context.ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
 
             String path = f.texture().getAbsolutePath();

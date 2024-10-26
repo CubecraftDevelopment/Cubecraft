@@ -1,0 +1,7 @@
+{
+  "type": "cubecraft:simple_block",
+  "layer": "cubecraft:transparent_block",
+  "culling": "equals",
+  "color": "none",
+  "texture": "cubecraft:/block/ice.png"
+}

@@ -1,9 +1,9 @@
 package net.cubecraft.world.chunk;
 
-import net.cubecraft.world.IWorld;
-import net.cubecraft.world.chunk.task.ChunkLoadTicket;
+import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.pos.ChunkPos;
+import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 
 public interface ChunkLoader {
-    void load(IWorld world, ChunkPos pos, ChunkLoadTicket ticket);
+    void load(World world, ChunkPos pos, ChunkLoadTicket ticket);
 }

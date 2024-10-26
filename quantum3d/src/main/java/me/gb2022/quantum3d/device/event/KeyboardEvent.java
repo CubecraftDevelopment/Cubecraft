@@ -1,5 +1,6 @@
 package me.gb2022.quantum3d.device.event;
 
+import me.gb2022.commons.event.CancellableEvent;
 import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.Window;
 
@@ -7,8 +8,7 @@ import me.gb2022.quantum3d.device.Window;
  * An abstract base class representing a keyboard event.
  * Implements the Event interface.
  */
-public abstract class KeyboardEvent {
-
+public abstract class KeyboardEvent extends CancellableEvent {
     private final Window window;
     private final Keyboard keyboard;
 

@@ -12,8 +12,8 @@ public abstract class Inventory extends Container {
 
     public void selectItem(Hittable obj, int targetSlot) {
         String id;
-        if (obj instanceof IBlockAccess) {
-            id = ((IBlockAccess) obj).getBlockID();
+        if (obj instanceof IBlockAccess b) {
+            id = b.getBlockID();
         } else {
             id = ((Entity) obj).getID() + Entity.AUTO_REGISTER_SPAWN_EGG_ID;
         }

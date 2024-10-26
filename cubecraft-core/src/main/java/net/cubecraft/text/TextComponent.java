@@ -8,7 +8,11 @@ public final class TextComponent {
     private boolean bold;
     private boolean italic;
     private boolean delete;
+
     private TextComponent next;
+    private TextComponent prev;
+
+
     private boolean underline;
     private float size;
 
@@ -20,6 +24,10 @@ public final class TextComponent {
         this.delete = delete;
         this.underline = underline;
         this.size = size;
+    }
+
+    public static TextComponent create(Object text) {
+        return new TextComponent(String.valueOf(text), 8, 0xFFFFFF, false, false, false, false);
     }
 
     public static TextComponent create(String text) {
@@ -94,11 +102,23 @@ public final class TextComponent {
 
     public TextComponent append(TextComponent append) {
         this.next = append;
+        append.prev = this;
         return append;
     }
 
+    public TextComponent previous(TextComponent append) {
+        this.prev = append;
+        append.next = this;
+        return append;
+    }
+
+
     public TextComponent getNext() {
         return next;
+    }
+
+    public TextComponent getPrev() {
+        return prev;
     }
 
     @Override
@@ -129,5 +149,19 @@ public final class TextComponent {
 
     public float getSize() {
         return this.size;
+    }
+
+    public TextComponent getFirst() {
+        if (getPrev() == null) {
+            return this;
+        }
+        return this.getPrev().getFirst();
+    }
+
+    public TextComponent getLast() {
+        if (getNext() == null) {
+            return this;
+        }
+        return this.getNext().getLast();
     }
 }

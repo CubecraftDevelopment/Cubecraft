@@ -9,3 +9,13 @@ version '1.0.25'
 
 ext.applyScript("/lib/lwjgl.gradle")
 ext.applyScript("/lib/basic.gradle")
+
+
+apply from: "E:/Java/GradleScripts/build-base.gradle"
+
+applyGlobalScript("Dependencies.gradle")
+
+dependencies {
+    implementation("org.slf4j:slf4j-api:1.7.27")
+    implementation localStorage("me.gb2022.commons-event")
+}

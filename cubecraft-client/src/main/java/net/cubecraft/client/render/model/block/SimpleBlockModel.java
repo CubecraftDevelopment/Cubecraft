@@ -8,7 +8,7 @@ import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.model.CullingMethod;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.util.DeserializedConstructor;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
@@ -21,11 +21,13 @@ public final class SimpleBlockModel extends BlockModel {
     private final TextureAsset texture;
     private final String layer;
     private final CullingMethod culling;
+    private final String color;
 
-    public SimpleBlockModel(TextureAsset tex, String layer, CullingMethod culling) {
+    public SimpleBlockModel(TextureAsset tex, String layer, CullingMethod culling, String color) {
         this.texture = tex;
         this.layer = layer;
         this.culling = culling;
+        this.color = color;
     }
 
     @DeserializedConstructor
@@ -33,12 +35,13 @@ public final class SimpleBlockModel extends BlockModel {
         this.texture = new TextureAsset(json.get("texture").getAsString());
         this.layer = json.get("layer").getAsString();
         this.culling = CullingMethod.from(json.get("culling").getAsString());
+        this.color = json.get("color").getAsString();
     }
 
-    public boolean shouldRender(int current, IBlockAccess blockAccess, IWorld world, long x, long y, long z) {
+    public static boolean shouldRender(CullingMethod culling, int current, IBlockAccess blockAccess, BlockAccessor world, long x, long y, long z) {
         Vector3<Long> pos = EnumFacing.findNear(x, y, z, 1, current);
         IBlockAccess near = world.getBlockAccess(pos.x(), pos.y(), pos.z());
-        return switch (this.culling) {
+        return switch (culling) {
             case NEVER -> false;
             case SOLID -> !BlockPropertyDispatcher.isSolid(near);
             case ALWAYS -> true;
@@ -54,23 +57,22 @@ public final class SimpleBlockModel extends BlockModel {
     }
 
     @Override
-    public void render(IBlockAccess blockAccess, VertexBuilder builder, String layer, IWorld world, double renderX, double renderY, double renderZ) {
+    public String getParticleTexture() {
+        return this.texture.getAbsolutePath();
+    }
+
+    @Override
+    public void renderBlock(IBlockAccess block, String layer, BlockAccessor world, int face, double renderX, double renderY, double renderZ, VertexBuilder builder) {
         if (!Objects.equals(layer, this.layer)) {
             return;
         }
 
-        long x = blockAccess.getX();
-        long y = blockAccess.getY();
-        long z = blockAccess.getZ();
-        for (int face = 0; face < 6; face++) {
-            if (this.shouldRender(face, blockAccess, world, x, y, z)) {
-                IBlockRenderer.renderFace(face, this.texture.getAbsolutePath(), builder, world, x, y, z, renderX, renderY, renderZ);
-            }
-        }
-    }
+        long x = block.getX();
+        long y = block.getY();
+        long z = block.getZ();
 
-    @Override
-    public String getParticleTexture() {
-        return this.texture.getAbsolutePath();
+        if (shouldRender(this.culling, face, block, world, x, y, z)) {
+            IBlockRenderer.renderFace(face, this.texture.getAbsolutePath(), this.color, builder, world, x, y, z, renderX, renderY, renderZ);
+        }
     }
 }

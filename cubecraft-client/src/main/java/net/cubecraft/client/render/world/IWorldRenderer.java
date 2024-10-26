@@ -8,18 +8,18 @@ import me.gb2022.quantum3d.device.Window;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.internal.entity.EntityPlayer;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 
 public abstract class IWorldRenderer {
     protected LevelRenderer parent;
     protected EntityPlayer player;
-    protected IWorld world;
+    protected World world;
     protected Camera camera;
     protected Window window;
 
-    public void initializeRenderer(LevelRenderer parent, Window window, IWorld world, EntityPlayer player, Camera cam) {
+    public void initializeRenderer(LevelRenderer parent, Window window, World world, EntityPlayer player, Camera cam) {
         this.world = world;
         this.player = player;
         this.camera = cam;
@@ -71,6 +71,9 @@ public abstract class IWorldRenderer {
     }
 
     protected void applyViewBobbing(float delta) {
+        if(!this.player.isOnGround()){
+            //return;
+        }
         float f = (float) (this.player.getWalkedDistance() - this.player.getLastWalkedDistance());
         float f1 = (float) -(this.player.getLastWalkedDistance() + f * delta);
         float f2 = 0.07f;//horizontal

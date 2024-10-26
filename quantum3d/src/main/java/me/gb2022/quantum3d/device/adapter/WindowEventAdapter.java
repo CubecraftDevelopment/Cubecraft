@@ -1,9 +1,9 @@
 package me.gb2022.quantum3d.device.adapter;
 
-import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.quantum3d.device.Window;
-import me.gb2022.quantum3d.device.listener.WindowListener;
 import me.gb2022.quantum3d.device.event.*;
+import me.gb2022.quantum3d.device.listener.WindowListener;
 
 /**
  * An adapter class that listens for mouse events and translates them into corresponding events.
@@ -15,7 +15,7 @@ public final class WindowEventAdapter extends EventAdapter implements WindowList
      *
      * @param eventBus The EventBus instance used to publish events.
      */
-    public WindowEventAdapter(EventBus eventBus) {
+    public WindowEventAdapter(SimpleEventBus eventBus) {
         super(eventBus);
     }
 

@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.device.adapter;
 
-import me.gb2022.commons.event.EventBus;
+import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.Window;
@@ -20,7 +20,7 @@ public final class KeyboardEventAdapter extends EventAdapter implements Keyboard
      *
      * @param eventBus The EventBus instance used to publish events.
      */
-    public KeyboardEventAdapter(EventBus eventBus) {
+    public KeyboardEventAdapter(SimpleEventBus eventBus) {
         super(eventBus);
     }
 

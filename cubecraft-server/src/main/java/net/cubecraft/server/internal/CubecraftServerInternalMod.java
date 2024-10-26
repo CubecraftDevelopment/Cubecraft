@@ -1,6 +1,7 @@
 package net.cubecraft.server.internal;
 
 import me.gb2022.commons.event.EventHandler;
+import net.cubecraft.server.service.EntityService;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import net.cubecraft.event.mod.ModConstructEvent;
@@ -26,6 +27,7 @@ public class CubecraftServerInternalMod {
 
         ServerSharedContext.SERVICE.registerItem(WorldTickService.class);
         ServerSharedContext.SERVICE.registerItem(ChunkService.class);
+        ServerSharedContext.SERVICE.registerItem(EntityService.class);
     }
 
     @EventHandler

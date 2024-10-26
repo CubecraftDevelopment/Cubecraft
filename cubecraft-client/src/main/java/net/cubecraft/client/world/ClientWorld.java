@@ -2,7 +2,7 @@ package net.cubecraft.client.world;
 
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.level.Level;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.access.ChunkLoadAccess;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.task.ChunkLoadLevel;
@@ -14,7 +14,7 @@ import net.cubecraft.world.chunk.WorldChunk;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
-public class ClientWorld extends IWorld {
+public class ClientWorld extends World {
     private static final int CLIENT_WORLD_SIMULATION_DISTANCE = 4;
     private final CubecraftClient client;
 
@@ -41,7 +41,7 @@ public class ClientWorld extends IWorld {
                 }
             }
         }
-        Iterator<WorldChunk> it = this.chunks.map.values().iterator();
+        Iterator<WorldChunk> it = this.chunkCache.map().values().iterator();
         try {
             while (it.hasNext()) {
                 WorldChunk chunk = it.next();

@@ -1,15 +1,17 @@
 package net.cubecraft.client.render.block;
 
-import net.cubecraft.client.context.ClientRenderContext;
-import net.cubecraft.client.render.model.object.Vertex;
-import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.client.render.BlockBakery;
-import net.cubecraft.event.resource.ResourceLoadFinishEvent;
-import net.cubecraft.world.IWorld;
-import net.cubecraft.world.block.access.IBlockAccess;
-import me.gb2022.commons.event.EventHandler;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
+import me.gb2022.commons.ColorUtil;
+import me.gb2022.commons.event.EventHandler;
+import net.cubecraft.client.context.ClientRenderContext;
+import net.cubecraft.client.render.BlockBakery;
+import net.cubecraft.client.render.model.object.Vertex;
+import net.cubecraft.client.resource.TextureAsset;
+import net.cubecraft.event.resource.ResourceLoadFinishEvent;
+import net.cubecraft.world.BlockAccessor;
+import net.cubecraft.world.World;
+import net.cubecraft.world.block.access.IBlockAccess;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 
@@ -19,7 +21,7 @@ import java.util.Set;
 import static net.cubecraft.client.render.block.ModelBlockRenderer.BLOCK_MODEL_LOAD_STAGE;
 
 public interface IBlockRenderer {
-    static void renderFace(int face, String texture, VertexBuilder builder, IWorld world, long x, long y, long z, double renderX, double renderY, double renderZ) {
+    static void renderFace(int face, String texture, String color, VertexBuilder builder, BlockAccessor world, long x, long y, long z, double renderX, double renderY, double renderZ) {
         Texture2DTileMap terrain = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
         float u0 = terrain.exactTextureU(texture, 0);
         float u1 = terrain.exactTextureU(texture, 1);
@@ -36,7 +38,18 @@ public interface IBlockRenderer {
         Vector3d v111 = new Vector3d(1, 1, 1);
 
         Vector3d render = new Vector3d(renderX, renderY, renderZ);
-        Vector3d faceColor = new Vector3d(1, 1, 1);
+
+        int c;
+        if (color == null|| color.equals("none")) {
+            c = 0xFFFFFF;
+        } else {
+            //todo block
+            c = ClientRenderContext.COLOR_MAP.get(color).sample(world, null, x, y, z);
+        }
+
+
+        Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
+
         if (face == 0) {
             BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v1), faceColor), v111, world, x, y, z, 0).draw(builder);
             BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u1, v0), faceColor), v110, world, x, y, z, 0).draw(builder);
@@ -86,19 +99,20 @@ public interface IBlockRenderer {
         }
     }
 
+    @EventHandler
+    static void onResourceReloadStart(ResourceLoadFinishEvent event) {
+        if (!Objects.equals(event.getStage(), BLOCK_MODEL_LOAD_STAGE)) {
+
+        }
+    }
+
     void renderBlock(
-            IBlockAccess blockAccess, String layer, IWorld world,
+            IBlockAccess blockAccess, String layer, World world,
             double renderX, double renderY, double renderZ,
             VertexBuilder builder);
 
     default void initializeRenderer(Set<TextureAsset> textureList) {
     }
 
-
-    @EventHandler
-    static void onResourceReloadStart(ResourceLoadFinishEvent event){
-        if(!Objects.equals(event.getStage(), BLOCK_MODEL_LOAD_STAGE)){
-
-        }
-    }
+    void renderBlock(IBlockAccess block, String layer, BlockAccessor region, int face, double renderX, double renderY, double renderZ, VertexBuilder builder);
 }

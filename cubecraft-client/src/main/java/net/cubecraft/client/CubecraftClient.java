@@ -1,12 +1,9 @@
 package net.cubecraft.client;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import ink.flybird.quantum3d_legacy.ContextManager;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.platform.Sync;
-import me.gb2022.commons.event.EventBus;
 import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.commons.timer.Timer;
 import me.gb2022.quantum3d.GameApplication;
@@ -33,6 +30,7 @@ import net.cubecraft.client.gui.screen.StudioLoadingScreen;
 import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.net.base.NetworkClient;
 import net.cubecraft.client.net.kcp.KCPNetworkClient;
+import net.cubecraft.client.particle.ParticleEngine;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.registry.TextureRegistry;
 import net.cubecraft.client.world.ClientWorldManager;
@@ -40,20 +38,22 @@ import net.cubecraft.level.Level;
 import net.cubecraft.mod.ModLoader;
 import net.cubecraft.mod.ModManager;
 import net.cubecraft.util.VersionInfo;
-import net.cubecraft.world.IWorld;
-import net.cubecraft.client.particle.ParticleEngine;
+import net.cubecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
+//todo: 堆外释放
 public final class CubecraftClient extends GameApplication {
-    public static final VersionInfo VERSION = new VersionInfo("client-0.4.1-b2");
-    private static final Logger LOGGER = LogManager.getLogger("client-main");
+    public static final VersionInfo VERSION = new VersionInfo("client-0.4.1-b3");
+    private static final Logger LOGGER = LogManager.getLogger("Client");
 
     private final ClientDeviceContext deviceContext = new ClientDeviceContext();
     private final ClientRenderContext renderContext = new ClientRenderContext(this);
     private final ClientWorldContext worldContext = new ClientWorldContext(this);
     private final ClientGUIContext guiContext = new ClientGUIContext(this, this.getWindow());
 
-    private final EventBus clientEventBus = new SimpleEventBus();
+    private final SimpleEventBus clientEventBus = new SimpleEventBus();
 
     private final NetworkClient clientIO = new KCPNetworkClient();
     private final ClientWorldManager clientWorldManager = new ClientWorldManager(this);
@@ -84,8 +84,10 @@ public final class CubecraftClient extends GameApplication {
         VertexBuilderAllocator.PREFER_MODE.set(0);
         LOGGER.info("render context started.");
 
+        ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(TextureRegistry.class);
+        ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(ResourceRegistry.class);
         ClientSharedContext.RESOURCE_MANAGER.registerResources(ResourceRegistry.class);
-        ClientSharedContext.RESOURCE_MANAGER.loadAsync("client:startup");
+        ClientSharedContext.RESOURCE_MANAGER.load("client:startup");
         LOGGER.info("pre-load resources loaded.");
 
         this.deviceContext.init(window, this.getDeviceContext());
@@ -111,29 +113,28 @@ public final class CubecraftClient extends GameApplication {
         ModLoader.loadClientInternalMod();
         ModLoader.loadStandaloneMods(EnvironmentPath.getModFolder());
         modManager.completeModRegister(Side.CLIENT);
-        modManager.constructMods(this.guiContext);
+        modManager.constructMods(null);
         LOGGER.info("mods initialized.");
-
-        long last = System.currentTimeMillis();
-        modManager.getModLoaderEventBus().callEvent(new ClientSetupEvent(this));
 
         this.renderContext.init();
         this.guiContext.init();
+
         if (!net.cubecraft.client.ClientSettingRegistry.SKIP_STUDIO_LOGO.getValue()) {
             StudioLoadingScreen scr = new StudioLoadingScreen();
             this.guiContext.setScreen(scr);
             this.guiContext.renderAnimationScreen(scr);
         }
 
-
         this.guiContext.setHoverLoadingScreen();
         this.guiContext.displayHoverScreen();
+
+        long last = System.currentTimeMillis();
+        modManager.getModLoaderEventBus().callEvent(new ClientSetupEvent(this));
+
         LOGGER.info("ui initialized.");
 
         modManager.getModLoaderEventBus().callEvent(new ClientPostSetupEvent(this));
 
-        ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(TextureRegistry.class);
-        ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(ResourceRegistry.class);
         ClientSharedContext.RESOURCE_MANAGER.reload();
         ClientSharedContext.RESOURCE_MANAGER.load("default");
         LOGGER.info("resource loaded.");
@@ -164,14 +165,14 @@ public final class CubecraftClient extends GameApplication {
 
     @Override
     public boolean onException(Exception error) {
-        LOGGER.error(error);
+        LOGGER.throwing(error);
         this.stop();
         return true;
     }
 
     @Override
     public boolean onError(Error error) {
-        LOGGER.error(error);
+        LOGGER.throwing(error);
         this.stop();
         return true;
     }
@@ -198,7 +199,14 @@ public final class CubecraftClient extends GameApplication {
             GLUtil.checkError("post_world_render");
         }
 
-        GLUtil.setupOrthogonalCamera(0, 0, window.getWidth(), window.getHeight(), screenInfo.getScreenWidth(), screenInfo.getScreenHeight());
+        GLUtil.setupOrthogonalCamera(
+                0,
+                0,
+                window.getWidth(),
+                window.getHeight(),
+                screenInfo.getScreenWidth(),
+                screenInfo.getScreenHeight()
+        );
         GLUtil.enableDepthTest();
         GLUtil.enableBlend();
         GLUtil.checkError("pre_screen_render");
@@ -209,7 +217,7 @@ public final class CubecraftClient extends GameApplication {
         Sync.sync(this.maxFPS);
 
         if (System.currentTimeMillis() - this.lastGCTime > ClientSettingRegistry.TICK_GC.getValue()) {
-            System.gc();
+            //System.gc();
             ClientGUIContext.FONT_RENDERER.gc();
             ClientGUIContext.ICON_FONT_RENDERER.gc();
             this.lastGCTime = System.currentTimeMillis();
@@ -227,7 +235,7 @@ public final class CubecraftClient extends GameApplication {
         );
     }
 
-    public EventBus getDeviceEventBus() {
+    public SimpleEventBus getDeviceEventBus() {
         return this.getClientDeviceContext().getEventBus();
     }
 
@@ -235,7 +243,7 @@ public final class CubecraftClient extends GameApplication {
         return this.clientIO;
     }
 
-    public EventBus getClientEventBus() {
+    public SimpleEventBus getClientEventBus() {
         return clientEventBus;
     }
 
@@ -270,7 +278,7 @@ public final class CubecraftClient extends GameApplication {
         this.renderContext.leaveLevel();
     }
 
-    public void setWorld(IWorld world) {
+    public void setWorld(World world) {
         this.worldContext.joinWorld(world);
         this.particleEngine = new ParticleEngine(this.getClientWorldContext().getWorld());
 

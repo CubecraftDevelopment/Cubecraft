@@ -1,7 +1,7 @@
 package net.cubecraft.world.item.container;
 
 import me.gb2022.commons.nbt.NBTTagCompound;
-import net.cubecraft.ContentRegistries;
+import net.cubecraft.CoreRegistries;
 import net.cubecraft.internal.item.ItemRegistry;
 import net.cubecraft.world.item.Item;
 import net.cubecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ public abstract class Container implements Iterable<ItemStack> {
         if (stack == null) {
             return ItemRegistry.DUMMY;
         }
-        return ContentRegistries.ITEM.get(stack.getType());
+        return CoreRegistries.ITEMS.object(stack.getType());
     }
 
     protected abstract int getCapacity();

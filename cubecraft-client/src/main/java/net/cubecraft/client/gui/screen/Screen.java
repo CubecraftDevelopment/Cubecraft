@@ -1,11 +1,11 @@
 package net.cubecraft.client.gui.screen;
 
-import me.gb2022.commons.JVMInfo;
-import me.gb2022.commons.container.OrderedHashMap;
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.draw.VertexUploader;
+import me.gb2022.commons.JVMInfo;
+import me.gb2022.commons.container.OrderedHashMap;
 import net.cubecraft.SharedObjects;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
@@ -18,6 +18,7 @@ import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.node.Container;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.util.IMBlocker;
+import net.cubecraft.text.TextComponent;
 import net.cubecraft.util.SystemInfoQuery;
 import org.w3c.dom.Element;
 
@@ -131,11 +132,16 @@ public class Screen extends Container {
             case IN_GAME_MASK -> ScreenUtil.renderMask(this.client.getWindow());
         }
         super.render(deltaTime);
+
+
         if (ClientSharedContext.getClient().isDebug) {
             this.debugInfoLeft.clear();
             this.debugInfoRight.clear();
             this.getDebug();
             this.renderDebug(info);
+        } else {
+            TextComponent text=TextComponent.create("fps:").color(0xffff00).append(TextComponent.create(client.getFPS()).color(0xffff00));
+            ClientGUIContext.FONT_RENDERER.render(text, info.getScreenWidth() - 2, 2, 0, FontAlignment.RIGHT);
         }
     }
 

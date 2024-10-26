@@ -1,5 +1,6 @@
 package net.cubecraft.client.internal.renderer.world.chunk;
 
+import me.gb2022.commons.container.keymap.KeyGetter;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.render.RenderType;
@@ -7,12 +8,11 @@ import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.client.render.chunk.layer.ChunkLayer;
 import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
 import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
-import me.gb2022.commons.container.KeyGetter;
 import me.gb2022.commons.context.LifetimeCounter;
 import net.cubecraft.client.render.chunk.ChunkRenderer;
 import net.cubecraft.client.render.DistanceComparable;
 import net.cubecraft.client.render.IRenderType;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import net.cubecraft.world.entity.Entity;
 import org.joml.Vector3d;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 
 public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceComparable{
     public final RenderChunkPos pos;
-    public final IWorld world;
+    public final World world;
     private final ChunkRenderer parent;
     private final Map<String, ChunkLayer> layers;
     private final IRenderCall visibleAreaRenderCall;
@@ -32,7 +32,7 @@ public final class RenderChunk implements KeyGetter<RenderChunkPos>, DistanceCom
 
 
 
-    public RenderChunk(ChunkRenderer parent, IWorld world, RenderChunkPos pos) {
+    public RenderChunk(ChunkRenderer parent, World world, RenderChunkPos pos) {
         this.parent = parent;
         this.layers = ClientRenderContext.CHUNK_LAYER_RENDERER.createAll(ClientSettingRegistry.CHUNK_USE_VBO.getValue());
         this.world = world;

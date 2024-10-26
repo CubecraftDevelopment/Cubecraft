@@ -1,5 +1,6 @@
 package net.cubecraft.client.registry;
 
+import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.event.resource.ResourceLoadFinishEvent;
 import me.gb2022.commons.container.Vector;
 import me.gb2022.commons.event.EventHandler;
@@ -31,14 +32,10 @@ public interface TextureRegistry {
     Vector<Texture2DTileMap> TERRAIN_TILEMAP=new Vector<>(null);
 
     @EventHandler
+    @SubscribedEvent("client:startup")
     static void onResourceLoadComplete(ResourceLoadFinishEvent event) {
-        if (Objects.equals(event.getStage(), "startup")) {
-            STUDIO_LOGO.load(ResourceRegistry.STUDIO_LOGO);
-            GAME_LOGO.load(ResourceRegistry.GAME_LOGO);
-            return;
-        }
-        TOAST.load(ResourceRegistry.TOAST);
-        IMAGE_BG.load(ResourceRegistry.IMAGE_BG);
+        STUDIO_LOGO.load(ResourceRegistry.STUDIO_LOGO);
+        GAME_LOGO.load(ResourceRegistry.GAME_LOGO);
         ASCII_PAGE.load(ResourceRegistry.ASCII_PAGE);
     }
 }

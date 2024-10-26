@@ -6,15 +6,13 @@ import net.cubecraft.SharedContext;
 import net.cubecraft.client.net.base.ClientContext;
 import net.cubecraft.client.net.base.ClientListener;
 import net.cubecraft.client.net.kcp.KCPNetworkClient;
-import net.cubecraft.util.ByteBufUtil;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.server.net.base.ServerContext;
 import net.cubecraft.server.net.base.ServerListener;
 import net.cubecraft.server.net.kcp.KCPNetworkServer;
 import net.cubecraft.util.NBTBufferCodec;
 import net.cubecraft.world.chunk.Chunk;
-import net.cubecraft.world.chunk.ChunkCodec;
-import net.cubecraft.world.chunk.ProviderChunk;
+import net.cubecraft.world.chunk.PrimerChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 
 import java.net.InetSocketAddress;
@@ -72,8 +70,16 @@ public class Test {
     }
 
     public static void main(String[] args) {
-        Chunk c=new ProviderChunk(new ChunkPos(0,0));
-        NBTTagCompound tag=ChunkCodec.getChunkSection(c,0);
+        Chunk c=new PrimerChunk(new ChunkPos(0,0));
+        NBTTagCompound tag1 = new NBTTagCompound();
+
+        c.compressSections(0);
+        tag1.setTag("blocks", c.blocks.getData());
+        tag1.setTag("biomes", c.biomes.getData());
+        tag1.setTag("meta", c.blockMetaSections[0].getData());
+        tag1.setTag("light", c.lightSections[0].getData());
+
+        NBTTagCompound tag= tag1;
 
         ByteBuf byteBuf=ByteBufAllocator.DEFAULT.ioBuffer();
 

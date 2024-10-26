@@ -1,7 +1,7 @@
 package net.cubecraft.internal.entity;
 
 import net.cubecraft.ContentRegistries;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
 import me.gb2022.commons.math.AABB;
 import net.cubecraft.world.entity.EntityNonLiving;
 
@@ -9,7 +9,7 @@ public class EntityFallingBlock extends EntityNonLiving {
     private String fallingID;
     //todo:take block meta
 
-    public EntityFallingBlock(IWorld world, String fallingID) {
+    public EntityFallingBlock(World world, String fallingID) {
         super(world);
         this.fallingID = fallingID;
     }

@@ -30,14 +30,14 @@
             title_screen.button.quit
         </label>
     </button>
-    <image layout="origin/middle_middle,0,-80,318,106" h-clip="scale" v-clip="scale">
+    <image layout="origin/middle_middle,0,-100,300,100" h-clip="scale" v-clip="scale">
         cubecraft:/gui/logo/game_logo.png
     </image>
-    <splash type="lang" id="splash" rotation="-20" bobbing="true" layout="origin/middle_middle,140,-70,16,8" color="efff00" align="middle">
+    <splash type="lang" id="splash" rotation="0" bobbing="false" layout="origin/middle_middle,-50,-74,16,8" color="dfdfdf" align="left">
         /asset/cubecraft/text/splash.json
     </splash>
     <label type="raw" layout="origin/right_bottom,-2,-2,0,8" color="ffffff" align="right">
-        ©CubecraftDevelopment-2023
+        ©CubecraftDevelopment 2021-2024
     </label>
     <label type="lang" layout="origin/left_bottom,2,-12,0,8" color="ffffff" align="left" id="auth_str">
         title_screen.auth

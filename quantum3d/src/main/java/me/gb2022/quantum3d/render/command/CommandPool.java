@@ -1,9 +1,10 @@
 package me.gb2022.quantum3d.render.command;
 
-import me.gb2022.commons.container.ArrayQueue;
+
+import java.util.ArrayDeque;
 
 public abstract class CommandPool {
-    private ArrayQueue<Command> commandQueue = new ArrayQueue<>();
+    private ArrayDeque<Command> commandQueue = new ArrayDeque<>();
 
 
     public void addCommand() {

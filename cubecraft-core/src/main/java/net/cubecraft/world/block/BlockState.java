@@ -8,7 +8,6 @@ import net.cubecraft.ContentRegistries;
 
 import java.util.Collection;
 
-@Deprecated
 public class BlockState implements NBTDataIO, Hittable {
     private long x;
     private long y;

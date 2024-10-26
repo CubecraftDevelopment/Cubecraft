@@ -1,11 +1,13 @@
 package net.cubecraft.client.render.model.block;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.util.DeserializedConstructor;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.IBlockAccess;
 
 import java.util.ArrayList;
@@ -49,10 +51,14 @@ public final class ComponentBlockModel extends BlockModel {
     }
 
     @Override
-    public void render(IBlockAccess blockAccess, VertexBuilder builder, String layer, IWorld world, double renderX, double renderY, double renderZ) {
+    public void renderBlock(IBlockAccess block, String layer, BlockAccessor accessor, int face, double renderX, double renderY, double renderZ, VertexBuilder builder) {
+        if (face != 6) {
+            return;
+        }
         Set<String> set = this.statementModels.keySet();
+
         for (String s : set) {
-            if (!blockAccess.getBlock().queryBoolean(s, blockAccess)) {
+            if (!block.getBlock().queryBoolean(s, block)) {
                 continue;
             }
             ArrayList<BlockModelComponent> components;
@@ -64,7 +70,7 @@ public final class ComponentBlockModel extends BlockModel {
                 if (!Objects.equals(layer, component.getRenderLayer())) {
                     continue;
                 }
-                component.render(builder, layer, world, blockAccess, renderX, renderY, renderZ);
+                component.render(builder, layer, accessor, block, renderX, renderY, renderZ);
             }
         }
     }

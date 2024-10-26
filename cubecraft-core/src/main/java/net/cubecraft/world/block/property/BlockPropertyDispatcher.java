@@ -4,11 +4,13 @@ import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.access.IBlockAccess;
+import net.cubecraft.world.block.blocks.Blocks;
 import net.cubecraft.world.block.property.collision.CollisionProperty;
 import net.cubecraft.world.block.property.hitbox.HitBoxProperty;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public interface BlockPropertyDispatcher {
     static Collection<AABB> getCollisionBox(IBlockAccess block) {
@@ -38,10 +40,12 @@ public interface BlockPropertyDispatcher {
     }
 
     static boolean isSolid(IBlockAccess block) {
-        if (block.getBlock() == null) {
+        if (Objects.equals(block.getBlockId(), Blocks.AIR.getId())) {
             return false;
         }
-        return block.getBlock().isSolid();
+
+        Block b = block.getBlock();
+        return b.isSolid();
     }
 
     static Collection<AABB> getCollisionBox(Block block, IBlockAccess access) {

@@ -39,6 +39,7 @@ public class Button extends Node {
     public void onClicked(MouseClickEvent e) {
         if (this.hovered && this.enabled && e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
             this.context.getEventBus().callEvent(new ButtonClickedEvent(this, this.screen, this.context), this.screen.getId());
+            e.setCancel(true);
         }
     }
 

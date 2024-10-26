@@ -23,7 +23,8 @@ import net.cubecraft.client.event.ClientRendererInitializeEvent;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.resource.ResourceLocation;
-import net.cubecraft.world.IWorld;
+import net.cubecraft.world.World;
+import net.cubecraft.world.block.blocks.Blocks;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
@@ -34,14 +35,14 @@ public final class LevelRenderer {
     public static final BufferAllocator ALLOCATOR = new LWJGLBufferAllocator(16384, 16777216);
 
     public final MultiMap<String, IWorldRenderer> renderers = new MultiMap<>();
-    public final IWorld world;
+    public final World world;
     public final EntityPlayer player;
     public final Camera camera = new Camera();
     private final FrameBuffer buffer = new FrameBuffer();
     private final FloatBuffer fogColor;
     private ColorElement fogColorElement;
 
-    public LevelRenderer(IWorld w, EntityPlayer p, ResourceLocation cfgLoc) {
+    public LevelRenderer(World w, EntityPlayer p, ResourceLocation cfgLoc) {
         CubecraftClient client = ClientSharedContext.getClient();
 
         this.fogColor = ALLOCATOR.allocFloatBuffer(5);
@@ -62,12 +63,26 @@ public final class LevelRenderer {
     }
 
     public void setFog(double dist) {
-        Vector3d vec = this.player.getCameraPosition().add(this.player.getPosition());
-        if (Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")) {
+        var position = this.player.getCameraPosition().add(this.player.getPosition());
+        var block = this.world.getBlockId((long) position.x, (long) position.y, (long) position.z);
+
+        if (block == Blocks.CALM_WATER.getId()) {
             GLUtil.setupFog(10, ColorUtil.int1Float1ToFloat4(0x050533, 1));
-        } else {
-            GLUtil.setupFog((int) (dist), this.fogColorElement.RGBA_F());
+            return;
         }
+
+        GLUtil.setupFog((int) (Math.sqrt(dist)*16), this.fogColorElement.RGBA_F());
+    }
+
+    public boolean isInBlock() {
+        var position = this.player.getCameraPosition().add(this.player.getPosition());
+
+        var x=Math.floor(position.x);
+        var z=Math.floor(position.z);
+
+        var block = this.world.getBlockId((long) x, (long) (position.y+0.1f), (long) z);
+
+        return block != Blocks.AIR.getId();
     }
 
     public void initialize(JsonObject config) {
@@ -80,7 +95,13 @@ public final class LevelRenderer {
 
         for (String id : renderers.keySet()) {
             IWorldRenderer renderer = ClientRenderContext.WORLD_RENDERER.create(id);
-            renderer.initializeRenderer(this, client.getWindow(), client.getClientWorldContext().getWorld(), client.getClientWorldContext().getPlayer(), this.camera);
+            renderer.initializeRenderer(
+                    this,
+                    client.getWindow(),
+                    client.getClientWorldContext().getWorld(),
+                    client.getClientWorldContext().getPlayer(),
+                    this.camera
+                                       );
             renderer.config(renderers.get(id).getAsJsonObject());
             client.getClientEventBus().registerEventListener(renderer);
             client.getDeviceEventBus().registerEventListener(renderer);
@@ -100,7 +121,8 @@ public final class LevelRenderer {
         this.camera.setPos(
                 MathHelper.linearInterpolate(this.player.xo, this.player.x, delta) + this.player.getCameraPosition().x,
                 MathHelper.linearInterpolate(this.player.yo, this.player.y, delta) + this.player.getCameraPosition().y,
-                MathHelper.linearInterpolate(this.player.zo, this.player.z, delta) + this.player.getCameraPosition().z);
+                MathHelper.linearInterpolate(this.player.zo, this.player.z, delta) + this.player.getCameraPosition().z
+                          );
         this.camera.setupRotation(this.player.xRot, this.player.yRot, this.player.zRot);
         this.camera.setPosRelative(0, 0, 0.15);
 
