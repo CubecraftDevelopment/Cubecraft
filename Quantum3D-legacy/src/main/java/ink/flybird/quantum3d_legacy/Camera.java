@@ -7,11 +7,9 @@ import org.joml.Quaternionf;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
-@Deprecated
 public class Camera {
     private final Vector3d position = new Vector3d();
     private final Vector3d lastPosition = new Vector3d();
-
 
     private final Vector3d rotation = new Vector3d();
     private final Vector3d relativePosition = new Vector3d();
@@ -19,6 +17,8 @@ public class Camera {
     public float fov = 70.0f;
     private Matrix4f proj = new Matrix4f();
     private double lastRotX, lastRotY, lastRotZ;
+
+    private float aspect = 1.0f;
 
     public void setUpGlobalCamera() {
         GLUtil.setupPerspectiveCamera((float) Math.toRadians(this.fov), 1280, 720);
@@ -35,7 +35,7 @@ public class Camera {
 
         this.proj = new Matrix4f();
         this.proj.rotate(new Quaternionf(this.rotation.x, this.rotation.y, this.rotation.z, 1.0f));
-        this.proj.mul(new Matrix4f().perspective((float) Math.toRadians(this.fov), 1280/720f, 0, 1));
+        this.proj.mul(new Matrix4f().perspective((float) Math.toRadians(this.fov), 1.3f, 0, 1));
         GLUtil.checkError("camera");
     }
 
@@ -66,6 +66,10 @@ public class Camera {
     public void setPos(double x, double y, double z) {
         this.lastPosition.set(this.position);
         this.position.set(x, y, z);
+    }
+
+    public void setAspect(float aspect) {
+        this.aspect = aspect;
     }
 
     public void setPosRelative(double x, double y, double z) {

@@ -1,8 +1,10 @@
 package net.cubecraft.world.biome;
 
+import net.cubecraft.util.register.NamedRegistry;
 import net.cubecraft.world.chunk.WorldChunk;
 
 public abstract class Biome {
+    public static final NamedRegistry<Biome> BIOMES = new NamedRegistry<>();
     private final double continental, temperature,humidity,erosion,altitude;
     private final String id;
     private final String basicBlock;

@@ -45,7 +45,7 @@ public class NonLoadedBlockAccess extends IBlockAccess {
 
     @Override
     public Block getBlock() {
-        return BlockRegistry.AIR;
+        return Blocks.AIR.get();
     }
 
     @Override

@@ -10,9 +10,4 @@ public class EntityModel implements Model{
     public void render(Entity entity){
 
     }
-
-    @Override
-    public void initializeModel(Set<TextureAsset> textureList) {
-
-    }
 }

@@ -11,7 +11,7 @@ import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.behavior.BlockBehavior;
 import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.block.property.BlockProperty;
-import net.cubecraft.world.dimension.Dimension;
+import net.cubecraft.world.environment.Environment;
 import net.cubecraft.world.entity.Entity;
 import net.cubecraft.world.item.Item;
 import net.cubecraft.world.item.behavior.ItemBehavior;
@@ -33,7 +33,7 @@ public interface ContentRegistries {
     RegisterMap<Item> ITEM = new RegisterMap<>(ItemRegistry.DUMMY, Item.class);
 
     //block
-    @FieldRegistry("block")
+
     RegisterMap<Block> BLOCK = new RegisterMap<>(BlockRegistry.UNKNOWN_BLOCK, Block.class);
 
     @SuppressWarnings("rawtypes")
@@ -46,7 +46,7 @@ public interface ContentRegistries {
 
     //world
     @FieldRegistry("dimension")
-    RegisterMap<Dimension> DIMENSION = new RegisterMap<>(Dimension.class);
+    RegisterMap<Environment> DIMENSION = new RegisterMap<>(Environment.class);
 
     @FieldRegistry("world_generator_pipeline")
     RegisterMap<WorldGenPipelineBuilder> CHUNK_GENERATE_PIPELINE = new RegisterMap<>(WorldGenPipelineBuilder.class);

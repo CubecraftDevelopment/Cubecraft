@@ -1,52 +1,12 @@
-[
-  {
-    "state": "default",
+{
+  "default:normal": {
+    "child_offset_y": -2,
     "components": [
       {
         "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
-        "loc": "cubecraft:/gui/controls/topbar.png",
-        "pos": [0,1,0,1]
-      },
-      {
-        "type": "font",
-        "binding": "topbar:back",
-        "size": 8,
-        "color": 16777215,
-        "line_offset": -3,
-        "pos": [0,0.4]
-      }
-    ]
-  },
-  {
-    "state": "back_pressed",
-    "components": [
-      {
-        "type": "border_image",
-        "boarderH":8,
-        "boarderV": 8,
-        "loc": "cubecraft:/gui/controls/topbar.png",
-        "pos": [0,1,0,1]
-      },
-      {
-        "type": "font",
-        "binding": "topbar:back",
-        "size": 8,
-        "color": 8388608,
-        "line_offset": -3,
-        "pos": [0,0.4]
-      }
-    ]
-  },
-  {
-    "state": "ore_ui:default",
-    "components": [
-      {
-        "type": "border_image",
-        "boarderH":8,
-        "boarderV": 8,
-        "loc": "cubecraft:/gui/controls/topbar_ore_ui.png",
+        "loc": "cubecraft:/gui/control/topbar.png",
         "pos": [0,1,0,1]
       },
       {
@@ -59,24 +19,24 @@
       }
     ]
   },
-  {
-    "state": "ore_ui:back_pressed",
+  "default:back_pressed":{
+    "child_offset_y": -2,
     "components": [
       {
         "type": "border_image",
         "boarderH":8,
         "boarderV": 8,
-        "loc": "cubecraft:/gui/controls/topbar_ore_ui.png",
+        "loc": "cubecraft:/gui/control/topbar.png",
         "pos": [0,1,0,1]
       },
       {
         "type": "font",
         "binding": "topbar:back",
         "size": 8,
-        "color": 16777215,
-        "line_offset": -3,
-        "pos": [0,0.4]
+        "color": 0,
+        "line_offset": -4,
+        "pos": [0,0.3]
       }
     ]
   }
-]
+}

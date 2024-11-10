@@ -3,6 +3,7 @@ package net.cubecraft.world.block.property.hitbox;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
 import me.gb2022.commons.registry.TypeItem;
+import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class FixedHitBoxProperty extends HitBoxProperty {
     }
 
     @Override
-    public Collection<HitBox> get(IBlockAccess block) {
+    public Collection<HitBox> get(BlockAccess block) {
         Collection<HitBox> result = new ArrayList<>();
         for (AABB aabb : this.aabbs) {
             result.add(new HitBox("block_default", aabb.cloneMove(block.getX(), block.getY(), block.getZ())));

@@ -2,7 +2,6 @@
   "type": "cubecraft:log",
   "layer": "cubecraft:alpha_block",
   "culling": "solid",
-  "color": "none",
-  "texture": "cubecraft:/block/oak_log.png",
+  "side_texture": "cubecraft:/block/oak_log.png",
   "top_texture": "cubecraft:/block/oak_log_top.png"
 }

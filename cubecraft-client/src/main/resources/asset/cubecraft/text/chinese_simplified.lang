@@ -10,6 +10,9 @@ title_screen.button.quit=退出
 title_screen.version=Cubecraft-%s(模组:%s个)
 title_screen.auth=当前账号：%s
 
+title_screen.button.game=游戏
+title_screen.button.settings=设置
+title_screen.button.quit=退出
 
 # pause screen
 pause_screen.title=游戏菜单

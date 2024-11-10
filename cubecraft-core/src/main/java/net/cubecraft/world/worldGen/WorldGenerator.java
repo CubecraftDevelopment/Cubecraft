@@ -1,30 +1,40 @@
 package net.cubecraft.world.worldGen;
 
-import net.cubecraft.world.storage.PersistentChunkHolder;
+import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.ChunkState;
 import net.cubecraft.world.chunk.PrimerChunk;
 import net.cubecraft.world.chunk.WorldChunk;
+import net.cubecraft.world.chunk.future.ChunkFuture;
+import net.cubecraft.world.chunk.future.FutureChunkContainer;
 import net.cubecraft.world.chunk.pos.ChunkPos;
+import net.cubecraft.world.storage.PersistentChunkHolder;
 import net.cubecraft.world.worldGen.pipeline.ChunkGenerateTask;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
+import net.cubecraft.world.worldGen.pipeline.pipelines.FlatWorldPipeline;
 import net.cubecraft.world.worldGen.pipeline.pipelines.OverworldPipeline;
 
 import java.util.HashMap;
-import java.util.function.Consumer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WorldGenerator {
     private final World world;
-    private final Consumer<Runnable> worker;
     private final HashMap<String, ChunkGeneratorPipeline> pipelineCache = new HashMap<>();
+    private final Long2ObjectMap<Object> asyncQueue = new Long2ObjectArrayMap<>(8192);
+    private final ExecutorService worker = Executors.newFixedThreadPool(1);
     private PersistentChunkHolder persistentChunkHolder;
 
-    public WorldGenerator(World world, Consumer<Runnable> worker) {
+    public WorldGenerator(World world) {
         this.world = world;
-        this.worker = worker;
 
         long seed = world.getLevel().getLevelInfo().getSeed();
         this.pipelineCache.put(world.getId(), new OverworldPipeline().build(world.getId(), seed));
+    }
+
+    public static long hash(int x, int z, ChunkState state) {
+        return ChunkPos.encode(x, z) & (state.ordinal() << 3) | state.ordinal() & 0xFA;
     }
 
     public PrimerChunk generate(World world, int x, int z) {
@@ -48,7 +58,7 @@ public class WorldGenerator {
             throw new IllegalArgumentException("what should i do to create an empty chunk");
         }
 
-        var chunk = this.world.getChunkCache().get(x, z);
+        var chunk = this.world.getChunkCache().cachedGet(x, z);
 
         if (chunk == null && this.persistentChunkHolder != null) {
             chunk = this.persistentChunkHolder.load(this.world, x, z);
@@ -97,5 +107,31 @@ public class WorldGenerator {
             return;
         }
         this.persistentChunkHolder.save(chunk);
+    }
+
+    public ChunkFuture<WorldChunk> loadAsync(World world, int x, int z, ChunkState state) {
+        var req = hash(x, z, state);
+
+        //if (this.asyncQueue.containsKey(req)) {
+            //return new FutureChunkContainer(world, x, z);
+        //}
+
+        //this.asyncQueue.put(req, Blocks.AIR);
+
+        this.worker.submit(() -> {
+
+
+        });
+
+        //todo: async world IO
+        this.world.getChunkCache().add(this.world.getWorldGenerator().load(x, z, state));
+        //this.asyncQueue.remove(req);
+
+        return new FutureChunkContainer(world, x, z);
+    }
+
+
+    public World getWorld() {
+        return world;
     }
 }

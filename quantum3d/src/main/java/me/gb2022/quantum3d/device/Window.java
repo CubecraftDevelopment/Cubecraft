@@ -7,13 +7,14 @@ import me.gb2022.quantum3d.device.listener.WindowListener;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The abstract class Window represents a graphical window within the Quantum3D platform.
  * It provides methods to manage window event listeners and control window-related functionality.
  */
 public abstract class Window implements Device {
-
+    private AtomicLong frame=new AtomicLong(0);
     private final List<WindowListener> listeners = new ArrayList<>(32);
 
     /**
@@ -179,4 +180,12 @@ public abstract class Window implements Device {
      * @return True if a close request has been made, otherwise false.
      */
     public abstract boolean isCloseRequested();
+
+    public long getFrame() {
+        return frame.get();
+    }
+
+    public void incrementFrame() {
+        this.frame.incrementAndGet();
+    }
 }

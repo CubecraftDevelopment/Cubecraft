@@ -3,7 +3,7 @@ package net.cubecraft.client.render.gui;
 import com.google.gson.*;
 import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import net.cubecraft.client.gui.node.Node;
@@ -50,7 +50,7 @@ public final class BorderImage extends ImageComponentRendererPart {
         int y0In = (int) (y + tbv * h), y1In = (int) (y + h - tbv * h), y1Out = y + h;
 
         tex.bind();
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(36);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(36);
         builder.begin();
 
         //corner

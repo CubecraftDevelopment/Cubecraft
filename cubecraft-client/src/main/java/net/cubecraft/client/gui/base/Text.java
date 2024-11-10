@@ -7,19 +7,18 @@ import me.gb2022.commons.file.FAMLDeserializer;
 import me.gb2022.commons.file.XmlReader;
 import me.gb2022.commons.math.MathHelper;
 import com.google.gson.*;
+import net.cubecraft.text.TextComponent;
 import org.w3c.dom.Element;
 
 import java.util.Random;
 
 public class Text {
-    private String text;
-    private int color;
+    private TextComponent text;
     private FontAlignment alignment;
     private final boolean isIcon;
 
     public Text(String text, int color, FontAlignment alignment, boolean isIcon) {
-        this.text = text;
-        this.color = color;
+        this.text = TextComponent.create(text).color(color);
         this.alignment = alignment;
         this.isIcon = isIcon;
     }
@@ -32,24 +31,16 @@ public class Text {
         return alignment;
     }
 
-    public String getText() {
+    public TextComponent getText() {
         return text;
     }
 
-    public int getColor() {
-        return color;
-    }
-
-    public void setText(String text) {
+    public void setText(TextComponent text) {
         this.text = text;
     }
 
     public void setAlignment(FontAlignment alignment) {
         this.alignment = alignment;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
     }
 
     public static class XMLDeserializer implements FAMLDeserializer<Text> {

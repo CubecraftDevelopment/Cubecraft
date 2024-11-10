@@ -50,6 +50,7 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
                 new Vector2d(0.06, 0.09),
                 new Vector2d(0.01, 0.2),
                 new Vector2d(0.15, 0.25),
+                new Vector2d(0.152, 0.259),
                 new Vector2d(0.74, 0.26),
                 new Vector2d(0.81, 0.255),
                 new Vector2d(0.84, 0.36),
@@ -139,7 +140,7 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
                             continue;
                         }
                         if (y < 128.0) {
-                            chunk.setBlockId(x, y, z, Blocks.CALM_WATER.getId());
+                            chunk.setBlockId(x, y, z, Blocks.WATER.getId());
                         }
                     }
                 }

@@ -1,20 +1,19 @@
 package net.cubecraft.world.block;
 
-import net.cubecraft.world.block.property.BlockProperty;
-import me.gb2022.commons.math.AABB;
 import com.google.gson.*;
-import net.cubecraft.world.block.property.attribute.SimpleBooleanProperty;
+import me.gb2022.commons.math.AABB;
+import net.cubecraft.world.block.property.BlockProperty;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Map;
 
 @Deprecated
-public class SimpleBlock extends Block{
+public class SimpleBlock extends Block {
     public final EnumFacing[] enumFacings;
     public final AABB[] collisionBoxSizes;
     public final AABB[] selectionBoxSizes;
-    public final float resistance,density,hardness;
+    public final float resistance, density, hardness;
     public final int opacity;
     public final boolean isSolid;
     private final String id;
@@ -35,7 +34,7 @@ public class SimpleBlock extends Block{
         this.tags = tags;
         this.light = light;
 
-        this.cachedSolidValue=isSolid;
+        this.cachedSolidValue = isSolid;
     }
 
 
@@ -95,7 +94,7 @@ public class SimpleBlock extends Block{
     }
 
     @Override
-    public int light(){
+    public int light() {
         return this.light;
     }
 

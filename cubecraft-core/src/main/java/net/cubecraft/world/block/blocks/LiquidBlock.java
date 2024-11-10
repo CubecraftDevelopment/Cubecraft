@@ -2,7 +2,9 @@ package net.cubecraft.world.block.blocks;
 
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.property.BlockProperty;
-import net.cubecraft.world.block.property.attribute.SimpleBooleanProperty;
+import net.cubecraft.world.block.property.BooleanProperty;
+import net.cubecraft.world.block.property.collision.EmptyCollisionProperty;
+import net.cubecraft.world.block.property.hitbox.EmptyHitboxProperty;
 
 import java.util.Map;
 
@@ -13,16 +15,13 @@ public class LiquidBlock extends Block {
 
     @Override
     public void initPropertyMap(Map<String, BlockProperty<?>> map) {
-        map.put("cubecraft:solid", new SimpleBooleanProperty(false));
+        map.put("cubecraft:solid", new BooleanProperty(false));
+        map.put("cubecraft:collision", new EmptyCollisionProperty());
+        map.put("cubecraft:selection", new EmptyHitboxProperty());
     }
 
     @Override
     public String[] getBehaviorList() {
-        return new String[0];
-    }
-
-    @Override
-    public String[] getTags() {
         return new String[]{"cubecraft:liquid"};
     }
 }

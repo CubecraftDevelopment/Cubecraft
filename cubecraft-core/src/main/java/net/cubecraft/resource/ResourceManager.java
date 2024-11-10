@@ -1,6 +1,10 @@
 package net.cubecraft.resource;
 
 
+import me.gb2022.commons.event.SimpleEventBus;
+import me.gb2022.commons.registry.FieldRegistry;
+import me.gb2022.commons.registry.FieldRegistryHolder;
+import me.gb2022.commons.registry.RegisterMap;
 import net.cubecraft.SharedContext;
 import net.cubecraft.event.resource.ResourceLoadFinishEvent;
 import net.cubecraft.event.resource.ResourceLoadItemEvent;
@@ -10,13 +14,8 @@ import net.cubecraft.resource.item.IResource;
 import net.cubecraft.resource.provider.InternalResourceLoader;
 import net.cubecraft.resource.provider.ModResourceLoader;
 import net.cubecraft.resource.provider.ResourceLoader;
-import me.gb2022.commons.event.EventBus;
-import me.gb2022.commons.event.SimpleEventBus;
-import me.gb2022.commons.registry.FieldRegistry;
-import me.gb2022.commons.registry.FieldRegistryHolder;
-import me.gb2022.commons.registry.RegisterMap;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +36,7 @@ public class ResourceManager {
     private final Map<String, ResourceLoader> loaders = new HashMap<>();
     private final SimpleEventBus eventBus = new SimpleEventBus();
     private final HashMap<String, RegisterMap<IResource>> resourceObjectCache = new HashMap<>(512);
+    private final Set<ResourceReloadListener> plugins = new HashSet<>();
 
     private final ArrayList<String> namespaces = new ArrayList<>();
 
@@ -155,6 +155,9 @@ public class ResourceManager {
             this.loadResource(loaders, stage, this.resourceObjectCache.get(stage).get(id), id);
         }
         this.eventBus.callEvent(new ResourceLoadFinishEvent(stage), stage);
+        for (var plugin : this.plugins) {
+            plugin.onResourceReload(this, stage);
+        }
     }
 
     @Deprecated
@@ -224,6 +227,14 @@ public class ResourceManager {
                 }
             }
         }
+    }
+
+    public void addPlugin(ResourceReloadListener plugin) {
+        this.plugins.add(plugin);
+    }
+
+    public void removePlugin(ResourceReloadListener plugin) {
+        this.plugins.remove(plugin);
     }
 
     @Deprecated

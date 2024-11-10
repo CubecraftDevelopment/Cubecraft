@@ -1,6 +1,6 @@
 package ink.flybird.quantum3d_legacy;
 
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import me.gb2022.commons.math.AABB;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -49,21 +49,21 @@ public interface ShapeRenderer {
 
 
     //with builder
-    static void drawRect(VertexBuilder builder, double x0, double x1, double y0, double y1, double z0, double z1) {
+    static void drawRect(LegacyVertexBuilder builder, double x0, double x1, double y0, double y1, double z0, double z1) {
         builder.vertex((float) x0, (float) y1, (float) z1);
         builder.vertex((float) x1, (float) y1, (float) z0);
         builder.vertex((float) x1, (float) y0, (float) z0);
         builder.vertex((float) x0, (float) y0, (float) z1);
     }
 
-    static void drawRectUV(VertexBuilder builder, double x0, double x1, double y0, double y1, double z0, double u0, double u1, double v0, double v1) {
+    static void drawRectUV(LegacyVertexBuilder builder, double x0, double x1, double y0, double y1, double z0, double u0, double u1, double v0, double v1) {
         builder.vertexUV(x1, y0, z0, (float) u1, (float) v0);
         builder.vertexUV(x0, y0, z0, (float) u0, (float) v0);
         builder.vertexUV(x0, y1, z0, (float) u0, (float) v1);
         builder.vertexUV(x1, y1, z0, (float) u1, (float) v1);
     }
 
-    static void renderAABBBox(VertexBuilder builder, AABB aabb) {
+    static void renderAABBBox(LegacyVertexBuilder builder, AABB aabb) {
         builder.vertex(aabb.x0, aabb.y0, aabb.z1);
         builder.vertex(aabb.x0, aabb.y0, aabb.z0);
         builder.vertex(aabb.x1, aabb.y0, aabb.z0);
@@ -90,7 +90,7 @@ public interface ShapeRenderer {
         builder.vertex(aabb.x1, aabb.y1, aabb.z1);
     }
 
-    static void renderAABBBoxInner(VertexBuilder builder, AABB aabb) {
+    static void renderAABBBoxInner(LegacyVertexBuilder builder, AABB aabb) {
         builder.vertex(aabb.x1, aabb.y0, aabb.z1);
         builder.vertex(aabb.x1, aabb.y0, aabb.z0);
         builder.vertex(aabb.x0, aabb.y0, aabb.z0);
@@ -117,7 +117,7 @@ public interface ShapeRenderer {
         builder.vertex(aabb.x1, aabb.y0, aabb.z1);
     }
 
-    static void renderAABB(VertexBuilder builder, double x0, double y0, double z0, double x1, double y1, double z1) {
+    static void renderAABB(LegacyVertexBuilder builder, double x0, double y0, double z0, double x1, double y1, double z1) {
         builder.vertex(x0, y0, z0);
         builder.vertex(x1, y0, z0);
         builder.vertex(x0, y1, z0);
@@ -144,7 +144,7 @@ public interface ShapeRenderer {
         builder.vertex(x1, y1, z1);
     }
 
-    static void renderAABB(VertexBuilder builder, AABB aabb) {
+    static void renderAABB(LegacyVertexBuilder builder, AABB aabb) {
         renderAABB(builder, aabb.x0, aabb.y0, aabb.z0, aabb.x1, aabb.y1, aabb.z1);
     }
 

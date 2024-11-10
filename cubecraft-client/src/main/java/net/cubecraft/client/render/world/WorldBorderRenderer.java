@@ -1,12 +1,12 @@
 package net.cubecraft.client.render.world;
 
 import net.cubecraft.client.render.RenderType;
-import net.cubecraft.world.dimension.Dimension;
+import net.cubecraft.world.environment.Environment;
 
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
 import ink.flybird.quantum3d_legacy.drawcall.ListRenderCall;
@@ -34,11 +34,11 @@ public final class WorldBorderRenderer extends IWorldRenderer {
         this.border = new ListRenderCall();
         this.border.allocate();
 
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(128);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(128);
 
         builder.color(0xdc, 0xe9, 0xf5, 0xaa);
 
-        double d = Dimension.VALID_WORLD_RADIUS;
+        double d = Environment.VALID_WORLD_RADIUS;
 
         ShapeRenderer.renderAABBBoxInner(builder, new AABB(-d, -d, -d, d, d, d));
         this.border.upload(builder);

@@ -26,7 +26,7 @@ public class TopBar extends Component {
 
     @Override
     public String getStatement() {
-        return hovered ? "back_pressed" : "default";
+        return this.style + ":" + (hovered ? "back_pressed" : "normal");
     }
 
     @EventHandler

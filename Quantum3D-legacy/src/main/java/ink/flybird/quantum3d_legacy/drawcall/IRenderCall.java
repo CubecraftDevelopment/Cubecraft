@@ -1,6 +1,6 @@
 package ink.flybird.quantum3d_legacy.drawcall;
 
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 
 public interface IRenderCall {
     static IRenderCall create(boolean useVBO) {
@@ -13,7 +13,7 @@ public interface IRenderCall {
 
     void call();
 
-    void upload(VertexBuilder builder);
+    void upload(LegacyVertexBuilder builder);
 
     void allocate();
 

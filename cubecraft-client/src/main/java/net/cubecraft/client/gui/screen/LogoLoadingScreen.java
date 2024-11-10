@@ -1,11 +1,10 @@
 package net.cubecraft.client.gui.screen;
 
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import me.gb2022.commons.JVMInfo;
-import net.cubecraft.SharedObjects;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
@@ -39,7 +38,7 @@ public final class LogoLoadingScreen extends AnimationScreen {
         int xc = info.getCenterX();
         int yc = info.getCenterY() - 25;
 
-        VertexBuilder bg = VertexBuilderAllocator.createByPrefer(16);
+        LegacyVertexBuilder bg = VertexBuilderAllocator.createByPrefer(16);
         bg.begin();
         bg.color(33 / 255f, 33 / 255f, 33 / 255f, this.getContext().getHoverScreenAlpha());
         ShapeRenderer.drawRect(bg, 0, info.getScreenWidth(), 0, info.getScreenHeight(), 2, 2);
@@ -47,7 +46,7 @@ public final class LogoLoadingScreen extends AnimationScreen {
         bg.uploadPointer();
         bg.free();
 
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(64);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(64);
         builder.begin();
         Runtime runtime = Runtime.getRuntime();
 
@@ -82,7 +81,7 @@ public final class LogoLoadingScreen extends AnimationScreen {
         int w=180;
         int h=60;
 
-        VertexBuilder l = VertexBuilderAllocator.createByPrefer(64);
+        LegacyVertexBuilder l = VertexBuilderAllocator.createByPrefer(64);
         l.begin();
         ShapeRenderer.drawRectUV(l, xc-w, xc+w, yc-h-15, yc+h-15, 1,0,1,0,1);
         l.end();
@@ -92,7 +91,7 @@ public final class LogoLoadingScreen extends AnimationScreen {
         GAME_LOGO.unbind();
     }
 
-    private void drawProgressBar(VertexBuilder builder, int xc, int yc, int w, float prog) {
+    private void drawProgressBar(LegacyVertexBuilder builder, int xc, int yc, int w, float prog) {
         float a = this.getContext().getHoverScreenAlpha();
         builder.color(1, 1, 1, a);
         ShapeRenderer.drawRect(builder, xc - w / 2f, xc + w / 2f, yc - 6, yc + 6, 0, 0);

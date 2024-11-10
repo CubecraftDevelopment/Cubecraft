@@ -3,7 +3,7 @@ package net.cubecraft.client.gui.font;
 
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import me.gb2022.commons.math.MathHelper;
@@ -33,7 +33,7 @@ public final class LegacyFontRenderer {
             case MIDDLE -> charPos_scr = (int) (x - contWidth / 2f);
             case RIGHT -> charPos_scr = x - contWidth;
         }
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(s.length() * 4);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(s.length() * 4);
         for (char c : rawData) {
             int pageCode = (int) Math.floor(c / 256.0f);
             String s2 = Integer.toHexString(pageCode);

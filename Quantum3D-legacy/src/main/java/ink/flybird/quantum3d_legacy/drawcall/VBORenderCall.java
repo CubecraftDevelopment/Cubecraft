@@ -1,7 +1,7 @@
 package ink.flybird.quantum3d_legacy.drawcall;
 
 import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexUploader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -40,7 +40,7 @@ public class VBORenderCall implements IRenderCall {
     }
 
     @Override
-    public void upload(VertexBuilder builder) {
+    public void upload(LegacyVertexBuilder builder) {
         if (!this.allocated) {
             throw new DrawCallException("not initialized");
         }

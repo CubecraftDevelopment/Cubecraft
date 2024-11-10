@@ -3,7 +3,6 @@ package net.cubecraft.client.internal;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.ContentRegistries;
-import net.cubecraft.CoreRegistries;
 import net.cubecraft.Side;
 import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
@@ -19,10 +18,7 @@ import net.cubecraft.client.internal.handler.ClientListener;
 import net.cubecraft.client.internal.handler.ParticleHandler;
 import net.cubecraft.client.internal.handler.ScreenController;
 import net.cubecraft.client.internal.renderer.particle.ParticleRenderers;
-import net.cubecraft.client.registry.ClientNetworkHandlerRegistry;
-import net.cubecraft.client.registry.ColorMapRegistry;
-import net.cubecraft.client.registry.GUIRegistry;
-import net.cubecraft.client.registry.RenderRegistry;
+import net.cubecraft.client.registry.*;
 import net.cubecraft.client.render.block.LiquidRenderer;
 import net.cubecraft.client.render.block.ModelBlockRenderer;
 import net.cubecraft.client.render.world.ParticleRenderer;
@@ -31,6 +27,7 @@ import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.event.mod.ModConstructEvent;
 import net.cubecraft.mod.CubecraftMod;
 import net.cubecraft.util.NSStringDispatcher;
+import net.cubecraft.world.block.blocks.Blocks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,6 +51,9 @@ public final class CubecraftClientInternalMod {
         LOGGER.info("mod constructed.");
 
         ContentRegistries.ENTITY.registerItem(BlockBrakeParticle.class);
+
+
+        ColorMaps.REGISTRY.handle(ColorMaps.class);
     }
 
     @EventHandler
@@ -62,18 +62,18 @@ public final class CubecraftClientInternalMod {
         ClientRenderContext.COLOR_MAP.registerGetter(ColorMapRegistry.class);
         ClientSharedContext.getClient().getClientEventBus().registerEventListener(new ParticleHandler());
 
-
         ClientSharedContext.RESOURCE_MANAGER.registerEventListener(new ClientAssetLoader());
+
+        ClientAssetLoader.init();
     }
 
 
     @EventHandler
     public static void onRenderContextInit(ClientRenderContextInitEvent event) {
         ClientRenderContext.WORLD_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
-        ClientRenderContext.CHUNK_LAYER_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
         ParticleRenderer.PARTICLE_RENDERERS.registerFieldHolder(ParticleRenderers.class);
 
-        CoreRegistries.BLOCKS.withShadow((reg) -> {
+        Blocks.REGISTRY.withShadow((reg) -> {
             var id = reg.getName();
             var namespace = NSStringDispatcher.getNameSpace(id);
             var localId = NSStringDispatcher.getId(id);
@@ -82,7 +82,7 @@ public final class CubecraftClientInternalMod {
                 return;
             }
 
-            var object = CoreRegistries.BLOCKS.object(id);
+            var object = Blocks.REGISTRY.object(id);
 
             if (object.isLiquid()) {
                 var still = new TextureAsset("cubecraft:/block/water_still.png");
@@ -92,7 +92,10 @@ public final class CubecraftClientInternalMod {
                 return;
             }
 
-            ClientRenderContext.BLOCK_RENDERERS.register(id, new ModelBlockRenderer(new ModelAsset(namespace + ":/block/" + localId + ".json")));
+            ClientRenderContext.BLOCK_RENDERERS.register(
+                    id,
+                    new ModelBlockRenderer(new ModelAsset(namespace + ":/block/" + localId + ".json"))
+            );
         });
     }
 

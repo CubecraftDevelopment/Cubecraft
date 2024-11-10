@@ -1,7 +1,6 @@
 package net.cubecraft.world.chunk;
 
 import me.gb2022.commons.container.keymap.KeyGetter;
-import net.cubecraft.CoreRegistries;
 import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.BlockState;
@@ -22,11 +21,9 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
 
     public final RegistryStorageContainer<Block> blocks;
     public final RegistryStorageContainer<Biome> biomes;
-
-    protected final ByteDataSection[] blockFacingSections;
     public final ByteDataSection[] blockMetaSections;
     public final ByteDataSection[] lightSections;
-
+    protected final ByteDataSection[] blockFacingSections;
     protected final int[] heightMap = new int[256];
 
     protected final int x, z;
@@ -47,8 +44,8 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
     public Chunk(ChunkPos p) {
         this(
                 p,
-                new RegistryStorageContainer<>(CoreRegistries.BLOCKS, SECTION_SIZE),
-                new RegistryStorageContainer<>(CoreRegistries.BIOMES, SECTION_SIZE),
+                new RegistryStorageContainer<>(Blocks.REGISTRY, SECTION_SIZE),
+                new RegistryStorageContainer<>(Biome.BIOMES, SECTION_SIZE),
                 new ByteDataSection[SECTION_SIZE],
                 new ByteDataSection[SECTION_SIZE],
                 new ByteDataSection[SECTION_SIZE]
@@ -62,9 +59,13 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
     }
 
     static void validChunkOperation(int x, int y, int z) {
-        if (x < 0 || x >= Chunk.WIDTH || z < 0 || z >= Chunk.WIDTH || y < 0 || y >= Chunk.HEIGHT) {
+        if (validChunkOperationConditionally(x, y, z)) {
             throw new IllegalArgumentException("Invalid chunk coordinates(%s/%s/%s)".formatted(x, y, z));
         }
+    }
+
+    static boolean validChunkOperationConditionally(int x, int y, int z) {
+        return x < 0 || x >= Chunk.WIDTH || z < 0 || z >= Chunk.WIDTH || y < 0 || y >= Chunk.HEIGHT;
     }
 
     public Collection<BlockState> getBlockEntityList() {
@@ -101,13 +102,14 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
     }
 
     public String getBlockID(int x, int y, int z) {
-        return CoreRegistries.BLOCKS.name(getBlockId(x, y, z));
+        return Blocks.REGISTRY.name(getBlockId(x, y, z));
     }
 
     public Block getBlock(int x, int y, int z) {
-        ChunkPos.checkChunkRelativePosition(x, y, z);
-        //return this.blockIdSections[y / WIDTH].getBlock(x, y % WIDTH, z);
-        return null;
+        if (validChunkOperationConditionally(x, y, z)) {
+            return Blocks.AIR.get();
+        }
+        return Blocks.REGISTRY.object(getBlockId(x, y, z));
     }
 
     public EnumFacing getBlockFacing(int x, int y, int z) {
@@ -122,6 +124,12 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
 
     public byte getBlockLight(int x, int y, int z) {
         ChunkPos.checkChunkRelativePosition(x, y, z);
+
+        var a = getHighestBlockAt(x, z);
+
+        if (a <= y) {
+            return 127;
+        }
 
         if (y >= 128) {
             return 127;
@@ -187,12 +195,37 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
     }
 
     public int getBlockId(int x, int y, int z) {
-        validChunkOperation(x, y, z);
+        if (validChunkOperationConditionally(x, y, z)) {
+            return Blocks.AIR.getId();
+        }
         return this.blocks.get(x, y, z);
     }
 
-    public void setBlockId(int x, int y, int z, int id) {
-        validChunkOperation(x, y, z);
+    public void setBlockId(int x, int y, int z, int id, boolean silent) {
+        if (validChunkOperationConditionally(x, y, z)) {
+            return;
+        }
         this.blocks.set(x, y, z, id);
+
+        if (!silent) {
+            updateHeightMap(x, z);
+        }
+    }
+
+    public void setBlockId(int x, int y, int z, int id) {
+        setBlockId(x, y, z, id, true);
+    }
+
+    public void compress(int position) {
+        this.blocks.compress(position);
+        this.biomes.compress(position);
+        this.lightSections[position].tryCompress();
+        this.blockMetaSections[position].tryCompress();
+    }
+
+    public void compress() {
+        for (int position = 0; position < SECTION_SIZE; position++) {
+            this.compress(position);
+        }
     }
 }

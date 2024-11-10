@@ -5,12 +5,11 @@ import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.Hittable;
 import net.cubecraft.ContentRegistries;
-import net.cubecraft.CoreRegistries;
 import net.cubecraft.level.Level;
-import net.cubecraft.util.register.Registered;
-import net.cubecraft.world.block.Block;
+import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.access.NonLoadedBlockAccess;
+import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.ChunkCache;
 import net.cubecraft.world.chunk.ChunkState;
@@ -20,16 +19,17 @@ import net.cubecraft.world.chunk.future.CompletedFutureChunkContainer;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.task.ChunkLoadLevel;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
-import net.cubecraft.world.dimension.Dimension;
-import net.cubecraft.world.dimension.DimensionOverworld;
 import net.cubecraft.world.entity.Entity;
 import net.cubecraft.world.entity.EntityLiving;
 import net.cubecraft.world.entity.EntityMap;
+import net.cubecraft.world.environment.Environment;
+import net.cubecraft.world.environment.Environments;
 import net.cubecraft.world.worldGen.WorldGenerator;
 import org.joml.Vector3d;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public abstract class World implements BlockAccessor {
@@ -37,20 +37,24 @@ public abstract class World implements BlockAccessor {
     public final HashMap<String, Entity> entities = new HashMap<>();
     protected final ChunkCache<WorldChunk> chunkCache = new ChunkCache<>();
     protected final EntityMap entityMap = new EntityMap(this);
-    protected final Dimension dimension;
+    protected final Environment environment;
     protected final SimpleEventBus eventBus = new SimpleEventBus();
     protected final Level level;
     protected final String id;
     protected final WorldGenerator worldGenerator;
+    protected Thread ownerThread = Thread.currentThread();
     protected long time;
 
     public World(String id, Level level) {
         this.id = id;
         this.level = level;
-        this.dimension = new DimensionOverworld();
-        this.worldGenerator = new WorldGenerator(this, Runnable::run);
+        this.environment = Environments.REGISTRY.object(id);
+        this.worldGenerator = new WorldGenerator(this);
     }
 
+    public void setOwnerThread() {
+        this.ownerThread = Thread.currentThread();
+    }
 
     public EntityMap getEntityMap() {
         return entityMap;
@@ -67,10 +71,10 @@ public abstract class World implements BlockAccessor {
     public ArrayList<AABB> getCollisionBoxInbound(AABB box) {
         ArrayList<AABB> result = new ArrayList<>();
 
-        List<IBlockAccess> blocks = this.getBlockInRange(box);
+        List<BlockAccess> blocks = this.getBlockInRange(box);
 
-        for (IBlockAccess access : blocks) {
-            result.addAll(access.getCollisionBox());
+        for (BlockAccess access : blocks) {
+            result.addAll(BlockPropertyDispatcher.getCollisionBox(access));
         }
 
         long xx0 = (long) Math.floor(box.x0);
@@ -98,12 +102,14 @@ public abstract class World implements BlockAccessor {
             }
         }
 
+        result.addAll(Arrays.asList(this.environment.getBounding(box)));
+
         result.remove(box);
         return result;
     }
 
-    public List<IBlockAccess> getBlockInRange(AABB box) {
-        ArrayList<IBlockAccess> result = new ArrayList<>();
+    public List<BlockAccess> getBlockInRange(AABB box) {
+        ArrayList<BlockAccess> result = new ArrayList<>();
 
         long xx0 = (long) Math.floor(box.x0);
         long yy0 = (long) Math.floor(box.y0);
@@ -146,10 +152,8 @@ public abstract class World implements BlockAccessor {
         }
 
         for (Entity e : this.entities.values()) {
-            if (!(Math.abs(e.x - from.x) < entity.getReachDistance() + 1
-                    && Math.abs(e.y - from.y) < entity.getReachDistance() + 1
-                    && Math.abs(e.z - from.z) < entity.getReachDistance() + 1
-                    && entity != e)) {
+            if (!(Math.abs(e.x - from.x) < entity.getReachDistance() + 1 && Math.abs(e.y - from.y) < entity.getReachDistance() + 1 && Math.abs(
+                    e.z - from.z) < entity.getReachDistance() + 1 && entity != e)) {
                 continue;
             }
             result.add(e);
@@ -182,9 +186,8 @@ public abstract class World implements BlockAccessor {
     public void addEntity(Entity e) {
         e.setWorld(World.this);
         this.entities.put(e.getUuid(), e);
-        this.loadChunk(
-                ChunkPos.create((long) e.x / Chunk.WIDTH, (long) (e.z / Chunk.WIDTH)),
-                new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 256)
+        this.loadChunk(ChunkPos.create((long) e.x / Chunk.WIDTH, (long) (e.z / Chunk.WIDTH)),
+                       new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 256)
         );
     }
 
@@ -206,23 +209,20 @@ public abstract class World implements BlockAccessor {
 
 
     //load chunk
-    public WorldChunk getChunk(ChunkPos p) {
-        try {
-            return this.chunkCache.get(p);
-        } catch (StackOverflowError ignored) {
-            return getChunk(p);
+    public WorldChunk getChunk(int cx, int cz, ChunkState state) {
+        var ch = this.ownerThread != Thread.currentThread() ? this.chunkCache.get(cx, cz) : this.chunkCache.cachedGet(cx, cz);
+
+        if (ch != null && ch.getState().isComplete(state)) {
+            return ch;
         }
-    }
 
-    public WorldChunk getChunk(int cx, int cz) {
-        return this.chunkCache.get(cx, cz);
-    }
-
-    public WorldChunk getChunkSafely(int cx, int cz) {
-        return this.getChunkSafely(cx, cz, ChunkState.COMPLETE);
-    }
-
-    public WorldChunk getChunkSafely(int cx, int cz, ChunkState state) {
+        if (this.ownerThread != Thread.currentThread()) {
+            CompletableFuture.supplyAsync(() -> {
+                var c = this.worldGenerator.load(cx, cz, state);
+                this.chunkCache.add(c);
+                return c;
+            }).join();
+        }
         var c = this.worldGenerator.load(cx, cz, state);
         this.chunkCache.add(c);
 
@@ -230,13 +230,17 @@ public abstract class World implements BlockAccessor {
     }
 
 
-    public WorldChunk getChunkSafely(ChunkPos p) {
-        return getChunkSafely(p.getX(), p.getZ());
+    public WorldChunk getChunk(ChunkPos p) {
+        return getChunk(p.getX(), p.getZ(), ChunkState.COMPLETE);
+    }
+
+    public WorldChunk getChunkSafely(int cx, int cz) {
+        return this.getChunk(cx, cz, ChunkState.COMPLETE);
     }
 
 
     public ChunkFuture loadChunk(ChunkPos p, ChunkLoadTicket ticket) {
-        WorldChunk chunk = getChunkSafely(p);
+        WorldChunk chunk = getChunkSafely(p.getX(), p.getZ());
         chunk.addTicket(ticket);
         return new CompletedFutureChunkContainer(chunk);
     }
@@ -260,15 +264,11 @@ public abstract class World implements BlockAccessor {
         chunk.setWorld(this);
     }
 
-    public boolean isAllNearMatch(long x, long y, long z, Predicate<IBlockAccess> predicate) {
-        IBlockAccess[] states = new IBlockAccess[]{
-                getBlockAccess(x + 1, y, z),
-                getBlockAccess(x - 1, y, z),
-                getBlockAccess(x, y + 1, z),
-                getBlockAccess(x, y - 1, z),
-                getBlockAccess(x, y, z + 1),
-                getBlockAccess(x, y, z - 1)
-        };
+    public boolean isAllNearMatch(long x, long y, long z, Predicate<BlockAccess> predicate) {
+        BlockAccess[] states = new BlockAccess[]{getBlockAccess(x + 1, y, z), getBlockAccess(x - 1, y, z), getBlockAccess(x,
+                                                                                                                          y + 1,
+                                                                                                                          z
+        ), getBlockAccess(x, y - 1, z), getBlockAccess(x, y, z + 1), getBlockAccess(x, y, z - 1)};
         return Arrays.stream(states).allMatch(predicate);
     }
 
@@ -276,8 +276,8 @@ public abstract class World implements BlockAccessor {
         return this.chunkCache.contains(p);
     }
 
-    public IBlockAccess[] getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
-        IBlockAccess[] result = new IBlockAccess[(int) ((x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1))];
+    public BlockAccess[] getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
+        BlockAccess[] result = new BlockAccess[(int) ((x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1))];
         int counter = 0;
         for (long i = x0; i <= x1; i++) {
             for (long j = y0; j <= y1; j++) {
@@ -292,8 +292,8 @@ public abstract class World implements BlockAccessor {
 
     //todo:light fetch->Light engine
 
-    public Dimension getDimension() {
-        return dimension;
+    public Environment getEnvironment() {
+        return environment;
     }
 
     //todo:hotspot
@@ -308,21 +308,6 @@ public abstract class World implements BlockAccessor {
     }
 
 
-    //----[Async]----
-    public void addChunkLock(ChunkPos p, Object caller) {
-        WorldChunk chunk = this.getChunk(p);
-        if (chunk != null) {
-            chunk.getDataLock().addLock(caller);
-        }
-    }
-
-    public void removeChunkLock(ChunkPos p, Object caller) {
-        WorldChunk chunk = this.getChunk(p);
-        if (chunk != null) {
-            chunk.getDataLock().removeLock(caller);
-        }
-    }
-
     public void waitUntilChunkExist(int x, int z) {
         while (!this.chunkCache.contains(x, z)) {
             Thread.onSpinWait();
@@ -335,22 +320,6 @@ public abstract class World implements BlockAccessor {
         }
     }
 
-    public void waitUntilChunkComplete(int x, int z) {
-        this.waitUntilChunkExist(x, z);
-        WorldChunk c = this.getChunk(x, z);
-
-        while (c.getState() != ChunkState.COMPLETE) {
-            Thread.onSpinWait();
-            try {
-                Thread.sleep(8);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            Thread.yield();
-        }
-    }
-
-
     public Level getLevel() {
         return level;
     }
@@ -359,27 +328,18 @@ public abstract class World implements BlockAccessor {
         return 512;
     }
 
-    public IBlockAccess[] getBlockAndNeighbor(long x, long y, long z) {
-        return new IBlockAccess[]{
-                getBlockAccess(x, y, z),
-                getBlockAccess(x - 1, y, z),
-                getBlockAccess(x + 1, y, z),
-                getBlockAccess(x, y - 1, z),
-                getBlockAccess(x, y + 1, z),
-                getBlockAccess(x, y, z - 1),
-                getBlockAccess(x, y, z + 1)
-        };
+    public BlockAccess[] getBlockAndNeighbor(long x, long y, long z) {
+        return new BlockAccess[]{getBlockAccess(x, y, z), getBlockAccess(x - 1, y, z), getBlockAccess(x + 1, y, z), getBlockAccess(x,
+                                                                                                                                   y - 1,
+                                                                                                                                   z
+        ), getBlockAccess(x, y + 1, z), getBlockAccess(x, y, z - 1), getBlockAccess(x, y, z + 1)};
     }
 
-    public IBlockAccess[] getBlockNeighbor(long x, long y, long z) {
-        return new IBlockAccess[]{
-                getBlockAccess(x - 1, y, z),
-                getBlockAccess(x + 1, y, z),
-                getBlockAccess(x, y - 1, z),
-                getBlockAccess(x, y + 1, z),
-                getBlockAccess(x, y, z - 1),
-                getBlockAccess(x, y, z + 1)
-        };
+    public BlockAccess[] getBlockNeighbor(long x, long y, long z) {
+        return new BlockAccess[]{getBlockAccess(x - 1, y, z), getBlockAccess(x + 1, y, z), getBlockAccess(x, y - 1, z), getBlockAccess(x,
+                                                                                                                                       y + 1,
+                                                                                                                                       z
+        ), getBlockAccess(x, y, z - 1), getBlockAccess(x, y, z + 1)};
     }
 
     public String getId() {
@@ -394,8 +354,7 @@ public abstract class World implements BlockAccessor {
             T entity = clazz.getDeclaredConstructor(World.class).newInstance(this);
             this.addEntity(entity);
             return entity;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
@@ -410,39 +369,47 @@ public abstract class World implements BlockAccessor {
     }
 
 
+    @Override
     public int getBlockId(long x, long y, long z) {
         if (ChunkPos.isWorldPosInvalid(x, y, z)) {
-            return this.dimension.getBlockID(this, x, y, z);
+            return this.environment.getBlockID(this, x, y, z);
         }
 
         var chunk = getChunkSafely((int) (x >> 4), (int) (z >> 4));
         return chunk.getBlockId((int) (x & 15), (int) y, (int) (z & 15));
     }
 
+    @Override
     public byte getBlockMetadata(long x, long y, long z) {
         if (ChunkPos.isWorldPosInvalid(x, y, z)) {
-            return this.dimension.getBlockMeta(this, x, y, z);
+            return this.environment.getBlockMeta(this, x, y, z);
         }
 
         var chunk = this.chunkCache.getByWorldPos(x, z);
         return chunk.getBlockMeta((int) (x & 15), (int) y, (int) (z & 15));
     }
 
+    @Override
     public byte getBlockLight(long x, long y, long z) {
         if (ChunkPos.isWorldPosInvalid(x, y, z)) {
-            return this.dimension.getBlockLight(this, x, y, z);
+            return this.environment.getBlockLight(this, x, y, z);
         }
 
         var chunk = getChunkSafely((int) (x >> 4), (int) (z >> 4));
         return chunk.getBlockLight((int) (x & 15), (int) y, (int) (z & 15));
     }
 
-
-    public Registered<Block> getBlock(long x, long y, long z) {
-        return CoreRegistries.BLOCKS.registered(getBlockId(x, y, z));
-    }
-
     public WorldGenerator getWorldGenerator() {
         return this.worldGenerator;
+    }
+
+    public boolean isChunkLoaded(int cx, int cz) {
+        return this.chunkCache.contains(cx, cz);
+    }
+
+    public ChunkFuture<WorldChunk> loadChunk(int cx, int cz, ChunkLoadTicket ticket) {
+        WorldChunk chunk = getChunkSafely(cx, cz);
+        chunk.addTicket(ticket);
+        return new CompletedFutureChunkContainer(chunk);
     }
 }

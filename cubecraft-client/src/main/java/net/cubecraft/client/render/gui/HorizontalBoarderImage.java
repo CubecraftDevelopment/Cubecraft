@@ -2,14 +2,12 @@ package net.cubecraft.client.render.gui;
 
 import com.google.gson.*;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.util.DeserializedConstructor;
-
-import java.lang.reflect.Type;
 
 @TypeItem("horizontal_border_image")
 public final class HorizontalBoarderImage extends ImageComponentRendererPart {
@@ -44,7 +42,7 @@ public final class HorizontalBoarderImage extends ImageComponentRendererPart {
         double tbh = (double) this.border / tex.getWidth();
 
         int x0In = x + this.border, x1In = x + w - this.border, x1Out = x + w;
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(12);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(12);
         builder.begin();
         ShapeRenderer.drawRectUV(builder, x, x0In, y, y + h, z, 0, tbh, 0, 1);
         ShapeRenderer.drawRectUV(builder, x0In, x1In, y, y + h, z, tbh, 1 - tbh, 0, 1);

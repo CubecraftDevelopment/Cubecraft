@@ -45,7 +45,7 @@ import org.lwjgl.glfw.GLFW;
 
 //todo: 堆外释放
 public final class CubecraftClient extends GameApplication {
-    public static final VersionInfo VERSION = new VersionInfo("client-0.4.1-b3");
+    public static final VersionInfo VERSION = new VersionInfo("client-0.4.3-b1");
     private static final Logger LOGGER = LogManager.getLogger("Client");
 
     private final ClientDeviceContext deviceContext = new ClientDeviceContext();
@@ -137,6 +137,8 @@ public final class CubecraftClient extends GameApplication {
 
         ClientSharedContext.RESOURCE_MANAGER.reload();
         ClientSharedContext.RESOURCE_MANAGER.load("default");
+        ClientSharedContext.RESOURCE_MANAGER.load("client:default");
+        ClientSharedContext.RESOURCE_MANAGER.load("client:language");
         LOGGER.info("resource loaded.");
 
         this.guiContext.renderAnimationLoadingScreen();
@@ -159,7 +161,7 @@ public final class CubecraftClient extends GameApplication {
 
         ScreenUtil.tickToasts();
         if (this.getClientWorldContext().getWorld() != null && this.clientWorldManager.isIntegrated()) {
-            this.getClientWorldContext().getWorld().tick();
+            //this.getClientWorldContext().getWorld().tick();
         }
     }
 
@@ -207,6 +209,7 @@ public final class CubecraftClient extends GameApplication {
                 screenInfo.getScreenWidth(),
                 screenInfo.getScreenHeight()
         );
+
         GLUtil.enableDepthTest();
         GLUtil.enableBlend();
         GLUtil.checkError("pre_screen_render");
@@ -222,11 +225,14 @@ public final class CubecraftClient extends GameApplication {
             ClientGUIContext.ICON_FONT_RENDERER.gc();
             this.lastGCTime = System.currentTimeMillis();
         }
+
+        this.getWindow().incrementFrame();
     }
 
     public DisplayScreenInfo getDisplaySize() {
-        Window window = this.getWindow();
-        double scale = net.cubecraft.client.ClientSettingRegistry.GUI_SCALE.getValue();
+        var window = this.getWindow();
+        var scale = ClientSettingRegistry.getFixedGUIScale();
+
         return new DisplayScreenInfo(
                 (int) Math.max(window.getWidth() / scale, 1),
                 (int) Math.max(window.getHeight() / scale, 1),

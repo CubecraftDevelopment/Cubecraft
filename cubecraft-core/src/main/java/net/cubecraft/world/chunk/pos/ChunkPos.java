@@ -41,15 +41,15 @@ public final class ChunkPos implements Key {
         return new ChunkPos(x, z);
     }
 
-    static int chunkLocal(long w) {
+    public static int chunkLocal(long w) {
         return (int) (w & 15);
     }
 
-    static int ofWorld(long v) {
+    public static int ofWorld(long v) {
         return (int) (v >> 4);
     }
 
-    static long toWorld(int c, int off) {
+    public static long toWorld(int c, int off) {
         return c * 16L + off;
     }
 

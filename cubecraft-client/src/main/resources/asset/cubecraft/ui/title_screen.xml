@@ -1,35 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE screen [
+        <!ELEMENT screen (button|image|splash|label)*>
+        <!ATTLIST screen
+                bg CDATA #REQUIRED
+                id CDATA #REQUIRED>
+        <!ELEMENT button (icon|label)*>
+        <!ATTLIST button
+                border CDATA #REQUIRED
+                enabled CDATA #IMPLIED
+                id CDATA #REQUIRED
+                layout CDATA #REQUIRED
+                style CDATA #IMPLIED>
+        <!ELEMENT icon (#PCDATA)>
+        <!ATTLIST icon
+                align CDATA #REQUIRED
+                color CDATA #REQUIRED
+                layout CDATA #REQUIRED>
+        <!ELEMENT label (#PCDATA)>
+        <!ATTLIST label
+                align CDATA #REQUIRED
+                color CDATA #REQUIRED
+                id CDATA #IMPLIED
+                layout CDATA #REQUIRED
+                type CDATA #REQUIRED>
+        <!ELEMENT image (#PCDATA)>
+        <!ATTLIST image
+                layout CDATA #REQUIRED
+                h-clip CDATA #REQUIRED
+                v-clip CDATA #REQUIRED>
+        <!ELEMENT splash (#PCDATA)>
+        <!ATTLIST splash
+                type CDATA #REQUIRED
+                id CDATA #REQUIRED
+                rotation CDATA #REQUIRED
+                bobbing CDATA #REQUIRED
+                layout CDATA #REQUIRED
+                color CDATA #REQUIRED
+                align CDATA #REQUIRED>
+        ]>
 <screen bg="image-bg" id="cubecraft:title_screen">
     <button layout="origin/left_top,0,0,30,30" border="4,4,4,4" id="button_check_version">
         <icon layout="origin/middle_middle,0,0,0,16" color="ffffff" align="middle">
             E946
         </icon>
     </button>
-    <button layout="origin/left_top,30,0,30,30" border="4,4,4,4" id="button_account_setting" enabled="false">
+    <button layout="origin/left_top,30,0,30,30" style="dark" border="4,4,4,4" id="button_account_setting" enabled="false">
         <icon layout="origin/middle_middle,0,0,0,16" color="ffffff" align="middle">
             E768
         </icon>
     </button>
-    <button layout="origin/middle_middle,0,-10,300,30" border="0,0,0,4" id="button_singleplayer">
+
+    <!--main control area | MCBE style-->
+    <button layout="origin/middle_middle,0,-10,170,40" style="dark" border="0,0,0,4" id="button_singleplayer">
         <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            title_screen.button.singleplayer
+            title_screen.button.game
         </label>
     </button>
-    <button layout="origin/middle_middle,0,20,300,30" border="0,0,0,4" id="button_multiplayer" enabled="false">
+    <button layout="origin/middle_middle,0,30,170,40" style="dark" border="0,0,0,4" id="button_option">
         <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            title_screen.button.multiplayer
+            title_screen.button.settings
         </label>
     </button>
-    <button layout="origin/middle_middle,-75,50,150,30" border="0,4,0,4" id="button_option">
-        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            title_screen.button.option
-        </label>
-    </button>
-    <button layout="origin/middle_middle,75,50,150,30" border="4,0,0,4" id="button_quit">
+    <button layout="origin/middle_middle,0,70,170,40" style="dark" border="0,0,0,4" id="button_quit">
         <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
             title_screen.button.quit
         </label>
     </button>
+
+
     <image layout="origin/middle_middle,0,-100,300,100" h-clip="scale" v-clip="scale">
         cubecraft:/gui/logo/game_logo.png
     </image>
@@ -39,10 +77,10 @@
     <label type="raw" layout="origin/right_bottom,-2,-2,0,8" color="ffffff" align="right">
         ©CubecraftDevelopment 2021-2024
     </label>
-    <label type="lang" layout="origin/left_bottom,2,-12,0,8" color="ffffff" align="left" id="auth_str">
+    <label type="lang" layout="origin/left_bottom,2,-12,0,8" color="ffffff" align="left" id="auth">
         title_screen.auth
     </label>
-    <label type="lang" layout="origin/left_bottom,2,-2,0,8" color="ffffff" align="left" id="version_str">
+    <label type="lang" layout="origin/left_bottom,2,-2,0,8" color="ffffff" align="left" id="version">
         title_screen.version
     </label>
 </screen>

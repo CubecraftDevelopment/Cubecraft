@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.render.vertex;
 
-import me.gb2022.commons.context.LifetimeCounter;
+import me.gb2022.commons.LifetimeCounter;
 import me.gb2022.commons.memory.BufferAllocator;
 
 import java.nio.ByteBuffer;
@@ -160,5 +160,30 @@ public class VertexBuilder {
 
     public ByteBuffer generateRawBuffer() {
         return getRawBuffer().slice(0, this.format.getRawBufferSize(this.getVertexCount()));
+    }
+
+    public LifetimeCounter getLifetimeCounter() {
+        return lifetimeCounter;
+    }
+
+    @Override
+    protected void finalize() {
+        if(!this.lifetimeCounter.isAllocated()){
+            return;
+        }
+        //System.err.println("unexpected free by"+ this);
+        this.free();
+    }
+
+    @Override
+    public String toString() {
+        return "VertexBuilder{" +
+                "vertexCount=" + vertexCount +
+                ", format=" + format +
+                ", lifetimeCounter=" + lifetimeCounter +
+                ", drawMode=" + drawMode +
+                ", capacity=" + capacity +
+                ", allocator=" + allocator +
+                '}';
     }
 }

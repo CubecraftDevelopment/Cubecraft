@@ -1,18 +1,16 @@
 package net.cubecraft.world.block.access;
 
-import net.cubecraft.CoreRegistries;
-import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.World;
 import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.EnumFacing;
+import net.cubecraft.world.block.blocks.Blocks;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 
 public class ChunkBlockAccess extends IBlockAccess {
     private final WorldChunk chunk;
-    private String cachedBlockId;
 
     public ChunkBlockAccess(World world, long x, long y, long z, WorldChunk chunk) {
         super(world, x, y, z);
@@ -35,47 +33,20 @@ public class ChunkBlockAccess extends IBlockAccess {
     }
 
 
-
     @Override
     public String getBlockID() {
-        return CoreRegistries.BLOCKS.name(getBlockId());
+        return Blocks.REGISTRY.name(getBlockId());
     }
 
 
     @Override
     public void setBlockID(String id, boolean sendUpdateEvent) {
-        if (y < 0 || y >= Chunk.HEIGHT) {
-            return;
-        }
-        ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-        if (this.chunk == null) {
-            return;
-        }
-
-        String old = getBlockID();
-
-        this.chunk.setBlockID(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z), id);
-        if (!sendUpdateEvent) {
-            return;
-        }
-
-        for (IBlockAccess blockAccess : this.world.getBlockNeighbor(this.x, this.y, this.z)) {
-            blockAccess.getBlock().onBlockUpdate(blockAccess);
-        }
-        this.getBlock().onBlockUpdate(this);
-        this.world.getEventBus().callEvent(new BlockIDChangedEvent(this.world, this.x, this.y, this.z, old, id));
-
+        this.setBlockId(Blocks.REGISTRY.id(id), !sendUpdateEvent);
     }
 
     @Override
     public EnumFacing getBlockFacing() {
-        EnumFacing bs = this.world.getDimension().predictBlockFacingAt(this.world, this.x, this.y, this.z);
-        if (bs != null) {
-            return bs;
-        } else {
-            ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-            return chunk.getBlockFacing(pos.getRelativePosX(this.x), (int) this.y, pos.getRelativePosZ(z));
-        }
+        return EnumFacing.Up;
     }
 
     @Override
@@ -89,7 +60,6 @@ public class ChunkBlockAccess extends IBlockAccess {
         }
         this.chunk.setBlockFacing(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z), facing);
     }
-
 
     @Override
     public void setBlockMeta(byte meta, boolean sendUpdateEvent) {
@@ -117,7 +87,7 @@ public class ChunkBlockAccess extends IBlockAccess {
 
     @Override
     public Biome getBiome() {
-        return CoreRegistries.BIOMES.object(this.chunk.getBiome((int) (this.x & 15), (int) this.y, (int) (this.z & 15)));
+        return Biome.BIOMES.object(this.chunk.getBiome((int) (this.x & 15), (int) this.y, (int) (this.z & 15)));
     }
 
     @Override
@@ -127,5 +97,10 @@ public class ChunkBlockAccess extends IBlockAccess {
             return;
         }
         this.chunk.setBiome(pos.getRelativePosX(x), (int) this.y, pos.getRelativePosZ(z), biome.getId());
+    }
+
+    @Override
+    public void setBlockId(int id, boolean silent) {
+        this.chunk.setBlockId((int) (this.x & 15), (int) this.y, (int) (this.z & 15), id, silent);
     }
 }

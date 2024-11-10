@@ -266,4 +266,7 @@ public class ModManager {
         this.constructMods(listener);
         this.sortAndRegisterMods();
     }
+
+    public void serverSetup() {
+    }
 }

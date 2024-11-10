@@ -51,7 +51,7 @@ public class ScrollPanel extends Node {
         }
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale = ClientSettingRegistry.getFixedGUIScale();
         int sx = (int) (this.layout.getAbsoluteX() * scale);
         int i = this.context.getWindow().getHeight();
         int i2 = (int) (this.layout.getAbsoluteY() * scale);

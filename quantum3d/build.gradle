@@ -18,4 +18,5 @@ applyGlobalScript("Dependencies.gradle")
 dependencies {
     implementation("org.slf4j:slf4j-api:1.7.27")
     implementation localStorage("me.gb2022.commons-event")
+    implementation localStorage("me.gb2022.commons-general")
 }

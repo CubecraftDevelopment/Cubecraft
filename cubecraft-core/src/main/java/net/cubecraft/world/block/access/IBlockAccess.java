@@ -1,22 +1,16 @@
 package net.cubecraft.world.block.access;
 
 import me.gb2022.commons.container.Vector3;
-import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
-import me.gb2022.commons.math.hitting.Hittable;
-import net.cubecraft.CoreRegistries;
-import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.World;
-import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.EnumFacing;
+import net.cubecraft.world.block.blocks.Blocks;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
-import net.cubecraft.world.block.property.collision.CollisionProperty;
 
 import java.util.Collection;
-import java.util.List;
 
-public abstract class IBlockAccess implements Hittable {
+public abstract class IBlockAccess implements BlockAccess {
     protected final World world;
     protected final long x;
     protected final long y;
@@ -30,17 +24,9 @@ public abstract class IBlockAccess implements Hittable {
         this.z = z;
     }
 
-    public abstract int getBlockId();
-
     public abstract String getBlockID();
 
     public abstract EnumFacing getBlockFacing();
-
-    public abstract byte getBlockMeta();
-
-    public abstract byte getBlockLight();
-
-    public abstract Biome getBiome();
 
 
     public void setBlockID(String id, boolean sendUpdateEvent) {
@@ -49,37 +35,29 @@ public abstract class IBlockAccess implements Hittable {
     public void setBlockFacing(EnumFacing facing, boolean sendUpdateEvent) {
     }
 
+    @Override
     public void setBlockMeta(byte meta, boolean sendUpdateEvent) {
     }
 
+    @Override
     public void setBlockLight(byte light, boolean sendUpdateEvent) {
     }
 
+    @Override
     public void setBiome(String biome, boolean sendUpdateEvent) {
     }
 
 
+    @Override
     public Block getBlock() {
-        return CoreRegistries.BLOCKS.registered(getBlockId()).get();
+        return Blocks.REGISTRY.registered(getBlockId()).get();
     }
 
 
 
+    @Override
     public void scheduleTick(int time) {
         this.world.setTickSchedule(this.x, this.y, this.z, time);
-    }
-
-    public Collection<AABB> getCollisionBox() {
-        var block = getBlock();
-        if (block == null) {
-            return List.of();
-        }
-
-        CollisionProperty property = block.getBlockProperty("cubecraft:collision", CollisionProperty.class);
-        if (property == null) {
-            return List.of();
-        }
-        return property.get(this);
     }
 
     @Override
@@ -87,27 +65,34 @@ public abstract class IBlockAccess implements Hittable {
         return BlockPropertyDispatcher.getHitBox(this);
     }
 
+    @Override
     public long getX() {
         return this.x;
     }
 
+    @Override
     public long getY() {
         return this.y;
     }
 
+    @Override
     public long getZ() {
         return this.z;
     }
 
 
+    @Override
     public IBlockAccess getNear(EnumFacing facing) {
         Vector3<Long> pos = facing.findNear(this.x, this.y, this.z, 1);
         return this.world.getBlockAccess(pos.x(), pos.y(), pos.z());
     }
 
+    @Override
     public World getWorld() {
         return world;
     }
 
-    public abstract void setBiome(Registered<Biome> biome, boolean sendUpdateEvent);
+    @Override
+    public void setBlockId(int id, boolean silent) {
+    }
 }

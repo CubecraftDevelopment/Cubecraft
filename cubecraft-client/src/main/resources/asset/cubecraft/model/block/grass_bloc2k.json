@@ -1,6 +1,6 @@
 {
   "type": "cubecraft:component_block",
-  "particle_texture": "cubecraft:block/dirt.png",
+  "particle_texture": "cubecraft:/block/dirt.png",
   "models": [
     {
       "statement": "default",
@@ -27,25 +27,25 @@
             },
             "left": {
               "id": "cubecraft:cube_2",
-              "texture": "cubecraft:/block/grass_block_side.tga",
+              "texture": "cubecraft:/block/empty.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "right": {
               "id": "cubecraft:cube_3",
-              "texture": "cubecraft:/block/grass_block_side.tga",
+              "texture": "cubecraft:/block/empty.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "front": {
               "id": "cubecraft:cube_4",
-              "texture": "cubecraft:/block/grass_block_side.tga",
+              "texture": "cubecraft:/block/empty.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "back": {
               "id": "cubecraft:cube_5",
-              "texture": "cubecraft:/block/grass_block_side.tga",
+              "texture": "cubecraft:/block/empty.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             }
@@ -73,7 +73,7 @@
             },
             "left": {
               "id": "cubecraft:cube_2",
-              "texture": "cubecraft:/block/grass_block_side_overlay.tga",
+              "texture": "cubecraft:/block/grass_block_top.png",
               "color": "cubecraft:grass",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
@@ -81,21 +81,21 @@
             "right": {
               "id": "cubecraft:cube_3",
               "color": "cubecraft:grass",
-              "texture": "cubecraft:/block/grass_block_side_overlay.tga",
+              "texture": "cubecraft:/block/grass_block_top.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "front": {
               "id": "cubecraft:cube_4",
               "color": "cubecraft:grass",
-              "texture": "cubecraft:/block/grass_block_side_overlay.tga",
+              "texture": "cubecraft:/block/grass_block_top.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             },
             "back": {
               "id": "cubecraft:cube_5",
               "color": "cubecraft:grass",
-              "texture": "cubecraft:/block/grass_block_side_overlay.tga",
+              "texture": "cubecraft:/block/grass_block_top.png",
               "culling": "solid",
               "uv": [0, 1, 0, 1]
             }

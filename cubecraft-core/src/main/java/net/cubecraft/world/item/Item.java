@@ -3,6 +3,7 @@ package net.cubecraft.world.item;
 import me.gb2022.commons.Initializable;
 import me.gb2022.commons.math.hitting.HitResult;
 import net.cubecraft.ContentRegistries;
+import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.entity.Entity;
 import net.cubecraft.world.item.behavior.ItemBehavior;
@@ -45,7 +46,7 @@ public abstract class Item implements Initializable {
 
     public abstract String[] getBehaviorList();
 
-    public void onDig(HitResult result, IBlockAccess block) {
+    public void onDig(HitResult result, BlockAccess block) {
         for (ItemBehavior behavior : getBehaviors()) {
             behavior.onDig(result, this, block);
         }
@@ -63,7 +64,7 @@ public abstract class Item implements Initializable {
         return behaviors;
     }
 
-    public void onUse(HitResult result, IBlockAccess block) {
+    public void onUse(HitResult result, BlockAccess block) {
         for (ItemBehavior behavior : this.getBehaviors()) {
             behavior.onUse(result, this, block);
         }

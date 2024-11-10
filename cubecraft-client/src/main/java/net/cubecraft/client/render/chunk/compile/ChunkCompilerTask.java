@@ -1,48 +1,44 @@
 package net.cubecraft.client.render.chunk.compile;
 
-import net.cubecraft.client.render.chunk.ChunkRenderer;
+import net.cubecraft.client.render.chunk.TerrainRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Queue;
 
 public abstract class ChunkCompilerTask implements Runnable {
-    public static final Logger LOGGER = LogManager.getLogger("Client/ChunkCompilerTask");
+    public static final Logger LOGGER = LogManager.getLogger("ChunkCompilerTask");
 
+    protected final TerrainRenderer owner;
     protected final Queue<ChunkCompileResult> resultQueue;
     protected final Queue<ChunkCompileRequest> requestQueue;
-    protected final ChunkRenderer parent;
+    protected final ModernChunkCompiler compiler;
 
     private boolean running = true;
 
-    protected ChunkCompilerTask(ChunkRenderer parent, Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
-        this.parent = parent;
-        this.resultQueue = result;
-        this.requestQueue = request;
+    public ChunkCompilerTask(TerrainRenderer owner) {
+        this.owner = owner;
+        this.requestQueue = owner.getRequestQueue();
+        this.resultQueue = owner.getResultQueue();
+        this.compiler = owner.getCompiler();
     }
 
-    public static ChunkCompilerTask daemon(ChunkRenderer parent, Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
-        return new CompilerDaemon(parent, request, result);
+
+    public static ChunkCompilerTask service(TerrainRenderer owner) {
+        return new CompilerDaemon(owner);
     }
 
-    public static ChunkCompilerTask task(ChunkRenderer parent, ChunkCompileRequest request, Queue<ChunkCompileResult> result) {
-        return new CompilerTask(parent, request, result);
+    public static ChunkCompilerTask task(TerrainRenderer owner, ChunkCompileRequest request) {
+        return new CompilerTask(owner, request);
     }
+
 
     public void processRequest(ChunkCompileRequest request) {
-        if (this.parent.isChunkOutOfRange(request.getPos())) {
+        if (this.owner.isChunkOutOfRange(request.getPos())) {
             return;
         }
 
-        ChunkCompiler.build(this.resultQueue, request.getWorld(), request.getPos(), request.getCompilations());
-
-        /*
-        if (request.getLayer() == null) {
-            result = ChunkCompiler.build(layerId, world, pos);
-        } else {
-            result = ChunkCompiler.rebuild(layerId, world, pos, request.getLayer());
-        }
-         */
+        this.compiler.build(this.resultQueue, request.getWorld(), request);
     }
 
     public boolean isRunning() {
@@ -56,17 +52,18 @@ public abstract class ChunkCompilerTask implements Runnable {
     private static class CompilerTask extends ChunkCompilerTask {
         private final ChunkCompileRequest request;
 
-        protected CompilerTask(ChunkRenderer parent, ChunkCompileRequest request, Queue<ChunkCompileResult> result) {
-            super(parent, null, result);
+        public CompilerTask(TerrainRenderer owner, ChunkCompileRequest request) {
+            super(owner);
             this.request = request;
         }
+
 
         @Override
         public void run() {
             if (this.request == null) {
                 return;
             }
-            if (this.parent.isChunkOutOfRange(this.request.getPos())) {
+            if (this.owner.isChunkOutOfRange(this.request.getPos())) {
                 return;
             }
             this.processRequest(this.request);
@@ -74,8 +71,8 @@ public abstract class ChunkCompilerTask implements Runnable {
     }
 
     private static class CompilerDaemon extends ChunkCompilerTask {
-        protected CompilerDaemon(ChunkRenderer parent, Queue<ChunkCompileRequest> request, Queue<ChunkCompileResult> result) {
-            super(parent, request, result);
+        public CompilerDaemon(TerrainRenderer owner) {
+            super(owner);
         }
 
         @Override
@@ -100,7 +97,7 @@ public abstract class ChunkCompilerTask implements Runnable {
                             }
                         }
 
-                        if (request == null || this.parent.isChunkOutOfRange(request.getPos())) {
+                        if (request == null || this.owner.isChunkOutOfRange(request.getPos())) {
                             Thread.yield();
                             continue;
                         }

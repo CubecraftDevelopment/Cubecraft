@@ -24,9 +24,14 @@ public class TextureStateManager {
                 GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MAG_FILTER,GL11.GL_NEAREST);
                 GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
             }else{
-                GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MAG_FILTER,GL11.GL_NEAREST);
-                GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MIN_FILTER, mipMap?GL11.GL_LINEAR_MIPMAP_LINEAR:GL11.GL_NEAREST);
+                GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+                GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
             }
+            GL30.glGenerateMipmap(t.getBindingType());
+        }else{
+            GL11.glTexParameteri(t.getBindingType(),GL32.GL_TEXTURE_MAX_LOD,1);
+            GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+            GL11.glTexParameteri(t.getBindingType(), GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
             GL30.glGenerateMipmap(t.getBindingType());
         }
         t.unbind();

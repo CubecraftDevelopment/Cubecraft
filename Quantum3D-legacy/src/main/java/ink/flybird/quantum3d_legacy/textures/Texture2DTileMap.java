@@ -143,6 +143,7 @@ public class Texture2DTileMap extends Texture2D {
 
     public void export(File f) {
         this.drawSection();
+        f.getParentFile().mkdirs();
         try {
             ImageIO.write(this.img, "png", f);
         } catch (IOException e) {

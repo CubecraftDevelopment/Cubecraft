@@ -1,19 +1,42 @@
 package net.cubecraft.world.chunk;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.cubecraft.world.chunk.pos.ChunkPos;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import oshi.annotation.concurrent.NotThreadSafe;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public final class ChunkCache<C extends Chunk> {
+    public static final Logger LOGGER = LogManager.getLogger("ChunkCache");
+
     private final Long2ObjectMap<C> chunks = new Long2ObjectOpenHashMap<>(8192);
+    private final AtomicLong lastKey = new AtomicLong(0);
+    private C lastValue;
 
     public C getByWorldPos(long x, long z) {
         return this.chunks.get(ChunkPos.encodeWorldPos(x, z));
     }
 
     public C get(int x, int z) {
-        return this.chunks.get(ChunkPos.encode(x, z));
+        var key = ChunkPos.encode(x, z);
+        return this.chunks.get(key);
+    }
+
+    @NotThreadSafe
+    public C cachedGet(int x, int z) {
+        var key = ChunkPos.encode(x, z);
+
+        if (this.lastKey.get() == key) {
+            return this.lastValue;
+        }
+
+        this.lastKey.set(key);
+        this.lastValue = this.chunks.get(key);
+
+        return this.lastValue;
     }
 
     public boolean contains(int x, int z) {
@@ -21,13 +44,17 @@ public final class ChunkCache<C extends Chunk> {
     }
 
     public C add(C chunk) {
-        if (this.chunks.containsKey(chunk.getKey().pack())) {
+        var encoded = ChunkPos.encode(chunk.x, chunk.z);
+
+        if (this.chunks.containsKey(encoded)) {
+            //LOGGER.warn("duplicated chunk insertion: {}/{}={}", chunk.x, chunk.z, encoded);
             return chunk;
         }
+
         try {
             this.chunks.put(ChunkPos.encode(chunk.x, chunk.z), chunk);
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println(chunk.x + "," + chunk.z + "=" + ChunkPos.encode(chunk.x, chunk.z));
+            throw new RuntimeException("chunk insert failed: " + chunk.x + "/" + chunk.z + "=" + encoded);
         }
         return chunk;
     }

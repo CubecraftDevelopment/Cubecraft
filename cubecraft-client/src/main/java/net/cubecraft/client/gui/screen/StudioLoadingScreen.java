@@ -1,10 +1,10 @@
 package net.cubecraft.client.gui.screen;
 
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.registry.ResourceRegistry;
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import org.lwjgl.opengl.GL11;
@@ -47,7 +47,7 @@ public class StudioLoadingScreen extends AnimationScreen {
             bgAlpha = 0f;
         }
 
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(32);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(32);
 
         builder.begin();
         builder.color((int) (255 * bgAlpha), (int) (178 * bgAlpha), (int) (26 * bgAlpha));

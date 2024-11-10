@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.world;
 
 import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.registry.RegisterMap;
@@ -78,7 +78,7 @@ public class ParticleRenderer extends IWorldRenderer {
             AABB aabb = new AABB(p.x - 0.1, p.y - 0.1, p.z - 0.1, p.x + 0.1, p.y + 0.1, p.z + 0.1);
             if (this.frustum.aabbVisible(this.camera.castAABB(aabb))) {
                 i++;
-                VertexBuilder builder = VertexBuilderAllocator.createByPrefer(128);
+                LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(128);
                 builder.begin();
                 renderer.render(p, builder, delta, xa, ya, za, xa2, za2);
                 builder.end();

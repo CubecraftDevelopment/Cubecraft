@@ -1,6 +1,6 @@
 package ink.flybird.quantum3d_legacy.draw;
 
-public class NativeVertexBuilder extends VertexBuilder{
+public class NativeVertexBuilder extends LegacyVertexBuilder {
     protected NativeVertexBuilder(int size, DrawMode drawMode) {
         super(size, drawMode);
     }

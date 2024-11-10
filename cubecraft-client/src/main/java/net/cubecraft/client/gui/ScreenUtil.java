@@ -5,7 +5,7 @@ import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.base.Popup;
 import net.cubecraft.client.gui.font.FontAlignment;
 import me.gb2022.quantum3d.device.Window;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import net.cubecraft.client.registry.TextureRegistry;
 import ink.flybird.quantum3d_legacy.GLUtil;
@@ -22,7 +22,7 @@ public class ScreenUtil {
     private static final ArrayList<Popup> popupList=new ArrayList<>();
 
     public static void renderPictureBackground(Window window){
-        double scale= net.cubecraft.client.ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale= ClientSettingRegistry.getFixedGUIScale();
         TextureRegistry.IMAGE_BG.bind();
         ShapeRenderer.begin();
         ShapeRenderer.drawRectUV(0, window.getWidth()/ scale,0,window.getHeight()/scale,-1, 0,1,0,1);
@@ -32,7 +32,7 @@ public class ScreenUtil {
 
     public static void renderMask(Window window){
         GLUtil.enableBlend();
-        double scale= net.cubecraft.client.ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale= ClientSettingRegistry.getFixedGUIScale();
         ShapeRenderer.setColor(0,0,0,127);
         ShapeRenderer.drawRect(0,window.getWidth()/ scale,0,window.getHeight()/scale,-1,-1);
     }
@@ -92,7 +92,7 @@ public class ScreenUtil {
         }
         TextureRegistry.ASCII_PAGE.bind();
         for (char c : rawData) {
-            VertexBuilder builder = VertexBuilderAllocator.createByPrefer(4);
+            LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(4);
             int charPos_Page = c % 256;
             int charPos_V = charPos_Page / 16;
             int charPos_H = charPos_Page % 16;
@@ -123,7 +123,7 @@ public class ScreenUtil {
     }
 
     public static void renderPictureBackgroundBlur(Window window) {
-        double scale= ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale= ClientSettingRegistry.getFixedGUIScale();
         Texture2D tex= TextureRegistry.IMAGE_BG;
         TextureStateManager.setTextureBlur(tex,true,3);
         tex.bind();

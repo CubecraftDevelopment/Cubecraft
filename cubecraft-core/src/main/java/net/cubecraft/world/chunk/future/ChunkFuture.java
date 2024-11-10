@@ -5,8 +5,8 @@ import net.cubecraft.world.chunk.Chunk;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public interface ChunkFuture extends Future<Chunk> {
+public interface ChunkFuture<V extends Chunk> extends Future<V> {
 
     @Override
-    Chunk get();
+    V get();
 }

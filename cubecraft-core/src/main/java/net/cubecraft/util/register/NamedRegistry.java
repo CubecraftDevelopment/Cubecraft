@@ -6,28 +6,46 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unchecked")
 public final class NamedRegistry<I> {
     private final Collection<Consumer<Registered<I>>> handlers = new ArrayList<>();
     private final List<I> directContainer = new ArrayList<>(256);
     private final List<Registered<I>> list = new ArrayList<>(256);
     private final Map<String, Registered<I>> link = new HashMap<>();
+    private final Registered<I> fallback;
     private int current = 0;
 
-    public Registered<I> register(String name, I object) {
-        Registered<I> rec = new Registered<>(object, name, this.current);
+    public NamedRegistry(Registered<I> dummy) {
+        fallback = dummy;
+    }
 
-        this.directContainer.add(this.current, object);
-        this.list.add(this.current, rec);
-        this.link.put(name, rec);
+
+    public NamedRegistry() {
+        this((Registered<I>) Registered.DUMMY);
+    }
+
+    public <T extends I> Registered<T> register(String name, T object) {
+        var rec = ((Registered<T>) registered(name));
+
+        if (rec == null || rec == this.fallback) {
+            rec = new Registered<>(object, name, this.current);
+
+            this.directContainer.add(this.current, object);
+            this.list.add(this.current, (Registered<I>) rec);
+            this.link.put(name, (Registered<I>) rec);
+
+            this.current++;
+        } else {
+            this.directContainer.set(this.current - 1, object);
+            rec._set(object);
+        }
 
         if (object instanceof Initializable i) {
             i.init();
         }
 
-        this.current++;
-
         for (Consumer<Registered<I>> handler : this.handlers) {
-            handler.accept(rec);
+            handler.accept((Registered<I>) rec);
         }
 
         return rec;
@@ -53,9 +71,8 @@ public final class NamedRegistry<I> {
         return this.registered(name).getId();
     }
 
-    @SuppressWarnings("unchecked")// I know this is safe
     public Registered<I> registered(String name) {
-        return Optional.ofNullable(this.link.get(name)).orElse((Registered<I>) Registered.DUMMY);
+        return Optional.ofNullable(this.link.get(name)).orElse(this.fallback);
     }
 
     public Registered<I> registered(int id) {
@@ -100,5 +117,42 @@ public final class NamedRegistry<I> {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public int getCurrent() {
+        return current;
+    }
+
+    public Registered<? extends I> deferred(String s) {
+        var entry = new DeferredRegistered<I>();
+        this.withShadow(r -> {
+            if (!Objects.equals(r.getName(), s)) {
+                return;
+            }
+            entry.inject(r);
+        });
+        return entry;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <T extends I> Registered<T> deferred(String id, Class<T> type) {
+        return register(id, null);
+    }
+
+    public <T extends I> T object(String name, Class<T> type) {
+        return type.cast(this.object(name));
+    }
+
+    public <T extends I> T object(int id, Class<T> type) {
+        return type.cast(this.object(id));
+    }
+
+    public int[] ids() {
+        var arr = new int[this.current];
+        for (int i = 0; i < this.current; i++) {
+            arr[i] = i;
+        }
+        return arr;
     }
 }

@@ -1,11 +1,10 @@
 package net.cubecraft.util.register;
 
-public final class Registered<I> {
-    public static final Registered<?> DUMMY = new Registered<>(null, "_dummy", -1);
-
-    private final I object;
+public class Registered<I> {
+    public static final Registered<?> DUMMY = new Registered<>(null, "_dummy", 0);
     private final String name;
     private final int allocatedId;
+    private I object;
 
     public Registered(I object, String name, int allocatedId) {
         this.object = object;
@@ -25,7 +24,11 @@ public final class Registered<I> {
         return object;
     }
 
-    public boolean isUnknown(){
+    protected void _set(I object) {
+        this.object = object;
+    }
+
+    public boolean isUnknown() {
         return allocatedId == -1;
     }
 }

@@ -12,7 +12,6 @@ public final class TextComponent {
     private TextComponent next;
     private TextComponent prev;
 
-
     private boolean underline;
     private float size;
 

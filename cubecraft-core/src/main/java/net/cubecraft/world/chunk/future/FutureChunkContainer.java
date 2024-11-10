@@ -1,21 +1,23 @@
 package net.cubecraft.world.chunk.future;
 
 import net.cubecraft.world.World;
-import net.cubecraft.world.chunk.Chunk;
-import net.cubecraft.world.chunk.pos.ChunkPos;
+import net.cubecraft.world.chunk.ChunkState;
+import net.cubecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public final class FutureChunkContainer implements ChunkFuture {
+public final class FutureChunkContainer implements ChunkFuture<WorldChunk> {
     private final World world;
-    private final ChunkPos pos;
+    private final int cx;
+    private final int cz;
 
-    public FutureChunkContainer(World world, ChunkPos pos) {
+    public FutureChunkContainer(World world, int cx, int cz) {
         this.world = world;
-        this.pos = pos;
+        this.cx = cx;
+        this.cz = cz;
     }
 
     @Override
@@ -30,17 +32,17 @@ public final class FutureChunkContainer implements ChunkFuture {
 
     @Override
     public boolean isDone() {
-        return this.world.isChunkLoaded(this.pos);
+        return this.world.isChunkLoaded(this.cx, this.cz);
     }
 
     @Override
-    public Chunk get(){
-        this.world.waitUntilChunkExist(pos.getX(), pos.getZ());
-        return this.world.getChunk(this.pos);
+    public WorldChunk get() {
+        this.world.waitUntilChunkExist(this.cx, this.cz);
+        return this.world.getChunk(this.cx, this.cz, ChunkState.TERRAIN);
     }
 
     @Override
-    public Chunk get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public WorldChunk get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         return get();
     }
 }

@@ -1,7 +1,7 @@
 {
   "type": "cubecraft:simple_block",
   "layer": "cubecraft:alpha_block",
-  "culling": "always",
+  "culling": "solid",
   "color": "cubecraft:foliage",
   "texture": "cubecraft:/block/oak_leaves.png"
 }

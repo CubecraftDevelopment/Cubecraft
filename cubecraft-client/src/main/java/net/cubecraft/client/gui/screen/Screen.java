@@ -147,7 +147,7 @@ public class Screen extends Container {
 
     public void tick() {
         super.tick();
-        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale = ClientSettingRegistry.getFixedGUIScale();
         this.onResize(0, 0, (int) (this.context.getWindow().getWidth() / scale), (int) (this.context.getWindow().getHeight() / scale));
     }
 

@@ -7,6 +7,7 @@ import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
+import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.text.TextComponent;
 
@@ -58,11 +59,13 @@ public final class TrueTypeFontRenderer implements FontRenderer {
         int width = this._width(start, 0);
 
 
+        var scaleMod = ClientSettingRegistry.getGUIScaleMod();
+
         int startX = -1;
         switch (alignment) {
             case LEFT -> startX = x;
-            case MIDDLE -> startX = (int) (x - width / 2f);
-            case RIGHT -> startX = x - width;
+            case MIDDLE -> startX = (int) (x - (float) width / 2 * scaleMod);
+            case RIGHT -> startX = (int) (x - width * scaleMod);
         }
 
         _renderComponent(start, startX, y);
@@ -71,7 +74,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
     private int _width(TextComponent text, int current) {
         CompiledComponent compiled = this.getCompiled(text);
 
-        current += compiled.width() / RESOLUTION_SCALE;
+        current += (int) ((double) compiled.width() / RESOLUTION_SCALE / ClientSettingRegistry.getGUIScaleMod());
 
         if (text.getNext() == null) {
             return current;
@@ -96,9 +99,16 @@ public final class TrueTypeFontRenderer implements FontRenderer {
             return;
         }
 
-        _renderComponent(text.getNext(), x + compiled.width() / RESOLUTION_SCALE, y);
+        _renderComponent(
+                text.getNext(),
+                (int) (x + (double) compiled.width() / RESOLUTION_SCALE * ClientSettingRegistry.getGUIScaleMod()),
+                y
+        );
     }
 
+    public void resize() {
+        this.compiled.clear();
+    }
 
     private static final class CompiledComponent {
         private final Texture2D texture;
@@ -128,13 +138,25 @@ public final class TrueTypeFontRenderer implements FontRenderer {
                 return new CompiledComponent();
             }
 
-            img = new BufferedImage(Math.abs(width) * RESOLUTION_SCALE, Math.abs(height) * RESOLUTION_SCALE, BufferedImage.TYPE_INT_ARGB);
+            var scale = ClientSettingRegistry.getGUIScaleMod();
+
+            img = new BufferedImage(
+                    (int) (Math.abs(width) * RESOLUTION_SCALE * scale),
+                    (int) (Math.abs(height) * RESOLUTION_SCALE * scale),
+                    BufferedImage.TYPE_INT_ARGB
+            );
             Graphics2D g = img.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
-            g.setFont(createStyledFont(font.deriveFont(size * RESOLUTION_SCALE), text.isBold(), text.isItalic(), text.isUnderline(), text.isDelete()));
+            g.setFont(createStyledFont(
+                    font.deriveFont((float) (size * RESOLUTION_SCALE * scale)),
+                    text.isBold(),
+                    text.isItalic(),
+                    text.isUnderline(),
+                    text.isDelete()
+            ));
             g.setColor(new Color(text.getColor()));
-            g.drawString(wrap, 0, size * RESOLUTION_SCALE);
+            g.drawString(wrap, 0, (int) (size * RESOLUTION_SCALE * scale));
             Texture2D tex = new Texture2D(false, false);
             tex.generateTexture();
             tex.load(img);
@@ -197,8 +219,10 @@ public final class TrueTypeFontRenderer implements FontRenderer {
 
             ShapeRenderer.drawRectUV(BUILDER, baseX, x1, baseY, y1, 0, 0, 1, 0, 1);
 
+
             this.texture.bind();
             GLUtil.enableBlend();
+
             VertexBuilderUploader.uploadPointer(BUILDER);
             this.texture.unbind();
         }

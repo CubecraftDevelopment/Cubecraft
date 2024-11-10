@@ -1,17 +1,17 @@
 package net.cubecraft.world.block.behavior;
 
-import net.cubecraft.world.block.access.IBlockAccess;
+import net.cubecraft.world.block.access.BlockAccess;
 
 public interface BlockBehavior {
-    default void onBlockTick(IBlockAccess block) {
+    default void onBlockTick(BlockAccess block) {
     }
 
-    default void onBlockRandomTick(IBlockAccess block) {
+    default void onBlockRandomTick(BlockAccess block) {
     }
 
-    default void onBlockPlace(IBlockAccess block) {
+    default void onBlockPlace(BlockAccess block) {
     }
 
-    default void onBlockDestroy(IBlockAccess block){
+    default void onBlockDestroy(BlockAccess block){
     }
 }

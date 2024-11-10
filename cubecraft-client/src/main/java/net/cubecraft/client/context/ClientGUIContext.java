@@ -13,6 +13,7 @@ import me.gb2022.commons.registry.ItemRegisterEvent;
 import me.gb2022.commons.threading.TaskProgressUpdateListener;
 import me.gb2022.quantum3d.device.Window;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
+import me.gb2022.quantum3d.device.listener.WindowListener;
 import me.gb2022.quantum3d.lwjgl.FrameBuffer;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
 import me.gb2022.quantum3d.render.ShapeRenderer;
@@ -89,6 +90,14 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     public void init() {
         this.client.getClientEventBus().callEvent(new GUIContextInitEvent(this.client, this));
         this.loadingScreen=new LogoLoadingScreen();
+
+        ClientSharedContext.getClient().getWindow().addListener(new WindowListener() {
+            @Override
+            public void onSizeEvent(Window window, int width, int height) {
+                FONT_RENDERER.resize();
+                ICON_FONT_RENDERER.resize();
+            }
+        });
     }
 
     public void tick() {
@@ -141,8 +150,6 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     }
 
     public void render(DisplayScreenInfo info, float delta) {
-        int w = window.getWidth() * 2;
-        int h = window.getHeight() * 2;
 
         //this.buffer.resize(w, h);
         //this.buffer.resizeRenderToScaledScreen(0.5f);
@@ -243,7 +250,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
 
     @EventHandler
     public void onMousePos(MousePosEvent e) {
-        double scale = ClientSettingRegistry.GUI_SCALE.getValue();
+        double scale = ClientSettingRegistry.getFixedGUIScale();
         this.fixedMouseX = (int) (e.getX() / scale);
         this.fixedMouseY = (int) (e.getY() / scale);
     }

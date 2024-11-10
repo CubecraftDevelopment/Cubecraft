@@ -3,59 +3,41 @@ package net.cubecraft.world.block.property;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.world.block.Block;
+import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.blocks.Blocks;
-import net.cubecraft.world.block.property.collision.CollisionProperty;
-import net.cubecraft.world.block.property.hitbox.HitBoxProperty;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 public interface BlockPropertyDispatcher {
-    static Collection<AABB> getCollisionBox(IBlockAccess block) {
+    static Collection<HitBox> getHitBox(BlockAccess block) {
         Block b = block.getBlock();
         if (b == null) {
             return List.of();
         }
 
-        CollisionProperty property = b.getBlockProperty("cubecraft:collision", CollisionProperty.class);
-        if (property == null) {
-            return List.of();
-        }
-        return property.get(block);
+        return b.getSelection().get(block);
     }
 
-    static Collection<HitBox> getHitBox(IBlockAccess block) {
-        Block b = block.getBlock();
-        if (b == null) {
-            return List.of();
-        }
-
-        HitBoxProperty property = b.getBlockProperty("cubecraft:hitbox", HitBoxProperty.class);
-        if (property == null) {
-            return List.of();
-        }
-        return property.get(block);
+    static Collection<AABB> getCollisionBox(BlockAccess access) {
+        return getCollisionBox(access.getBlock(), access);
     }
 
-    static boolean isSolid(IBlockAccess block) {
+    static Collection<AABB> getCollisionBox(Block block,BlockAccess access) {
+        if (block == null) {
+            return List.of();
+        }
+        return block.getCollision().get(access);
+    }
+
+    static boolean isSolid(BlockAccess block) {
         if (Objects.equals(block.getBlockId(), Blocks.AIR.getId())) {
             return false;
         }
 
         Block b = block.getBlock();
         return b.isSolid();
-    }
-
-    static Collection<AABB> getCollisionBox(Block block, IBlockAccess access) {
-        if (block == null) {
-            return List.of();
-        }
-        CollisionProperty property = block.getBlockProperty("cubecraft:collision", CollisionProperty.class);
-        if (property == null) {
-            return List.of();
-        }
-        return property.get(access);
     }
 }

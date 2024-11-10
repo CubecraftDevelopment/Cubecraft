@@ -1,28 +1,31 @@
 package net.cubecraft.client.render.block;
 
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
-import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientRenderContext;
+import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.client.resource.ModelAsset;
 import net.cubecraft.client.resource.TextureAsset;
+import net.cubecraft.resource.MultiAssetContainer;
+import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
-import net.cubecraft.world.World;
-import net.cubecraft.world.block.access.IBlockAccess;
-
-import java.util.Set;
+import net.cubecraft.world.block.access.BlockAccess;
 
 @TypeItem("cubecraft:model_block")
 public final class ModelBlockRenderer implements IBlockRenderer {
-    public static final String BLOCK_MODEL_LOAD_STAGE = "cubecraft:block_model";
+    public static final String LOAD_STAGE = "cubecraft:block_model";
     private final ModelAsset model;
     private BlockModel blockModel;
 
     public ModelBlockRenderer(ModelAsset asset) {
         this.model = asset;
-        ClientSharedContext.RESOURCE_MANAGER.registerResource(BLOCK_MODEL_LOAD_STAGE, "cubecraft:block_model@" + this.model.getAbsolutePath(), this.model);
+        ClientSharedContext.RESOURCE_MANAGER.registerResource(
+                LOAD_STAGE,
+                "cubecraft:block_model@" + this.model.getAbsolutePath(),
+                this.model
+        );
         ClientSharedContext.RESOURCE_MANAGER.loadResource(this.model);
     }
 
@@ -31,26 +34,14 @@ public final class ModelBlockRenderer implements IBlockRenderer {
     }
 
     @Override
-    public void renderBlock(IBlockAccess blockAccess, String layer, World world, double renderX, double renderY, double renderZ, VertexBuilder builder) {
-
+    public void render(BlockAccess block, BlockAccessor accessor, Registered<ChunkLayerContainerFactory.Provider> layer, int face, float x, float y, float z, VertexBuilder builder) {
+        this.blockModel.render(block, accessor, layer, face, x, y, z, builder);
     }
 
     @Override
-    public void renderBlock(IBlockAccess block, String layer, BlockAccessor world, int face, double renderX, double renderY, double renderZ, VertexBuilder builder) {
-        if (this.blockModel == null) {
-            this.blockModel = ClientRenderContext.BLOCK_MODEL.get(this.model.getAbsolutePath());
-        }
-        this.blockModel.renderBlock(block, layer,world, face, renderX, renderY, renderZ, builder);
-    }
-
-    @Override
-    public void initializeRenderer(Set<TextureAsset> textureList) {
+    public void provideTileMapItems(MultiAssetContainer<TextureAsset> list) {
         ClientRenderContext.BLOCK_MODEL.load(this.model);
-        ClientRenderContext.BLOCK_MODEL.get(this.model.getAbsolutePath()).initializeModel(textureList);
-    }
-
-    @EventHandler
-    public void onResourceReloadFinish() {
-
+        this.blockModel = ClientRenderContext.BLOCK_MODEL.get(this.model.getAbsolutePath());
+        this.blockModel.provideTileMapItems(list);
     }
 }

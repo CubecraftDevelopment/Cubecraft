@@ -1,67 +1,100 @@
 package net.cubecraft.client.render.chunk.compile;
 
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
-import ink.flybird.quantum3d_legacy.drawcall.IRenderCall;
-import net.cubecraft.client.render.chunk.ChunkRenderer;
+import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
-import net.cubecraft.client.render.chunk.layer.ChunkLayer;
 
 public final class ChunkCompileResult {
-    private final RenderChunkPos pos;
-    private final ChunkLayer layer;
-    private final VertexBuilder[] builders;
-    private final String layerId;
+    private final int x;
+    private final int y;
+    private final int z;
+    private final VertexBuilder[][] builders;
+    private final int[] layers;
+    private final boolean success;
 
-    private ChunkCompileResult(RenderChunkPos pos, ChunkLayer layer, VertexBuilder[] builders, String layerID) {
-        this.pos = pos;
-        this.layer = layer;
-        this.builders = builders;
-        this.layerId = layerID;
+    private ChunkCompileResult(RenderChunkPos pos, int[] layers, boolean success) {
+        this.x = pos.getX();
+        this.y = pos.getY();
+        this.z = pos.getZ();
+
+        this.layers = layers;
+        this.builders = new VertexBuilder[7][layers.length];
+        this.success = success;
     }
 
-    public static ChunkCompileResult failed(RenderChunkPos pos, String layer) {
-        return new ChunkCompileResult(pos, null, null, layer);
+    ChunkCompileResult(int x, int y, int z, boolean success, int[] layers) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.success = success;
+        this.layers = layers;
+        this.builders = new VertexBuilder[7][layers.length];
     }
 
-    public static ChunkCompileResult success(RenderChunkPos pos, ChunkLayer layer, VertexBuilder[] builder) {
-        return new ChunkCompileResult(pos, layer, builder, layer.getID());
+    public static ChunkCompileResult failed(int x, int y, int z, int[] layers) {
+        return new ChunkCompileResult(x, y, z, false, layers);
     }
 
-    public ChunkLayer getLayer() {
-        return this.layer;
+
+    public void setLayerFailed(int localIndex) {
+        if (!this.success) {
+            throw new UnsupportedOperationException("mark-as-failed layer!");
+        }
+        this.builders[localIndex] = null;
+    }
+
+    public void setLayerComplete(int localIndex, VertexBuilder[] builders) {
+        if (!this.success) {
+            throw new UnsupportedOperationException("mark-as-failed layer!");
+        }
+        this.builders[localIndex] = builders;
+    }
+
+    public boolean isLayerComplete(int localIndex) {
+        if (!this.success) {
+            return false;
+        }
+        return this.builders[localIndex] != null;
     }
 
     public RenderChunkPos getPos() {
-        return this.pos;
+        return RenderChunkPos.create(x, y, z);
     }
 
-    public VertexBuilder[] getBuilders() {
-        return this.builders;
+    public int[] getLayers() {
+        return layers;
     }
 
-    public boolean isSuccess() {
-        return this.layer != null;
+    public VertexBuilder[] getBuilders(int i) {
+        return this.builders[i];
     }
 
-    public String getLayerId() {
-        return this.layerId;
+
+    public boolean success() {
+        return this.success;
     }
 
-    public void destroy(){
-        for (int i = 0; i < 7; i++) {
-            this.builders[i].freeAsync();
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public void freeLayer(int n) {
+        if (!this.success) {
+            return;
         }
-    }
-
-    public void upload() {
-        for (int i = 0; i < 7; i++) {
-            IRenderCall call = this.layer.getBatches()[i];
-            if (!call.isAllocated()) {
-                call.allocate();
-            }
-
-            call.upload(this.builders[i]);
+        if (this.builders[n] == null) {
+            return;
         }
-        destroy();
+        for (var b : this.builders[n]) {
+            b.free();
+        }
+        this.builders[n] = null;
     }
 }

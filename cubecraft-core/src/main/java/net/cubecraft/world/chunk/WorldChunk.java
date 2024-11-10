@@ -1,7 +1,9 @@
 package net.cubecraft.world.chunk;
 
 import me.gb2022.commons.threading.ThreadLock;
+import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.world.World;
+import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.ChunkBlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.access.NonLoadedBlockAccess;
@@ -10,10 +12,13 @@ import net.cubecraft.world.chunk.task.ChunkLoadTaskType;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.chunk.task.ChunkProcessTask;
 
+import java.util.Random;
+
 //todo:task|add dynamic chunk height
 public final class WorldChunk extends Chunk {
     public final ChunkProcessTask task = new ChunkProcessTask(this);
     private final ThreadLock dataLock = new ThreadLock();
+    private final Random random = new Random();
     private ChunkState state;
     private World world;
 
@@ -39,6 +44,11 @@ public final class WorldChunk extends Chunk {
 
     public void tick() {
         this.task.run();
+
+        if (this.random.nextInt(0, 100) > 90) {
+            var position = this.random.nextInt(SECTION_SIZE);
+            this.compress(position);
+        }
     }
 
     public void addTicket(ChunkLoadTicket ticket) {
@@ -86,8 +96,8 @@ public final class WorldChunk extends Chunk {
         return new ChunkBlockAccess(this.getWorld(), x, y, z, this);
     }
 
-    public IBlockAccess[] getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
-        IBlockAccess[] result = new IBlockAccess[(int) ((x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1))];
+    public BlockAccess[] getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
+        BlockAccess[] result = new BlockAccess[(int) ((x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1))];
         int counter = 0;
         for (long i = x0; i <= x1; i++) {
             for (long j = y0; j <= y1; j++) {
@@ -108,7 +118,32 @@ public final class WorldChunk extends Chunk {
         this.state = state;
     }
 
-    public IBlockAccess getBlockAccessRelative(int x, long y, int z) {
+    public BlockAccess getBlockAccessRelative(int x, long y, int z) {
         return new ChunkBlockAccess(this.getWorld(), x + this.x * 16, y, z + this.z * 16, this);
+    }
+
+    @Override
+    public void setBlockId(int x, int y, int z, int id, boolean silent) {
+        var prev = getBlockId(x, y, z);
+
+        super.setBlockId(x, y, z, id, silent);
+
+        if (silent) {
+            return;
+        }
+
+        var wx = ChunkPos.toWorld(this.x, x);
+        var wz = ChunkPos.toWorld(this.z, z);
+
+        this.world.getEventBus().callEvent(new BlockIDChangedEvent(this.world, wx, y, wz, prev, id));
+        for (BlockAccess blockAccess : this.world.getBlockNeighbor(wx, y, wz)) {
+            blockAccess.getBlock().onBlockUpdate(blockAccess);
+        }
+
+        var b = this.getBlock(x, y, z);
+        if (b == null) {
+            return;
+        }
+        b.onBlockUpdate(getBlockAccess(x, y, z));
     }
 }

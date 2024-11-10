@@ -16,6 +16,7 @@ import net.cubecraft.EnvironmentPath;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.chunk.ChunkCodec;
+import net.cubecraft.world.chunk.ChunkState;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.entity.EntityLiving;
@@ -120,8 +121,9 @@ public class PlayerController extends EntityController<EntityPlayer> {
             try {
                 var tag = NBT.readZipped(new FileInputStream("E:/chunk.dat"));
 
-                ChunkCodec.setWorldChunkData(this.entity.getWorld().getChunk(ChunkPos.fromWorldPos(this.entity.x, this.entity.z)),
-                                             (NBTTagCompound) tag
+                ChunkCodec.setWorldChunkData(
+                        this.entity.getWorld().getChunk(ChunkPos.fromWorldPos(this.entity.x, this.entity.z)),
+                        (NBTTagCompound) tag
                 );
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
@@ -130,7 +132,7 @@ public class PlayerController extends EntityController<EntityPlayer> {
 
 
         if (e.getKey() == KeyboardButton.KEY_O) {
-            WorldChunk chunk = this.entity.getWorld().getChunk(0, 0);
+            WorldChunk chunk = this.entity.getWorld().getChunk(0, 0, ChunkState.COMPLETE);
             NBTTagCompound tag = ChunkCodec.getWorldChunkData(chunk);
 
             OutputStream stream;
@@ -167,7 +169,7 @@ public class PlayerController extends EntityController<EntityPlayer> {
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            ChunkCodec.setWorldChunkData(this.entity.getWorld().getChunk(0, 0), tag);
+            ChunkCodec.setWorldChunkData(this.entity.getWorld().getChunk(0, 0, ChunkState.EMPTY), tag);
         }
     }
 
@@ -190,7 +192,6 @@ public class PlayerController extends EntityController<EntityPlayer> {
         this.entity.getInventory().setActiveSlot(this.slot);
     }
 
-    @EventHandler
     public void onClicked(MouseClickEvent e) {
         if (!this.isHandlingEntity()) {
             return;

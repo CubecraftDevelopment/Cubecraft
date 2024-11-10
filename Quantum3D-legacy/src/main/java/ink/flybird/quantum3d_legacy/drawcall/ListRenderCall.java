@@ -2,7 +2,7 @@ package ink.flybird.quantum3d_legacy.drawcall;
 
 import ink.flybird.quantum3d_legacy.GLUtil;
 import ink.flybird.quantum3d_legacy.draw.VertexUploader;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import org.lwjgl.opengl.GL11;
 
 public class ListRenderCall implements IRenderCall {
@@ -32,7 +32,7 @@ public class ListRenderCall implements IRenderCall {
     }
 
     @Override
-    public void upload(VertexBuilder builder) {
+    public void upload(LegacyVertexBuilder builder) {
         if (!this.allocated) {
             throw new DrawCallException("not initialized!");
         }

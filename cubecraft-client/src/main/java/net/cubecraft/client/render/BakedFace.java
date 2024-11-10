@@ -18,7 +18,7 @@ public class BakedFace {
     private final Vector4f[] color=new Vector4f[4];
     private final int face;
 
-    public final void draw(VertexBuilder builder){
+    public final void draw(LegacyVertexBuilder builder){
         Vector3d
         if (this.face == 0) {
 

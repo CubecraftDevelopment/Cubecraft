@@ -3,12 +3,17 @@ package net.cubecraft.client.render.model.block;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.quantum3d.render.vertex.VertexBuilder;
+import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
+import net.cubecraft.client.render.model.block.component.BlockModelComponent;
+import net.cubecraft.client.render.model.block.component.Cube;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.util.DeserializedConstructor;
+import net.cubecraft.resource.MultiAssetContainer;
+import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
-import net.cubecraft.world.block.access.IBlockAccess;
+import net.cubecraft.world.block.access.BlockAccess;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +39,7 @@ public final class ComponentBlockModel extends BlockModel {
             ArrayList<BlockModelComponent> component = new ArrayList<>();
 
             for (int i = 0; i < comp.size(); i++) {
-                component.add(new BlockModelComponent.Cube(comp.get(i).getAsJsonObject()));
+                component.add(new Cube(comp.get(i).getAsJsonObject()));
             }
 
             components.put(object.get("statement").getAsString(), component);
@@ -50,16 +55,14 @@ public final class ComponentBlockModel extends BlockModel {
         this.particleTex = particleTexture;
     }
 
+
     @Override
-    public void renderBlock(IBlockAccess block, String layer, BlockAccessor accessor, int face, double renderX, double renderY, double renderZ, VertexBuilder builder) {
-        if (face != 6) {
-            return;
-        }
+    public void render(BlockAccess block, BlockAccessor accessor, Registered<ChunkLayerContainerFactory.Provider> layer, int face, float x, float y, float z, VertexBuilder builder) {
         Set<String> set = this.statementModels.keySet();
 
         for (String s : set) {
             if (!block.getBlock().queryBoolean(s, block)) {
-                continue;
+                //continue;
             }
             ArrayList<BlockModelComponent> components;
             components = this.statementModels.get(s);
@@ -67,19 +70,16 @@ public final class ComponentBlockModel extends BlockModel {
                 components = this.statementModels.get("default");
             }
             for (BlockModelComponent component : components) {
-                if (!Objects.equals(layer, component.getRenderLayer())) {
-                    continue;
-                }
-                component.render(builder, layer, accessor, block, renderX, renderY, renderZ);
+                component.render(builder, layer, face, accessor, block, x, y, z);
             }
         }
     }
 
     @Override
-    public void initializeModel(Set<TextureAsset> textureList) {
+    public void provideTileMapItems(MultiAssetContainer<TextureAsset> list) {
         for (String state : this.statementModels.keySet()) {
             for (BlockModelComponent component : this.statementModels.get(state)) {
-                component.initializeModel(textureList);
+                component.provideTileMapItems(list);
             }
         }
     }

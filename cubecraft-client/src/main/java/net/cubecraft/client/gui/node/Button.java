@@ -1,12 +1,12 @@
 package net.cubecraft.client.gui.node;
 
 
-import net.cubecraft.client.gui.base.Text;
-import net.cubecraft.client.event.gui.component.ButtonClickedEvent;
+import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.event.MouseClickEvent;
-import me.gb2022.commons.event.EventHandler;
+import net.cubecraft.client.event.gui.component.ButtonClickedEvent;
+import net.cubecraft.client.gui.base.Text;
 import org.w3c.dom.Element;
 
 import java.util.Objects;
@@ -20,10 +20,10 @@ public class Button extends Node {
     @Override
     public void init(Element element) {
         super.init(element);
-        if(!element.hasAttribute("enabled")){
+        if (!element.hasAttribute("enabled")) {
             return;
         }
-        this.enabled= Boolean.parseBoolean(element.getAttribute("enabled"));
+        this.enabled = Boolean.parseBoolean(element.getAttribute("enabled"));
     }
 
     public void setText(Text text) {
@@ -37,15 +37,17 @@ public class Button extends Node {
 
     @EventHandler
     public void onClicked(MouseClickEvent e) {
+        if (this.hovered) {
+            e.setCancel(true);
+        }
         if (this.hovered && this.enabled && e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
             this.context.getEventBus().callEvent(new ButtonClickedEvent(this, this.screen, this.context), this.screen.getId());
-            e.setCancel(true);
         }
     }
 
     @Override
     public void tick() {
-        this.hovered=this.isMouseInbound();
+        this.hovered = this.isMouseInbound();
     }
 
     @Override

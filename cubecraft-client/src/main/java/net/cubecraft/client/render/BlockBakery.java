@@ -5,7 +5,7 @@ import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.World;
 import net.cubecraft.world.block.EnumFacing;
-import net.cubecraft.world.block.access.IBlockAccess;
+import net.cubecraft.world.block.access.BlockAccess;
 import me.gb2022.commons.container.Vector3;
 import me.gb2022.commons.math.MathHelper;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
@@ -88,10 +88,10 @@ public interface BlockBakery {
         //00,01,10,11
         float[] result = new float[4];
 
-        IBlockAccess blockEPM = world.getBlockAccess(x, y + 1, z - 1);
-        IBlockAccess blockMPE = world.getBlockAccess(x - 1, y + 1, z);
-        IBlockAccess blockPPE = world.getBlockAccess(x + 1, y + 1, z);
-        IBlockAccess blockEPP = world.getBlockAccess(x, y + 1, z + 1);
+        BlockAccess blockEPM = world.getBlockAccess(x, y + 1, z - 1);
+        BlockAccess blockMPE = world.getBlockAccess(x - 1, y + 1, z);
+        BlockAccess blockPPE = world.getBlockAccess(x + 1, y + 1, z);
+        BlockAccess blockEPP = world.getBlockAccess(x, y + 1, z + 1);
 
         if (BlockPropertyDispatcher.isSolid(blockMPE)) {
             result[0] = 0.5f;
@@ -122,20 +122,20 @@ public interface BlockBakery {
         Arrays.fill(result, 1.0f);
 
 
-        IBlockAccess blockMPM = world.getBlockAccess(x - 1, y + 1, z - 1);
-        IBlockAccess blockEPM = world.getBlockAccess(x, y + 1, z - 1);
-        IBlockAccess blockPPM = world.getBlockAccess(x + 1, y + 1, z - 1);
-        IBlockAccess blockMPE = world.getBlockAccess(x - 1, y + 1, z);
-        IBlockAccess blockEPE = world.getBlockAccess(x, y + 1, z);
-        IBlockAccess blockPPE = world.getBlockAccess(x + 1, y + 1, z);
-        IBlockAccess blockMPP = world.getBlockAccess(x - 1, y + 1, z + 1);
-        IBlockAccess blockEPP = world.getBlockAccess(x, y + 1, z + 1);
-        IBlockAccess blockPPP = world.getBlockAccess(x + 1, y + 1, z + 1);
+        BlockAccess blockMPM = world.getBlockAccess(x - 1, y + 1, z - 1);
+        BlockAccess blockEPM = world.getBlockAccess(x, y + 1, z - 1);
+        BlockAccess blockPPM = world.getBlockAccess(x + 1, y + 1, z - 1);
+        BlockAccess blockMPE = world.getBlockAccess(x - 1, y + 1, z);
+        BlockAccess blockEPE = world.getBlockAccess(x, y + 1, z);
+        BlockAccess blockPPE = world.getBlockAccess(x + 1, y + 1, z);
+        BlockAccess blockMPP = world.getBlockAccess(x - 1, y + 1, z + 1);
+        BlockAccess blockEPP = world.getBlockAccess(x, y + 1, z + 1);
+        BlockAccess blockPPP = world.getBlockAccess(x + 1, y + 1, z + 1);
 
 
-        IBlockAccess blockEMM = world.getBlockAccess(x, y - 1, z - 1);
-        IBlockAccess blockMME = world.getBlockAccess(x - 1, y - 1, z);
-        IBlockAccess blockMMM = world.getBlockAccess(x - 1, y - 1, z - 1);
+        BlockAccess blockEMM = world.getBlockAccess(x, y - 1, z - 1);
+        BlockAccess blockMME = world.getBlockAccess(x - 1, y - 1, z);
+        BlockAccess blockMMM = world.getBlockAccess(x - 1, y - 1, z - 1);
 
 
         //v000,v001,v010,v011,v100,v101,v110,v111,

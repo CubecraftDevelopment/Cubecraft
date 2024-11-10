@@ -1,5 +1,9 @@
 package net.cubecraft.client.gui.node;
 
+import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.commons.container.MultiMap;
+import me.gb2022.commons.file.DocumentUtil;
+import me.gb2022.commons.file.XmlReader;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
 import net.cubecraft.client.gui.ComponentRenderer;
@@ -9,12 +13,10 @@ import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.client.gui.layout.Scale;
 import net.cubecraft.client.gui.screen.Screen;
-import me.gb2022.commons.container.MultiMap;
-import me.gb2022.commons.file.DocumentUtil;
-import me.gb2022.commons.file.XmlReader;
-import ink.flybird.quantum3d_legacy.GLUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import java.util.Optional;
 
 public abstract class Node {
     protected final MultiMap<String, Node> nodes = new MultiMap<>();
@@ -90,7 +92,7 @@ public abstract class Node {
 
     //query
     public String getStatement() {
-        return "default";
+        return "default:normal";
     }
 
     public Text queryText(String query) {
@@ -107,14 +109,32 @@ public abstract class Node {
 
 
     public void onResize(int x, int y, int w, int h) {
+        var renderer = getRenderer();
+
+        var xo = 0;
+        var yo = 0;
+
+
+        if (renderer != null) {
+            var offset = renderer.getOffset(this);
+
+            xo = offset.x();
+            yo = offset.y();
+        }
+
         if (this.layout != null) {
             this.layout.resize(x, y, w, h);
             for (Node node : this.nodes.values()) {
-                node.onResize(this.layout.getAbsoluteX(), this.layout.getAbsoluteY(), this.layout.getAbsoluteWidth(), this.layout.getAbsoluteHeight());
+                node.onResize(
+                        this.layout.getAbsoluteX() + xo,
+                        this.layout.getAbsoluteY() + yo,
+                        this.layout.getAbsoluteWidth(),
+                        this.layout.getAbsoluteHeight()
+                );
             }
         } else {
             for (Node node : this.nodes.values()) {
-                node.onResize(x, y, w, h);
+                node.onResize(x + xo, y + yo, w, h);
             }
         }
     }
@@ -127,7 +147,7 @@ public abstract class Node {
     }
 
     public void render(float interpolationTime) {
-        ComponentRenderer renderer = ClientGUIContext.COMPONENT_RENDERER.get(this.getClass());
+        ComponentRenderer renderer = getRenderer();
         if (renderer != null) {
             renderer.render(this);
         }
@@ -138,6 +158,10 @@ public abstract class Node {
         }
     }
 
+    public ComponentRenderer getRenderer() {
+        return ClientGUIContext.COMPONENT_RENDERER.get(this.getClass());
+    }
+
     public void tick() {
         for (Node node : this.nodes.values()) {
             node.tick();
@@ -145,7 +169,7 @@ public abstract class Node {
     }
 
     public void addNode(String name, Node node) {
-        node.id=name;
+        node.id = name;
         node.setContext(this.screen, this, this.context);
         this.nodes.put(name, node);
     }
@@ -165,7 +189,7 @@ public abstract class Node {
     }
 
     public void deserializeChild(Element element) {
-        var s=ClientGUIContext.NODE;
+        var s = ClientGUIContext.NODE;
 
         for (String type : s.keySet()) {
             NodeList elementList = element.getElementsByTagName(type);
@@ -219,5 +243,9 @@ public abstract class Node {
             return null;
         }
         return GUIBuilder.createNode(ele.getTagName(), ele);
+    }
+
+    public <C extends Node> Optional<C> getNodeOptional(String id,Class<C> clazz) {
+        return Optional.ofNullable(clazz.cast(this.nodes.get(id)));
     }
 }

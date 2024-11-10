@@ -33,9 +33,13 @@ public class Level {
 
     public Location getSpawnPoint() {
         var w = worlds.get("cubecraft:overworld");
-        var h = w.getChunkSafely(0, 0).getHighestBlockAt(0, 0);
 
-        return new Location("cubecraft:overworld", 0.5, h + 1, 0.5, 0, 0, 0);
+        var x = 0;
+        var z = 0;
+
+        var h = w.getChunkSafely(x, z).getHighestBlockAt(0, 0);
+
+        return new Location("cubecraft:overworld", x + 0.5, h + 1, z + 0.5, 0, 0, 0);
     }
 
     public LevelInfo getLevelInfo() {

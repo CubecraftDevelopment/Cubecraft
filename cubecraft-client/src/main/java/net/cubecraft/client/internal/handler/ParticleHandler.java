@@ -9,6 +9,7 @@ import me.gb2022.commons.event.EventHandler;
 
 import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.event.BlockIDChangedEvent;
+import net.cubecraft.world.block.blocks.Blocks;
 
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ public class ParticleHandler {
         long y = e.y();
         long z = e.z();
 
-        String id = e.old();
+        String id = Blocks.REGISTRY.name(e.old());
         BlockModel m = ClientRenderContext.BLOCK_MODEL.get(ResourceLocation.blockModel(id + ".json").format());
         if (m == null) {
             return;

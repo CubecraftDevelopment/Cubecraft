@@ -8,6 +8,7 @@ import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.resource.ResourceLocation;
 import net.cubecraft.world.World;
+import net.cubecraft.world.block.blocks.Blocks;
 import net.cubecraft.world.entity.EntityParticle;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class ParticleEngine {
         long y = e.y();
         long z = e.z();
 
-        String id = e.old();
+        String id = Blocks.REGISTRY.name(e.old());
         BlockModel m = ClientRenderContext.BLOCK_MODEL.get(ResourceLocation.blockModel(id + ".json").format());
         if (m == null) {
             return;

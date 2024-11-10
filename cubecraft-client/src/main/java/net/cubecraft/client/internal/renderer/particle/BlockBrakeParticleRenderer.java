@@ -1,6 +1,6 @@
 package net.cubecraft.client.internal.renderer.particle;
 
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.context.ClientRenderContext;
@@ -11,7 +11,7 @@ import net.cubecraft.client.render.renderer.IParticleRenderer;
 public class BlockBrakeParticleRenderer implements IParticleRenderer<BlockBrakeParticle> {
 
     @Override
-    public void render(BlockBrakeParticle particle, VertexBuilder builder, double a, double xa, double ya, double za, double xa2, double za2) {
+    public void render(BlockBrakeParticle particle, LegacyVertexBuilder builder, double a, double xa, double ya, double za, double xa2, double za2) {
         Texture2DTileMap tex = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
         float u0 = tex.exactTextureU(particle.getTexture(), particle.getUOffset() / 4f);
         float u1 = tex.exactTextureU(particle.getTexture(), particle.getUOffset() / 4f + 0.25f);

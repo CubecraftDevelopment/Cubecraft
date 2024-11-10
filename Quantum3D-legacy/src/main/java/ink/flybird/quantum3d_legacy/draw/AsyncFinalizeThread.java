@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class AsyncFinalizeThread extends Thread {
-    private final List<VertexBuilder> builders = new ArrayList<>();
+    private final List<LegacyVertexBuilder> builders = new ArrayList<>();
     private final AtomicBoolean dumping = new AtomicBoolean(false);
 
     public AsyncFinalizeThread() {
@@ -13,7 +13,7 @@ public final class AsyncFinalizeThread extends Thread {
         setName("AsyncVBFinalizeThread");
     }
 
-    public void append(VertexBuilder builder) {
+    public void append(LegacyVertexBuilder builder) {
         builder.free();
 
         /*
@@ -39,11 +39,11 @@ public final class AsyncFinalizeThread extends Thread {
             }
 
             this.dumping.set(true);
-            List<VertexBuilder> builders = new ArrayList<>(this.builders);
+            List<LegacyVertexBuilder> builders = new ArrayList<>(this.builders);
             this.builders.clear();
             this.dumping.set(false);
 
-            for (VertexBuilder builder : builders) {
+            for (LegacyVertexBuilder builder : builders) {
                 builder.clear();
                 builder.free();
             }

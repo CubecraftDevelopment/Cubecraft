@@ -3,16 +3,24 @@ package net.cubecraft.client.render.world;
 import com.google.gson.JsonObject;
 import ink.flybird.quantum3d_legacy.Camera;
 import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.commons.memory.BufferAllocator;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.Window;
+import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
+import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
+import java.util.logging.Logger;
+
 
 public abstract class IWorldRenderer {
+    private final BufferAllocator memoryAllocator = new LWJGLBufferAllocator();
+    private final VertexBuilderAllocator vertexBuilderAllocator = new VertexBuilderAllocator(this.memoryAllocator);
+
     protected LevelRenderer parent;
     protected EntityPlayer player;
     protected World world;
@@ -85,7 +93,7 @@ public abstract class IWorldRenderer {
     }
 
     protected void setGlobalCamera(float delta) {
-        GLUtil.setupPerspectiveCamera((float) Math.toRadians(this.camera.fov), 1280, 720);
+        GLUtil.setupPerspectiveCamera((float) Math.toRadians(this.camera.fov), this.window.getWidth(),this.window.getHeight());
         //GL11.glLoadIdentity();
         //GL11.glOrtho(0,window.getWindowWidth()*16f,0,window.getWindowHeight()*16f,,-1000000,1000000);
         //GL11.glLoadIdentity();
@@ -98,5 +106,14 @@ public abstract class IWorldRenderer {
         GL11.glRotated(this.camera.getRotation().x, 1, 0, 0);
         GL11.glRotated(this.camera.getRotation().y, 0, 1, 0);
         GL11.glRotated(this.camera.getRotation().z, 0, 0, 1);
+    }
+
+
+    public VertexBuilderAllocator getVertexBuilderAllocator() {
+        return vertexBuilderAllocator;
+    }
+
+    public BufferAllocator getMemoryAllocator() {
+        return memoryAllocator;
     }
 }

@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.lwjgl.device;
 
-import me.gb2022.commons.context.LifetimeCounter;
+import me.gb2022.commons.LifetimeCounter;
 import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.listener.KeyboardListener;

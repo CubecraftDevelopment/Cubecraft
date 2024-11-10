@@ -1,7 +1,7 @@
 package net.cubecraft.world.block.property;
 
-import net.cubecraft.world.block.access.IBlockAccess;
+import net.cubecraft.world.block.access.BlockAccess;
 
 public interface BlockProperty<I> {
-    I get(IBlockAccess blockAccess);
+    I get(BlockAccess blockAccess);
 }

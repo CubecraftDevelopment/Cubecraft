@@ -81,6 +81,14 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         return new Vector3d(cx * 16, cy * 16, cz * 16);
     }
 
+    public static AABB getBounding(Vector3d viewOffset, int x1, int y1, int z1) {
+        double x = (x1 << 4 + 8) - viewOffset.x();
+        double y = (y1 << 4 + 8) - viewOffset.y();
+        double z = (z1 << 4 + 8) - viewOffset.z();
+
+        return new AABB(x, y, z, x + 16, y + 16, z + 16);
+    }
+
 
     @Override
     public double distanceTo(Entity target) {
@@ -103,28 +111,28 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         return getCenterWorldPosition(this.x, this.y, this.z);
     }
 
-    public long getX() {
-        return x;
+    public int getX() {
+        return (int) x;
     }
 
-    public long getY() {
-        return y;
+    public int getY() {
+        return (int) y;
     }
 
-    public long getZ() {
-        return z;
+    public int getZ() {
+        return (int) z;
     }
 
     public long getWorldX() {
-        return getX() * 16;
+        return getX() * 16L;
     }
 
     public long getWorldY() {
-        return getY() * 16;
+        return getY() * 16L;
     }
 
     public long getWorldZ() {
-        return getZ() * 16;
+        return getZ() * 16L;
     }
 
     @Override

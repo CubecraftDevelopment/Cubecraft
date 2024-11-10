@@ -1,16 +1,17 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
+import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
 import me.gb2022.commons.registry.TypeItem;
 import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.draw.DrawMode;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilder;
 import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.RenderType;
+import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import org.joml.Vector3d;
@@ -42,8 +43,8 @@ public class HUDRenderer extends IWorldRenderer {
 
         GL11.glPushMatrix();
         HitBox aabb = this.player.hitResult.getHitBox();
-        IBlockAccess sel = this.player.hitResult.getObject(IBlockAccess.class);
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(64, DrawMode.LINES);
+        BlockAccess sel = this.player.hitResult.getObject(IBlockAccess.class);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(64, DrawMode.LINES);
         builder.begin();
         this.camera.setupObjectCamera(aabb.minPos());
         builder.color(0.1f, 0.1f, 0.1f, 1.0f);
@@ -59,7 +60,7 @@ public class HUDRenderer extends IWorldRenderer {
         GL11.glPushMatrix();
         ChunkPos pos = ChunkPos.fromWorldPos((long) this.player.x, (long) this.player.z);
         this.camera.setupObjectCamera(new Vector3d(pos.getX() * 16, 0, pos.getZ() * 16));
-        VertexBuilder builder = VertexBuilderAllocator.createByPrefer(65536, DrawMode.LINES);
+        LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(65536, DrawMode.LINES);
         builder.begin();
         builder.color(255, 251, 13);
         ShapeRenderer.renderAABB(builder, new AABB(0, 0, 0, 16, 512, 16));
@@ -83,7 +84,7 @@ public class HUDRenderer extends IWorldRenderer {
         cy *= 16;
         cz *= 16;
 
-        VertexBuilder builder2 = VertexBuilderAllocator.createByPrefer(128, DrawMode.LINES);
+        LegacyVertexBuilder builder2 = VertexBuilderAllocator.createByPrefer(128, DrawMode.LINES);
         builder2.begin();
         builder2.color(255, 251, 13);
 

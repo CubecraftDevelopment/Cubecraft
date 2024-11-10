@@ -62,4 +62,12 @@ public final class DataFormat {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "DataFormat{" +
+                "size=" + size +
+                ", type=" + type +
+                '}';
+    }
 }

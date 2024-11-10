@@ -108,13 +108,16 @@ public final class CloudRenderer extends IWorldRenderer {
 
         GL11.glPushMatrix();
         this.setGlobalCamera(delta);
-        camera.updateFrustum();
+        this.camera.updateFrustum();
         GL11.glPopMatrix();
         this.parent.setFog(ClientSettingRegistry.getFixedViewDistance() * 16 * 10);
     }
 
     @Override
     public void render(RenderType type, float delta) {
+        if (true) {
+            return;//todo:optimize cloud render using instancing
+        }
         if (type != RenderType.TRANSPARENT) {
             return;
         }
@@ -158,13 +161,15 @@ public final class CloudRenderer extends IWorldRenderer {
             }
         }
 
+
         list.sort((o1, o2) -> {
             float centeredHeight = cfg.cloudHeight + cfg.cloudThick / 2;
-            Vector3d vec1 = new Vector3d(o1.x * size + radius+ox, centeredHeight, o1.y * size + radius+oz);
-            Vector3d vec2 = new Vector3d(o2.x * size + radius+ox, centeredHeight, o2.y * size + radius+oz);
+            Vector3d vec1 = new Vector3d(o1.x * size + radius + ox, centeredHeight, o1.y * size + radius + oz);
+            Vector3d vec2 = new Vector3d(o2.x * size + radius + ox, centeredHeight, o2.y * size + radius + oz);
 
             return -Double.compare(vec1.distance(this.camera.getPosition()), vec2.distance(this.camera.getPosition()));
         });
+
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_CULL_FACE);
@@ -182,7 +187,7 @@ public final class CloudRenderer extends IWorldRenderer {
             double z = j * (int) size;
 
 
-            camera.setupObjectCamera(new Vector3d(x - ox, y, z-oz));
+            camera.setupObjectCamera(new Vector3d(x - ox, y, z - oz));
             this.renderLists[0].call();
             this.renderLists[1].call();
             if (this.shouldDiscard(i, j - 1)) {

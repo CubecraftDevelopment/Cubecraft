@@ -8,7 +8,7 @@ public class VertexFormat {
     public static final VertexFormat V3F_C3F = new VertexFormat(DataFormat.FLOAT_3, null, DataFormat.FLOAT_3, null);
     public static final VertexFormat V3F_C4F_T2F = new VertexFormat(DataFormat.FLOAT_3, DataFormat.FLOAT_2, DataFormat.FLOAT_4, null);
     public static final VertexFormat V3F_C3F_T2F = new VertexFormat(DataFormat.FLOAT_3, DataFormat.FLOAT_2, DataFormat.FLOAT_3, null);
-    public static final VertexFormat V3F_T2F = new VertexFormat(DataFormat.FLOAT_3, DataFormat.FLOAT_2, null,null);
+    public static final VertexFormat V3F_T2F = new VertexFormat(DataFormat.FLOAT_3, DataFormat.FLOAT_2, null, null);
 
     private final DataFormat vertexFormat;
     private final DataFormat textureFormat;
@@ -125,5 +125,30 @@ public class VertexFormat {
                 + this.getColorBufferSize(vertexCount)
                 + this.getTextureBufferSize(vertexCount)
                 + this.getNormalBufferSize(vertexCount);
+    }
+
+    @Override
+    public String toString() {
+        return "VertexFormat{" +
+                "vertexFormat=" + vertexFormat +
+                ", textureFormat=" + textureFormat +
+                ", colorFormat=" + colorFormat +
+                ", normalFormat=" + normalFormat +
+                '}';
+    }
+
+    public int getTotalBytes() {
+        var size = this.vertexFormat.getSize() * this.vertexFormat.getType().getBytes();
+
+        if(this.hasColorData()) {
+            size += this.getColorFormat().getSize() * this.colorFormat.getType().getBytes();
+        }
+        if(this.hasTextureData()) {
+            size += this.getTextureFormat().getSize() * this.textureFormat.getType().getBytes();
+        }
+        if(this.hasNormalData()) {
+            size += this.getNormalFormat().getSize() * this.normalFormat.getType().getBytes();
+        }
+        return size;
     }
 }

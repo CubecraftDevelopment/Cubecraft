@@ -2,14 +2,14 @@ package ink.flybird.quantum3d_legacy.draw;
 
 import ink.flybird.quantum3d_legacy.BufferAllocation;
 import ink.flybird.quantum3d_legacy.GLUtil;
-import me.gb2022.commons.context.LifetimeCounter;
+import me.gb2022.commons.LifetimeCounter;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-public final class OffHeapVertexBuilder extends VertexBuilder {
+public final class OffHeapVertexBuilder extends LegacyVertexBuilder {
     private final Exception callerRef = new RuntimeException("reference");
 
     private final ByteBuffer vertexArray;

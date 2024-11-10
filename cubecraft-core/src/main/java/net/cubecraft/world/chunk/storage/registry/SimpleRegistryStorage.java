@@ -10,11 +10,16 @@ public final class SimpleRegistryStorage<V> implements RegistryStorage<V> {
     }
 
     public SimpleRegistryStorage(short[] data) {
-        this.data = data;
+        if (data.length == 1) {
+            this.data = new short[4096];
+            Arrays.fill(this.data, data[0]);
+        } else {
+            this.data = data;
+        }
     }
 
     public SimpleRegistryStorage(CompressedRegistryStorage<V> storage) {
-        this();
+        this.data = new short[4096];
         Arrays.fill(this.data, storage._get(0, 0, 0));
     }
 
@@ -25,6 +30,9 @@ public final class SimpleRegistryStorage<V> implements RegistryStorage<V> {
 
     @Override
     public short _get(int x, int y, int z) {
+        if (this.data.length < 4096) {
+            return -32768;
+        }
         return this.data[x * 256 + y * 16 + z];
     }
 

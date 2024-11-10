@@ -19,11 +19,11 @@ public final class ChunkCompileResultSorter extends DistanceSorter implements Co
         if (order != -2) {
             return -order;
         }
-        if (!o1.isSuccess()) {
+        if (!o1.success()) {
             order = -1;
             return -order;
         }
-        if (!o2.isSuccess()) {
+        if (!o2.success()) {
             order = 1;
             return -order;
         }

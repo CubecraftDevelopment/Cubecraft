@@ -3,12 +3,14 @@
   "fog_color": "#DCE9F5",
   "renderers": {
     "cubecraft:chunk_renderer": {},
-    "cubecraft:particle_renderer": {},
-    "cubecraft:entity_renderer": {},
     "cubecraft:sky_box_renderer": {
       "sky_color": "#79A7FF",
       "sky_fog_color": "#DCE9F5"
     },
+    "cubecraft:hud_renderer": {
+      "allow_debug": true
+    },
+    "cubecraft:particle_renderer": {},
     "cubecraft:cloud_renderer": {
       "color": "#FFFFFF44",
       "thick": 20,
@@ -19,9 +21,6 @@
       "speed_z": 0,
       "use_classic_lighting": true,
       "effect_by_world_light": true
-    },
-    "cubecraft:hud_renderer": {
-      "allow_debug": true
     }
   }
 }

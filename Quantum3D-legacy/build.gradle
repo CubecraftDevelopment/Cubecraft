@@ -20,6 +20,7 @@ dependencies {
     implementation localStorage("me.gb2022.commons-container")
     implementation local("jflogger-0.0.2-1")
     implementation local("fcommon-1.0.5")
+    implementation localStorage("me.gb2022.commons-general")
 
     compileOnly 'org.jetbrains:annotations:26.0.1'
 }

@@ -6,6 +6,7 @@ import ink.flybird.quantum3d_legacy.ShapeRenderer;
 import ink.flybird.quantum3d_legacy.textures.Texture2D;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.MouseClickEvent;
 import me.gb2022.quantum3d.device.event.MousePressEvent;
 import net.cubecraft.SharedObjects;
 import net.cubecraft.client.ClientSharedContext;
@@ -13,6 +14,7 @@ import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.registry.ResourceRegistry;
+import net.cubecraft.client.util.IMBlocker;
 import org.lwjgl.opengl.GL11;
 
 public final class HUDScreen extends Screen {
@@ -78,14 +80,14 @@ public final class HUDScreen extends Screen {
     public void getDebug() {
         super.getDebug();
         this.debugInfoLeft.put("chunk_renderer", "C: pc=%d req=%d res=%d, a=%s/%s t=%s/%s cache=%s".formatted(
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "pos_cache_size", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "compile_request_size", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "compile_result_size", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_success_size_alpha", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_size_alpha", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_success_size_transparent", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "draw_size_transparent", int.class),
-                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "status_cache", String.class)
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "PC", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "C/R", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "C/D", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/A_S", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/A", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/T_S", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/T", int.class),
+                ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "SC", String.class)
         ));
         this.debugInfoLeft.put("entity_renderer", "E: %d/%d".formatted(
                 ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "success_size", int.class),
@@ -127,7 +129,15 @@ public final class HUDScreen extends Screen {
     }
 
     @EventHandler
-    public void onMousePress(MousePressEvent event) {
+    public void onMousePress(MouseClickEvent event) {
         this.client.getClientDeviceContext().getMouse().setMouseGrabbed(true);
+        PlayerController controller = ClientSharedContext.getClient().getPlayerController();
+        if (controller != null) {
+            controller.onClicked(event);
+        }
+
+        IMBlocker.set(true);
     }
+
+
 }

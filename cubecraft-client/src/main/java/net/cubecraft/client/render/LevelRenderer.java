@@ -66,7 +66,7 @@ public final class LevelRenderer {
         var position = this.player.getCameraPosition().add(this.player.getPosition());
         var block = this.world.getBlockId((long) position.x, (long) position.y, (long) position.z);
 
-        if (block == Blocks.CALM_WATER.getId()) {
+        if (block == Blocks.WATER.getId()) {
             GLUtil.setupFog(10, ColorUtil.int1Float1ToFloat4(0x050533, 1));
             return;
         }
@@ -95,17 +95,24 @@ public final class LevelRenderer {
 
         for (String id : renderers.keySet()) {
             IWorldRenderer renderer = ClientRenderContext.WORLD_RENDERER.create(id);
+
+            renderer.config(renderers.get(id).getAsJsonObject());
+            client.getClientEventBus().registerEventListener(renderer);
+            client.getDeviceEventBus().registerEventListener(renderer);
+            this.renderers.put(id, renderer);
+        }
+
+        //test
+        //this.renderers.put("cubecraft:modern_terrain_renderer",new ModernTerrainRenderer());
+
+        for (var renderer : this.renderers.values()) {
             renderer.initializeRenderer(
                     this,
                     client.getWindow(),
                     client.getClientWorldContext().getWorld(),
                     client.getClientWorldContext().getPlayer(),
                     this.camera
-                                       );
-            renderer.config(renderers.get(id).getAsJsonObject());
-            client.getClientEventBus().registerEventListener(renderer);
-            client.getDeviceEventBus().registerEventListener(renderer);
-            this.renderers.put(id, renderer);
+            );
         }
     }
 
@@ -115,6 +122,11 @@ public final class LevelRenderer {
         if (Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")) {
             GLUtil.setupFog(d, ColorUtil.int1Float1ToFloat4(0x050533, 1));
         }
+
+        var window=ClientSharedContext.getClient().getWindow();
+
+        var a=window.getAspect();
+        this.camera.setAspect(a);
 
         float[] col = new float[]{0, 0, 0, 0};
         GL11.glClearColor(col[0], col[1], col[2], col[3]);
