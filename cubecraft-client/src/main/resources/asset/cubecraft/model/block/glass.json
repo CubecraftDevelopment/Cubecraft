@@ -1,0 +1,7 @@
+{
+	"type": "cubecraft:simple_block",
+	"layer": "cubecraft:alpha_cutout",
+	"culling": "solid_or_equals",
+	"color": "none",
+	"texture": "cubecraft:/block/glass.png"
+}

@@ -2,6 +2,7 @@ package net.cubecraft.world.block.blocks;
 
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.property.BlockProperty;
+import net.cubecraft.world.block.property.BooleanProperty;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ public final class GlassBlock extends Block {
 
     @Override
     public void initPropertyMap(Map<String, BlockProperty<?>> map) {
+        map.put("cubecraft:solid", new BooleanProperty(false));
     }
 
     @Override

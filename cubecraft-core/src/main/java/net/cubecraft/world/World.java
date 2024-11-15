@@ -186,8 +186,9 @@ public abstract class World implements BlockAccessor {
     public void addEntity(Entity e) {
         e.setWorld(World.this);
         this.entities.put(e.getUuid(), e);
-        this.loadChunk(ChunkPos.create((long) e.x / Chunk.WIDTH, (long) (e.z / Chunk.WIDTH)),
-                       new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 256)
+        this.loadChunk(
+                ChunkPos.create((long) e.x / Chunk.WIDTH, (long) (e.z / Chunk.WIDTH)),
+                new ChunkLoadTicket(ChunkLoadLevel.Entity_TICKING, 256)
         );
     }
 
@@ -265,9 +266,10 @@ public abstract class World implements BlockAccessor {
     }
 
     public boolean isAllNearMatch(long x, long y, long z, Predicate<BlockAccess> predicate) {
-        BlockAccess[] states = new BlockAccess[]{getBlockAccess(x + 1, y, z), getBlockAccess(x - 1, y, z), getBlockAccess(x,
-                                                                                                                          y + 1,
-                                                                                                                          z
+        BlockAccess[] states = new BlockAccess[]{getBlockAccess(x + 1, y, z), getBlockAccess(x - 1, y, z), getBlockAccess(
+                x,
+                y + 1,
+                z
         ), getBlockAccess(x, y - 1, z), getBlockAccess(x, y, z + 1), getBlockAccess(x, y, z - 1)};
         return Arrays.stream(states).allMatch(predicate);
     }
@@ -329,16 +331,18 @@ public abstract class World implements BlockAccessor {
     }
 
     public BlockAccess[] getBlockAndNeighbor(long x, long y, long z) {
-        return new BlockAccess[]{getBlockAccess(x, y, z), getBlockAccess(x - 1, y, z), getBlockAccess(x + 1, y, z), getBlockAccess(x,
-                                                                                                                                   y - 1,
-                                                                                                                                   z
+        return new BlockAccess[]{getBlockAccess(x, y, z), getBlockAccess(x - 1, y, z), getBlockAccess(x + 1, y, z), getBlockAccess(
+                x,
+                y - 1,
+                z
         ), getBlockAccess(x, y + 1, z), getBlockAccess(x, y, z - 1), getBlockAccess(x, y, z + 1)};
     }
 
     public BlockAccess[] getBlockNeighbor(long x, long y, long z) {
-        return new BlockAccess[]{getBlockAccess(x - 1, y, z), getBlockAccess(x + 1, y, z), getBlockAccess(x, y - 1, z), getBlockAccess(x,
-                                                                                                                                       y + 1,
-                                                                                                                                       z
+        return new BlockAccess[]{getBlockAccess(x - 1, y, z), getBlockAccess(x + 1, y, z), getBlockAccess(x, y - 1, z), getBlockAccess(
+                x,
+                y + 1,
+                z
         ), getBlockAccess(x, y, z - 1), getBlockAccess(x, y, z + 1)};
     }
 
@@ -385,7 +389,7 @@ public abstract class World implements BlockAccessor {
             return this.environment.getBlockMeta(this, x, y, z);
         }
 
-        var chunk = this.chunkCache.getByWorldPos(x, z);
+        var chunk = getChunkSafely((int) (x >> 4), (int) (z >> 4));
         return chunk.getBlockMeta((int) (x & 15), (int) y, (int) (z & 15));
     }
 
@@ -397,6 +401,12 @@ public abstract class World implements BlockAccessor {
 
         var chunk = getChunkSafely((int) (x >> 4), (int) (z >> 4));
         return chunk.getBlockLight((int) (x & 15), (int) y, (int) (z & 15));
+    }
+
+    @Override
+    public void setBlockId(long x, long y, long z, int i, boolean silent) {
+        var chunk = getChunkSafely((int) (x >> 4), (int) (z >> 4));
+        chunk.setBlockId((int) (x & 15), (int) y, (int) (z & 15), i,silent);
     }
 
     public WorldGenerator getWorldGenerator() {
@@ -411,5 +421,9 @@ public abstract class World implements BlockAccessor {
         WorldChunk chunk = getChunkSafely(cx, cz);
         chunk.addTicket(ticket);
         return new CompletedFutureChunkContainer(chunk);
+    }
+
+    public boolean isClient(){
+        return false;
     }
 }

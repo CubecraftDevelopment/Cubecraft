@@ -1,12 +1,10 @@
 package net.cubecraft.client.render.gui;
 
 import com.google.gson.*;
-import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.util.DeserializedConstructor;
-
-import java.lang.reflect.Type;
 
 @TypeItem("vertical_border_image")
 public final class VerticalBorderImage extends ImageComponentRendererPart {

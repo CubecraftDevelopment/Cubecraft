@@ -1,11 +1,11 @@
 package net.cubecraft.client.gui.font;
 
 
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
+import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.util.GLUtil;
+import me.gb2022.quantum3d.util.ShapeRenderer;
+import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.commons.math.MathHelper;
 
 import java.util.List;

@@ -1,0 +1,7 @@
+{
+  "type": "cubecraft:simple_block",
+  "layer": "cubecraft:alpha_block",
+  "culling": "solid",
+  "color": "cubecraft:none",
+  "texture": "cubecraft:/block/acacia_planks.png"
+}

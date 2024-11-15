@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.chunk.sort;
 
 import net.cubecraft.client.render.chunk.RenderChunkPos;
-import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
+import me.gb2022.quantum3d.util.FrustumCuller;
 import org.joml.Vector3d;
 
 public abstract class DistanceSorter {

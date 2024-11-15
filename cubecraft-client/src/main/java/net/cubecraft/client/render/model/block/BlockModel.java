@@ -1,7 +1,6 @@
 package net.cubecraft.client.render.model.block;
 
 import com.google.gson.*;
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import me.gb2022.commons.container.Pair;
 import me.gb2022.commons.registry.ConstructingMap;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;

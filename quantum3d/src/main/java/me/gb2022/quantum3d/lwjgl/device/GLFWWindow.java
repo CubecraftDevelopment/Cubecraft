@@ -3,9 +3,9 @@ package me.gb2022.quantum3d.lwjgl.device;
 
 import me.gb2022.quantum3d.device.Window;
 import me.gb2022.quantum3d.device.listener.WindowListener;
-import me.gb2022.quantum3d.lwjgl.deprecated.BufferAllocation;
-import me.gb2022.quantum3d.lwjgl.deprecated.platform.MonitorInfo;
-import me.gb2022.quantum3d.lwjgl.deprecated.textures.ImageUtil;
+import me.gb2022.quantum3d.texture.ImageUtil;
+import me.gb2022.quantum3d.util.BufferAllocation;
+import me.gb2022.quantum3d.util.MonitorInfo;
 import org.lwjgl.glfw.*;
 
 import javax.imageio.ImageIO;
@@ -146,7 +146,12 @@ public final class GLFWWindow extends Window {
     public MonitorInfo getMonitorInfo() {
         long monitor = GLFW.glfwGetPrimaryMonitor();
         GLFWVidMode vidMode = Objects.requireNonNull(GLFW.glfwGetVideoMode(monitor));
-        return new MonitorInfo(vidMode.width(), vidMode.height(), vidMode.blueBits() + vidMode.greenBits() + vidMode.redBits(), vidMode.refreshRate());
+        return new MonitorInfo(
+                vidMode.width(),
+                vidMode.height(),
+                vidMode.blueBits() + vidMode.greenBits() + vidMode.redBits(),
+                vidMode.refreshRate()
+        );
     }
 
     public long getHandle() {
@@ -195,9 +200,25 @@ public final class GLFWWindow extends Window {
             this.lastNFullScreenHeight = this.height;
             this.lastNFullScreenX = this.x;
             this.lastNFullScreenY = this.y;
-            GLFW.glfwSetWindowMonitor(this.handle, GLFW.glfwGetPrimaryMonitor(), 0, 0, getMonitorInfo().width(), getMonitorInfo().height(), getMonitorInfo().freshRate());
+            GLFW.glfwSetWindowMonitor(
+                    this.handle,
+                    GLFW.glfwGetPrimaryMonitor(),
+                    0,
+                    0,
+                    getMonitorInfo().width(),
+                    getMonitorInfo().height(),
+                    getMonitorInfo().freshRate()
+            );
         } else {
-            GLFW.glfwSetWindowMonitor(handle, 0, this.lastNFullScreenX, this.lastNFullScreenY, this.lastNFullScreenWidth, this.lastNFullScreenHeight, this.getMonitorInfo().freshRate());
+            GLFW.glfwSetWindowMonitor(
+                    handle,
+                    0,
+                    this.lastNFullScreenX,
+                    this.lastNFullScreenY,
+                    this.lastNFullScreenWidth,
+                    this.lastNFullScreenHeight,
+                    this.getMonitorInfo().freshRate()
+            );
         }
     }
 

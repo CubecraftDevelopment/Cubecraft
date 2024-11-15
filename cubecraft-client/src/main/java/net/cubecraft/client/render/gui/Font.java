@@ -2,10 +2,9 @@ package net.cubecraft.client.render.gui;
 
 import com.google.gson.JsonObject;
 import me.gb2022.commons.registry.TypeItem;
-import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.base.Text;
+import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.render.renderer.ComponentRendererPart;
 import net.cubecraft.client.util.DeserializedConstructor;
 
 @TypeItem("font")
@@ -32,14 +31,14 @@ public record Font(double x, double y, int size, int col, int yOffset, String qu
         text.getText().color(col);
 
         if (text.isIcon()) {
-            ClientGUIContext.ICON_FONT_RENDERER.render(text.getText(),
-                                                       x,
-                                                       (int) (y + yOffset - size * ((iconModifier - 1) / 2)),
-                                                       0,
-                                                       text.getAlignment()
+            FontRenderer.icon().render(text.getText(),
+                                                   x,
+                                                   (int) (y + yOffset - size * ((iconModifier - 1) / 2)),
+                                                   0,
+                                                   text.getAlignment()
             );
         } else {
-            ClientGUIContext.FONT_RENDERER.render(text.getText(), x, y + yOffset, 0, text.getAlignment());
+            FontRenderer.ttf().render(text.getText(), x, y + yOffset, 0, text.getAlignment());
         }
     }
 }

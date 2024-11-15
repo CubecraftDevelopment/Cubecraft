@@ -1,12 +1,11 @@
 package net.cubecraft.client.render.model.block.component;
 
 import com.google.gson.*;
-import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import me.gb2022.commons.ColorUtil;
-import me.gb2022.commons.container.Vector3;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import net.cubecraft.client.context.ClientRenderContext;
-import net.cubecraft.client.render.BlockBakery;
+import me.gb2022.quantum3d.texture.Texture2DTileMap;
+import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.render.block.BlockBakery;
 import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
 import net.cubecraft.client.render.model.object.Vertex;
@@ -14,9 +13,7 @@ import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.resource.MultiAssetContainer;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
-import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.BlockAccess;
-import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 
@@ -42,19 +39,13 @@ public final class Cube extends BlockModelComponent {
     }
 
     public Cube(JsonObject json) {
-        super(
-                json.get("layer").getAsString(),
-                new Vector3d(
-                        json.get("start").getAsJsonArray().get(0).getAsDouble(),
-                        json.get("start").getAsJsonArray().get(1).getAsDouble(),
-                        json.get("start").getAsJsonArray().get(2).getAsDouble()
-                ),
-                new Vector3d(
-                        json.get("end").getAsJsonArray().get(0).getAsDouble(),
+        super(json.get("layer").getAsString(), new Vector3d(json.get("start").getAsJsonArray().get(0).getAsDouble(),
+                                                            json.get("start").getAsJsonArray().get(1).getAsDouble(),
+                                                            json.get("start").getAsJsonArray().get(2).getAsDouble()
+        ), new Vector3d(json.get("end").getAsJsonArray().get(0).getAsDouble(),
                         json.get("end").getAsJsonArray().get(1).getAsDouble(),
                         json.get("end").getAsJsonArray().get(2).getAsDouble()
-                )
-        );
+        ));
 
         var faces = json.getAsJsonObject("faces");
 
@@ -69,10 +60,6 @@ public final class Cube extends BlockModelComponent {
 
     @Override
     public void render(VertexBuilder builder, Registered<ChunkLayerContainerFactory.Provider> layer, int face, BlockAccessor world, BlockAccess block, double renderX, double renderY, double renderZ) {
-        long x = block.getX();
-        long y = block.getY();
-        long z = block.getZ();
-
         if (this.localizedLayer != layer.getId()) {
             return;
         }
@@ -130,14 +117,14 @@ public final class Cube extends BlockModelComponent {
         };
     }
 
-    public void renderFace(BlockModelFace f, Registered<ChunkLayerContainerFactory.Provider> layer, int face, VertexBuilder builder, BlockAccessor w, BlockAccess blockAccess, double renderX, double renderY, double renderZ) {
+    public void renderFace(BlockModelFace f, Registered<ChunkLayerContainerFactory.Provider> layer, int face, VertexBuilder builder, BlockAccessor w, BlockAccess block, double renderX, double renderY, double renderZ) {
         Texture2DTileMap terrain = layer.get().getTextureUsed();
 
         String path = f.texture().getAbsolutePath();
 
-        var x = blockAccess.getX();
-        var y = blockAccess.getY();
-        var z = blockAccess.getZ();
+        var x = block != null ? block.getX() : 0;
+        var y = block != null ? block.getY() : 0;
+        var z = block != null ? block.getZ() : 0;
 
 
         var u0 = terrain.exactTextureU(path, f.u0());
@@ -155,7 +142,7 @@ public final class Cube extends BlockModelComponent {
         var v111 = new Vector3d(this.end.x, this.end.y, this.end.z);
 
         var render = new Vector3d(renderX, renderY, renderZ);
-        int c = ClientRenderContext.COLOR_MAP.get(f.color()).sample(w, blockAccess);
+        int c = ClientRenderContext.COLOR_MAP.get(f.color()).sample(w, block);
         if (face == 0) {
             var faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
             BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 0)

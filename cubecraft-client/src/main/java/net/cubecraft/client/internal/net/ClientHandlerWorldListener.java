@@ -20,16 +20,6 @@ public class ClientHandlerWorldListener extends ClientNetHandler {
         this.sendPacket(new PacketAttack(e.from().getUuid(), e.target().getUuid()));
     }
 
-    @EventHandler
-    public void onBlockChanged(BlockChangeEvent e) {
-        this.sendPacket(new PacketBlockChange(e.x(), e.y(), e.z(), ClientSharedContext.getClient().getClientWorldContext().getWorld().getId(), e.newBlockState()));
-    }
-
-    @EventHandler
-    public void onClientWorldChunkLoad(ChunkLoadEvent e) {
-        this.sendPacket(new PacketChunkGet(e.pos(), ClientSharedContext.getClient().getClientWorldContext().getWorld().getId()));
-        this.sendPacket(new PacketChunkLoad(ClientSharedContext.getClient().getClientWorldContext().getWorld().getId(), e.pos(), e.ticket()));
-    }
 
     @EventHandler
     public void onPlayerMove(EntityMoveEvent e) {

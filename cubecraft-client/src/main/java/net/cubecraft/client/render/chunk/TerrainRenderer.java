@@ -1,13 +1,13 @@
 package net.cubecraft.client.render.chunk;
 
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.registry.TypeItem;
-import net.cubecraft.client.ClientSettingRegistry;
+import me.gb2022.quantum3d.util.FrustumCuller;
+import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileRequest;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileResult;
@@ -24,7 +24,6 @@ import net.cubecraft.client.render.chunk.status.ChunkStatusHandlerThread;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.event.SettingReloadEvent;
-import net.cubecraft.util.ShadowedMap;
 import net.cubecraft.world.chunk.Chunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +31,6 @@ import org.joml.Vector3d;
 import org.joml.Vector3i;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -52,7 +50,7 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     private final Int2ObjectMap<ChunkLayerContainer> alphaContainers = new Int2ObjectOpenHashMap<>(8);
     private final Int2ObjectMap<ChunkLayerContainer> transparentContainers = new Int2ObjectOpenHashMap<>(8);
-    private final Map<Integer, ChunkLayerContainer> containers = new ShadowedMap<>(this.alphaContainers, this.transparentContainers);
+    private final Int2ObjectMap<ChunkLayerContainer> containers = new Int2ObjectOpenHashMap<>(8);
 
     private final ChunkCompileRequestSorter chunkCompileRequestSorter = new ChunkCompileRequestSorter(this.frustum);
     private final Queue<ChunkCompileRequest> requestQueue = new PriorityQueue<>(this.chunkCompileRequestSorter);
@@ -75,7 +73,11 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
                 case TRANSPARENT -> this.transparentContainers;
             };
 
-            map.put(provider.getId(), f.getFactory().createChunkLayer(this, this.viewDistance, this.vbo));
+            var id = provider.getId();
+            var layer = f.getFactory().createChunkLayer(this, this.viewDistance, this.vbo);
+
+            map.put(id, layer);
+            this.containers.put(id, layer);
         }
 
         LOGGER.info("created {} alpha renderers, {} transparent renderers", this.alphaContainers.size(), this.transparentContainers.size());
@@ -86,9 +88,9 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             case "D/A_S" -> this.alphaContainers.values().stream().mapToInt((c) -> c.getVisibleLayers().size()).sum();
             case "D/T_S" -> this.transparentContainers.values().stream().mapToInt((c) -> c.getVisibleLayers().size()).sum();
 
-            case "compile_result_size" -> this.resultQueue.size();
-            case "compile_request_size" -> this.requestQueue.size();
-            case "status_cache" -> this.chunkStatusCache.toString();
+            case "C/D" -> this.resultQueue.size();
+            case "C/R" -> this.requestQueue.size();
+            case "SC" -> this.chunkStatusCache.toString();
             default -> 0;
         }));
     }
@@ -130,8 +132,6 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         this.chunkCompileRequestSorter.setPos(camPos);
         this.chunkCompileResultSorter.setPos(camPos);
 
-        var stamp = System.currentTimeMillis();
-
         for (var container : this.containers.values()) {
             container.remove((l) -> isChunkOutOfRange(l.getOwner().getX(), l.getOwner().getY(), l.getOwner().getZ(), 0));
             container.lazyUpdate();
@@ -152,9 +152,14 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             for (var n = 0; n < result.getLayers().length; n++) {
                 var layer = result.getLayers()[n];
                 var container = this.containers.get(layer);
+
                 var x = result.getX();
                 var y = result.getY();
                 var z = result.getZ();
+
+                if (container == null) {
+                    continue;
+                }
 
                 if (!result.success()) {
                     result.freeLayer(n);
@@ -211,7 +216,11 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             GLUtil.disableClientState();
         }
 
-        this.lastChunkPos.set((int) (((long) vx) >> 4), (int) (((long) vy) >> 4), (int) (((long) vz) >> 4));
+        var cx = ((long) Math.floor(vx)) >> 4;
+        var cy = ((long) Math.floor(vy)) >> 4;
+        var cz = ((long) Math.floor(vz)) >> 4;
+
+        this.lastChunkPos.set((int) cx, (int) cy, (int) cz);
     }
 
     @Override
@@ -282,14 +291,6 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             setUpdate(cx, cy, cz + 1, true);
         }
         setUpdate(cx, cy, cz, true);
-    }
-
-    @EventHandler
-    public void onSettingReload(SettingReloadEvent e) {
-        if (!e.isNodeChanged(SETTING_NAMESPACE)) {
-            return;
-        }
-        this.refresh();
     }
 
     public int getViewDistance() {

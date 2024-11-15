@@ -94,4 +94,11 @@ public abstract class Mouse implements Device {
      * @return The Y-coordinate of the cursor.
      */
     public abstract float getCursorY();
+
+    /**
+     * check if button is pressed
+     * @param btn button
+     * @return if key is pressed
+     */
+    public abstract boolean isButtonDown(MouseButton btn);
 }

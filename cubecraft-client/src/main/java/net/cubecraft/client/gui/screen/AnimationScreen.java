@@ -1,7 +1,7 @@
 package net.cubecraft.client.gui.screen;
 
+import me.gb2022.quantum3d.util.Sync;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
-import me.gb2022.quantum3d.lwjgl.deprecated.platform.Sync;
 
 public abstract class AnimationScreen extends Screen {
     protected int time;

@@ -15,7 +15,12 @@ apply from: "E:/Java/GradleScripts/build-base.gradle"
 
 applyGlobalScript("Dependencies.gradle")
 
+
+
 dependencies {
+    implementation 'org.lwjgl:lwjgl:3.3.1'
+    implementation 'org.lwjgl:lwjgl-opengl:3.3.1'
+    implementation 'org.lwjgl:lwjgl-glfw:3.3.1'
     implementation("org.slf4j:slf4j-api:1.7.27")
     implementation localStorage("me.gb2022.commons-event")
     implementation localStorage("me.gb2022.commons-general")

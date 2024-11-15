@@ -1,8 +1,6 @@
 package me.gb2022.quantum3d.lwjgl.context;
 
 import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
-import me.gb2022.quantum3d.lwjgl.deprecated.BufferAllocation;
-import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
 import me.gb2022.quantum3d.render.texture.OGLSimpleTexture2D;
 import me.gb2022.quantum3d.render.texture.OGLTilemapTexture2D;
 import me.gb2022.quantum3d.render.RenderContext;
@@ -10,15 +8,14 @@ import me.gb2022.quantum3d.render.command.RenderCall;
 import me.gb2022.quantum3d.render.texture.SimpleTexture2D;
 import me.gb2022.quantum3d.render.texture.TilemapTexture2D;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
+import me.gb2022.quantum3d.util.BufferAllocation;
+import me.gb2022.quantum3d.util.GLUtil;
 import org.joml.Matrix4d;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.DoubleBuffer;
-
-import static me.gb2022.quantum3d.lwjgl.deprecated.GLUtil.loadIdentity;
-
 
 public abstract class OGLRenderContext extends RenderContext {
     private final int majorVersion;
@@ -39,7 +36,6 @@ public abstract class OGLRenderContext extends RenderContext {
 
     @Override
     public void destroy() {
-        GL.setCapabilities(null);
     }
 
     public abstract int getGLFWProfileID();
@@ -98,19 +94,12 @@ public abstract class OGLRenderContext extends RenderContext {
     public void setMatrix(Matrix4d mat) {
         GLUtil.assertRenderThread();
         GL11.glMatrixMode(5889);
-        loadIdentity();
+        GLUtil.loadIdentity();
         DoubleBuffer matrix = BufferAllocation.allocDoubleBuffer(16);
         GL11.glMultMatrixd(mat.get(matrix));
         BufferAllocation.free(matrix);
         GL11.glMatrixMode(5888);
-        loadIdentity();
-    }
-
-    public void mov(double x, double y, double z, double xr, double yr, double zr) {
-        GL11.glRotated(xr, 1, 0, 0);
-        GL11.glRotated(yr, 0, 1, 0);
-        GL11.glRotated(zr, 0, 0, 1);
-        GL11.glTranslated(x, y, z);
+        GLUtil.loadIdentity();
     }
 
     @Override

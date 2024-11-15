@@ -20,7 +20,7 @@ import net.cubecraft.client.gui.node.ToggleButton;
 import net.cubecraft.client.gui.screen.Screen;
 import net.cubecraft.client.internal.gui.ScreenType;
 import net.cubecraft.client.net.ClientNetHandler;
-import net.cubecraft.level.Level;
+import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.level.LevelInfo;
 import net.cubecraft.server.CubecraftServer;
 import net.cubecraft.server.ServerFactory;
@@ -61,9 +61,8 @@ public class ClientWorldManager extends ClientNetHandler {
             Thread.yield();
         }
 
-        Level level = this.getIntegratedServer().getLevel();
-        this.client.joinLevel(level);
-        this.client.setWorld(this.client.getClientWorldContext().getWorld());
+        var level = this.getIntegratedServer().getLevel();
+        this.client.setWorldContext(level.join(new EntityPlayer(level, this.client.getSession())));
     }
 
     public void setConnectionScreenText(String statement, String reason, Object... reasonArgs) {
@@ -242,7 +241,8 @@ public class ClientWorldManager extends ClientNetHandler {
         }
 
         this.getIntegratedServer().setRunning(false);
-        this.client.leaveLevel();
+
+        this.client.setWorldContext(null);
 
         while (!(this.getIntegratedServer().getState() == ThreadState.TERMINATED || this.getIntegratedServer()
                 .getState() == ThreadState.TERMINATING_FAILED)) {

@@ -7,7 +7,6 @@ import net.cubecraft.client.render.chunk.ChunkLayer;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 import org.lwjgl.opengl.GL11;
 
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -39,20 +38,20 @@ public abstract class ChunkLayerContainer {
     }
 
     public void render(double vx, double vy, double vz, long frame) {
-        var cx = ((long) vx) >> 4;
-        var cy = ((long) vy) >> 4;
-        var cz = ((long) vz) >> 4;
+        var cx = ((long) Math.floor(vx)) >> 4;
+        var cy = ((long) Math.floor(vy)) >> 4;
+        var cz = ((long) Math.floor(vz)) >> 4;
 
         var lc = this.parent.getLastChunkPos();
-        var lcp = this.parent.getCamera().getLastPosition();
+        var lp = this.parent.getCamera().getLastPosition();
 
         var chunkPosChanged = cx != lc.x() || cy != lc.y() || cz != lc.z();
-        var camPosChanged = vx != lcp.x() || vy != lcp.y() || vz != lcp.z();
+        var camPosChanged = vx != lp.x() || vy != lp.y() || vz != lp.z();
 
         if (this.parent.getCamera().isRotationChanged() || camPosChanged) {
             for (var layer : this.layers.values()) {
                 layer.getOwner().updateFrustumVisibility(frame, this.parent);
-                if(this.updateLayerVisible(layer)){
+                if (this.updateLayerVisible(layer)) {
                     layer.getOwner().updateFaceVisibility(frame, this.parent);
                 }
             }

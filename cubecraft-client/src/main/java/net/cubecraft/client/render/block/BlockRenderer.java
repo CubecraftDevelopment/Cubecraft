@@ -7,12 +7,16 @@ import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
 import net.cubecraft.client.resource.TextureAsset;
+import net.cubecraft.resource.item.IResource;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.World;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
+
+import java.util.Collection;
+import java.util.List;
 
 @TypeItem("cubecraft:block")
 public final class BlockRenderer implements IBlockRenderer {

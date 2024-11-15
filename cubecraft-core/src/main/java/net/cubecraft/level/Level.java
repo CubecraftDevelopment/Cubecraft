@@ -6,6 +6,7 @@ import net.cubecraft.event.world.EntityJoinLevelEvent;
 import net.cubecraft.event.world.EntityLeaveLevelEvent;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.World;
+import net.cubecraft.world.WorldContext;
 import net.cubecraft.world.WorldFactory;
 import net.cubecraft.world.entity.Entity;
 import net.cubecraft.world.storage.PersistentEntityHolder;
@@ -77,8 +78,7 @@ public class Level {
         return eventBus;
     }
 
-
-    public void join(@NotNull Entity entity) {
+    public WorldContext join(@NotNull Entity entity) {
         Location entitySpawnLocation = this.getLocation(entity);
 
         if (!this.persistentEntityHolder.load(entity)) {
@@ -101,6 +101,8 @@ public class Level {
 
         entitySpawnLocation.getWorld(this).addEntity(entity);
         this.eventBus.callEvent(new EntityJoinLevelEvent(this, entitySpawnLocation.getWorld(this), entity));
+
+        return new WorldContext(this, entity.getWorld(), entity);
     }
 
     public void leave(@NotNull Entity entity, String reason) {

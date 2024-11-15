@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.chunk.sort;
 
-import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
+import me.gb2022.quantum3d.util.FrustumCuller;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileRequest;
 import org.joml.Vector3d;
 

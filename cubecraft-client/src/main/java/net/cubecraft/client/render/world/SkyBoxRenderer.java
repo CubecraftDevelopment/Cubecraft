@@ -1,13 +1,13 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import me.gb2022.quantum3d.util.GLUtil;
+import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
 import me.gb2022.quantum3d.render.vertex.*;
-import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.render.LevelRenderer;
@@ -44,7 +44,7 @@ public final class SkyBoxRenderer extends IWorldRenderer {
     public void build() {
         this.skyRenderBatch.allocate();
         int d2 = ClientSettingRegistry.getFixedViewDistance();
-        VertexBuilder builder = ALLOCATOR.allocate(VertexFormat.V3F_C3F, DrawMode.TRIANGLES, 5120);
+        VertexBuilder builder = ALLOCATOR.create(VertexFormat.V3F_C3F, DrawMode.TRIANGLES, 5120);
         builder.allocate();
 
         float cx = 0;
@@ -71,7 +71,7 @@ public final class SkyBoxRenderer extends IWorldRenderer {
             builder.addVertex(x1, -cy, y1);
         }
 
-        VertexBuilder builder2 = ALLOCATOR.allocate(VertexFormat.V3F_C3F, DrawMode.QUAD_STRIP, 5120);
+        VertexBuilder builder2 = ALLOCATOR.create(VertexFormat.V3F_C3F, DrawMode.QUAD_STRIP, 5120);
         builder2.allocate();
 
         builder2.setColor(this.skyFogColor.RGB_F());
@@ -126,7 +126,7 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
         long time = world.getTime();
 
-        VertexBuilder builder = ALLOCATOR.allocate(VertexFormat.V3F_T2F, DrawMode.QUADS, 16);
+        VertexBuilder builder = ALLOCATOR.create(VertexFormat.V3F_T2F, DrawMode.QUADS, 16);
         builder.allocate();
 
 

@@ -28,6 +28,10 @@ public enum MouseButton {
         this.code = code;
     }
 
+    public int getCode() {
+        return code;
+    }
+
     /**
      * Get the MouseButton instance corresponding to the given button code.
      *

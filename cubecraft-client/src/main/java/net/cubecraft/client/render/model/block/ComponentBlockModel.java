@@ -11,14 +11,12 @@ import net.cubecraft.client.render.model.block.component.Cube;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.util.DeserializedConstructor;
 import net.cubecraft.resource.MultiAssetContainer;
+import net.cubecraft.resource.item.IResource;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.BlockAccess;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @TypeItem("cubecraft:component_block")
 public final class ComponentBlockModel extends BlockModel {
@@ -61,7 +59,7 @@ public final class ComponentBlockModel extends BlockModel {
         Set<String> set = this.statementModels.keySet();
 
         for (String s : set) {
-            if (!block.getBlock().queryBoolean(s, block)) {
+            if (block!=null&&!block.getBlock().queryBoolean(s, block)) {
                 //continue;
             }
             ArrayList<BlockModelComponent> components;

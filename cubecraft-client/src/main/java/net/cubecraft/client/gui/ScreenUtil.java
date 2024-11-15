@@ -1,17 +1,17 @@
 package net.cubecraft.client.gui;
 
-import net.cubecraft.client.ClientSettingRegistry;
+import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
+import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.base.Popup;
 import net.cubecraft.client.gui.font.FontAlignment;
 import me.gb2022.quantum3d.device.Window;
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
 import net.cubecraft.client.registry.TextureRegistry;
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.textures.Texture2D;
-import ink.flybird.quantum3d_legacy.textures.TextureStateManager;
+import me.gb2022.quantum3d.util.GLUtil;
+import me.gb2022.quantum3d.util.ShapeRenderer;
+import me.gb2022.quantum3d.texture.Texture2D;
+import me.gb2022.quantum3d.texture.TextureStateManager;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;

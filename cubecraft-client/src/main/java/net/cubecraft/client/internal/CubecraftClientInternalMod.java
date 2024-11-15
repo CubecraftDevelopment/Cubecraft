@@ -4,11 +4,10 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.Side;
-import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientGUIContext;
-import net.cubecraft.client.context.ClientRenderContext;
-import net.cubecraft.client.event.ClientRenderContextInitEvent;
+import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.event.app.ClientDisposeEvent;
 import net.cubecraft.client.event.app.ClientSetupEvent;
 import net.cubecraft.client.event.gui.context.GUIContextInitEvent;
@@ -62,14 +61,8 @@ public final class CubecraftClientInternalMod {
         ClientRenderContext.COLOR_MAP.registerGetter(ColorMapRegistry.class);
         ClientSharedContext.getClient().getClientEventBus().registerEventListener(new ParticleHandler());
 
-        ClientSharedContext.RESOURCE_MANAGER.registerEventListener(new ClientAssetLoader());
-
         ClientAssetLoader.init();
-    }
 
-
-    @EventHandler
-    public static void onRenderContextInit(ClientRenderContextInitEvent event) {
         ClientRenderContext.WORLD_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
         ParticleRenderer.PARTICLE_RENDERERS.registerFieldHolder(ParticleRenderers.class);
 

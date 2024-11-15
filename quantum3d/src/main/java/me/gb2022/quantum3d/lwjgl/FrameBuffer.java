@@ -1,10 +1,10 @@
 package me.gb2022.quantum3d.lwjgl;
 
 import me.gb2022.commons.memory.BufferAllocator;
-import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
 import me.gb2022.quantum3d.render.ShapeRenderer;
 import me.gb2022.quantum3d.render.vertex.*;
+import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
@@ -153,7 +153,7 @@ public class FrameBuffer {
 
     public void blit() {
         GLUtil.enableBlend();
-        VertexBuilder builder = BUILDER_ALLOCATOR.allocate(VertexFormat.V3F_C4F_T2F, DrawMode.QUADS, 8);
+        VertexBuilder builder = BUILDER_ALLOCATOR.create(VertexFormat.V3F_C4F_T2F, DrawMode.QUADS, 8);
         builder.allocate();
         GLUtil.enableBlend();
         builder.setColor(1, 1, 1, 1);

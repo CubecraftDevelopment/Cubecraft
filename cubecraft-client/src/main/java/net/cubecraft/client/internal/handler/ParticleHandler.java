@@ -1,7 +1,7 @@
 package net.cubecraft.client.internal.handler;
 
 import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.context.ClientRenderContext;
+import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.resource.ResourceLocation;

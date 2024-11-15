@@ -1,13 +1,13 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.hitting.HitBox;
 import me.gb2022.commons.registry.TypeItem;
-import ink.flybird.quantum3d_legacy.ShapeRenderer;
-import ink.flybird.quantum3d_legacy.draw.DrawMode;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.legacy.draw.DrawMode;
+import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
+import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.util.ShapeRenderer;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.RenderType;
@@ -58,8 +58,12 @@ public class HUDRenderer extends IWorldRenderer {
 
     private void renderChunkBorder() {
         GL11.glPushMatrix();
-        ChunkPos pos = ChunkPos.fromWorldPos((long) this.player.x, (long) this.player.z);
-        this.camera.setupObjectCamera(new Vector3d(pos.getX() * 16, 0, pos.getZ() * 16));
+
+        long cx = (long) ((Math.floor(this.camera.getPosition().x) + 0)) >> 4;
+        long cz = (long) ((Math.floor(this.camera.getPosition().z) + 0)) >> 4;
+        long cy = (long) ((Math.floor(this.camera.getPosition().y) + 0)) >> 4;
+
+        this.camera.setupObjectCamera(new Vector3d(cx * 16, 0, cz * 16));
         LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(65536, DrawMode.LINES);
         builder.begin();
         builder.color(255, 251, 13);
@@ -75,10 +79,6 @@ public class HUDRenderer extends IWorldRenderer {
         builder.uploadPointer();
         builder.free();
         GL11.glPopMatrix();
-
-        long cx = (long) ((this.camera.getPosition().x + 0)) >> 4;
-        long cz = (long) ((this.camera.getPosition().z + 0)) >> 4;
-        long cy = (long) ((this.camera.getPosition().y + 0)) >> 4;
 
         cx *= 16;
         cy *= 16;

@@ -1,16 +1,16 @@
 package net.cubecraft.client.render.block;
 
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
-import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
 import me.gb2022.commons.ColorUtil;
 import me.gb2022.commons.container.Vector3;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import net.cubecraft.client.context.ClientRenderContext;
-import net.cubecraft.client.render.BlockBakery;
+import me.gb2022.quantum3d.texture.Texture2DTileMap;
+import net.cubecraft.client.render.Textures;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
+import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
 import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.client.resource.TextureAsset;
+import net.cubecraft.resource.MultiAssetContainer;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.EnumFacing;
@@ -44,13 +44,47 @@ public final class LiquidRenderer implements IBlockRenderer {
 
     @Override
     public void render(BlockAccess block, BlockAccessor accessor, Registered<ChunkLayerContainerFactory.Provider> layer, int face, float x, float y, float z, VertexBuilder builder) {
+        var h00 = 0.875f;
+        var h01 = 0.875f;
+        var h10 = 0.875f;
+        var h11 = 0.875f;
 
+        if (block != null) {
+            if (block.getNear(EnumFacing.Up).getBlockId() == block.getBlockId()) {
+                h00 = h01 = h10 = h11 = 1f;
+            }
+
+            if (layer != ChunkLayerContainers.TRANSPARENT) {
+                return;
+            }
+        }
+
+        if(block == null || accessor == null){
+            renderFace(block, face, builder, accessor, h00, h01, h10, h11, x, y, z);
+            return;
+        }
+
+        if (shouldRender(face, block, accessor, block.getX(), block.getY(), block.getZ())) {
+            renderFace(block, face, builder, accessor, h00, h01, h10, h11, x, y, z);
+        }
     }
 
-    public void renderFace(int face, LegacyVertexBuilder builder, BlockAccessor w, float h00, float h01, float h10, float h11, long x, long y, long z, double renderX, double renderY, double renderZ) {
-        Texture2DTileMap terrain = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
+    @Override
+    public void provideTileMapItems(MultiAssetContainer<TextureAsset> list) {
+        list.addResource("cubecraft:transparent_block", this.calmTexture);
+        list.addResource("cubecraft:transparent_block", this.flowTexture);
+    }
+
+    //todo
+    public void renderFace(BlockAccess block, int face, VertexBuilder builder, BlockAccessor w, float h00, float h01, float h10, float h11, double renderX, double renderY, double renderZ) {
+        Texture2DTileMap terrain = Textures.TERRAIN_TRANSPARENT.get();
 
         String path = face == 0 || face == 1 ? this.calmTexture.getAbsolutePath() : this.flowTexture.getAbsolutePath();
+
+
+        var x = block.getX();
+        var y = block.getY();
+        var z = block.getZ();
 
         float u0 = terrain.exactTextureU(path, 0);
         float u1 = terrain.exactTextureU(path, 0.5f);

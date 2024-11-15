@@ -15,16 +15,16 @@ public interface SystemInfoQuery {
     }
 
     static String getCPUInfo() {
-        return "%s@%sGHZ".formatted(
+        return "%s@%sMHZ".formatted(
                 PROCESSOR.getProcessorIdentifier().getName(),
-                PROCESSOR.getCurrentFreq()[0] / 1024 / 1024 / 1024f
+                PROCESSOR.getCurrentFreq()[0] / 1024 / 1024
         );
     }
 
     static String getGPUInfo() {
-        return "%s@%sG".formatted(
+        return "%s@%sGB".formatted(
                 GRAPHICS_CARD.getName(),
-                GRAPHICS_CARD.getVRam() / 1024 / 1024 / 1024
+                GRAPHICS_CARD.getVRam() / 1024 / 1024
         );
     }
 

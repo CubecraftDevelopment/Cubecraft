@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.chunk.container;
 
-import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
+import me.gb2022.quantum3d.texture.Texture2DTileMap;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 import net.cubecraft.util.register.Named;
@@ -39,6 +39,10 @@ public interface ChunkLayerContainerFactory {
 
         public Texture2DTileMap getTextureUsed() {
             return this.texture.get();
+        }
+
+        public Registered<Texture2DTileMap> getTexture() {
+            return texture;
         }
 
         public boolean isChunked() {

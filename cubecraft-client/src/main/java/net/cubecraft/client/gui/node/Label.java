@@ -4,9 +4,9 @@ package net.cubecraft.client.gui.node;
 import me.gb2022.commons.math.MathHelper;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontAlignment;
+import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.text.TextComponent;
 import org.w3c.dom.Element;
@@ -32,7 +32,7 @@ public class Label extends Node {
     @Override
     public void render(float interpolationTime) {
         Layout layout = this.getLayout();
-        ClientGUIContext.FONT_RENDERER.render(
+        FontRenderer.ttf().render(
                 this.text2.getText(),
                 layout.getAbsoluteX() + layout.getAbsoluteWidth() / 2,
                 layout.getAbsoluteY(),

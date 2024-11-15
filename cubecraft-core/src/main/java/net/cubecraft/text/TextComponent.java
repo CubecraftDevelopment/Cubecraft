@@ -130,7 +130,10 @@ public final class TextComponent {
         if (!(obj instanceof TextComponent other)) {
             return false;
         }
-        return Objects.equals(other.text, this.text) && other.bold == this.bold && other.italic == this.italic && other.delete == this.delete && other.underline == this.underline;
+        return Objects.equals(
+                other.text,
+                this.text
+        ) && other.bold == this.bold && other.italic == this.italic && other.delete == this.delete && other.underline == this.underline;
     }
 
     @Override
@@ -143,6 +146,9 @@ public final class TextComponent {
     }
 
     public boolean isEmpty() {
+        if (this.text == null) {
+            return true;
+        }
         return this.text.isEmpty();
     }
 

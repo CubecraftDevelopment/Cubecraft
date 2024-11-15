@@ -1,11 +1,10 @@
 package net.cubecraft.client.render.gui;
 
 import com.google.gson.JsonObject;
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.ShapeRenderer;
+import me.gb2022.quantum3d.util.GLUtil;
+import me.gb2022.quantum3d.util.ShapeRenderer;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.render.renderer.ComponentRendererPart;
 import net.cubecraft.client.util.DeserializedConstructor;
 import net.cubecraft.util.NumberResolver;
 

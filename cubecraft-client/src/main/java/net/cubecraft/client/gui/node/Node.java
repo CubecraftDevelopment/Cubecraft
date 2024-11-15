@@ -1,6 +1,6 @@
 package net.cubecraft.client.gui.node;
 
-import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.commons.container.MultiMap;
 import me.gb2022.commons.file.DocumentUtil;
 import me.gb2022.commons.file.XmlReader;

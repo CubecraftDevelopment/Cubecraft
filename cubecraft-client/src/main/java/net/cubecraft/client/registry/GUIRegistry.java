@@ -8,7 +8,7 @@ import net.cubecraft.client.gui.layout.OriginLayout;
 import net.cubecraft.client.gui.layout.ViewportLayout;
 import net.cubecraft.client.gui.node.*;
 import net.cubecraft.client.render.gui.*;
-import net.cubecraft.client.render.renderer.ComponentRendererPart;
+import net.cubecraft.client.render.gui.ComponentRendererPart;
 
 public class GUIRegistry {
     @ItemRegisterFunc(ComponentRendererPart.class)

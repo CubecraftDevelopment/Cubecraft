@@ -1,7 +1,6 @@
 package net.cubecraft.client.context;
 
 import com.google.gson.JsonObject;
-import ink.flybird.quantum3d_legacy.GLUtil;
 import me.gb2022.commons.container.CollectionUtil;
 import me.gb2022.commons.event.EventBus;
 import me.gb2022.commons.event.EventHandler;
@@ -18,8 +17,9 @@ import me.gb2022.quantum3d.lwjgl.FrameBuffer;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
 import me.gb2022.quantum3d.render.ShapeRenderer;
 import me.gb2022.quantum3d.render.vertex.*;
+import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.gui.context.GUIContextInitEvent;
@@ -27,11 +27,12 @@ import net.cubecraft.client.gui.ComponentRenderer;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.base.Text;
-import net.cubecraft.client.gui.font.TrueTypeFontRenderer;
+import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.gui.screen.*;
-import net.cubecraft.client.render.renderer.ComponentRendererPart;
+import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.render.gui.ComponentRendererPart;
 import net.cubecraft.client.resource.ModelAsset;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.event.resource.ResourceLoadStartEvent;
@@ -49,11 +50,11 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
 
     public static final ConstructingMap<Node> NODE = new ConstructingMap<>(Node.class);
     public static final ConstructingMap<Layout> LAYOUT = new ConstructingMap<>(Layout.class);
-    public static final ConstructingMap<ComponentRendererPart> COMPONENT_RENDERER_PART = new ConstructingMap<>(ComponentRendererPart.class, JsonObject.class);
+    public static final ConstructingMap<ComponentRendererPart> COMPONENT_RENDERER_PART = new ConstructingMap<>(ComponentRendererPart.class,
+                                                                                                               JsonObject.class
+    );
 
     public static final HashMap<Class<? extends Node>, ComponentRenderer> COMPONENT_RENDERER = new HashMap<>();
-    public static final TrueTypeFontRenderer FONT_RENDERER = new TrueTypeFontRenderer();
-    public static final TrueTypeFontRenderer ICON_FONT_RENDERER = new TrueTypeFontRenderer();
 
     static {
         NODE.getEventBus().registerEventListener(RegisterListener.class);
@@ -89,13 +90,13 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     @Override
     public void init() {
         this.client.getClientEventBus().callEvent(new GUIContextInitEvent(this.client, this));
-        this.loadingScreen=new LogoLoadingScreen();
+        this.loadingScreen = new LogoLoadingScreen();
 
         ClientSharedContext.getClient().getWindow().addListener(new WindowListener() {
             @Override
             public void onSizeEvent(Window window, int width, int height) {
-                FONT_RENDERER.resize();
-                ICON_FONT_RENDERER.resize();
+                FontRenderer.ttf().resize();
+                FontRenderer.icon().resize();
             }
         });
     }
@@ -110,7 +111,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     }
 
     public void drawScreenBuffer(DisplayScreenInfo info) {
-        VertexBuilder builder = BUILDER_ALLOCATOR.allocate(VertexFormat.V3F_C4F_T2F, DrawMode.QUADS, 8);
+        VertexBuilder builder = BUILDER_ALLOCATOR.create(VertexFormat.V3F_C4F_T2F, DrawMode.QUADS, 8);
         builder.allocate();
 
         GLUtil.enableBlend();

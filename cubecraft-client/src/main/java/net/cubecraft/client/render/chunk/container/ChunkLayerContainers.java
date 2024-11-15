@@ -24,4 +24,12 @@ public interface ChunkLayerContainers {
             false//todo
     ));
 
+    Registered<ChunkLayerContainerFactory.Provider> TRANSPARENT = REGISTRY.register(new ChunkLayerContainerFactory.Provider(
+            TransparentBlockContainer::new,
+            RenderType.TRANSPARENT,
+            "cubecraft:transparent_block",
+            Textures.TERRAIN_SIMPLE,
+            false
+    ));
+
 }

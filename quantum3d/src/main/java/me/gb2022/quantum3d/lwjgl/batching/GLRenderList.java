@@ -1,9 +1,9 @@
 package me.gb2022.quantum3d.lwjgl.batching;
 
-import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
 import me.gb2022.quantum3d.render.command.RenderCall;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
+import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 
 public class GLRenderList implements RenderCall {

@@ -3,33 +3,48 @@ package net.cubecraft.client.internal.handler;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
-import ink.flybird.quantum3d_legacy.textures.TextureStateManager;
 import me.gb2022.commons.I18nHelper;
+import me.gb2022.quantum3d.texture.Texture2DTileMap;
+import me.gb2022.quantum3d.texture.TextureStateManager;
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.context.ClientRenderContext;
+import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.registry.ColorMaps;
 import net.cubecraft.client.render.Textures;
+import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.event.resource.ResourceReloadEvent;
-import net.cubecraft.resource.*;
+import net.cubecraft.resource.MultiAssetContainer;
+import net.cubecraft.resource.ResourceLocation;
+import net.cubecraft.resource.ResourcePlugin;
+import net.cubecraft.resource.item.IResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
 
-public class ClientAssetLoader {
-    public static final Logger LOGGER = LogManager.getLogger("ClientAssetLoader");
+public interface ClientAssetLoader {
+    Logger LOGGER = LogManager.getLogger("ClientAssetLoader");
 
-    public static ResourceReloadListener blockModelPlugin() {
+    static ResourcePlugin blockModelPlugin() {
         return (rm, s) -> {
             SharedContext.GSON_BUILDER.registerTypeAdapter(BlockModel.class, new BlockModel.JDeserializer());
             var container = new MultiAssetContainer<TextureAsset>();
+
+            var resources = new HashSet<IResource>();
+
+            for (var renderer : ClientRenderContext.BLOCK_RENDERERS.values()) {
+                if (renderer == null) {
+                    continue;
+                }
+
+                renderer.getResources(resources);
+            }
+
+            rm.loadBlocking(resources, "_block_model", true);
 
             for (var renderer : ClientRenderContext.BLOCK_RENDERERS.values()) {
                 if (renderer == null) {
@@ -48,12 +63,7 @@ public class ClientAssetLoader {
 
                 var a = f.toArray(new TextureAsset[0]);
 
-                for (TextureAsset r : a) {
-                    if (r == null) {
-                        continue;
-                    }
-                    rm.loadResource(r);
-                }
+                rm.loadBlocking(f, "_block_texture", true);
 
                 var texture = Texture2DTileMap.autoGenerate(a, false);
 
@@ -62,22 +72,30 @@ public class ClientAssetLoader {
                 texture.drawSection();
                 texture.upload();
 
-                if (Objects.equals(layer, "cubecraft:alpha_block")) {
-                    ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().set("cubecraft:terrain", texture);
-                    Textures.BLOCK_TEXTURES.register("cubecraft:block_simple", texture);
-                    TextureStateManager.setTextureMipMap(texture, true);
-                    TextureStateManager.setTextureClamp(texture, true);
-                }
+                var texReg = ChunkLayerContainers.REGISTRY.registered(layer);
 
-                if (Objects.equals(layer, "cubecraft:alpha_cutout")) {
-                    Textures.BLOCK_TEXTURES.register("cubecraft:block_cutout", texture);
-                    TextureStateManager.setTextureMipMap(texture, false);
+                switch (layer){
+                    case "cubecraft:alpha_block"->{
+                        ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().set("cubecraft:terrain", texture);
+                        Textures.BLOCK_TEXTURES.register("cubecraft:block_simple", texture);
+                        TextureStateManager.setTextureMipMap(texture, true);
+                        TextureStateManager.setTextureClamp(texture, true);
+                    }
+                    case "cubecraft:transparent_block"->{
+                        Textures.BLOCK_TEXTURES.register("cubecraft:block_transparent", texture);
+                        TextureStateManager.setTextureMipMap(texture, true);
+                        TextureStateManager.setTextureClamp(texture, true);
+                    }
+                    case "cubecraft:alpha_cutout"->{
+                        Textures.BLOCK_TEXTURES.register("cubecraft:block_cutout", texture);
+                        TextureStateManager.setTextureMipMap(texture, false);
+                    }
                 }
             }
         };
     }
 
-    public static ResourceReloadListener languagePlugin() {
+    static ResourcePlugin languagePlugin() {
         return (rm, stage) -> {
             var language = "auto";
             var i18n = SharedContext.I18N;
@@ -119,7 +137,7 @@ public class ClientAssetLoader {
         };
     }
 
-    public static ResourceReloadListener colorMapPlugin() {
+    static ResourcePlugin colorMapPlugin() {
         return (rm, stage) -> {
             for (var id : ColorMaps.REGISTRY.names()) {
                 LOGGER.debug("todo:load color map {}", id);
@@ -128,17 +146,12 @@ public class ClientAssetLoader {
     }
 
 
-    public static void init() {
+    static void init() {
         var rm = ClientSharedContext.RESOURCE_MANAGER;
+        rm.addNameSpace("cubecraft");
 
-        rm.addPlugin(blockModelPlugin());
-        rm.addPlugin(languagePlugin());
-        rm.addPlugin(colorMapPlugin());
-    }
-
-
-    @ResourceLoadHandler(stage = ResourceLoadStage.DETECT)
-    public void detectResourceLoader(ResourceReloadEvent e) {
-        e.resourceManager().addNameSpace("cubecraft");
+        rm.addPlugin("client:default", blockModelPlugin());
+        rm.addPlugin("client:default", colorMapPlugin());
+        rm.addPlugin("client:default", languagePlugin());
     }
 }

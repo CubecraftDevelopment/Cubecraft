@@ -1,18 +1,19 @@
 package net.cubecraft.client.render.block;
 
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
-import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
+import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
+import me.gb2022.quantum3d.texture.Texture2DTileMap;
 import me.gb2022.commons.ColorUtil;
 import me.gb2022.commons.container.Vector3;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import net.cubecraft.client.context.ClientRenderContext;
-import net.cubecraft.client.render.BlockBakery;
+import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
 import net.cubecraft.client.render.model.CullingMethod;
 import net.cubecraft.client.render.model.CullingPredication;
 import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.resource.MultiAssetContainer;
+import net.cubecraft.resource.ResourceHolder;
+import net.cubecraft.resource.item.IResource;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.EnumFacing;
@@ -21,7 +22,9 @@ import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 
-public interface IBlockRenderer {
+import java.util.Collection;
+
+public interface IBlockRenderer extends ResourceHolder {
     static void renderFace(int face, String texture, String color, LegacyVertexBuilder builder, BlockAccessor world, long x, long y, long z, double renderX, double renderY, double renderZ) {
         Texture2DTileMap terrain = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
         float u0 = terrain.exactTextureU(texture, 0);
@@ -126,7 +129,7 @@ public interface IBlockRenderer {
 
     static boolean isFaceCulled(CullingPredication culling, int face, BlockAccess block, BlockAccessor accessor) {
         if (block == null || accessor == null) {
-            return true;
+            return false;
         }
 
         return culling.test(block, block.near(accessor, face, 1));
@@ -149,7 +152,12 @@ public interface IBlockRenderer {
         };
     }
 
-    default void provideTileMapItems(MultiAssetContainer<TextureAsset> list){}
+    default void provideTileMapItems(MultiAssetContainer<TextureAsset> list) {
+    }
 
     void render(BlockAccess block, BlockAccessor accessor, Registered<ChunkLayerContainerFactory.Provider> layer, int face, float x, float y, float z, VertexBuilder builder);
+
+    @Override
+    default void getResources(Collection<IResource> list) {
+    }
 }

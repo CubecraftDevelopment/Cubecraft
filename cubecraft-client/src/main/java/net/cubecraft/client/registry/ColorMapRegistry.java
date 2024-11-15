@@ -26,6 +26,11 @@ public class ColorMapRegistry {
                 //return this.image.getRGB((int) (h*this.image.getWidth()), (int) (t/this.image.getHeight()));
                 return 0x77AB2F;
             }
+
+            @Override
+            public int getDummyColor() {
+                return 0x77AB2F;
+            }
         };
     }
 
@@ -45,6 +50,11 @@ public class ColorMapRegistry {
             @Override
             public int sample(BlockAccessor w, BlockAccess blockAccess, long x, long y, long z) {
                 // return this.image.getRGB((int) (h*this.image.getWidth()), (int) (t/this.image.getHeight()));
+                return 0x91BD59;
+            }
+
+            @Override
+            public int getDummyColor() {
                 return 0x91BD59;
             }
         };

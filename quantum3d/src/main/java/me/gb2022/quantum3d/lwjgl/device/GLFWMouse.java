@@ -84,6 +84,10 @@ public final class GLFWMouse extends Mouse {
         return this.y;
     }
 
+    @Override
+    public boolean isButtonDown(MouseButton btn) {
+        return GLFW.glfwGetMouseButton(this.handle, btn.getCode()) == 1;
+    }
 
     @Override
     public String toString() {

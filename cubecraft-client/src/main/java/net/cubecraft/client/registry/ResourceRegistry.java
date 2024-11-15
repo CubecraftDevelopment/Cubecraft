@@ -1,11 +1,11 @@
 package net.cubecraft.client.registry;
 
-import ink.flybird.quantum3d_legacy.textures.ITextureImage;
+import me.gb2022.quantum3d.texture.ITextureImage;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import me.gb2022.commons.registry.FieldRegistry;
 import me.gb2022.commons.registry.FieldRegistryHolder;
-import net.cubecraft.client.context.ClientGUIContext;
+import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.resource.FontAsset;
 import net.cubecraft.client.resource.TextureAsset;
 import net.cubecraft.client.resource.UIAsset;
@@ -81,8 +81,8 @@ public interface ResourceRegistry {
         if (!Objects.equals(event.getStage(), "default")) {
             return;
         }
-        ClientGUIContext.FONT_RENDERER.setFontFamily(TEXT_FONT.getFont());
-        ClientGUIContext.ICON_FONT_RENDERER.setFontFamily(ICON_FONT.getFont());
+        FontRenderer.ttf().setFontFamily(TEXT_FONT.getFont());
+        FontRenderer.icon().setFontFamily(ICON_FONT.getFont());
 
         TextureRegistry.TOAST.load(ResourceRegistry.TOAST);
         TextureRegistry.IMAGE_BG.load(ResourceRegistry.IMAGE_BG);

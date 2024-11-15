@@ -9,23 +9,23 @@ import net.cubecraft.SharedContext;
 import net.cubecraft.event.resource.ResourceLoadFinishEvent;
 import net.cubecraft.event.resource.ResourceLoadItemEvent;
 import net.cubecraft.event.resource.ResourceLoadStartEvent;
-import net.cubecraft.event.resource.ResourceReloadEvent;
 import net.cubecraft.resource.item.IResource;
 import net.cubecraft.resource.provider.InternalResourceLoader;
 import net.cubecraft.resource.provider.ModResourceLoader;
 import net.cubecraft.resource.provider.ResourceLoader;
+import net.cubecraft.util.TaskFutureWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class ResourceManager {
     private static final Logger LOGGER = LogManager.getLogger("ResourceManager");
@@ -36,7 +36,7 @@ public class ResourceManager {
     private final Map<String, ResourceLoader> loaders = new HashMap<>();
     private final SimpleEventBus eventBus = new SimpleEventBus();
     private final HashMap<String, RegisterMap<IResource>> resourceObjectCache = new HashMap<>(512);
-    private final Set<ResourceReloadListener> plugins = new HashSet<>();
+    private final Map<String, Set<ResourcePlugin>> plugins = new HashMap<>();
 
     private final ArrayList<String> namespaces = new ArrayList<>();
 
@@ -50,6 +50,7 @@ public class ResourceManager {
         return this.eventBus;
     }
 
+    //----[register]----
     public void registerResources(Class<?> clazz) {
         for (Field f : clazz.getDeclaredFields()) {
             if (f.getAnnotation(FieldRegistry.class) == null) {
@@ -83,10 +84,8 @@ public class ResourceManager {
     }
 
     public void registerResource(String loadStage, String namespace, String id, IResource resource) {
-        this.resourceObjectCache.computeIfAbsent(loadStage, K -> new RegisterMap<>(IResource.class))
-                .registerItem(namespace, id, resource);
+        this.resourceObjectCache.computeIfAbsent(loadStage, K -> new RegisterMap<>(IResource.class)).registerItem(namespace, id, resource);
     }
-
 
     private List<String> createLoadList(String stage) {
         RegisterMap<IResource> map = this.resourceObjectCache.get(stage);
@@ -102,12 +101,15 @@ public class ResourceManager {
         return loaders;
     }
 
-    private void loadResource(List<ResourceLoader> loaders, String stage, IResource resource, String id) {
+    private void loadResource(List<ResourceLoader> loaders, String stage, IResource resource) {
+        if (resource == null) {
+            return;
+        }
         for (ResourceLoader loader : loaders) {
             if (!loader.load(resource)) {
                 continue;
             }
-            this.eventBus.callEvent(new ResourceLoadItemEvent(stage, resource, id));
+            this.eventBus.callEvent(new ResourceLoadItemEvent(stage, resource));
             return;
         }
         LOGGER.warn("failed to load resource:{}", resource.toString());
@@ -122,53 +124,46 @@ public class ResourceManager {
         }
     }
 
-    public void loadAsync(String stage) {
-        this.eventBus.callEvent(new ResourceLoadStartEvent(stage));
-        List<String> list = this.createLoadList(stage);
-        List<ResourceLoader> loaders = this.getSortedLoaders();
-        if (list == null) {
-            return;
+    public Set<? extends Future<?>> load(Collection<? extends IResource> resources, String stage, boolean async) {
+        var loaders = this.getSortedLoaders();
+
+        if (!async) {
+            return resources.stream().map(r -> new TaskFutureWrapper(() -> loadResource(loaders, stage, r))).collect(Collectors.toSet());
         }
-        AtomicInteger counter = new AtomicInteger(0);
-        for (String id : list) {
-            Runnable task = () -> {
-                this.loadResource(loaders, stage, this.resourceObjectCache.get(stage).get(id), id);
-                counter.decrementAndGet();
-            };
-            counter.incrementAndGet();
-            this.threadPool.submit(task);
-        }
-        while (counter.get() > 0) {
-            Thread.yield();
-        }
-        this.eventBus.callEvent(new ResourceLoadFinishEvent(stage), stage);
+        return resources.stream()
+                .map((r) -> (Runnable) () -> loadResource(loaders, stage, r))
+                .collect(Collectors.toSet())
+                .stream()
+                .map(this.threadPool::submit)
+                .collect(Collectors.toSet());
     }
 
-    public void load(String stage) {
+    public void loadBlocking(Collection<? extends IResource> resources, String stage, boolean async) {
+        for (var future : load(resources, stage, async)) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                LOGGER.catching(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void load(String stage, boolean async) {
         this.eventBus.callEvent(new ResourceLoadStartEvent(stage));
-        List<String> list = this.createLoadList(stage);
-        List<ResourceLoader> loaders = this.getSortedLoaders();
-        if (list == null) {
-            return;
+        var list = this.createLoadList(stage);
+
+        if (list != null) {
+            var resources = list.stream().map((s) -> this.resourceObjectCache.get(stage).get(s)).collect(Collectors.toSet());
+            this.loadBlocking(resources, stage, async);
         }
-        for (String id : list) {
-            this.loadResource(loaders, stage, this.resourceObjectCache.get(stage).get(id), id);
-        }
-        this.eventBus.callEvent(new ResourceLoadFinishEvent(stage), stage);
-        for (var plugin : this.plugins) {
+
+        for (var plugin : this.getPlugins(stage)) {
             plugin.onResourceReload(this, stage);
         }
-    }
 
-    @Deprecated
-    public void reload() {
-        this.reloadStage(new ResourceReloadEvent(this), ResourceLoadStage.DETECT);
-        this.reloadStage(new ResourceReloadEvent(this), ResourceLoadStage.BLOCK_MODEL);
-        this.reloadStage(new ResourceReloadEvent(this), ResourceLoadStage.BLOCK_TEXTURE);
-        this.reloadStage(new ResourceReloadEvent(this), ResourceLoadStage.COLOR_MAP);
-        this.reloadStage(new ResourceReloadEvent(this), ResourceLoadStage.FONT_TEXTURE);
-        this.reloadStage(new ResourceReloadEvent(this), ResourceLoadStage.LANGUAGE);
-        this.reloadStage(new ResourceReloadEvent(this), ResourceLoadStage.UI_CONTROLLER);
+        this.eventBus.callEvent(new ResourceLoadFinishEvent(stage), stage);
     }
 
     @Deprecated
@@ -210,42 +205,27 @@ public class ResourceManager {
         this.listeners.add(listener);
     }
 
-    @Deprecated
-    public void reloadStage(ResourceReloadEvent e, ResourceLoadStage stage) {
-        for (Object el : this.listeners) {
-            Method[] ms = el.getClass().getMethods();
-            for (Method m : ms) {
-                if (Arrays.stream(m.getAnnotations()).anyMatch(annotation -> annotation instanceof ResourceLoadHandler)) {
-                    ResourceLoadHandler a = m.getAnnotation(ResourceLoadHandler.class);
-                    if (m.getParameters()[0].getType() == e.getClass() && a.stage() == stage) {
-                        try {
-                            m.invoke(el, e);
-                        } catch (IllegalAccessException | InvocationTargetException e2) {
-                            throw new RuntimeException(e2);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public void addPlugin(ResourceReloadListener plugin) {
-        this.plugins.add(plugin);
-    }
-
-    public void removePlugin(ResourceReloadListener plugin) {
-        this.plugins.remove(plugin);
-    }
-
-    @Deprecated
     public void addNameSpace(String space) {
         if (!this.namespaces.contains(space)) {
             this.namespaces.add(space);
         }
     }
 
-    @Deprecated
     public List<String> getNameSpaces() {
         return this.namespaces;
+    }
+
+
+    //----[plugin api]----
+    public Set<ResourcePlugin> getPlugins(String stage) {
+        return this.plugins.computeIfAbsent(stage, k -> new HashSet<>());
+    }
+
+    public void addPlugin(String stage, ResourcePlugin plugin) {
+        this.getPlugins(stage).add(plugin);
+    }
+
+    public void removePlugin(String stage, ResourcePlugin plugin) {
+        this.getPlugins(stage).remove(plugin);
     }
 }

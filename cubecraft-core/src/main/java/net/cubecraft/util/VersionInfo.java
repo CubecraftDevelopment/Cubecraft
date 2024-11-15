@@ -5,7 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class VersionInfo {
-    public static final Pattern DISPATCHER = Pattern.compile("(\\w+)-(\\d+)\\.(\\d+)\\.(\\d+)-(\\w+)");
+    public static final Pattern DISPATCHER = Pattern.compile("(\\w+)-(\\d+)\\.(\\d+)\\.(\\d+)");
+    public static final Pattern DISPATCHER_SNAPSHOT = Pattern.compile("(\\w+)-(\\d+)\\.(\\d+)\\.(\\d+)-(\\w+)");
     public static final String CLIENT_ARTIFACT_ID = "cubecraft-client";
     public static final String SERVER_ARTIFACT_ID = "cubecraft-server";
 
@@ -24,7 +25,14 @@ public final class VersionInfo {
     }
 
     public VersionInfo(String version) {
-        Matcher matcher = DISPATCHER.matcher(version);
+        Matcher matcher = DISPATCHER_SNAPSHOT.matcher(version);
+        if (!matcher.matches()) {
+            matcher = DISPATCHER.matcher(version);
+            this.buildVersion = "_";
+        } else {
+            this.buildVersion = matcher.group(5);
+        }
+
         if (!matcher.matches()) {
             throw new IllegalArgumentException(version);
         }
@@ -32,7 +40,6 @@ public final class VersionInfo {
         this.archVersion = Integer.parseInt(matcher.group(2));
         this.majorVersion = Integer.parseInt(matcher.group(3));
         this.minorVersion = Integer.parseInt(matcher.group(4));
-        this.buildVersion = matcher.group(5);
     }
 
     public String getArtifactId() {
@@ -120,16 +127,17 @@ public final class VersionInfo {
 
     @Override
     public String toString() {
-        return "%s-%d.%d.%d-%s".formatted(
-                this.artifactId,
-                this.archVersion,
-                this.majorVersion,
-                this.minorVersion,
-                this.buildVersion
-        );
+        return this.artifactId + "-" + shortVersion();
     }
 
     public String shortVersion() {
+        if (this.buildVersion.equals("_")) {
+            return "%d.%d.%d".formatted(
+                    this.archVersion,
+                    this.majorVersion,
+                    this.minorVersion
+            );
+        }
         return "%d.%d.%d-%s".formatted(
                 this.archVersion,
                 this.majorVersion,

@@ -1,12 +1,11 @@
 package net.cubecraft.client.render.chunk;
 
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.draw.VertexUploader;
-import ink.flybird.quantum3d_legacy.drawcall.DrawCallException;
+import me.gb2022.quantum3d.legacy.drawcall.DrawCallException;
 import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
+import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
@@ -33,23 +32,28 @@ public interface RenderBatch {
 
     final class ListRenderBatch implements RenderBatch {
         private int list = -1;
+        private int count;
 
         @Override
         public void call() {
-            if(!this.isAllocated()) {
+            if (!this.isAllocated()) {
                 throw new RuntimeException("ListRenderBatch is not allocated");
             }
             GL11.glCallList(this.list);
+
+            VertexBuilderUploader.UPLOAD_COUNT.addAndGet(this.count);
         }
 
         @Override
         public void upload(VertexBuilder builder) {
             GL11.glNewList(this.list, GL11.GL_COMPILE);
-            if(!builder.getLifetimeCounter().isAllocated()){
+            if (!builder.getLifetimeCounter().isAllocated()) {
                 return;
             }
             VertexBuilderUploader.uploadPointer(builder);
             GL11.glEndList();
+
+            this.count = builder.getVertexCount();
         }
 
         @Override
@@ -103,7 +107,7 @@ public interface RenderBatch {
             VertexBuilderUploader.disableState(this.format);
 
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-            VertexUploader.UPLOAD_COUNTER.addAndGet(this.count);
+            VertexBuilderUploader.UPLOAD_COUNT.addAndGet(this.count);
         }
 
         @Override

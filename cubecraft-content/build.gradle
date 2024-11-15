@@ -4,8 +4,6 @@ plugins {
 
 version '0.0.1'
 
-apply from: "../script/build-base.gradle"
-
 apply from: "E:/Java/GradleScripts/build-base.gradle"
 
 applyGlobalScript("Dependencies.gradle")
@@ -13,7 +11,6 @@ applyGlobalScript("Dependencies.gradle")
 version '1.0-SNAPSHOT'
 
 ext.applyScript("/jar.gradle")
-ext.applyScript("/shared.gradle")
 ext.applyScript("/lib/basic.gradle")
 ext.applyScript("/lib/cubecraft.gradle")
 
@@ -31,9 +28,8 @@ dependencies {
 
     compileOnly projectLocal("terraforged-noise")
 
-    compileOnly local("jflogger-0.0.2-1")
-    compileOnly local("fcommon-1.0.5")
-
+    compileOnly projectLocal("jflogger-0.0.2-1")
+    compileOnly projectLocal("fcommon-1.0.5")
 }
 
 jar {

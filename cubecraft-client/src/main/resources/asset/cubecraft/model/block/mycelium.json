@@ -1,0 +1,50 @@
+{
+  "type": "cubecraft:component_block",
+  "particle_texture": "cubecraft:/block/dirt.png",
+  "models": [
+    {
+      "statement": "default",
+      "components": [
+        {
+          "id": "#default",
+          "type": "cube",
+          "layer": "cubecraft:alpha_block",
+          "start": [0, 0, 0],
+          "end": [1, 1, 1],
+          "faces": {
+            "top": {
+              "texture": "cubecraft:/block/mycelium_top.png",
+              "culling": "solid",
+              "uv": [0, 1, 0, 1]
+            },
+            "bottom": {
+              "texture": "cubecraft:/block/dirt.png",
+              "culling": "solid",
+              "uv": [0, 1, 0, 1]
+            },
+            "left": {
+              "texture": "cubecraft:/block/mycelium_side.png",
+              "culling": "solid",
+              "uv": [0, 1, 0, 1]
+            },
+            "right": {
+              "texture": "cubecraft:/block/mycelium_side.png",
+              "culling": "solid",
+              "uv": [0, 1, 0, 1]
+            },
+            "front": {
+              "texture": "cubecraft:/block/mycelium_side.png",
+              "culling": "solid",
+              "uv": [0, 1, 0, 1]
+            },
+            "back": {
+              "texture": "cubecraft:/block/mycelium_side.png",
+              "culling": "solid",
+              "uv": [0, 1, 0, 1]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

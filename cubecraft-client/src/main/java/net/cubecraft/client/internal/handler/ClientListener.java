@@ -4,22 +4,14 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.WindowFocusEvent;
-import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.ClientRendererInitializeEvent;
-import net.cubecraft.client.render.world.ParticleRenderer;
 import net.cubecraft.event.SettingReloadEvent;
-import net.cubecraft.event.register.BlockRegisterEvent;
 
 
 public class ClientListener {
-    @EventHandler
-    public static void onBlockRegister(BlockRegisterEvent event) {
-
-
-        //todo:注册事件
-    }
 
     @EventHandler
     public void onClientRendererInitialize(ClientRendererInitializeEvent e) {

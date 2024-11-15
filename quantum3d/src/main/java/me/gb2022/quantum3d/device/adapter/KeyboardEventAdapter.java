@@ -4,10 +4,7 @@ import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.quantum3d.device.Keyboard;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.Window;
-import me.gb2022.quantum3d.device.event.KeyboardCharEvent;
-import me.gb2022.quantum3d.device.event.KeyboardHoldEvent;
-import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
-import me.gb2022.quantum3d.device.event.KeyboardReleaseEvent;
+import me.gb2022.quantum3d.device.event.*;
 import me.gb2022.quantum3d.device.listener.KeyboardListener;
 
 /**
@@ -32,6 +29,7 @@ public final class KeyboardEventAdapter extends EventAdapter implements Keyboard
     @Override
     public void onKeyReleaseEvent(Window window, Keyboard keyboard, KeyboardButton key) {
         this.getEventBus().callEvent(new KeyboardReleaseEvent(window, keyboard, key));
+        this.getEventBus().callEvent(new AnyClickInputEvent(window, null, keyboard, key, null));
     }
 
     @Override

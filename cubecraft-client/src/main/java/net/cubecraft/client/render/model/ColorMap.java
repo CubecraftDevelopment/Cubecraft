@@ -19,7 +19,15 @@ public abstract class ColorMap {
     }
 
     public int sample(BlockAccessor w, BlockAccess b) {
+        if (b == null) {
+            return getDummyColor();
+        }
+
         return sample(w, b, b.getX(), b.getY(), b.getZ());
+    }
+
+    public int getDummyColor() {
+        return 0xFFFFFF;
     }
 
     public abstract int sample(BlockAccessor w, BlockAccess blockAccess, long x, long y, long z);

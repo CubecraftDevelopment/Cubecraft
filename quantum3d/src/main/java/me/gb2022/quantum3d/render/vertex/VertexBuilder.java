@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class VertexBuilder {
-    protected final AtomicInteger vertexCount = new AtomicInteger();
+public final class VertexBuilder {
+    private final AtomicInteger vertexCount = new AtomicInteger();
     private final VertexFormat format;
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
     private final DrawMode drawMode;
@@ -70,7 +70,7 @@ public class VertexBuilder {
         this.allocator.free(this.rawBuffer);
     }
 
-    public final void addVertex(double... data) {
+    public void addVertex(double... data) {
         if (this.vertexCount.get() >= this.capacity) {
             throw new RuntimeException("Builder overflowed: reached capacity " + this.capacity);
         }
@@ -81,16 +81,19 @@ public class VertexBuilder {
         this.format.putNormalData(this.normalBuffer, this.rawBuffer, this.normalCache);
     }
 
-    public final void setColor(double... data) {
+    public VertexBuilder setColor(double... data) {
         this.colorCache = data;
+        return this;
     }
 
-    public final void setTextureCoordinate(double... data) {
+    public VertexBuilder setTextureCoordinate(double... data) {
         this.textureCache = data;
+        return this;
     }
 
-    public final void setNormal(double... data) {
+    public VertexBuilder setNormal(double... data) {
         this.normalCache = data;
+        return this;
     }
 
     public int getVertexCount() {
@@ -168,7 +171,7 @@ public class VertexBuilder {
 
     @Override
     protected void finalize() {
-        if(!this.lifetimeCounter.isAllocated()){
+        if (!this.lifetimeCounter.isAllocated()) {
             return;
         }
         //System.err.println("unexpected free by"+ this);
@@ -177,13 +180,6 @@ public class VertexBuilder {
 
     @Override
     public String toString() {
-        return "VertexBuilder{" +
-                "vertexCount=" + vertexCount +
-                ", format=" + format +
-                ", lifetimeCounter=" + lifetimeCounter +
-                ", drawMode=" + drawMode +
-                ", capacity=" + capacity +
-                ", allocator=" + allocator +
-                '}';
+        return "VertexBuilder{" + "vertexCount=" + vertexCount + ", format=" + format + ", lifetimeCounter=" + lifetimeCounter + ", drawMode=" + drawMode + ", capacity=" + capacity + ", allocator=" + allocator + '}';
     }
 }

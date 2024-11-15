@@ -6,10 +6,8 @@ import me.gb2022.commons.container.Vector;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.registry.FieldRegistry;
 import me.gb2022.commons.registry.FieldRegistryHolder;
-import ink.flybird.quantum3d_legacy.textures.Texture2D;
-import ink.flybird.quantum3d_legacy.textures.Texture2DTileMap;
-
-import java.util.Objects;
+import me.gb2022.quantum3d.texture.Texture2D;
+import me.gb2022.quantum3d.texture.Texture2DTileMap;
 
 @FieldRegistryHolder(value = "cubecraft")
 public interface TextureRegistry {

@@ -48,10 +48,11 @@ public class ScreenController {
                     context.setScreen(ScreenBuilder.xml(ResourceRegistry.MULTI_PLAYER_SCREEN, ResourceRegistry.TITLE_SCREEN));
             case "button_option" -> context.setScreen(ScreenBuilder.xml(ResourceRegistry.OPTIONS_SCREEN, ResourceRegistry.TITLE_SCREEN));
 
-            case "button_check_version" -> ScreenUtil.createPopup(SharedContext.I18N.get("version_check.start"),
-                                                                  SharedContext.I18N.get("version_check.start_detail"),
-                                                                  100,
-                                                                  Popup.INFO
+            case "button_check_version" -> ScreenUtil.createPopup(
+                    SharedContext.I18N.get("version_check.start"),
+                    SharedContext.I18N.get("version_check.start_detail"),
+                    100,
+                    Popup.INFO
             );
             case "button_quit" -> ClientSharedContext.getClient().setRunning(false);
         }
@@ -61,10 +62,11 @@ public class ScreenController {
     @SubscribedEvent("cubecraft:title_screen")
     public void onComponentInitialize(ComponentInitializeEvent event) {
         Text auth = Text.translated("title_screen.auth", FontAlignment.LEFT, ClientSharedContext.getClient().getSession());
-        Text version = Text.translated("title_screen.version",
-                                       FontAlignment.LEFT,
-                                       CubecraftClient.VERSION.shortVersion(),
-                                       SharedContext.MOD.getMods().size()
+        Text version = Text.translated(
+                "title_screen.version",
+                FontAlignment.LEFT,
+                CubecraftClient.VERSION.shortVersion(),
+                SharedContext.MOD.getMods().size()
         );
 
 

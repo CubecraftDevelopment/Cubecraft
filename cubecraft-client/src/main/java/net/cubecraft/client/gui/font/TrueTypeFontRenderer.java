@@ -1,13 +1,13 @@
 package net.cubecraft.client.gui.font;
 
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.textures.Texture2D;
+import me.gb2022.quantum3d.util.GLUtil;
+import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.quantum3d.render.ShapeRenderer;
 import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.text.TextComponent;
 
@@ -27,11 +27,12 @@ public final class TrueTypeFontRenderer implements FontRenderer {
     private Font fontFamily = new Font("System", Font.PLAIN, 12);
 
     public static VertexBuilder createSharedBuilder() {
-        VertexBuilder builder = ClientGUIContext.BUILDER_ALLOCATOR.allocate(VertexFormat.V3F_C4F_T2F, DrawMode.QUADS, 8);
+        VertexBuilder builder = ClientGUIContext.BUILDER_ALLOCATOR.create(VertexFormat.V3F_C4F_T2F, DrawMode.QUADS, 8);
         builder.allocate();
         return builder;
     }
 
+    @Override
     public void gc() {
         if (this.compiled.size() > 114514) {
             Set<CompiledComponent> components = new HashSet<>(this.compiled.values());
@@ -39,6 +40,11 @@ public final class TrueTypeFontRenderer implements FontRenderer {
             components.forEach(CompiledComponent::destroy);
             components.clear();
         }
+    }
+
+    @Override
+    public void resize() {
+        this.compiled.clear();
     }
 
     public Font getFontFamily() {
@@ -104,10 +110,6 @@ public final class TrueTypeFontRenderer implements FontRenderer {
                 (int) (x + (double) compiled.width() / RESOLUTION_SCALE * ClientSettingRegistry.getGUIScaleMod()),
                 y
         );
-    }
-
-    public void resize() {
-        this.compiled.clear();
     }
 
     private static final class CompiledComponent {

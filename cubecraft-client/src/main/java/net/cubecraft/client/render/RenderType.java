@@ -1,6 +1,6 @@
 package net.cubecraft.client.render;
 
-public enum RenderType implements IRenderType {
+public enum RenderType {
     VISIBLE_AREA("visible_area"),
     ALPHA("alpha"),
     TRANSPARENT("transparent");

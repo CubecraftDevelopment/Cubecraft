@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.chunk.status;
 
-import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 import net.cubecraft.world.chunk.Chunk;

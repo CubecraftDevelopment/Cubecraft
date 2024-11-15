@@ -17,8 +17,15 @@ public final class VertexBuilderAllocator {
         builder.free();
     }
 
-    public VertexBuilder allocate(VertexFormat format, DrawMode mode, int capacity) {
+    public VertexBuilder create(VertexFormat format, DrawMode mode, int capacity) {
         this.counter.incrementAndGet();
         return new VertexBuilder(format, capacity, mode, this.allocator);
+    }
+
+    public VertexBuilder allocate(VertexFormat format, DrawMode mode, int capacity) {
+        this.counter.incrementAndGet();
+        var b = new VertexBuilder(format, capacity, mode, this.allocator);
+        b.allocate();
+        return b;
     }
 }

@@ -40,34 +40,54 @@ public abstract class EntityController<E extends EntityLiving> {
     }
 
     public void jump() {
+        if (this.entity == null) {
+            return;
+        }
         if (this.entity.inLiquid()) {
-            if(this.entity.yd<0.15f) {
-                this.entity.yd += 0.05f;
+            if (this.entity.yd < 0.15f) {
+                this.entity.yd += 0.087f;
             }
         } else if (this.entity.isOnGround()) {
             this.entity.yd = 0.45f;
         }
+
+        System.out.println(entity.yd);
     }
 
     //fly
     public void toggleFly() {
+        if (this.entity == null) {
+            return;
+        }
         this.entity.setFlying(!this.entity.isFlying());
     }
 
     public void flyUp() {
+        if (this.entity == null) {
+            return;
+        }
         entity.yd = 0.45f;
     }
 
     public void flyDown() {
+        if (this.entity == null) {
+            return;
+        }
         entity.yd = -0.45f;
     }
 
     //mode
     public void toggleSprint() {
+        if (this.entity == null) {
+            return;
+        }
         this.entity.setSprinting(!this.entity.isSprinting());
     }
 
     public void tick() {
+        if (this.entity == null) {
+            return;
+        }
         this.entity.moveRelative(this.xAction, this.zAction);
         this.xAction = 0;
         this.zAction = 0;

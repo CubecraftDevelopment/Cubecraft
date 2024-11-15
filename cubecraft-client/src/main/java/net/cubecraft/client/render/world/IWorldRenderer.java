@@ -1,8 +1,8 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import ink.flybird.quantum3d_legacy.Camera;
-import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.quantum3d.util.Camera;
+import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.commons.memory.BufferAllocator;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.Window;
@@ -13,8 +13,6 @@ import net.cubecraft.client.render.RenderType;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.World;
 import org.lwjgl.opengl.GL11;
-
-import java.util.logging.Logger;
 
 
 public abstract class IWorldRenderer {
@@ -45,11 +43,6 @@ public abstract class IWorldRenderer {
 
     public Camera getCamera() {
         return camera;
-    }
-
-    public final void refresh() {
-        this.stop();
-        this.init();
     }
 
     public void init() {

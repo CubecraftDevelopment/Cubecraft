@@ -1,8 +1,8 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.quantum3d_legacy.GLUtil;
+import me.gb2022.quantum3d.util.BufferAllocation;
+import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.math.MathHelper;
 import me.gb2022.commons.registry.TypeItem;
@@ -12,7 +12,7 @@ import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
@@ -234,7 +234,7 @@ public final class CloudRenderer extends IWorldRenderer {
         double z1 = (this.cfg.cloudSize);
         float[] col = this.cloudColor.RGBA_F();
 
-        VertexBuilder builder = ALLOCATOR.allocate(VertexFormat.V3F_C4F, DrawMode.QUADS, 4);
+        VertexBuilder builder = ALLOCATOR.create(VertexFormat.V3F_C4F, DrawMode.QUADS, 4);
         builder.allocate();
 
         float col0 = 1.0f;

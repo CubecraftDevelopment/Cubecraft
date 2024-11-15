@@ -28,4 +28,8 @@ public final class DisplayScreenInfo {
     public int getScreenHeight() {
         return scrHeight;
     }
+
+    public float getAspect() {
+        return (float) this.scrWidth / this.scrHeight;
+    }
 }

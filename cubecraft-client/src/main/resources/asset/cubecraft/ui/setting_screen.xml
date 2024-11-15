@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<screen bg="image-bg-blur-mask" id="cubecraft:setting_screen">
+    <topbar layout="flow/top,0,28">
+        <label layout="origin/middle_middle,0,0,0,8" type="lang" color="000000" align="middle">setting.title</label>
+    </topbar>
+</screen>
+
+
+<!--
 <faml ext="cubecraft_ui">
     <meta>
         <type>image-bg-blur-mask</type>
@@ -441,4 +450,4 @@
             </elements>
         </element_factory>
     </elements>
-</faml>
+</faml>-->

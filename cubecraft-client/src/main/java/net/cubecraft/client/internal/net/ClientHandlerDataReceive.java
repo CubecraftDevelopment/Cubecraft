@@ -24,8 +24,4 @@ public class ClientHandlerDataReceive extends ClientNetHandler {
         //todo
     }
 
-    @PacketListener
-    public void entityReceived(PacketEntityData packet, NetHandlerContext context) {
-        this.client.getClientWorldContext().getWorld().addEntity(packet.getEntity());
-    }
 }

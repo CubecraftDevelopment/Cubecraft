@@ -47,9 +47,15 @@ public class ShadowedMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-        for (var map:this.maps){
-            if(map.containsKey(key)){
-                return map.get(key);
+        for (var map : this.maps) {
+            if (map.containsKey(key)) {
+                var v = map.get(key);
+
+                if (v == null) {
+                    continue;
+                }
+
+                return v;
             }
         }
 
@@ -79,7 +85,7 @@ public class ShadowedMap<K, V> implements Map<K, V> {
 
     @Override
     public @NotNull Set<K> keySet() {
-        var s=new HashSet<K>();
+        var s = new HashSet<K>();
         this.maps.stream().map(Map::keySet).forEach(s::addAll);
 
         return s;
@@ -87,7 +93,7 @@ public class ShadowedMap<K, V> implements Map<K, V> {
 
     @Override
     public @NotNull Collection<V> values() {
-        var s=new HashSet<V>();
+        var s = new HashSet<V>();
         this.maps.stream().map(Map::values).forEach(s::addAll);
 
         return s;
@@ -95,7 +101,7 @@ public class ShadowedMap<K, V> implements Map<K, V> {
 
     @Override
     public @NotNull Set<Entry<K, V>> entrySet() {
-        var s=new HashSet<Entry<K, V>>();
+        var s = new HashSet<Entry<K, V>>();
         this.maps.stream().map(Map::entrySet).forEach(s::addAll);
 
         return s;

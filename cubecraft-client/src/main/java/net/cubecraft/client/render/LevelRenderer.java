@@ -2,8 +2,6 @@ package net.cubecraft.client.render;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import ink.flybird.quantum3d_legacy.Camera;
-import ink.flybird.quantum3d_legacy.GLUtil;
 import me.gb2022.commons.ColorUtil;
 import me.gb2022.commons.container.MultiMap;
 import me.gb2022.commons.event.EventHandler;
@@ -13,80 +11,126 @@ import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.KeyboardReleaseEvent;
-import me.gb2022.quantum3d.lwjgl.FrameBuffer;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
-import net.cubecraft.client.ClientSettingRegistry;
+import me.gb2022.quantum3d.util.Camera;
+import me.gb2022.quantum3d.util.GLUtil;
+import net.cubecraft.client.ClientComponent;
+import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.context.ClientRenderContext;
 import net.cubecraft.client.event.ClientRendererInitializeEvent;
+import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.resource.ResourceLocation;
 import net.cubecraft.world.World;
+import net.cubecraft.world.WorldContext;
 import net.cubecraft.world.block.blocks.Blocks;
-import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
-import java.util.Objects;
 
-public final class LevelRenderer {
+public final class LevelRenderer extends ClientComponent {
     public static final BufferAllocator ALLOCATOR = new LWJGLBufferAllocator(16384, 16777216);
-
     public final MultiMap<String, IWorldRenderer> renderers = new MultiMap<>();
-    public final World world;
-    public final EntityPlayer player;
+
     public final Camera camera = new Camera();
-    private final FrameBuffer buffer = new FrameBuffer();
-    private final FloatBuffer fogColor;
+    private final FloatBuffer fogColor = ALLOCATOR.allocFloatBuffer(5);
+
+    public World world;
+    public EntityPlayer player;
+
     private ColorElement fogColorElement;
+    private boolean active;
 
-    public LevelRenderer(World w, EntityPlayer p, ResourceLocation cfgLoc) {
-        CubecraftClient client = ClientSharedContext.getClient();
 
-        this.fogColor = ALLOCATOR.allocFloatBuffer(5);
-
-        client.getDeviceEventBus().registerEventListener(this);
-        this.world = w;
-        this.player = p;
-        this.renderers.clear();
-        String str = ClientSharedContext.RESOURCE_MANAGER.getResource(cfgLoc).getAsText();
-        this.initialize(JsonParser.parseString(str).getAsJsonObject());
-        client.getClientEventBus().callEvent(new ClientRendererInitializeEvent(client, this));
-
-        for (IWorldRenderer renderer : this.renderers.values()) {
-            renderer.init();
-        }
-
-        this.buffer.allocate();
+    public LevelRenderer() {
+        this.camera.setPosRelative(0, 0, 0.15);
     }
 
-    public void setFog(double dist) {
-        var position = this.player.getCameraPosition().add(this.player.getPosition());
-        var block = this.world.getBlockId((long) position.x, (long) position.y, (long) position.z);
+    @Override
+    public void worldContextChange(WorldContext context) {
+        if (context == null) {
+            this.stop();
+            return;
+        }
+        var world = context.getWorld();
+        var player = context.getPlayer();
 
-        if (block == Blocks.WATER.getId()) {
-            GLUtil.setupFog(10, ColorUtil.int1Float1ToFloat4(0x050533, 1));
+        this.world = world;
+        this.player = player;
+
+        if (this.active) {
+            this.stop();
+        }
+        this.init(ResourceLocation.worldRendererSetting(world.getId() + ".json"));
+    }
+
+    @Override
+    public void clientSetup(CubecraftClient client) {
+        super.clientSetup(client);
+
+        client.getClientEventBus().registerEventListener(this);
+        client.getDeviceEventBus().registerEventListener(this);
+    }
+
+    @Override
+    public void tick() {
+        if (!this.active) {
+            return;
+        }
+        for (IWorldRenderer renderer : this.renderers.values()) {
+            renderer.tick();
+        }
+    }
+
+    @Override
+    public void render(DisplayScreenInfo info, float delta) {
+        if (!this.active) {
             return;
         }
 
-        GLUtil.setupFog((int) (Math.sqrt(dist)*16), this.fogColorElement.RGBA_F());
+        var vx = MathHelper.linearInterpolate(this.player.xo, this.player.x, delta) + this.player.getCameraPosition().x;
+        var vy = MathHelper.linearInterpolate(this.player.yo, this.player.y, delta) + this.player.getCameraPosition().y;
+        var vz = MathHelper.linearInterpolate(this.player.zo, this.player.z, delta) + this.player.getCameraPosition().z;
+
+        this.camera.setPos(vx, vy, vz);
+        this.camera.setupRotation(this.player.xRot, this.player.yRot, this.player.zRot);
+        this.camera.setAspect(info.getAspect());
+
+        for (IWorldRenderer renderer : this.renderers.values()) {
+            renderer.preRender();
+        }
+
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+
+        GLUtil.disableBlend();
+        GLUtil.enableAlphaTest();
+        render(RenderType.ALPHA, delta);
+
+        GL11.glDepthMask(false);
+        GLUtil.enableBlend();
+        render(RenderType.TRANSPARENT, delta);
+        GL11.glDepthMask(true);
+
+        for (IWorldRenderer renderer : this.renderers.values()) {
+            renderer.postRender();
+        }
+
+        if (this.camera.isRotationChanged()) {
+            this.camera.updateRotation();
+        }
     }
 
-    public boolean isInBlock() {
-        var position = this.player.getCameraPosition().add(this.player.getPosition());
 
-        var x=Math.floor(position.x);
-        var z=Math.floor(position.z);
+    public void init(ResourceLocation configuration) {
+        this.active = true;
+        var dom = ClientSharedContext.RESOURCE_MANAGER.getResource(configuration).getAsText();
+        var config = JsonParser.parseString(dom).getAsJsonObject();
+        var eventBus = this.client.getClientEventBus();
 
-        var block = this.world.getBlockId((long) x, (long) (position.y+0.1f), (long) z);
 
-        return block != Blocks.AIR.getId();
-    }
-
-    public void initialize(JsonObject config) {
-        CubecraftClient client = ClientSharedContext.getClient();
+        this.renderers.clear();
 
         this.fogColorElement = ColorElement.parseFromString(config.get("fog_color").getAsString());
         this.fogColorElement.toFloatRGBA(this.fogColor);
@@ -102,67 +146,15 @@ public final class LevelRenderer {
             this.renderers.put(id, renderer);
         }
 
-        //test
-        //this.renderers.put("cubecraft:modern_terrain_renderer",new ModernTerrainRenderer());
-
         for (var renderer : this.renderers.values()) {
-            renderer.initializeRenderer(
-                    this,
-                    client.getWindow(),
-                    client.getClientWorldContext().getWorld(),
-                    client.getClientWorldContext().getPlayer(),
-                    this.camera
-            );
+            renderer.initializeRenderer(this, client.getWindow(), this.world, this.player, this.camera);
         }
-    }
-
-    public void render(float delta) {
-        int d = ClientSettingRegistry.getFixedViewDistance();
-        Vector3d vec = this.player.getCameraPosition().add(this.player.getPosition());
-        if (Objects.equals(this.world.getBlockAccess((long) vec.x, (long) vec.y, (long) vec.z).getBlockID(), "cubecraft:calm_water")) {
-            GLUtil.setupFog(d, ColorUtil.int1Float1ToFloat4(0x050533, 1));
-        }
-
-        var window=ClientSharedContext.getClient().getWindow();
-
-        var a=window.getAspect();
-        this.camera.setAspect(a);
-
-        float[] col = new float[]{0, 0, 0, 0};
-        GL11.glClearColor(col[0], col[1], col[2], col[3]);
-        this.camera.setPos(
-                MathHelper.linearInterpolate(this.player.xo, this.player.x, delta) + this.player.getCameraPosition().x,
-                MathHelper.linearInterpolate(this.player.yo, this.player.y, delta) + this.player.getCameraPosition().y,
-                MathHelper.linearInterpolate(this.player.zo, this.player.z, delta) + this.player.getCameraPosition().z
-                          );
-        this.camera.setupRotation(this.player.xRot, this.player.yRot, this.player.zRot);
-        this.camera.setPosRelative(0, 0, 0.15);
 
         for (IWorldRenderer renderer : this.renderers.values()) {
-            renderer.preRender();
+            renderer.init();
         }
 
-        GL11.glShadeModel(GL11.GL_SMOOTH);
-        GL11.glEnable(GL11.GL_CULL_FACE);
-
-        GLUtil.disableBlend();
-        GLUtil.enableAlphaTest();
-        render(RenderType.ALPHA, delta);
-
-        GL11.glDepthMask(false);
-        GLUtil.enableBlend();
-        render(RenderType.TRANSPARENT, delta);
-        GL11.glDepthMask(true);
-
-        GL11.glDisable(GL11.GL_CULL_FACE);
-
-        for (IWorldRenderer renderer : this.renderers.values()) {
-            renderer.postRender();
-        }
-
-        if (this.camera.isRotationChanged()) {
-            this.camera.updateRotation();
-        }
+        eventBus.callEvent(new ClientRendererInitializeEvent(this.client, this));
     }
 
     public void render(RenderType type, float delta) {
@@ -181,6 +173,38 @@ public final class LevelRenderer {
         }
     }
 
+    public void stop() {
+        for (IWorldRenderer renderer : this.renderers.values()) {
+            renderer.stop();
+        }
+        this.active = false;
+    }
+
+
+    public void setFog(double dist) {
+        var position = this.player.getCameraPosition().add(this.player.getPosition());
+        var block = this.world.getBlockId((long) position.x, (long) position.y, (long) position.z);
+
+        if (block == Blocks.WATER.getId()) {
+            GLUtil.setupFog(10, ColorUtil.int1Float1ToFloat4(0x050533, 1));
+            return;
+        }
+
+        GLUtil.setupFog((int) (Math.sqrt(dist) * 16), this.fogColorElement.RGBA_F());
+    }
+
+    public boolean isInBlock() {
+        var position = this.player.getCameraPosition().add(this.player.getPosition());
+
+        var x = Math.floor(position.x);
+        var z = Math.floor(position.z);
+
+        var block = this.world.getBlockId((long) x, (long) (position.y + 0.1f), (long) z);
+
+        return block != Blocks.AIR.getId();
+    }
+
+
     @EventHandler
     public void onKey(KeyboardPressEvent event) {
         if (event.getKey() == KeyboardButton.KEY_F8) {
@@ -198,24 +222,16 @@ public final class LevelRenderer {
         }
     }
 
-    public void stop() {
-        for (IWorldRenderer renderer : this.renderers.values()) {
-            renderer.stop();
-        }
-        this.buffer.free();
-    }
 
     public void refresh() {
-        for (IWorldRenderer renderer : this.renderers.values()) {
-            renderer.refresh();
+        if(!this.active) {
+            return;
         }
+
+        this.stop();
+        this.init(ResourceLocation.worldRendererSetting(this.world.getId() + ".json"));
     }
 
-    public void tick() {
-        for (IWorldRenderer renderer : this.renderers.values()) {
-            renderer.tick();
-        }
-    }
 
     public FloatBuffer getFogColor() {
         return this.fogColor;

@@ -1,24 +1,21 @@
 package net.cubecraft.client.gui.screen;
 
-import ink.flybird.quantum3d_legacy.BufferAllocation;
-import ink.flybird.quantum3d_legacy.GLUtil;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
-import ink.flybird.quantum3d_legacy.draw.VertexUploader;
 import me.gb2022.commons.JVMInfo;
 import me.gb2022.commons.container.OrderedHashMap;
-import net.cubecraft.SharedObjects;
-import net.cubecraft.client.ClientSettingRegistry;
+import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
+import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.font.FontAlignment;
+import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.node.Container;
 import net.cubecraft.client.gui.node.Node;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.util.IMBlocker;
-import net.cubecraft.text.TextComponent;
 import net.cubecraft.util.SystemInfoQuery;
 import org.w3c.dom.Element;
 
@@ -71,49 +68,47 @@ public class Screen extends Container {
     public void renderDebug(DisplayScreenInfo info) {
         int pos = 2;
         for (String s : this.debugInfoLeft.values()) {
-            ClientGUIContext.FONT_RENDERER.renderShadow(s, 2, pos, 16777215, 8, FontAlignment.LEFT);
+            FontRenderer.ttf().renderShadow(s, 2, pos, 16777215, 8, FontAlignment.LEFT);
             pos += 10;
         }
         pos = 2;
         for (String s : this.debugInfoRight.values()) {
-            ClientGUIContext.FONT_RENDERER.renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
+            FontRenderer.ttf().renderShadow(s, info.getScreenWidth() - 2, pos, 16777215, 8, FontAlignment.RIGHT);
             pos += 10;
         }
     }
 
 
+    public void debugLeft(String id, String line, Object... format) {
+        this.debugInfoLeft.put(id, line.formatted(format));
+    }
+
+    public void debugRight(String id, String line, Object... format) {
+        this.debugInfoRight.put(id, line.formatted(format));
+    }
+
     public void getDebug() {
-        this.debugInfoLeft.put("version", "version: %s".formatted(
-                CubecraftClient.VERSION
-        ));
-        this.debugInfoLeft.put("fps", "fps: %d, builder: %d, vert: %d".formatted(
-                this.client.getFPS(),
-                VertexBuilderAllocator.ALLOCATED_COUNT.get(),
-                VertexUploader.getUploadedCount()
-        ));
-        this.debugInfoLeft.put("tps", "tps: %d".formatted(
-                this.client.getTPS()
-        ));
-        this.debugInfoLeft.put("gui", "scr: %s(%s)".formatted(
-                getId(),
-                this.parent == null ? null : this.parent.getId()
-        ));
-        VertexUploader.resetUploadCount();
-        this.debugInfoRight.put("vm", "VM: %s-%s, os:%s-%s".formatted(
-                JVMInfo.getJavaName(),
-                JVMInfo.getJavaVersion(),
-                JVMInfo.getOSName(),
-                JVMInfo.getOSVersion()
-        ));
-        this.debugInfoRight.put("mem", "Mem: %s/%s(%s),o: %sMB(%d)".formatted(
-                JVMInfo.getUsedMemory(),
-                JVMInfo.getTotalMemory(),
-                JVMInfo.getUsage(),
-                SharedObjects.SHORT_DECIMAL_FORMAT.format(BufferAllocation.getAllocSize() / 1024f / 1024),
-                BufferAllocation.getAllocInstances()
-        ));
-        this.debugInfoRight.put("cpu", "CPU: %s".formatted(SystemInfoQuery.getCPUInfo()));
-        this.debugInfoRight.put("gpu", "GPU: %s".formatted(SystemInfoQuery.getGPUInfo()));
+        var r_fps = this.client.getFPS();
+        var r_vac = VertexBuilderAllocator.ALLOCATED_COUNT.get();
+        var r_vuc = VertexBuilderUploader.getUploadedCount();
+
+        var vm_name = JVMInfo.getJavaName();
+        var vm_ver = JVMInfo.getJavaVersion();
+        var vm_osn = JVMInfo.getOSName();
+        var vm_osv = JVMInfo.getOSVersion();
+
+        var m_vmu = JVMInfo.getUsedMemory();
+        var m_vmp = JVMInfo.getUsage();
+        var m_vmt = JVMInfo.getTotalMemory();
+
+        this.debugLeft("version", "version: %s".formatted(CubecraftClient.VERSION));
+        this.debugLeft("fps", "fps: %d, builder: %d, vert: %d", r_fps, r_vac, r_vuc);
+        this.debugLeft("tps", "tps: %d", this.client.getTPS());
+        this.debugLeft("gui", "scr: %s(%s)".formatted(getId(), this.parent == null ? null : this.parent.getId()));
+        this.debugRight("vm", "VM: %s-%s, os:%s-%s", vm_name, vm_ver, vm_osn, vm_osv);
+        this.debugRight("mem", "Mem: %s/%s[%s]", m_vmu, m_vmt,m_vmp);
+        this.debugRight("cpu", "CPU: %s".formatted(SystemInfoQuery.getCPUInfo()));
+        this.debugRight("gpu", "GPU: %s".formatted(SystemInfoQuery.getGPUInfo()));
     }
 
     //run
@@ -140,8 +135,8 @@ public class Screen extends Container {
             this.getDebug();
             this.renderDebug(info);
         } else {
-            TextComponent text=TextComponent.create("fps:").color(0xffff00).append(TextComponent.create(client.getFPS()).color(0xffff00));
-            ClientGUIContext.FONT_RENDERER.render(text, info.getScreenWidth() - 2, 2, 0, FontAlignment.RIGHT);
+            FontRenderer.ttf()
+                    .renderShadow("fps: %s".formatted(client.getFPS()), info.getScreenWidth() - 2, 2, 0xffff00, 8, FontAlignment.RIGHT);
         }
     }
 

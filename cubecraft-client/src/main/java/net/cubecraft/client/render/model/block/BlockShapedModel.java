@@ -3,8 +3,7 @@ package net.cubecraft.client.render.model.block;
 import com.google.gson.JsonObject;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import net.cubecraft.client.registry.ColorMaps;
-import net.cubecraft.client.render.BlockBakery;
-import net.cubecraft.client.render.Textures;
+import net.cubecraft.client.render.block.BlockBakery;
 import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
@@ -17,8 +16,6 @@ import net.cubecraft.resource.MultiAssetContainer;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.BlockAccess;
-
-import java.util.Set;
 
 public abstract class BlockShapedModel extends BlockModel {
     private final String[] faceTextures = new String[6];
@@ -51,7 +48,7 @@ public abstract class BlockShapedModel extends BlockModel {
         if (face == 6) {
             return;
         }
-        if (this.localizedLayer != layer.getId()) {
+        if (layer != null && this.localizedLayer != layer.getId()) {
             return;
         }
         if (IBlockRenderer.isFaceCulled(this.culling, face, block, accessor)) {
@@ -65,7 +62,7 @@ public abstract class BlockShapedModel extends BlockModel {
         }
 
         var faceTexture = this.faceTextures[face];
-        var terrainTexture = Textures.TERRAIN_SIMPLE.get();
+        var terrainTexture = layer.get().getTextureUsed();
         var faceLightModifier = BlockBakery.getClassicLight(face);
 
         var u0 = terrainTexture.exactTextureU(faceTexture, 0);

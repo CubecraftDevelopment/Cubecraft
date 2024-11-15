@@ -2,7 +2,7 @@ package net.cubecraft.client.render.chunk.compile;
 
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.context.ClientRenderContext;
+import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
 import net.cubecraft.world.BlockAccessor;
@@ -34,7 +34,7 @@ public final class ModernChunkCompiler {
         var stack = new VertexBuilder[7];
 
         for (var i = 0; i < 7; i++) {
-            stack[i] = this.renderer.getVertexBuilderAllocator().allocate(fmt, mode, 8192);
+            stack[i] = this.renderer.getVertexBuilderAllocator().create(fmt, mode, 8192);
             stack[i].allocate();
         }
 

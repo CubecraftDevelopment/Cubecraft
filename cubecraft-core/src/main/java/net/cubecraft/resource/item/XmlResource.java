@@ -1,24 +1,17 @@
 package net.cubecraft.resource.item;
 
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class XmlResource extends IResource {
-    public static final DocumentBuilder DOM_PARSER;
-
-    static {
-        try {
-            DOM_PARSER = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public static final Map<Thread, DocumentBuilder> DOM_PARSER = new ConcurrentHashMap<>();
 
     private Document dom;
 
@@ -36,10 +29,12 @@ public abstract class XmlResource extends IResource {
 
     @Override
     public void load(InputStream stream) throws Exception {
-        try {
-            this.dom = DOM_PARSER.parse(stream);
-        } catch (SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.dom = DOM_PARSER.computeIfAbsent(Thread.currentThread(), (k) -> {
+            try {
+                return DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            } catch (ParserConfigurationException e) {
+                throw new RuntimeException(e);
+            }
+        }).parse(stream);
     }
 }

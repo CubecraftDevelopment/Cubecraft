@@ -2,7 +2,7 @@ package net.cubecraft.client.resource;
 
 
 import net.cubecraft.resource.item.ImageResource;
-import ink.flybird.quantum3d_legacy.textures.ITextureImage;
+import me.gb2022.quantum3d.texture.ITextureImage;
 
 import java.awt.image.BufferedImage;
 

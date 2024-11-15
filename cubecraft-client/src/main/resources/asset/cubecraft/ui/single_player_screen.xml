@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<screen bg="image-bg-blur" id="cubecraft:single_player_screen">
-    <topbar layout="flow/top,0,36">
+<screen bg="image-bg-blur-mask" id="cubecraft:single_player_screen">
+    <topbar layout="flow/top,0,28">
         <label layout="origin/middle_middle,0,0,0,8" type="lang" color="000000" align="middle">singleplayer.title</label>
     </topbar>
 

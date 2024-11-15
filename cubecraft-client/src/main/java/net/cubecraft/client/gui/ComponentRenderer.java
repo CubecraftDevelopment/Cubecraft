@@ -3,7 +3,7 @@ package net.cubecraft.client.gui;
 import com.google.gson.*;
 import me.gb2022.commons.container.CollectionUtil;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.render.renderer.ComponentRendererPart;
+import net.cubecraft.client.render.gui.ComponentRendererPart;
 import net.cubecraft.client.resource.TextureAsset;
 import org.joml.Vector2i;
 

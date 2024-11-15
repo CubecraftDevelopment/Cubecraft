@@ -4,7 +4,7 @@ plugins {
     id 'idea'
 }
 
-group= "net.cubecraft"
+group = "net.cubecraft"
 version '0.3.2'
 
 apply from: "../script/build-base.gradle"
@@ -20,15 +20,13 @@ applyGlobalScript("Dependencies.gradle")
 group 'net.cubecraft'
 version '0.2.0-beta'
 
-apply from:"../script/build-base.gradle"
+apply from: "../script/build-base.gradle"
 
 
 dependencies {
     implementation project(":cubecraft-core")
     implementation project(":cubecraft-server")
     implementation project(":quantum3d")
-
-    implementation project(":Quantum3D-legacy")
 }
 
 
@@ -42,7 +40,6 @@ dependencies {
     implementation 'io.netty:netty-transport:4.1.90.Final'
     implementation 'net.java.dev.jna:jna:4.5.2'
     implementation 'com.github.oshi:oshi-core:5.7.1'
-    implementation project(":JRakNet")
     implementation "org.beykery:jkcp:1.3.1"
     implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
     implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
@@ -58,7 +55,7 @@ dependencies {
 
 jar {
     archivesBaseName = 'cubecraft-client'
-    destinationDirectory=file('../run/client')
+    destinationDirectory = file('../run/client')
     manifest {
         attributes(
                 "Manifest-Version": 1.0,

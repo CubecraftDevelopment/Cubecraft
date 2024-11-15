@@ -2,15 +2,13 @@ package net.cubecraft.client.render.chunk;
 
 import me.gb2022.commons.container.keymap.Key;
 import me.gb2022.commons.math.AABB;
-import net.cubecraft.client.ClientSettingRegistry;
-import net.cubecraft.client.render.DistanceComparable;
-import net.cubecraft.world.entity.Entity;
+import net.cubecraft.client.registry.ClientSettingRegistry;
 import org.joml.Vector3d;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class RenderChunkPos implements Key, DistanceComparable {
+public final class RenderChunkPos implements Key {
     public static final long HASH_KEY_0 = 63615134589L;
     public static final long HASH_KEY_1 = 37855153351311L;
     public static final long HASH_KEY_2 = 2147483647;
@@ -87,12 +85,6 @@ public final class RenderChunkPos implements Key, DistanceComparable {
         double z = (z1 << 4 + 8) - viewOffset.z();
 
         return new AABB(x, y, z, x + 16, y + 16, z + 16);
-    }
-
-
-    @Override
-    public double distanceTo(Entity target) {
-        return distanceTo(this.x, this.y, this.z, target.getPosition());
     }
 
     public double distanceTo(Vector3d pos) {

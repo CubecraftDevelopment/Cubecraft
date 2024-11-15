@@ -27,7 +27,7 @@ public final class RegistryStorageContainer<V> implements NBTDataIO {
         this.registry = registry;
 
         for (int i = 0; i < pCap; i++) {
-            this.palettes[i] = new DirectPalette<>(registry);
+            this.palettes[i] = new RegistryPalette<>(registry);
         }
 
         for (int i = 0; i < capacity; i++) {

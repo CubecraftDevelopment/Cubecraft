@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.model.object;
 
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
 import me.gb2022.commons.ColorUtil;
+import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import org.joml.Vector2d;
 import org.joml.Vector3d;

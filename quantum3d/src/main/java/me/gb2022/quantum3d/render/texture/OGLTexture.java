@@ -1,8 +1,7 @@
 package me.gb2022.quantum3d.render.texture;
 
 import me.gb2022.commons.LifetimeCounter;
-import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
-import me.gb2022.quantum3d.render.texture.Texture;
+import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 
 public abstract class OGLTexture implements Texture {

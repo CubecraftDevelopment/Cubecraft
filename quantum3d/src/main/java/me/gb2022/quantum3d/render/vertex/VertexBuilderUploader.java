@@ -1,10 +1,14 @@
 package me.gb2022.quantum3d.render.vertex;
 
-import me.gb2022.quantum3d.lwjgl.deprecated.GLUtil;
+import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public interface VertexBuilderUploader {
+    AtomicInteger UPLOAD_COUNT = new AtomicInteger();
+
     static void uploadPointer(VertexBuilder builder) {
         VertexFormat format = builder.getFormat();
 
@@ -29,6 +33,8 @@ public interface VertexBuilderUploader {
         GLUtil.checkError("upload_builder:data_upload");
         GL11.glDrawArrays(builder.getDrawMode().glId(), 0, builder.getVertexCount());
         GLUtil.checkError("upload_builder:draw_array");
+
+        UPLOAD_COUNT.addAndGet(builder.getVertexCount());
 
         disableState(format);
         GLUtil.checkError("upload_builder:close_state");
@@ -95,5 +101,9 @@ public interface VertexBuilderUploader {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, builder.generateRawBuffer(), GL15.GL_STATIC_DRAW);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+    }
+
+    static int getUploadedCount() {
+        return UPLOAD_COUNT.getAndSet(0);
     }
 }

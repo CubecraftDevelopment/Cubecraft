@@ -1,8 +1,8 @@
 package net.cubecraft.client.render.world;
 
-import ink.flybird.quantum3d_legacy.culling.FrustumCuller;
-import ink.flybird.quantum3d_legacy.draw.LegacyVertexBuilder;
-import ink.flybird.quantum3d_legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
+import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.util.FrustumCuller;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.registry.RegisterMap;
 import me.gb2022.commons.registry.TypeItem;
@@ -54,6 +54,10 @@ public class ParticleRenderer extends IWorldRenderer {
         if (type != RenderType.ALPHA) {
             return;
         }
+        if(this.particleEngine==null){
+            return;
+        }
+
         this.camera.setUpGlobalCamera();
         double yRot = this.camera.getRotation().y;
         double xRot = this.camera.getRotation().x;
