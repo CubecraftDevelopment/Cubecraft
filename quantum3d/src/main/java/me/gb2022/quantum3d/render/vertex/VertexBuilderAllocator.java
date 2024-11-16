@@ -13,19 +13,30 @@ public final class VertexBuilderAllocator {
     }
 
     public void free(VertexBuilder builder) {
-        this.counter.decrementAndGet();
         builder.free();
     }
 
     public VertexBuilder create(VertexFormat format, DrawMode mode, int capacity) {
         this.counter.incrementAndGet();
-        return new VertexBuilder(format, capacity, mode, this.allocator);
+        return new VertexBuilder(format, capacity, mode, this);
     }
 
     public VertexBuilder allocate(VertexFormat format, DrawMode mode, int capacity) {
         this.counter.incrementAndGet();
-        var b = new VertexBuilder(format, capacity, mode, this.allocator);
+        var b = new VertexBuilder(format, capacity, mode, this);
         b.allocate();
         return b;
+    }
+
+    public BufferAllocator getAllocator() {
+        return allocator;
+    }
+
+    public AtomicInteger getCounter() {
+        return counter;
+    }
+
+    public void clearInstance(VertexBuilder vertexBuilder) {
+        this.counter.decrementAndGet();
     }
 }

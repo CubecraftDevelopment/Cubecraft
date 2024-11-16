@@ -4,8 +4,6 @@ import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.World;
 import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.Block;
-import net.cubecraft.world.block.EnumFacing;
-import net.cubecraft.world.block.blocks.BlockRegistry;
 import net.cubecraft.world.block.blocks.Blocks;
 
 public class NonLoadedBlockAccess extends IBlockAccess {
@@ -19,11 +17,6 @@ public class NonLoadedBlockAccess extends IBlockAccess {
     }
 
     @Override
-    public String getBlockID() {
-        return "cubecraft:air";
-    }
-
-    @Override
     public byte getBlockMeta() {
         return 0;
     }
@@ -31,11 +24,6 @@ public class NonLoadedBlockAccess extends IBlockAccess {
     @Override
     public byte getBlockLight() {
         return 0;
-    }
-
-    @Override
-    public EnumFacing getBlockFacing() {
-        return EnumFacing.Up;
     }
 
     @Override

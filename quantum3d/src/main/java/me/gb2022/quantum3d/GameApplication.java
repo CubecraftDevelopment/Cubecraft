@@ -83,6 +83,11 @@ public abstract class GameApplication extends LoopTickingThread {
     }
 
     @Override
+    public boolean monitor() {
+        return false;
+    }
+
+    @Override
     public final void tick() {
         this.update();
         this.ticks++;

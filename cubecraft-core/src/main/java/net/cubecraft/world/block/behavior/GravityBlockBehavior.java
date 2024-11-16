@@ -1,11 +1,10 @@
 package net.cubecraft.world.block.behavior;
 
-import net.cubecraft.internal.block.BlockType;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.ChunkBlockAccess;
-import net.cubecraft.world.block.access.IBlockAccess;
-import me.gb2022.commons.registry.TypeItem;
+import net.cubecraft.world.block.blocks.Blocks;
 
 import java.util.Objects;
 
@@ -13,12 +12,12 @@ import java.util.Objects;
 public final class GravityBlockBehavior implements BlockBehavior {
     @Override
     public void onBlockTick(BlockAccess block) {
-        IBlockAccess blockAccess = block.getNear(EnumFacing.Down);
+        BlockAccess blockAccess = block.getNear(EnumFacing.Down);
         if (block instanceof ChunkBlockAccess cBlock) {
-            if (!blockAccess.getBlock().isLiquid() || !Objects.equals(blockAccess.getBlockID(), BlockType.AIR)) {
+            if (!blockAccess.getBlock().isLiquid() || !Objects.equals(blockAccess.getBlockId(), Blocks.AIR.getId())) {
                 return;
             }
-            cBlock.setBlockID(BlockType.AIR, true);
+            cBlock.setBlockId(Blocks.AIR.getId(), true);
         }
     }
 }

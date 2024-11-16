@@ -1,193 +1,136 @@
 package net.cubecraft.level;
 
-import net.cubecraft.EnvironmentPath;
 import me.gb2022.commons.nbt.NBT;
 import me.gb2022.commons.nbt.NBTTagCompound;
-import org.apache.logging.log4j.Logger;
+import net.cubecraft.EnvironmentPath;
+import net.cubecraft.world.WorldFactory;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
-import java.util.Properties;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.Random;
 
-public class LevelInfo {
-    private static final Logger LOGGER = LogManager.getLogger("level_info");
+public final class LevelInfo {
+    public static final Logger LOGGER = LogManager.getLogger("LevelInfo");
 
-    private final NBTTagCompound tag;
-    private final Properties properties = new Properties();
+    private final String folderPath;
+    private final NBTTagCompound data;
 
-    public LevelInfo(NBTTagCompound tag) {
-        this.tag = tag;
+    public LevelInfo(String folderPath, NBTTagCompound data) {
+        this.folderPath = folderPath;
+        this.data = data;
     }
 
-    public LevelInfo() {
-        this.tag = new NBTTagCompound();
-    }
+    public static String allocateFolder(String savesFolderPath, String levelName) {
+        var folder = savesFolderPath + "/" + levelName;
 
-
-    public static LevelInfo create(String name, long seed) {
-        LevelInfo levelInfo = load(name);
-
-        if (levelInfo == null) {
-            levelInfo = new LevelInfo();
+        if (!new File(folder).exists()) {
+            return folder;
         }
 
-        levelInfo.setString("level_name", name);
-        levelInfo.setLong("seed", seed);
-        levelInfo.setLong("created_time", System.currentTimeMillis());
-        levelInfo.updateLastPlayTime();
+        var aliasId = 1;
 
-        save(levelInfo);
+        while (true) {
+            var folderName = folder + "(" + aliasId + ")";
 
-        return levelInfo;
-    }
+            if (!new File(folderName).exists()) {
+                return folderName;
+            }
 
-    public static LevelInfo load(String levelName) {
-        File f = getLevelInfoFile(levelName);
-        return load(f);
-    }
-
-    public static LevelInfo load(File worldFolder) {
-        return loadFile(new File(worldFolder.getAbsolutePath() + "/level.dat"));
-    }
-
-    public static LevelInfo loadFile(File levelFile) {
-        LevelInfo levelInfo = null;
-        if (!levelFile.exists()) {
-            return null;
-        }
-        try {
-            FileInputStream fis = new FileInputStream(levelFile);
-            GZIPInputStream zis = new GZIPInputStream(fis);
-            DataInputStream dis = new DataInputStream(zis);
-
-            levelInfo = new LevelInfo((NBTTagCompound) NBT.read(dis));
-
-            dis.close();
-            zis.close();
-            fis.close();
-        } catch (IOException e) {
-            LOGGER.throwing(e);
-        }
-        return levelInfo;
-    }
-
-    public static void save(LevelInfo levelInfo) {
-        File f = getLevelInfoFile(levelInfo.getLevelName());
-        try {
-            f.getParentFile().mkdirs();
-            f.createNewFile();
-
-            FileOutputStream fos = new FileOutputStream(f);
-            GZIPOutputStream zos = new GZIPOutputStream(fos);
-            DataOutputStream dos = new DataOutputStream(zos);
-
-            NBT.write(levelInfo.tag, dos);
-
-            dos.close();
-            zos.close();
-            fos.close();
-        } catch (IOException e) {
-            LOGGER.throwing(e);
+            aliasId++;
         }
     }
 
-    public static File getLevelInfoFile(String levelName) {
-        String worldFolder = EnvironmentPath.SAVE_FOLDER;
-        return new File(worldFolder + "/" + levelName + "/level.dat");
+    public static LevelInfo create(String savesFolderPath, NBTTagCompound properties) throws IOException {
+        var folder = allocateFolder(savesFolderPath, properties.getString("level_name"));
+        var info = new LevelInfo(folder, properties);
+
+
+        var data = info.getData();
+
+        data.setLong("created_time", System.currentTimeMillis());
+        data.setLong("last_play_time", System.currentTimeMillis());
+
+        if (!data.hasKey("seed")) {
+            data.setLong("seed", new Random().nextLong());
+        }
+
+        if (!data.hasKey("world_type")) {
+            data.setString("world_type", "cubecraft:default");
+        }
+
+        info.save();
+
+        return info;
+    }
+
+    public static LevelInfo open(String folder) throws IOException {
+        var dataFile = new File(folder + "/level.dat");
+
+        if (!dataFile.exists()) {
+            throw new IllegalArgumentException("level.dat does not exist: " + dataFile);
+        }
+
+        try (var fis = new FileInputStream(dataFile)) {
+            return new LevelInfo(folder, (NBTTagCompound) NBT.readZipped(fis));
+        }
+    }
+
+    public static LevelInfo openOrElseCreate(String folder) throws IOException {
+        var dataFile = new File(folder + "/level.dat");
+
+        if (!dataFile.exists()) {
+            return create(folder, new NBTTagCompound());
+        }
+
+        return open(folder);
     }
 
 
-    public byte getByte(String id) {
-        return this.tag.getByte(id);
+    public void save() throws IOException {
+        var dataFile = new File(this.folderPath + "/level.dat");
+
+        if (dataFile.getParentFile().mkdirs()) {
+            LOGGER.info("created level folder: {}", this.folderPath);
+        }
+        if (dataFile.createNewFile()) {
+            LOGGER.info("created level file: {}", dataFile);
+        }
     }
 
-    public short getShort(String id) {
-        return this.tag.getShort(id);
+    public NBTTagCompound getData() {
+        return data;
     }
 
-    public int getInt(String id) {
-        return this.tag.getInteger(id);
+    public String getFolderPath() {//todo: use relative path 4 db relocate
+        return folderPath;
     }
 
-    public long getLong(String id) {
-        return this.tag.getLong(id);
+    public Level createLevel(WorldFactory factory) {
+        return new Level(this, factory);
     }
-
-    public float getFloat(String id) {
-        return this.tag.getFloat(id);
-    }
-
-    public double getDouble(String id) {
-        return this.tag.getDouble(id);
-    }
-
-    private String getString(String id) {
-        return this.tag.getString(id);
-    }
-
-    public NBTTagCompound getNBT(String id) {
-        return this.tag.getCompoundTag(id);
-    }
-
-
-    public void setByte(String id, byte value) {
-        this.tag.setByte(id, value);
-    }
-
-    public void setShort(String id, short value) {
-        this.tag.setShort(id, value);
-    }
-
-    public void setInt(String id, int value) {
-        this.tag.setInteger(id, value);
-    }
-
-    public void setLong(String id, long value) {
-        this.tag.setLong(id, value);
-    }
-
-    public void setFloat(String id, float value) {
-        this.tag.setFloat(id, value);
-    }
-
-    public void setDouble(String id, double value) {
-        this.tag.setDouble(id, value);
-    }
-
-    private void setString(String id, String value) {
-        this.tag.setString(id, value);
-    }
-
-    public void setNBT(String id, NBTTagCompound value) {
-        this.tag.setCompoundTag(id, value);
-    }
-
 
     public String getLevelName() {
-        return this.getString("level_name");
+        return this.data.getString("level_name");
     }
 
     public Date getCreatedTime() {
-        return new Date(this.getLong("created_time"));
+        return new Date(this.data.getLong("created_time"));
     }
 
     public Date getLastPlayTime() {
-        return new Date(this.getLong("last_play_time"));
+        return new Date(this.data.getLong("last_play_time"));
     }
 
     public long getSeed() {
-        return this.getLong("seed");
+        return this.data.getLong("seed");
     }
 
     public void updateLastPlayTime() {
-        this.setLong("last_play_time", System.currentTimeMillis());
-    }
-
-    public NBTTagCompound getTag() {
-        return this.tag;
+        this.data.setLong("last_play_time", System.currentTimeMillis());
     }
 
     public File getFolder() {

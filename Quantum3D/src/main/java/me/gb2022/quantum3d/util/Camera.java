@@ -21,6 +21,7 @@ public class Camera {
     private float aspect = 1.0f;
 
     public void setUpGlobalCamera() {
+        GLUtil.checkError("pre-global-camera");
         GLUtil.setupPerspectiveCamera((float) Math.toRadians(this.fov), 1280, 720);
         //GL11.glLoadIdentity();
         //GL11.glOrtho(0,window.getWindowWidth()*16f,0,window.getWindowHeight()*16f,,-1000000,1000000);

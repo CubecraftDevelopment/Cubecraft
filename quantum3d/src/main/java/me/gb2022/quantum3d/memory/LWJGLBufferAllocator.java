@@ -24,4 +24,9 @@ public class LWJGLBufferAllocator extends BufferAllocator {
     public void freeBuffer(Buffer buffer) {
         MemoryUtil.memFree(buffer);
     }
+
+    @Override
+    public long hashcode(Buffer buffer) {
+        return MemoryUtil.memAddress(buffer);
+    }
 }

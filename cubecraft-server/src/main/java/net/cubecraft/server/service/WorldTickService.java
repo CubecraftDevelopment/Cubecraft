@@ -1,40 +1,45 @@
 package net.cubecraft.server.service;
 
 import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.commons.threading.SimpleThreadFactory;
 import net.cubecraft.server.CubecraftServer;
-import net.cubecraft.server.WorldIOThread;
 import net.cubecraft.server.world.ServerWorld;
-import net.cubecraft.util.thread.BlockableEventLoop;
+import net.cubecraft.util.thread.EventLoop;
 import net.cubecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @TypeItem("cubecraft:world_tick")
 public final class WorldTickService implements Service {
     private static final Logger LOGGER = LogManager.getLogger("WorldTickService");
-    private WorldTickingThread[] threads;
-    private WorldIOThread[] ioThreads;
+    private WorldTickingThreadHolder[] threads;
+    private EventLoop[] ioThreads;
 
 
     @Override
     public void postInitialize(CubecraftServer server) {
-        this.threads = new WorldTickingThread[server.getLevel().getWorldCount()];
-        this.ioThreads = new WorldIOThread[server.getLevel().getWorldCount()];
+        this.threads = new WorldTickingThreadHolder[server.getLevel().getWorldCount()];
+        this.ioThreads = new EventLoop[server.getLevel().getWorldCount()];
 
         World[] worlds = server.getLevel().getWorlds().values().toArray(new World[0]);
         for (int i = 0; i < server.getLevel().getWorldCount(); i++) {
-            this.threads[i] = new WorldTickingThread((ServerWorld) worlds[i]);
-            this.threads[i].start();
-        }
+            var world = ((ServerWorld) worlds[i]);
 
-        for (int i = 0; i < server.getLevel().getWorldCount(); i++) {
-            this.ioThreads[i] = new WorldIOThread((ServerWorld) worlds[i]);
-            this.ioThreads[i].start();
+            var thread = new EventLoop(() -> {
+                world.setOwnerThread();
+                world.setChunkIOService(((Executor) Thread.currentThread()));
+            });
+
+            thread.setName("WorldIOThread[%s]#%d".formatted(i,server.hashCode()));
+            thread.setDaemon(true);
+            thread.start();
+
+            this.ioThreads[i] = thread;
+
+            this.threads[i] = new WorldTickingThreadHolder((ServerWorld) worlds[i]);
+            this.threads[i].start();
         }
 
         LOGGER.info("started {} world tick threads, {} IO threads", threads.length, ioThreads.length);
@@ -44,57 +49,31 @@ public final class WorldTickService implements Service {
     public void stop(CubecraftServer server) {
         for (int i = 0; i < server.getLevel().getWorldCount(); i++) {
             this.threads[i].stop();
-            this.ioThreads[i].setRunning(false);
+            this.ioThreads[i].shutdown();
         }
     }
 
 
-    public static final class WorldEventLoop extends BlockableEventLoop<Runnable> {
-        protected WorldEventLoop(String name) {
-            super(name);
-        }
-
-        @Override
-        protected Runnable of(Runnable command) {
-            return command;
-        }
-
-        @Override
-        protected boolean shouldRun(Runnable command) {
-            return true;
-        }
-
-        @Override
-        protected Thread getOwnerThread() {
-            return null;
-        }
-
-
-    }
-
-
-
-
-
-
-    public static final class WorldTickingThread {
+    public static final class WorldTickingThreadHolder {
         private final Logger logger;
-        private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         private final ServerWorld world;
+        private final ScheduledExecutorService scheduler;
         private ScheduledFuture<?> future;
 
-        public WorldTickingThread(ServerWorld world) {
+        public WorldTickingThreadHolder(ServerWorld world) {
+            var tid = "WorldTickingThread[%s]#%d".formatted(world.getId(),world.getServer().hashCode());
+
             this.world = world;
-            this.logger = LogManager.getLogger("WorldTickingThread[%s]".formatted(world.getId()));
+            this.logger = LogManager.getLogger(tid);
+            this.scheduler = Executors.newScheduledThreadPool(1, new SimpleThreadFactory(tid, true));
         }
 
         public void start() {
             this.future = this.scheduler.scheduleAtFixedRate(() -> {
-                this.world.setOwnerThread();
                 try {
                     this.world.tick();
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    this.logger.catching(e);
                 }
             }, 0, 50, TimeUnit.MILLISECONDS);
         }

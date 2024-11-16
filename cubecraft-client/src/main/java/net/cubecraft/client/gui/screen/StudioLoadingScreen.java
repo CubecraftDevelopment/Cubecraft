@@ -2,11 +2,11 @@ package net.cubecraft.client.gui.screen;
 
 import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
-import net.cubecraft.client.gui.base.DisplayScreenInfo;
-import net.cubecraft.client.registry.ResourceRegistry;
+import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.quantum3d.util.ShapeRenderer;
-import me.gb2022.quantum3d.texture.Texture2D;
+import net.cubecraft.client.gui.base.DisplayScreenInfo;
+import net.cubecraft.client.registry.ResourceRegistry;
 import org.lwjgl.opengl.GL11;
 
 public class StudioLoadingScreen extends AnimationScreen {
@@ -23,8 +23,8 @@ public class StudioLoadingScreen extends AnimationScreen {
     }
 
     @Override
-    public void render(DisplayScreenInfo info, float deltaTime) {
-        super.render(info, deltaTime);
+    public void render(DisplayScreenInfo info, float deltaTime, float alphaOverwrite) {
+        super.render(info, deltaTime, alphaOverwrite);
         GLUtil.enableBlend();
         int xc = info.getCenterX();
         int yc = info.getCenterY() - 25;
@@ -61,7 +61,7 @@ public class StudioLoadingScreen extends AnimationScreen {
         builder.begin();
         builder.color(1, 1, 1, alpha);
 
-        int r=125;
+        int r = 125;
         ShapeRenderer.drawRectUV(builder, xc - r, xc + r, yc - r, yc + r, 1, 0, 1, 0, 1);
         builder.end();
 

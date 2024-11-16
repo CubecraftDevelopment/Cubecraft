@@ -11,8 +11,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
-import java.io.IOException;
-
 @TypeItem("cubecraft:join_world_response")
 public class PacketPlayerJoinWorldResponse implements Packet {
     private LevelInfo levelInfo=new LevelInfo();
@@ -30,7 +28,7 @@ public class PacketPlayerJoinWorldResponse implements Packet {
     @Override
     public void writePacketData(ByteBuf buffer) {
         NBTTagCompound tag=new NBTTagCompound();
-        tag.setCompoundTag("level",this.levelInfo.getTag());
+        tag.setCompoundTag("level", this.levelInfo.getData());
         tag.setCompoundTag("entity",this.tag);
         NBT.write(tag,new ByteBufOutputStream(buffer));
     }

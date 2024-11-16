@@ -12,7 +12,6 @@ import net.cubecraft.world.chunk.storage.registry.RegistryStorageContainer;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Objects;
 
 public abstract class Chunk implements KeyGetter<ChunkPos> {
     public static final int HEIGHT = 512;
@@ -183,7 +182,7 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
 
     public void updateHeightMap(int x, int z) {
         for (int i = HEIGHT - 1; i >= 0; i--) {
-            if (!Objects.equals(getBlockId(x, i, z), Blocks.AIR.getId())) {
+            if (getBlockId(x, i, z) != Blocks.AIR.getId()) {
                 this.heightMap[x * 16 + z] = i;
                 return;
             }

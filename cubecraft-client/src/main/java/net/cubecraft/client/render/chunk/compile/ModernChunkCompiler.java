@@ -1,5 +1,6 @@
 package net.cubecraft.client.render.chunk.compile;
 
+import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
 import net.cubecraft.client.ClientRenderContext;
@@ -11,16 +12,18 @@ import net.cubecraft.world.block.blocks.Blocks;
 import net.cubecraft.world.dump.ChunkCompileRegion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import oshi.annotation.concurrent.NotThreadSafe;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
+@NotThreadSafe
 public final class ModernChunkCompiler {
     private final Map<Thread, VertexBuilder[]> builderCache = new HashMap<>();
-
     private final TerrainRenderer renderer;
     private final Logger logger;
+
 
     public ModernChunkCompiler(TerrainRenderer renderer) {
         this.renderer = renderer;
@@ -30,7 +33,7 @@ public final class ModernChunkCompiler {
     public void updateBuffers() {
         var thread = Thread.currentThread();
         var fmt = VertexFormat.V3F_C4F_T2F;
-        var mode = me.gb2022.quantum3d.render.vertex.DrawMode.QUADS;
+        var mode = DrawMode.QUADS;
         var stack = new VertexBuilder[7];
 
         for (var i = 0; i < 7; i++) {
@@ -51,26 +54,22 @@ public final class ModernChunkCompiler {
         return builderCache.get(thread);
     }
 
-    public void build(Queue<ChunkCompileResult> callback, World world, ChunkCompileRequest request) {
+    public void build(ChunkCompileRegion region, Queue<ChunkCompileResult> callback, World world, ChunkCompileRequest request) {
         var x = request.getX();
         var y = request.getY();
         var z = request.getZ();
         var layers = request.getLayers();
 
-        BlockAccessor region;
-
         try {
-            region = ChunkCompileRegion.read(world, x, y, z);
+            if (region.dump(world, x, y, z)) {
+                callback.add(ChunkCompileResult.failed(x, y, z, layers));
+                return;
+            }
         } catch (Throwable t) {
             this.logger.warn("failed to read compile data at chunk [{},{},{}]", x, y, z);
             this.logger.throwing(t);
             callback.add(ChunkCompileResult.failed(x, y, z, layers));
 
-            return;
-        }
-
-        if (region == null) {
-            callback.add(ChunkCompileResult.failed(x, y, z, layers));
             return;
         }
 
@@ -110,12 +109,13 @@ public final class ModernChunkCompiler {
             var ry = chunked ? wy & 0xFFFF : cy;
             var rz = chunked ? wz & 0xFFFF : cz;
 
-            if (accessor.getBlockId(wx, wy, wz) == Blocks.AIR.getId()) {
+            var block = accessor.getBlockAccess(wx, wy, wz);
+            var id = block.getBlockId();
+            if (id == Blocks.AIR.getId()) {
                 continue;
             }
 
-            var block = accessor.getBlockAccess(wx, wy, wz);
-            var renderer = ClientRenderContext.BLOCK_RENDERERS.get(block.getBlockId());
+            var renderer = ClientRenderContext.BLOCK_RENDERERS.get(id);
 
             if (renderer == null) {
                 continue;

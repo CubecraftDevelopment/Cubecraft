@@ -1,10 +1,10 @@
 package net.cubecraft.client.gui.screen;
 
+import me.gb2022.commons.JVMInfo;
 import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
-import me.gb2022.quantum3d.util.ShapeRenderer;
 import me.gb2022.quantum3d.texture.Texture2D;
-import me.gb2022.commons.JVMInfo;
+import me.gb2022.quantum3d.util.ShapeRenderer;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
@@ -25,22 +25,22 @@ public final class LogoLoadingScreen extends AnimationScreen {
     public void init() {
         super.init();
 
-        var resource=ResourceRegistry.GAME_LOGO;
+        var resource = ResourceRegistry.GAME_LOGO;
 
         ClientSharedContext.RESOURCE_MANAGER.loadResource(resource);
         GAME_LOGO.load(ResourceRegistry.GAME_LOGO);
     }
 
     @Override
-    public void render(DisplayScreenInfo info, float deltaTime) {
-        super.render(info, deltaTime);
+    public void render(DisplayScreenInfo info, float deltaTime, float alphaOverwrite) {
+        super.render(info, deltaTime, alphaOverwrite);
 
         int xc = info.getCenterX();
         int yc = info.getCenterY() - 25;
 
         LegacyVertexBuilder bg = VertexBuilderAllocator.createByPrefer(16);
         bg.begin();
-        bg.color(33 / 255f, 33 / 255f, 33 / 255f, this.getContext().getHoverScreenAlpha());
+        bg.color(33 / 255f, 33 / 255f, 33 / 255f, alphaOverwrite);
         ShapeRenderer.drawRect(bg, 0, info.getScreenWidth(), 0, info.getScreenHeight(), 2, 2);
         bg.end();
         bg.uploadPointer();
@@ -52,7 +52,7 @@ public final class LogoLoadingScreen extends AnimationScreen {
 
         float prog = Math.min(this.time / 100f, this.progress);
 
-        this.drawProgressBar(builder, xc, 27, 150, 1 - runtime.freeMemory() / (float) runtime.totalMemory());
+        this.drawProgressBar(builder, xc, 27, 150, 1 - runtime.freeMemory() / (float) runtime.totalMemory(), alphaOverwrite);
         ScreenUtil.drawFontASCII(
                 "Memory - %s/%s [%s]".formatted(JVMInfo.getUsedMemory(), JVMInfo.getTotalMemory(), JVMInfo.getUsage()),
                 xc,
@@ -71,19 +71,19 @@ public final class LogoLoadingScreen extends AnimationScreen {
 
         ScreenUtil.drawFontASCII(msg + "%]", xc - mw / 2, mh - 25, 16777215, 8, FontAlignment.LEFT);
 
-        this.drawProgressBar(builder, xc, mh, mw, prog);
+        this.drawProgressBar(builder, xc, mh, mw, prog, alphaOverwrite);
         builder.end();
         builder.uploadPointer();
         builder.free();
 
         GAME_LOGO.bind();
 
-        int w=180;
-        int h=60;
+        int w = 180;
+        int h = 60;
 
         LegacyVertexBuilder l = VertexBuilderAllocator.createByPrefer(64);
         l.begin();
-        ShapeRenderer.drawRectUV(l, xc-w, xc+w, yc-h-15, yc+h-15, 1,0,1,0,1);
+        ShapeRenderer.drawRectUV(l, xc - w, xc + w, yc - h - 15, yc + h - 15, 1, 0, 1, 0, 1);
         l.end();
         l.uploadPointer();
         l.free();
@@ -91,8 +91,7 @@ public final class LogoLoadingScreen extends AnimationScreen {
         GAME_LOGO.unbind();
     }
 
-    private void drawProgressBar(LegacyVertexBuilder builder, int xc, int yc, int w, float prog) {
-        float a = this.getContext().getHoverScreenAlpha();
+    private void drawProgressBar(LegacyVertexBuilder builder, int xc, int yc, int w, float prog, float a) {
         builder.color(1, 1, 1, a);
         ShapeRenderer.drawRect(builder, xc - w / 2f, xc + w / 2f, yc - 6, yc + 6, 0, 0);
         builder.color(0x33 / 255f, 0x33 / 255f, 0x33 / 255f, a);

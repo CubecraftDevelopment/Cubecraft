@@ -1,13 +1,9 @@
 package net.cubecraft.world.worldGen;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.ChunkState;
 import net.cubecraft.world.chunk.PrimerChunk;
 import net.cubecraft.world.chunk.WorldChunk;
-import net.cubecraft.world.chunk.future.ChunkFuture;
-import net.cubecraft.world.chunk.future.FutureChunkContainer;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.storage.PersistentChunkHolder;
 import net.cubecraft.world.worldGen.pipeline.ChunkGenerateTask;
@@ -15,14 +11,10 @@ import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
 import net.cubecraft.world.worldGen.pipeline.pipelines.OverworldPipeline;
 
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class WorldGenerator {
     private final World world;
     private final HashMap<String, ChunkGeneratorPipeline> pipelineCache = new HashMap<>();
-    private final Long2ObjectMap<Object> asyncQueue = new Long2ObjectArrayMap<>(8192);
-    private final ExecutorService worker = Executors.newFixedThreadPool(1);
     private PersistentChunkHolder persistentChunkHolder;
 
     public WorldGenerator(World world) {
@@ -106,27 +98,6 @@ public class WorldGenerator {
             return;
         }
         this.persistentChunkHolder.save(chunk);
-    }
-
-    public ChunkFuture<WorldChunk> loadAsync(World world, int x, int z, ChunkState state) {
-        var req = hash(x, z, state);
-
-        //if (this.asyncQueue.containsKey(req)) {
-            //return new FutureChunkContainer(world, x, z);
-        //}
-
-        //this.asyncQueue.put(req, Blocks.AIR);
-
-        this.worker.submit(() -> {
-
-
-        });
-
-        //todo: async world IO
-        this.world.getChunkCache().add(this.world.getWorldGenerator().load(x, z, state));
-        //this.asyncQueue.remove(req);
-
-        return new FutureChunkContainer(world, x, z);
     }
 
 

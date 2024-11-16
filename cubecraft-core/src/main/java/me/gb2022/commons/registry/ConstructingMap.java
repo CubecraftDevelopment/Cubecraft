@@ -45,10 +45,8 @@ public class ConstructingMap<I> extends RegisterMap<Class<? extends I>> {
 
     public Map<String, I> createAll(Object... initArgs) {
         Map<String, I> map = new HashMap();
-        Iterator var3 = this.keySet().iterator();
 
-        while (var3.hasNext()) {
-            String all = (String) var3.next();
+        for (String all : this.keySet()) {
             map.put(all, this.create(all, initArgs));
         }
 
@@ -71,8 +69,7 @@ public class ConstructingMap<I> extends RegisterMap<Class<? extends I>> {
         Field[] var2 = clazz.getFields();
         int var3 = var2.length;
 
-        for (int var4 = 0; var4 < var3; ++var4) {
-            Field f = var2[var4];
+        for (Field f : var2) {
             ClassRegistry registry = f.getAnnotation(ClassRegistry.class);
             if (registry != null) {
                 try {
@@ -92,8 +89,7 @@ public class ConstructingMap<I> extends RegisterMap<Class<? extends I>> {
             Method[] var8 = clazz.getMethods();
             int var3 = var8.length;
 
-            for(int var4 = 0; var4 < var3; ++var4) {
-                Method m = var8[var4];
+            for (Method m : var8) {
                 ItemRegisterFunc getter = m.getAnnotation(ItemRegisterFunc.class);
                 if (getter != null && getter.value() == this.template && m.getParameters().length == 1 && m.getParameters()[0].getType() == this.getClass()) {
                     m.invoke(clazz.getConstructor().newInstance(), this);

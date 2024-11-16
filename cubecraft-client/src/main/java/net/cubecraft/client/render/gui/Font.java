@@ -5,7 +5,7 @@ import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.util.DeserializedConstructor;
+import net.cubecraft.util.DeserializedConstructor;
 
 @TypeItem("font")
 public record Font(double x, double y, int size, int col, int yOffset, String query, float iconModifier) implements ComponentRendererPart {

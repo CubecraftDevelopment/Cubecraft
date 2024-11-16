@@ -4,9 +4,7 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.math.hitting.HitResult;
 import me.gb2022.commons.math.hitting.Hittable;
 import me.gb2022.quantum3d.device.KeyboardButton;
-import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.event.AnyClickInputEvent;
-import me.gb2022.quantum3d.device.event.MouseClickEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import net.cubecraft.client.CubecraftClient;
@@ -99,28 +97,6 @@ public final class PlayerController extends EntityController<EntityPlayer> {
         }
     }
 
-    public void onInput(AnyClickInputEvent event) {
-        if (SPRINT.isTriggered(event)) {
-            this.toggleSprint();
-        }
-
-        if(ATTACK.isTriggered(event)) {
-            this.entity.attack();
-        }
-        if(INTERACT.isTriggered(event)) {
-            this.entity.interact();
-        }
-        if(SELECT.isTriggered(event)) {
-            HitResult hitResult = this.entity.hitResult;
-            if (hitResult != null) {
-                Hittable obj = this.entity.hitResult.getObject(Hittable.class);
-                Inventory inv = this.entity.getInventory();
-                inv.selectItem(obj, this.slot);
-            }
-        }
-    }
-
-
     @EventHandler
     public void onScroll(MouseScrollEvent e) {
         int i = (int) -e.getYOffset();
@@ -138,5 +114,27 @@ public final class PlayerController extends EntityController<EntityPlayer> {
             this.slot = 8;
         }
         this.entity.getInventory().setActiveSlot(this.slot);
+    }
+
+    //@EventHandler
+    public void onInput(AnyClickInputEvent event) {
+        if (SPRINT.isTriggered(event)) {
+            this.toggleSprint();
+        }
+
+        if (ATTACK.isTriggered(event)) {
+            this.entity.attack();
+        }
+        if (INTERACT.isTriggered(event)) {
+            this.entity.interact();
+        }
+        if (SELECT.isTriggered(event)) {
+            HitResult hitResult = this.entity.hitResult;
+            if (hitResult != null) {
+                Hittable obj = this.entity.hitResult.getObject(Hittable.class);
+                Inventory inv = this.entity.getInventory();
+                inv.selectItem(obj, this.slot);
+            }
+        }
     }
 }

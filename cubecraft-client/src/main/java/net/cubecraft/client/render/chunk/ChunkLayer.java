@@ -2,6 +2,7 @@ package net.cubecraft.client.render.chunk;
 
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
+import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.render.chunk.status.RenderChunkStatus;
 
 import java.util.function.Consumer;
@@ -91,6 +92,7 @@ public final class ChunkLayer {
 
         for (int i = 0; i < this.batches.length; i++) {
             this.batches[i].upload(builder[i]);
+            builder[i].free();
         }
     }
 }

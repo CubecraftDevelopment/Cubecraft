@@ -2,7 +2,7 @@ package net.cubecraft.world.block.access;
 
 import me.gb2022.commons.math.hitting.HitBox;
 import net.cubecraft.util.register.Registered;
-import net.cubecraft.world.World;
+import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.EnumFacing;
@@ -90,7 +90,7 @@ public class SnapshotBlockAccess implements BlockAccess {
     }
 
     @Override
-    public World getWorld() {
+    public BlockAccessor getWorld() {
         return null;
     }
 

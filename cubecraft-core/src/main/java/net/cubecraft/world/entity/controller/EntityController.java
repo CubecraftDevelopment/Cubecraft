@@ -50,8 +50,6 @@ public abstract class EntityController<E extends EntityLiving> {
         } else if (this.entity.isOnGround()) {
             this.entity.yd = 0.45f;
         }
-
-        System.out.println(entity.yd);
     }
 
     //fly

@@ -5,7 +5,7 @@ import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.render.model.ColorMap;
 import net.cubecraft.client.render.model.CullingPredication;
 import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.client.util.DeserializedConstructor;
+import net.cubecraft.util.DeserializedConstructor;
 
 @TypeItem("cubecraft:log")
 public final class LogBlockModel extends BlockShapedModel {

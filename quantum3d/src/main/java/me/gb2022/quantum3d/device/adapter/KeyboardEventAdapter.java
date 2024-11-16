@@ -24,12 +24,12 @@ public final class KeyboardEventAdapter extends EventAdapter implements Keyboard
     @Override
     public void onKeyPressEvent(Window window, Keyboard keyboard, KeyboardButton key) {
         this.getEventBus().callEvent(new KeyboardPressEvent(window, keyboard, key));
+        this.getEventBus().callEvent(new AnyClickInputEvent(window, null, keyboard, key, null));
     }
 
     @Override
     public void onKeyReleaseEvent(Window window, Keyboard keyboard, KeyboardButton key) {
         this.getEventBus().callEvent(new KeyboardReleaseEvent(window, keyboard, key));
-        this.getEventBus().callEvent(new AnyClickInputEvent(window, null, keyboard, key, null));
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.google.gson.*;
 import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.util.DeserializedConstructor;
+import net.cubecraft.util.DeserializedConstructor;
 
 @TypeItem("vertical_border_image")
 public final class VerticalBorderImage extends ImageComponentRendererPart {

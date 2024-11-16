@@ -37,6 +37,21 @@ public final class ChunkPos implements Key {
         return ChunkPos.create(((long) x) >> 4, ((long) z) >> 4);
     }
 
+
+    public static int world(double wx) {
+        return (int) (((long) Math.floor(wx)) >> 4);
+    }
+
+    public static int x(Entity e) {
+        return world(e.x);
+    }
+
+    public static int z(Entity e) {
+        return world(e.z);
+    }
+
+
+
     public static ChunkPos create(long x, long z) {
         return new ChunkPos(x, z);
     }

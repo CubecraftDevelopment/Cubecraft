@@ -1,15 +1,18 @@
 package net.cubecraft.world.block.access;
 
+import me.gb2022.commons.container.Vector3;
 import me.gb2022.commons.math.hitting.HitBox;
 import me.gb2022.commons.math.hitting.Hittable;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
-import net.cubecraft.world.World;
 import net.cubecraft.world.biome.Biome;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.EnumFacing;
+import net.cubecraft.world.block.blocks.Blocks;
+import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface BlockAccess extends Hittable {
     int getBlockId();
@@ -20,15 +23,21 @@ public interface BlockAccess extends Hittable {
 
     Biome getBiome();
 
-    void setBlockMeta(byte meta, boolean sendUpdateEvent);
+    default void setBlockMeta(byte meta, boolean sendUpdateEvent) {
+    }
 
-    void setBlockLight(byte light, boolean sendUpdateEvent);
+    default void setBlockLight(byte light, boolean sendUpdateEvent) {
+    }
 
-    void setBiome(String biome, boolean sendUpdateEvent);
+    default void setBiome(String biome, boolean sendUpdateEvent) {
+    }
 
-    Block getBlock();
+    default Block getBlock(){
+        return Blocks.REGISTRY.object(getBlockId());
+    }
 
-    void scheduleTick(int time);
+    default void scheduleTick(int time) {
+    }
 
     long getX();
 
@@ -36,16 +45,19 @@ public interface BlockAccess extends Hittable {
 
     long getZ();
 
-    IBlockAccess getNear(EnumFacing facing);
 
-    World getWorld();
+    BlockAccessor getWorld();
 
-    void setBiome(Registered<Biome> biome, boolean sendUpdateEvent);
+    default void setBiome(Registered<Biome> biome, boolean sendUpdateEvent) {
+    }
 
-    void setBlockId(int id, boolean silent);
+    default void setBlockId(int id, boolean silent) {
+    }
 
     @Override
-    Collection<HitBox> getHitBox();
+    default Collection<HitBox> getHitBox() {
+        return BlockPropertyDispatcher.getHitBox(this);
+    }
 
     default BlockAccess near(BlockAccessor access, int face, int range) {
         var x = getX();
@@ -63,4 +75,8 @@ public interface BlockAccess extends Hittable {
         };
     }
 
+    default BlockAccess getNear(EnumFacing facing) {
+        Vector3<Long> pos = facing.findNear(this.getX(), this.getY(), this.getZ(), 1);
+        return this.getWorld().getBlockAccess(pos.x(), pos.y(), pos.z());
+    }
 }

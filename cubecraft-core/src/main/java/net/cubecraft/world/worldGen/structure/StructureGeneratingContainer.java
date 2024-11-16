@@ -23,7 +23,7 @@ public final class StructureGeneratingContainer {
         long wx = rx + this.baseX;
         long wz = rz + this.baseZ;
 
-        return this.world.getChunk((int) (wx >> 4), (int) (wz >> 4), ChunkState.STRUCTURE);
+        return this.world.threadSafeGetChunk((int) (wx >> 4), (int) (wz >> 4), ChunkState.STRUCTURE);
     }
 
     public long getBaseX() {

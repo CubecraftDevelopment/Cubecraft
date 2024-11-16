@@ -2,7 +2,7 @@
 id = "cubecraft_server"
 version = "1.0.0"
 class = "net.cubecraft.server.internal.CubecraftServerInternalMod"
-side = "shared"
+side = "server"
 
 [info]
 name = "Cubecraft-Server"

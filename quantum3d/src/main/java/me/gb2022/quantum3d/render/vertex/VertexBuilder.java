@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public final class VertexBuilder {
+    private final VertexBuilderAllocator vertexBuilderAllocator;
     private final AtomicInteger vertexCount = new AtomicInteger();
     private final VertexFormat format;
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
@@ -27,11 +28,12 @@ public final class VertexBuilder {
     private double[] normalCache;
 
 
-    public VertexBuilder(VertexFormat format, int capacity, DrawMode drawMode, BufferAllocator allocator) {
+    public VertexBuilder(VertexFormat format, int capacity, DrawMode drawMode, VertexBuilderAllocator allocator) {
         this.format = format;
         this.drawMode = drawMode;
         this.capacity = capacity;
-        this.allocator = allocator;
+        this.vertexBuilderAllocator = allocator;
+        this.allocator = allocator.getAllocator();
     }
 
     public void allocate() {
@@ -40,9 +42,17 @@ public final class VertexBuilder {
         this.lifetimeCounter.allocate();
 
         this.vertexBuffer = this.allocator.allocateBuffer(this.format.getVertexBufferSize(cap));
-        this.colorBuffer = this.allocator.allocateBuffer(this.format.getColorBufferSize(cap));
-        this.textureBuffer = this.allocator.allocateBuffer(this.format.getTextureBufferSize(cap));
-        this.normalBuffer = this.allocator.allocateBuffer(this.format.getNormalBufferSize(cap));
+
+        if (this.format.hasColorData()) {
+            this.colorBuffer = this.allocator.allocateBuffer(this.format.getColorBufferSize(cap));
+        }
+        if (this.format.hasTextureData()) {
+            this.textureBuffer = this.allocator.allocateBuffer(this.format.getTextureBufferSize(cap));
+        }
+        if (this.format.hasNormalData()) {
+            this.normalBuffer = this.allocator.allocateBuffer(this.format.getNormalBufferSize(cap));
+        }
+
         this.rawBuffer = this.allocator.allocateBuffer(this.format.getRawBufferSize(cap));
 
         if (this.format.hasColorData()) {
@@ -62,11 +72,23 @@ public final class VertexBuilder {
     }
 
     public void free() {
+        if(!this.lifetimeCounter.isAllocated()){
+            return;
+        }
+        this.vertexBuilderAllocator.clearInstance(this);
         this.lifetimeCounter.release();
         this.allocator.free(this.vertexBuffer);
-        this.allocator.free(this.colorBuffer);
-        this.allocator.free(this.textureBuffer);
-        this.allocator.free(this.normalBuffer);
+
+        if (this.format.hasColorData()) {
+            this.allocator.free(this.colorBuffer);
+        }
+        if (this.format.hasTextureData()) {
+            this.allocator.free(this.textureBuffer);
+        }
+        if (this.format.hasNormalData()) {
+            this.allocator.free(this.normalBuffer);
+        }
+
         this.allocator.free(this.rawBuffer);
     }
 
@@ -110,11 +132,20 @@ public final class VertexBuilder {
 
     public void reset() {
         this.vertexCount.set(0);
-        Arrays.fill(this.colorCache, 1.0f);
+        if (this.colorCache != null) {
+            Arrays.fill(this.colorCache, 1.0f);
+        }
         this.vertexBuffer.clear().position(0);
-        this.textureBuffer.clear().position(0);
-        this.colorBuffer.clear().position(0);
-        this.normalBuffer.clear().position(0);
+
+        if (this.format.hasColorData()) {
+            this.colorBuffer.clear().position(0);
+        }
+        if (this.format.hasTextureData()) {
+            this.textureBuffer.clear().position(0);
+        }
+        if (this.format.hasNormalData()) {
+            this.normalBuffer.clear().position(0);
+        }
         this.rawBuffer.clear().position(0);
     }
 

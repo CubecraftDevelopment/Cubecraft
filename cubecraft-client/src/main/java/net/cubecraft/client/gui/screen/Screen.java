@@ -20,7 +20,6 @@ import net.cubecraft.util.SystemInfoQuery;
 import org.w3c.dom.Element;
 
 public class Screen extends Container {
-
     protected final OrderedHashMap<String, String> debugInfoLeft = new OrderedHashMap<>();
     protected final OrderedHashMap<String, String> debugInfoRight = new OrderedHashMap<>();
     protected final boolean grabMouse;
@@ -58,8 +57,8 @@ public class Screen extends Container {
     }
 
     public void init() {
+        super.init();
         this.client = ClientSharedContext.getClient();
-        this.client.getDeviceEventBus().registerEventListener(this);
         this.client.getClientDeviceContext().getMouse().setMouseGrabbed(this.grabMouse);
         this.context.getEventBus().callEvent(new ComponentInitializeEvent(this, this, this.context), getId());
     }
@@ -112,7 +111,7 @@ public class Screen extends Container {
     }
 
     //run
-    public void render(DisplayScreenInfo info, float deltaTime) {
+    public void render(DisplayScreenInfo info, float deltaTime,float alphaOverwrite) {
         switch (this.backgroundType) {
             case IMAGE_BACKGROUND -> ScreenUtil.renderPictureBackground(this.client.getWindow());
             case TILE_BACKGROUND -> ScreenUtil.renderTileBackground();

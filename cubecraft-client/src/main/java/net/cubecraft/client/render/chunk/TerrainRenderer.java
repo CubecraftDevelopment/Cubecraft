@@ -23,7 +23,6 @@ import net.cubecraft.client.render.chunk.status.ChunkStatusHandler;
 import net.cubecraft.client.render.chunk.status.ChunkStatusHandlerThread;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.event.BlockIDChangedEvent;
-import net.cubecraft.event.SettingReloadEvent;
 import net.cubecraft.world.chunk.Chunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,12 +32,12 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 @TypeItem("cubecraft:chunk_renderer")
 public final class TerrainRenderer extends IWorldRenderer implements ChunkStatusHandler {
     public static final Logger LOGGER = LogManager.getLogger("TerrainRenderer");
-
-    public static final String SETTING_NAMESPACE = "chunk_renderer";
 
     private final int viewDistance = ClientSettingRegistry.getFixedViewDistance();
     private final boolean vbo = ClientSettingRegistry.CHUNK_USE_VBO.getValue();
@@ -53,7 +52,7 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
     private final Int2ObjectMap<ChunkLayerContainer> containers = new Int2ObjectOpenHashMap<>(8);
 
     private final ChunkCompileRequestSorter chunkCompileRequestSorter = new ChunkCompileRequestSorter(this.frustum);
-    private final Queue<ChunkCompileRequest> requestQueue = new PriorityQueue<>(this.chunkCompileRequestSorter);
+    private final BlockingQueue<ChunkCompileRequest> requestQueue = new PriorityBlockingQueue<>(4096, this.chunkCompileRequestSorter);
     private final ChunkCompileResultSorter chunkCompileResultSorter = new ChunkCompileResultSorter(this.frustum);
     private final Queue<ChunkCompileResult> resultQueue = new PriorityQueue<>(this.chunkCompileResultSorter);
     private final Queue<ChunkCompileResult> pendingUploadQueue = new PriorityQueue<>(this.chunkCompileResultSorter);
@@ -115,11 +114,10 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         for (int i = 0; i < count; i++) {
             ChunkCompilerTask task = ChunkCompilerTask.service(this);
             this.compilers[i] = task;
-            Thread t = new Thread(task);
-            t.setName("%s#%d-%d".formatted("ChunkCompiler", hashCode(), i));
-            t.setDaemon(true);
-            t.setPriority(1);
-            t.start();
+            task.setName("%s#%d-%d".formatted("ChunkCompiler", hashCode(), i));
+            task.setDaemon(true);
+            task.setPriority(1);
+            task.start();
         }
 
         this.daemon.start();
@@ -230,9 +228,11 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     @Override
     public void stop() {
+        super.stop();
         this.daemon.setRunning(false);
         for (ChunkCompilerTask daemon : this.compilers) {
             daemon.setRunning(false);
+            daemon.interrupt();
         }
 
         for (var container : this.containers.values()) {
@@ -243,7 +243,9 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         this.requestQueue.clear();
         this.resultQueue.clear();
         ClientSharedContext.QUERY_HANDLER.unregisterCallback(this.getID());
-        this.world.getEventBus().registerEventListener(this);
+        this.world.getEventBus().unregisterEventListener(this);
+
+        this.getMemoryAllocator().clear();
     }
 
     public void setUpdate(int x, int y, int z, boolean immediate) {
@@ -272,25 +274,27 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         var cy = (int) (y >> 4);
         var cz = (int) (z >> 4);
 
+        var immediate = true;
+
         if ((x & 15) == 0) {
-            setUpdate(cx - 1, cy, cz, true);
+            setUpdate(cx - 1, cy, cz, immediate);
         }
         if ((x & 15) == 15) {
-            setUpdate(cx + 1, cy, cz, true);
+            setUpdate(cx + 1, cy, cz, immediate);
         }
         if ((y & 15) == 0) {
-            setUpdate(cx, cy - 1, cz, true);
+            setUpdate(cx, cy - 1, cz, immediate);
         }
         if ((y & 15) == 15) {
-            setUpdate(cx, cy + 1, cz, true);
+            setUpdate(cx, cy + 1, cz, immediate);
         }
         if ((z & 15) == 0) {
-            setUpdate(cx, cy, cz - 1, true);
+            setUpdate(cx, cy, cz - 1, immediate);
         }
         if ((z & 15) == 15) {
-            setUpdate(cx, cy, cz + 1, true);
+            setUpdate(cx, cy, cz + 1, immediate);
         }
-        setUpdate(cx, cy, cz, true);
+        setUpdate(cx, cy, cz, immediate);
     }
 
     public int getViewDistance() {
@@ -305,7 +309,7 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         return this.chunkStatusCache;
     }
 
-    public Queue<ChunkCompileRequest> getRequestQueue() {
+    public BlockingQueue<ChunkCompileRequest> getRequestQueue() {
         return this.requestQueue;
     }
 

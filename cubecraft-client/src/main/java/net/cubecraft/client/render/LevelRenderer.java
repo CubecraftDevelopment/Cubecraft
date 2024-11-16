@@ -99,7 +99,9 @@ public final class LevelRenderer extends ClientComponent {
         this.camera.setAspect(info.getAspect());
 
         for (IWorldRenderer renderer : this.renderers.values()) {
+            GLUtil.checkError(renderer.getID() + ":pre:before");
             renderer.preRender();
+            GLUtil.checkError(renderer.getID() + ":pre:after");
         }
 
         GL11.glShadeModel(GL11.GL_SMOOTH);
@@ -132,6 +134,7 @@ public final class LevelRenderer extends ClientComponent {
 
         this.renderers.clear();
 
+        this.fogColor.clear();
         this.fogColorElement = ColorElement.parseFromString(config.get("fog_color").getAsString());
         this.fogColorElement.toFloatRGBA(this.fogColor);
 
@@ -224,7 +227,7 @@ public final class LevelRenderer extends ClientComponent {
 
 
     public void refresh() {
-        if(!this.active) {
+        if (!this.active) {
             return;
         }
 

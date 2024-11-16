@@ -13,7 +13,7 @@ import net.cubecraft.resource.item.IResource;
 import net.cubecraft.resource.provider.InternalResourceLoader;
 import net.cubecraft.resource.provider.ModResourceLoader;
 import net.cubecraft.resource.provider.ResourceLoader;
-import net.cubecraft.util.TaskFutureWrapper;
+import net.cubecraft.util.thread.TaskFutureWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

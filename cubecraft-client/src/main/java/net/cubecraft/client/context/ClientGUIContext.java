@@ -2,7 +2,6 @@ package net.cubecraft.client.context;
 
 import com.google.gson.JsonObject;
 import me.gb2022.commons.container.CollectionUtil;
-import me.gb2022.commons.event.EventBus;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SimpleEventBus;
 import me.gb2022.commons.file.XmlReader;
@@ -50,8 +49,9 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
 
     public static final ConstructingMap<Node> NODE = new ConstructingMap<>(Node.class);
     public static final ConstructingMap<Layout> LAYOUT = new ConstructingMap<>(Layout.class);
-    public static final ConstructingMap<ComponentRendererPart> COMPONENT_RENDERER_PART = new ConstructingMap<>(ComponentRendererPart.class,
-                                                                                                               JsonObject.class
+    public static final ConstructingMap<ComponentRendererPart> COMPONENT_RENDERER_PART = new ConstructingMap<>(
+            ComponentRendererPart.class,
+            JsonObject.class
     );
 
     public static final HashMap<Class<? extends Node>, ComponentRenderer> COMPONENT_RENDERER = new HashMap<>();
@@ -73,8 +73,6 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     private boolean checked;
     private int fixedMouseX, fixedMouseY;
     private LogoLoadingScreen loadingScreen;
-    private int renderCount;
-
 
     public ClientGUIContext(CubecraftClient client, Window window) {
         super(client);
@@ -126,7 +124,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
     public void renderScreen(DisplayScreenInfo info, float delta) {
         GLUtil.disableDepthTest();
         if (this.screen != null) {
-            this.screen.render(info, delta);
+            this.screen.render(info, delta, 1);
         }
 
 
@@ -142,7 +140,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
                 checked = false;
             }
             if (alpha > 0) {
-                this.hoverScreen.render(info, delta);
+                this.hoverScreen.render(info, delta, alpha);
             }
         }
 
@@ -154,7 +152,6 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
 
         //this.buffer.resize(w, h);
         //this.buffer.resizeRenderToScaledScreen(0.5f);
-        this.renderCount++;
 
         GLUtil.disableDepthTest();
         if (this.screen != null) {
@@ -230,7 +227,6 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
         }
         this.hoverScreen = screen;
         this.hoverScreen.init();
-        String s = screen.getId();
     }
 
     public SimpleEventBus getEventBus() {
@@ -275,7 +271,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
         }
     }
 
-    public EventBus getDeviceEventBus() {
+    public SimpleEventBus getDeviceEventBus() {
         return this.client.getDeviceEventBus();
     }
 

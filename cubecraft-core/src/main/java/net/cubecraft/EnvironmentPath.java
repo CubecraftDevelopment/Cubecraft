@@ -1,5 +1,8 @@
 package net.cubecraft;
 
+import net.cubecraft.level.LevelInfo;
+import org.jetbrains.annotations.Blocking;
+
 import java.io.File;
 
 public interface EnvironmentPath {
@@ -75,5 +78,24 @@ public interface EnvironmentPath {
             f.mkdirs();
         }
         return f;
+    }
+
+    @Blocking
+    static String getFolderName(LevelInfo info) {
+        var folderName = info.getLevelName();
+
+        var folder = SAVE_FOLDER + "/" + folderName;
+
+        if (!new File(folder).exists()) {
+            return folder;
+        }
+
+        var aliasId = 1;
+
+        while (new File(folder + "(" + aliasId + ")").exists()) {
+            aliasId++;
+        }
+
+        return folder;
     }
 }

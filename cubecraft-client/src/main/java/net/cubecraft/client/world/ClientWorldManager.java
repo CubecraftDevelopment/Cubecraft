@@ -23,16 +23,16 @@ import net.cubecraft.client.net.ClientNetHandler;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.level.LevelInfo;
 import net.cubecraft.server.CubecraftServer;
-import net.cubecraft.server.ServerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class ClientWorldManager extends ClientNetHandler {
+public final class ClientWorldManager extends ClientNetHandler {
     private static final Logger LOGGER = LogManager.getLogger("client-world-manager");
     private final CubecraftClient client;
     private final HashMap<String, LevelInfo> levels = new HashMap<>();
@@ -51,11 +51,23 @@ public class ClientWorldManager extends ClientNetHandler {
         this.client.getClientGUIContext().getEventBus().registerEventListener(this);
     }
 
-    public void joinLocalWorld(String name) {
-        this.server = ServerFactory.createIntegratedServer(name);
+    public void joinLocalWorld(LevelInfo name) {
+        if (this.server != null) {
+            this.getIntegratedServer().setRunning(false);
+
+            while (!(this.getIntegratedServer().getState() == ThreadState.TERMINATED || this.getIntegratedServer()
+                    .getState() == ThreadState.TERMINATING_FAILED)) {
+                Thread.yield();
+            }
+        }
+        this.server = CubecraftServer.createIntegratedServer(name);
         LOGGER.info("integrated server started.");
 
-        new Thread(this.server).start();
+        var t = new Thread(this.server);
+        t.setName("Server#" + this.server.hashCode());
+        t.setDaemon(true);
+
+        t.start();
 
         while (this.server.getState() != ThreadState.INITIALIZED) {
             Thread.yield();
@@ -105,16 +117,25 @@ public class ClientWorldManager extends ClientNetHandler {
         }
 
         for (File worldFolder : files) {
-            LevelInfo info = LevelInfo.load(worldFolder);
-            if (info == null) {
-                continue;
+            LevelInfo info;
+            try {
+                info = LevelInfo.open(worldFolder.getAbsolutePath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            String name = info.getLevelName();
-            this.levels.put(name, info);
+
+            this.levels.put(info.getLevelName(), info);
         }
         updateShowedList("");
     }
 
+
+    public void createWorld(LevelInfo info) {
+        var folder = new File(EnvironmentPath.getFolderName(info));
+        if (folder.mkdir()) {
+            LOGGER.info("created level folder: {}", folder.getAbsolutePath());
+        }
+    }
 
     @EventHandler
     @SubscribedEvent(ScreenType.SINGLE_PLAYER)
@@ -124,11 +145,10 @@ public class ClientWorldManager extends ClientNetHandler {
                 if (this.selectedLevel == null) {
                     return;
                 }
-                this.joinLocalWorld(this.selectedLevel.getLevelName());
+                this.joinLocalWorld(this.selectedLevel);
             }
             case "create_world" -> {
-                LevelInfo info = LevelInfo.create("ExampleWorld", 11451419198710L);
-                this.levels.put(info.getLevelName(), info);
+                //todo: create-world-screen
             }
         }
     }
@@ -240,14 +260,15 @@ public class ClientWorldManager extends ClientNetHandler {
             return;
         }
 
-        this.getIntegratedServer().setRunning(false);
-
         this.client.setWorldContext(null);
+        this.getIntegratedServer().setRunning(false);
 
         while (!(this.getIntegratedServer().getState() == ThreadState.TERMINATED || this.getIntegratedServer()
                 .getState() == ThreadState.TERMINATING_FAILED)) {
             Thread.yield();
         }
+
+        this.server = null;
     }
 
     public boolean isIntegrated() {

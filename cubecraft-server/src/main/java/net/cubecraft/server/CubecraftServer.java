@@ -22,8 +22,12 @@ import net.cubecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.util.Map;
+import java.util.Properties;
 
 public final class CubecraftServer extends LoopTickingThread {
     public static final VersionInfo VERSION = new VersionInfo("server-0.3.2-b2");
@@ -39,16 +43,56 @@ public final class CubecraftServer extends LoopTickingThread {
     private Map<String, Service> services;
 
 
-    public CubecraftServer(InetSocketAddress localAddress, String levelName, boolean isIntegrated) {
+    public CubecraftServer(InetSocketAddress localAddress, LevelInfo info, boolean isIntegrated) {
+        info.updateLastPlayTime();
         this.localAddress = localAddress;
         this.isIntegrated = isIntegrated;
-        this.level = new Level(LevelInfo.create(levelName, 114514), new ServerWorldFactory(this));
+        this.level = info.createLevel(new ServerWorldFactory(this));
     }
 
     public CubecraftServer(InetSocketAddress localAddress, Level initialLevel, boolean isIntegrated) {
         this.localAddress = localAddress;
         this.level = initialLevel;
         this.isIntegrated = isIntegrated;
+    }
+
+    public static CubecraftServer createIntegratedServer(LevelInfo info) {
+        int port = 11451;
+
+        try {
+            ServerSocket socket = new ServerSocket(0);
+            port = socket.getLocalPort();
+            socket.close();
+        } catch (Exception ignored) {
+        }
+
+        return new CubecraftServer(new InetSocketAddress("127.0.0.1", port), info, true);
+    }
+
+    public static CubecraftServer createExternalServer() {
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(EnvironmentPath.GAME_FOLDER + "/server.properties"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        var level = properties.getProperty("world", "world");
+        var address = properties.getProperty("address", "127.0.0.1");
+        var port = Integer.parseInt(properties.getProperty("port", "25585"));
+
+        try {
+            var info = LevelInfo.openOrElseCreate(EnvironmentPath.GAME_FOLDER + "/" + level);
+
+            return new CubecraftServer(new InetSocketAddress(address, port), info, false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean monitor() {
+        return true;
     }
 
     @Override
@@ -89,7 +133,7 @@ public final class CubecraftServer extends LoopTickingThread {
         for (World world : this.level.getWorlds().values()) {
             this.getEventBus().callEvent(new ServerWorldInitializedEvent(this, world));
         }
-        LOGGER.info("loaded level {}",this.level.getLevelInfo().getLevelName());
+        LOGGER.info("loaded level {}", this.level.getLevelInfo().getLevelName());
         for (Service service : this.services.values()) {
             try {
                 service.postInitialize(this);
@@ -104,6 +148,11 @@ public final class CubecraftServer extends LoopTickingThread {
     public void tick() {
         for (Service service : this.services.values()) {
             service.onServerTick(this);
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

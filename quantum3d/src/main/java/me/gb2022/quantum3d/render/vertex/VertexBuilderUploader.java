@@ -12,6 +12,7 @@ public interface VertexBuilderUploader {
     static void uploadPointer(VertexBuilder builder) {
         VertexFormat format = builder.getFormat();
 
+        GLUtil.checkError("upload_builder:setup-pointer");
         DataFormat vertexFormat = format.getVertexFormat();
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glVertexPointer(vertexFormat.getSize(), vertexFormat.getType().getGlId(), 0, builder.generateVertexBuffer());

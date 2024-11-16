@@ -1,4 +1,4 @@
-package net.cubecraft.client.util;
+package net.cubecraft.util;
 
 @SuppressWarnings("unused")
 public @interface DeserializedConstructor {
