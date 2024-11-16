@@ -7,7 +7,7 @@ import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
 import me.gb2022.quantum3d.util.ShapeRenderer;
 import me.gb2022.quantum3d.texture.Texture2D;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.util.DeserializedConstructor;
+import net.cubecraft.util.DeserializedConstructor;
 
 @TypeItem("border_image")
 public final class BorderImage extends ImageComponentRendererPart {

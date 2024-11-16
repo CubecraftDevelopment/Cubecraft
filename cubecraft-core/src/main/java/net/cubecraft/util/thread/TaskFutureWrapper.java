@@ -1,4 +1,4 @@
-package net.cubecraft.util;
+package net.cubecraft.util.thread;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;

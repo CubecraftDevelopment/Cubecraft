@@ -15,11 +15,12 @@ import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
 import net.cubecraft.Side;
 import net.cubecraft.auth.Session;
-import net.cubecraft.client.context.ClientDeviceContext;
+import net.cubecraft.client.context.Devicecontext;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.app.ClientDisposeEvent;
 import net.cubecraft.client.event.app.ClientPostSetupEvent;
 import net.cubecraft.client.event.app.ClientSetupEvent;
+import net.cubecraft.client.gui.GUIContext;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.font.FontRenderer;
@@ -48,15 +49,17 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-//todo: 堆外释放
 public final class CubecraftClient extends GameApplication {
     public static final VersionInfo VERSION = new VersionInfo("client-0.4.4");
     private static final Logger LOGGER = LogManager.getLogger("Client");
 
     private final List<ClientComponent> components = new ArrayList<>(4);
 
-    private final ClientDeviceContext deviceContext = new ClientDeviceContext();
+    private final Devicecontext deviceContext = new Devicecontext();
+    private final GUIContext gui = new GUIContext();
+
     private final ClientGUIContext guiContext = new ClientGUIContext(this, this.getWindow());
+
 
     private final SimpleEventBus clientEventBus = new SimpleEventBus();
 
@@ -78,6 +81,7 @@ public final class CubecraftClient extends GameApplication {
         deviceContext.initContext();
 
         this.components.add(this.deviceContext);
+        //this.components.add(this.gui);
         this.components.add(new LevelRenderer());
 
         for (var component : this.components) {
@@ -188,6 +192,7 @@ public final class CubecraftClient extends GameApplication {
 
     @Override
     public boolean onException(Exception error) {
+        error.printStackTrace();
         LOGGER.catching(error);
         this.stop();
         return true;
@@ -294,7 +299,6 @@ public final class CubecraftClient extends GameApplication {
     }
 
 
-
     public DisplayScreenInfo getDisplaySize() {
         var window = this.getWindow();
         var scale = ClientSettingRegistry.getFixedGUIScale();
@@ -336,7 +340,7 @@ public final class CubecraftClient extends GameApplication {
         return this.clientWorldManager;
     }
 
-    public ClientDeviceContext getClientDeviceContext() {
+    public Devicecontext getClientDeviceContext() {
         return deviceContext;
     }
 

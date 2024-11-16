@@ -1,19 +1,20 @@
 package net.cubecraft.client.render.chunk.compile;
 
 import net.cubecraft.client.render.chunk.TerrainRenderer;
+import net.cubecraft.world.dump.ChunkCompileRegion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
-public abstract class ChunkCompilerTask implements Runnable {
+public abstract class ChunkCompilerTask extends Thread {
     public static final Logger LOGGER = LogManager.getLogger("ChunkCompilerTask");
-
     protected final TerrainRenderer owner;
     protected final Queue<ChunkCompileResult> resultQueue;
-    protected final Queue<ChunkCompileRequest> requestQueue;
+    protected final BlockingQueue<ChunkCompileRequest> requestQueue;
     protected final ModernChunkCompiler compiler;
-
+    private final ChunkCompileRegion regionCache = new ChunkCompileRegion();
     private boolean running = true;
 
     public ChunkCompilerTask(TerrainRenderer owner) {
@@ -38,7 +39,7 @@ public abstract class ChunkCompilerTask implements Runnable {
             return;
         }
 
-        this.compiler.build(this.resultQueue, request.getWorld(), request);
+        this.compiler.build(this.regionCache, this.resultQueue, request.getWorld(), request);
     }
 
     public boolean isRunning() {
@@ -79,32 +80,19 @@ public abstract class ChunkCompilerTask implements Runnable {
         public void run() {
             while (this.isRunning()) {
                 try {
-                    while (this.requestQueue.isEmpty()) {
-                        Thread.onSpinWait();
-                        Thread.sleep(50);
+                    ChunkCompileRequest request;
+                    synchronized ("chunk_poll") {
+                        request = this.requestQueue.take();
+                    }
+
+                    if (this.owner.isChunkOutOfRange(request.getPos())) {
                         Thread.yield();
+                        continue;
                     }
 
-                    for (int i = 0; i < 40; i++) {
-                        ChunkCompileRequest request;
-                        if (this.requestQueue.isEmpty()) {
-                            Thread.yield();
-                            Thread.sleep(1);
-                            continue;
-                        } else {
-                            synchronized ("chunk_poll") {
-                                request = this.requestQueue.poll();
-                            }
-                        }
-
-                        if (request == null || this.owner.isChunkOutOfRange(request.getPos())) {
-                            Thread.yield();
-                            continue;
-                        }
-
-                        this.processRequest(request);
-                    }
-                    Thread.sleep(5);
+                    this.processRequest(request);
+                } catch (InterruptedException ignored) {
+                    return;
                 } catch (Exception e) {
                     LOGGER.throwing(e);
                 }

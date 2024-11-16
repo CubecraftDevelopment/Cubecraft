@@ -19,10 +19,9 @@ import java.util.*;
 import java.util.jar.JarFile;
 
 
-public class ModManager {
+public final class ModManager {
     private static final Logger LOGGER = LogManager.getLogger("ModManager");
-    private final EventBus eventBus = new SimpleEventBus();
-    // private final HashMap<String, Object> mods = new HashMap<>();
+    private final SimpleEventBus eventBus = new SimpleEventBus();
     private final ExtensionInfoMapping modMap = new ExtensionInfoMapping();
 
     private final List<String> modLoadList = new ArrayList<>(128);
@@ -77,10 +76,10 @@ public class ModManager {
         int counter = 0;
 
         for (String id : this.modLoadList) {
-            Mod mod = this.mods.get(id);
+            var mod = this.mods.get(id);
             mod.construct();
 
-            EventBus eventBus = this.getModLoaderEventBus();
+            var eventBus = this.getModLoaderEventBus();
 
             eventBus.registerEventListener(this.mods.get(id).getModClass());
             eventBus.registerEventListener(this.mods.get(id).getModObject());

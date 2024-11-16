@@ -48,9 +48,8 @@ public class RegisterMap<I> extends NameSpaceMap<I> {
         Method[] var2 = clazz.getMethods();
         int var3 = var2.length;
 
-        for(int var4 = 0; var4 < var3; ++var4) {
-            Method m = var2[var4];
-            ItemGetter getter = (ItemGetter)m.getAnnotation(ItemGetter.class);
+        for (Method m : var2) {
+            ItemGetter getter = (ItemGetter) m.getAnnotation(ItemGetter.class);
             if (getter != null) {
                 try {
                     this.set(getter.namespace(), getter.id(), (I) m.invoke(clazz.getConstructor().newInstance()));
@@ -68,8 +67,7 @@ public class RegisterMap<I> extends NameSpaceMap<I> {
             Method[] var8 = clazz.getMethods();
             int var3 = var8.length;
 
-            for(int var4 = 0; var4 < var3; ++var4) {
-                Method m = var8[var4];
+            for (Method m : var8) {
                 ItemRegisterFunc getter = m.getAnnotation(ItemRegisterFunc.class);
                 if (getter != null && getter.value() == this.templateClass && m.getParameters().length == 1 && m.getParameters()[0].getType() == this.getClass()) {
                     m.invoke(clazz.getConstructor().newInstance(), this);

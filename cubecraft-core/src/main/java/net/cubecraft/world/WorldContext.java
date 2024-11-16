@@ -2,6 +2,7 @@ package net.cubecraft.world;
 
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.level.Level;
+import net.cubecraft.world.chunk.ChunkState;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.entity.Entity;
 
@@ -28,7 +29,7 @@ public final class WorldContext {
         if (this.entity == null) {
             return;
         }
-        if (this.world.getChunk(ChunkPos.fromEntity(this.entity)) == null) {
+        if (this.world.getChunk(ChunkPos.x(this.entity), ChunkPos.z(this.entity), ChunkState.COMPLETE) == null) {
             return;
         }
         if (this.world.isClient()) {

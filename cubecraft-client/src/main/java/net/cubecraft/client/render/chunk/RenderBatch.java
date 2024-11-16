@@ -48,6 +48,7 @@ public interface RenderBatch {
         public void upload(VertexBuilder builder) {
             GL11.glNewList(this.list, GL11.GL_COMPILE);
             if (!builder.getLifetimeCounter().isAllocated()) {
+                GL11.glEndList();
                 return;
             }
             VertexBuilderUploader.uploadPointer(builder);

@@ -95,10 +95,8 @@ public class RidgeNoise extends NoiseSource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RidgeNoise)) return false;
+        if (!(o instanceof RidgeNoise that)) return false;
         if (!super.equals(o)) return false;
-
-        RidgeNoise that = (RidgeNoise) o;
 
         if (Float.compare(that.min, min) != 0) return false;
         if (Float.compare(that.max, max) != 0) return false;

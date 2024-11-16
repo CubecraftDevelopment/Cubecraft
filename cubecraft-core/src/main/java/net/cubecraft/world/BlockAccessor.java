@@ -43,4 +43,33 @@ public interface BlockAccessor {
 
     default void setBlockId(long x, long y, long z, int i, boolean silent) {
     }
+
+    default void setTick(long x, long y, long z) {
+    }
+
+    default void setTickSchedule(long x, long y, long z, int time) {
+    }
+
+    default BlockAccess[] getBlockAndNeighbor(long x, long y, long z) {
+        return new BlockAccess[]{
+                getBlockAccess(x, y, z),
+                getBlockAccess(x - 1, y, z),
+                getBlockAccess(x + 1, y, z),
+                getBlockAccess(x, y - 1, z),
+                getBlockAccess(x, y + 1, z),
+                getBlockAccess(x, y, z - 1),
+                getBlockAccess(x, y, z + 1)
+        };
+    }
+
+    default BlockAccess[] getBlockNeighbor(long x, long y, long z) {
+        return new BlockAccess[]{
+                getBlockAccess(x - 1, y, z),
+                getBlockAccess(x + 1, y, z),
+                getBlockAccess(x, y - 1, z),
+                getBlockAccess(x, y + 1, z),
+                getBlockAccess(x, y, z - 1),
+                getBlockAccess(x, y, z + 1)
+        };
+    }
 }

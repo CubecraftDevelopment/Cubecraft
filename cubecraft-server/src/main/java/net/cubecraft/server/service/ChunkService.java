@@ -15,26 +15,25 @@ import net.cubecraft.world.World;
 import net.cubecraft.world.chunk.ChunkCodec;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
-import net.cubecraft.world.chunk.pos.WorldChunkPos;
 import net.cubecraft.world.storage.PersistentChunkHolder;
-import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.GZIPInputStream;
 
 @TypeItem("cubecraft:chunk_service")
 public final class ChunkService implements Service, PersistentChunkHolder {
     public static final Options DEFAULT_LEVELDB_OPTIONS = new Options().createIfMissing(true).blockSize(1024);
-    private static final Logger LOGGER = LogManager.getLogger("server/chunk_service");
-    private final HashMap<String, ChunkGeneratorPipeline> pipelineCache = new HashMap<>();
+    private static final Logger LOGGER = LogManager.getLogger("ServerChunkService");
     private DB db;
     private ExecutorService saveTaskPool;
     private String serverLevelName;
@@ -52,8 +51,6 @@ public final class ChunkService implements Service, PersistentChunkHolder {
     @Override
     public void onServerTick(CubecraftServer server) {
         if (System.currentTimeMillis() - this.lastSaved > 20000) {
-            //this.saveDataBase();
-            //this.loadDataBase();
             this.lastSaved = System.currentTimeMillis();
         }
     }
@@ -93,36 +90,42 @@ public final class ChunkService implements Service, PersistentChunkHolder {
         }
     }
 
-    public NBTTagCompound loadChunkFromDB(WorldChunkPos pos) {
-        while (this.db == null) {
-            Thread.yield();
-        }
-        try {
-            byte[] key = (pos.toString()).getBytes(StandardCharsets.UTF_8);
-            byte[] data = this.db.get(key);
-            if (data == null) {
-                return null;
-            }
-
-            ByteArrayInputStream stream = new ByteArrayInputStream(data);
-            GZIPInputStream zipInput = new GZIPInputStream(stream);
-            NBTTagCompound tag = (NBTTagCompound) NBT.read(new DataInputStream(zipInput));
-            zipInput.close();
-            stream.close();
-
-            return tag;
-        } catch (Exception error) {
-            LOGGER.throwing(error);
-            return null;
-        }
-    }
-
     @EventHandler
     public void onServerWorldInitialized(ServerWorldInitializedEvent e) {
-        World world = e.getWorld();
-        world.getWorldGenerator().setPersistentChunkProvider(this);
+        e.getWorld().getWorldGenerator().setPersistentChunkProvider(this);
     }
 
+    @Override
+    public void save(Set<WorldChunk> chunks) {
+        this.saveTaskPool.submit(() -> {
+            while (this.db == null) {
+                Thread.yield();
+            }
+
+            var batch = this.db.createWriteBatch();
+
+            for (WorldChunk chunk : chunks) {
+                try {
+                    NBTTagCompound tag = ChunkCodec.getWorldChunkData(chunk);
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream(4096);
+                    NBT.writeZipped(tag, new DataOutputStream(stream));
+                    stream.close();
+
+                    byte[] data = stream.toByteArray();
+                    byte[] key = (chunk.getWorld().getId() + "@" + chunk.getKey().pack()).getBytes(StandardCharsets.UTF_8);
+
+                    batch.put(key, data);
+                } catch (Exception error) {
+                    LOGGER.throwing(error);
+                }
+            }
+
+            this.db.write(batch);
+
+            LOGGER.info("saved {} chunks", chunks.size());
+        });
+    }
 
     @Override
     public void save(WorldChunk chunk) {
@@ -162,5 +165,4 @@ public final class ChunkService implements Service, PersistentChunkHolder {
         ChunkCodec.setWorldChunkData(chunk, (NBTTagCompound) NBT.readZipped(new ByteArrayInputStream(data)));
         return chunk;
     }
-
 }

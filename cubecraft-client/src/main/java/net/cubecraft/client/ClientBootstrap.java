@@ -104,7 +104,7 @@ public final class ClientBootstrap {
                 System.exit(0);
             }
 
-            LOGGER.info("releasing library:%s -> %s", localPath, targetPath);
+            LOGGER.info("releasing library:{} -> {}}", localPath, targetPath);
         }
         return true;
     }

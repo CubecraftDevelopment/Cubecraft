@@ -3,8 +3,6 @@ package net.cubecraft.world.block.access;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.World;
 import net.cubecraft.world.biome.Biome;
-import net.cubecraft.world.block.EnumFacing;
-import net.cubecraft.world.block.blocks.Blocks;
 import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.WorldChunk;
 import net.cubecraft.world.chunk.pos.ChunkPos;
@@ -32,34 +30,6 @@ public class ChunkBlockAccess extends IBlockAccess {
         return this.world.getBlockLight(this.x, this.y, this.z);
     }
 
-
-    @Override
-    public String getBlockID() {
-        return Blocks.REGISTRY.name(getBlockId());
-    }
-
-
-    @Override
-    public void setBlockID(String id, boolean sendUpdateEvent) {
-        this.setBlockId(Blocks.REGISTRY.id(id), !sendUpdateEvent);
-    }
-
-    @Override
-    public EnumFacing getBlockFacing() {
-        return EnumFacing.Up;
-    }
-
-    @Override
-    public void setBlockFacing(EnumFacing facing, boolean sendUpdateEvent) {
-        if (y < 0 || y >= Chunk.HEIGHT) {
-            return;
-        }
-        ChunkPos pos = ChunkPos.fromWorldPos(this.x, this.z);
-        if (this.chunk == null) {
-            return;
-        }
-        this.chunk.setBlockFacing(pos.getRelativePosX(x), (int) y, pos.getRelativePosZ(z), facing);
-    }
 
     @Override
     public void setBlockMeta(byte meta, boolean sendUpdateEvent) {

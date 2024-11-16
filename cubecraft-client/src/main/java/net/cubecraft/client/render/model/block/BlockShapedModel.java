@@ -11,7 +11,7 @@ import net.cubecraft.client.render.model.ColorMap;
 import net.cubecraft.client.render.model.CullingPredication;
 import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.client.util.DeserializedConstructor;
+import net.cubecraft.util.DeserializedConstructor;
 import net.cubecraft.resource.MultiAssetContainer;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;

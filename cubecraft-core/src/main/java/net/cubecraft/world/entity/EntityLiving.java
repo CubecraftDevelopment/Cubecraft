@@ -178,7 +178,7 @@ public abstract class EntityLiving extends Entity {
     @Override
     public float getSpeed() {
         if (this.isFlying()) {
-            return this.sprinting ? 0.08f : 0.22f;
+            return this.sprinting ? 0.3f : 0.08f;
         } else {
             if (this.inLiquid()) {
                 return this.sprinting ? 0.05f : 0.045f;

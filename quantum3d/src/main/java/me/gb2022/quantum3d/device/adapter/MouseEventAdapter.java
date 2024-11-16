@@ -35,11 +35,11 @@ public final class MouseEventAdapter extends EventAdapter implements MouseListen
     @Override
     public void onPressEvent(Window window, Mouse mouse, MouseButton button) {
         this.getEventBus().callEvent(new MousePressEvent(window, mouse, button));
-        this.getEventBus().callEvent(new AnyClickInputEvent(window, mouse, null, null, button));
     }
 
     @Override
     public void onClickEvent(Window window, Mouse mouse, MouseButton button) {
         this.getEventBus().callEvent(new MouseClickEvent(window, mouse, button));
+        this.getEventBus().callEvent(new AnyClickInputEvent(window, mouse, null, null, button));
     }
 }

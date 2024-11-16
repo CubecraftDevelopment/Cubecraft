@@ -1,43 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE screen [
-        <!ELEMENT screen (button|image|splash|label)*>
-        <!ATTLIST screen
-                bg CDATA #REQUIRED
-                id CDATA #REQUIRED>
-        <!ELEMENT button (icon|label)*>
-        <!ATTLIST button
-                border CDATA #REQUIRED
-                enabled CDATA #IMPLIED
-                id CDATA #REQUIRED
-                layout CDATA #REQUIRED
-                style CDATA #IMPLIED>
-        <!ELEMENT icon (#PCDATA)>
-        <!ATTLIST icon
-                align CDATA #REQUIRED
-                color CDATA #REQUIRED
-                layout CDATA #REQUIRED>
-        <!ELEMENT label (#PCDATA)>
-        <!ATTLIST label
-                align CDATA #REQUIRED
-                color CDATA #REQUIRED
-                id CDATA #IMPLIED
-                layout CDATA #REQUIRED
-                type CDATA #REQUIRED>
-        <!ELEMENT image (#PCDATA)>
-        <!ATTLIST image
-                layout CDATA #REQUIRED
-                h-clip CDATA #REQUIRED
-                v-clip CDATA #REQUIRED>
-        <!ELEMENT splash (#PCDATA)>
-        <!ATTLIST splash
-                type CDATA #REQUIRED
-                id CDATA #REQUIRED
-                rotation CDATA #REQUIRED
-                bobbing CDATA #REQUIRED
-                layout CDATA #REQUIRED
-                color CDATA #REQUIRED
-                align CDATA #REQUIRED>
-        ]>
 <screen bg="image-bg" id="cubecraft:title_screen">
     <button layout="origin/left_top,0,0,30,30" border="4,4,4,4" id="button_check_version">
         <icon layout="origin/middle_middle,0,0,0,16" color="ffffff" align="middle">
@@ -75,7 +36,7 @@
         /asset/cubecraft/text/splash.json
     </splash>
     <label type="raw" layout="origin/right_bottom,-2,-2,0,8" color="ffffff" align="right">
-        ©CubecraftDevelopment 2021-2024
+        ©2021-2024 [OpenSource Project]
     </label>
     <label type="lang" layout="origin/left_bottom,2,-12,0,8" color="ffffff" align="left" id="auth">
         title_screen.auth

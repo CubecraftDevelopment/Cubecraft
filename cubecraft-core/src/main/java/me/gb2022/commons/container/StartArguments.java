@@ -21,8 +21,7 @@ public class StartArguments {
             char[] var9 = arg.toCharArray();
             int var10 = var9.length;
 
-            for(int var11 = 0; var11 < var10; ++var11) {
-                char c = var9[var11];
+            for (char c : var9) {
                 if (c == '=') {
                     k = sb.toString();
                     sb = new StringBuilder();

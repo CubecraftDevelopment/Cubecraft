@@ -5,7 +5,7 @@ import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.quantum3d.util.ShapeRenderer;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.util.DeserializedConstructor;
+import net.cubecraft.util.DeserializedConstructor;
 import net.cubecraft.util.NumberResolver;
 
 @TypeItem("color")

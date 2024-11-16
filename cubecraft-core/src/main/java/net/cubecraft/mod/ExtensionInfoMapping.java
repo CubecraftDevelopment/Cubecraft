@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
 
-public class ExtensionInfoMapping {
+public final class ExtensionInfoMapping {
     private final HashMap<String, ExtensionStatus> statusMapping = new HashMap<>();
     private final HashMap<String, Properties> propertyMapping = new HashMap<>();
     private final HashMap<String, String> fileMapping = new HashMap<>();

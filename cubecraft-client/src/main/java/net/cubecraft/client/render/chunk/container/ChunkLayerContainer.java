@@ -3,6 +3,7 @@ package net.cubecraft.client.render.chunk.container;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
+import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.render.chunk.ChunkLayer;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 import org.lwjgl.opengl.GL11;

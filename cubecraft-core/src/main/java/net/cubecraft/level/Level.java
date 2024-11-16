@@ -20,15 +20,13 @@ public class Level {
     public final MultiMap<String, World> worlds = new MultiMap<>();
     private final SimpleEventBus eventBus = new SimpleEventBus();
     private final LevelInfo levelInfo;
-    private final WorldFactory worldFactory;
     private PersistentEntityHolder persistentEntityHolder;
 
     public Level(LevelInfo info, WorldFactory worldFactory) {
-        this.worldFactory = worldFactory;
         this.levelInfo = info;
 
         for (String id : new String[]{"cubecraft:overworld"}) {
-            this.worlds.put(id, this.worldFactory.create(id, this));
+            this.worlds.put(id, worldFactory.create(id, this));
         }
     }
 
@@ -53,10 +51,6 @@ public class Level {
 
     public World getDimension(String worldID) {
         return this.worlds.get(worldID);
-    }
-
-    public WorldFactory getWorldFactory() {
-        return worldFactory;
     }
 
     public int getWorldCount() {

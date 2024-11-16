@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ScreenUtil {
-    private static final ArrayList<Popup> popupList=new ArrayList<>();
+public interface ScreenUtil {
+    ArrayList<Popup> popupList=new ArrayList<>();
 
-    public static void renderPictureBackground(Window window){
+    static void renderPictureBackground(Window window){
         double scale= ClientSettingRegistry.getFixedGUIScale();
         TextureRegistry.IMAGE_BG.bind();
         ShapeRenderer.begin();
@@ -30,18 +30,18 @@ public class ScreenUtil {
         TextureRegistry.IMAGE_BG.unbind();
     }
 
-    public static void renderMask(Window window){
+    static void renderMask(Window window){
         GLUtil.enableBlend();
         double scale= ClientSettingRegistry.getFixedGUIScale();
         ShapeRenderer.setColor(0,0,0,127);
         ShapeRenderer.drawRect(0,window.getWidth()/ scale,0,window.getHeight()/scale,-1,-1);
     }
 
-    public static void createPopup(String title, String subTitle, int time, int type){
+    static void createPopup(String title, String subTitle, int time, int type){
         popupList.add(new Popup(title,subTitle,time,type));
     }
 
-    public static void tickToasts(){
+    static void tickToasts(){
         Iterator<Popup> p= popupList.iterator();
         while (p.hasNext()){
             Popup pop=p.next();
@@ -52,7 +52,7 @@ public class ScreenUtil {
         }
     }
 
-    public static void renderToasts(DisplayScreenInfo info, float interpolationTime){
+    static void renderToasts(DisplayScreenInfo info, float interpolationTime){
         TextureRegistry.TOAST.bind();
         int yPop=0;
         for (Popup p: ((List<Popup>) popupList.clone())){
@@ -66,7 +66,7 @@ public class ScreenUtil {
         TextureRegistry.TOAST.unbind();
     }
 
-    public static void drawFontASCII(String s, int x, int y, int color, int size, FontAlignment alignment){
+    static void drawFontASCII(String s, int x, int y, int color, int size, FontAlignment alignment){
         if(s==null){
             return;
         }
@@ -118,11 +118,11 @@ public class ScreenUtil {
         TextureRegistry.ASCII_PAGE.unbind();
     }
 
-    public static void renderTileBackground() {
+    static void renderTileBackground() {
         //todo:add minecraft themed tile background rendering
     }
 
-    public static void renderPictureBackgroundBlur(Window window) {
+    static void renderPictureBackgroundBlur(Window window) {
         double scale= ClientSettingRegistry.getFixedGUIScale();
         Texture2D tex= TextureRegistry.IMAGE_BG;
         TextureStateManager.setTextureBlur(tex,true,3);

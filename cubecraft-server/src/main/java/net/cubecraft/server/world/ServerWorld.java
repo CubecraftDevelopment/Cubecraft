@@ -15,21 +15,68 @@ import net.cubecraft.world.chunk.task.ChunkLoadLevel;
 import net.cubecraft.world.chunk.task.ChunkLoadTaskType;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
 import net.cubecraft.world.entity.Entity;
+import net.cubecraft.world.worldGen.WorldGenerator;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-//world io thread - chunk loading & cleaning
-//world tick thread - handle all world events
-//world entity thread - handle all entity events
-public class ServerWorld extends World {
+public final class ServerWorld extends World {
+    private final WorldGenerator worldGenerator = new WorldGenerator(this);
     private final CubecraftServer server;
+    private Thread ownerThread;
+    private Executor chunkIOService;
 
     public ServerWorld(String id, Level level, CubecraftServer server) {
         super(id, level);
         this.server = server;
     }
+
+
+    @Override
+    public WorldChunk getChunk(int cx, int cz, ChunkState state) {
+        var ch = this.ownerThread != Thread.currentThread() ? this.chunkCache.get(cx, cz) : this.chunkCache.cachedGet(cx, cz);
+
+        if (ch != null && ch.getState().isComplete(state)) {
+            return ch;
+        }
+
+        if (this.ownerThread != Thread.currentThread()) {
+            return CompletableFuture.supplyAsync(() -> {
+                var c = this.worldGenerator.load(cx, cz, state);
+                this.chunkCache.add(c);
+                return c;
+            }, this.chunkIOService).join();
+        }
+        var c = this.worldGenerator.load(cx, cz, state);
+        this.chunkCache.add(c);
+
+        return c;
+    }
+
+    @Override
+    public WorldChunk threadSafeGetChunk(int cx, int cz, ChunkState state) {
+        var c = this.worldGenerator.load(cx, cz, state);
+        this.chunkCache.add(c);
+
+        return c;
+    }
+
+
+    public void setOwnerThread() {
+        this.ownerThread = Thread.currentThread();
+    }
+
+    public void setChunkIOService(Executor chunkIO) {
+        this.chunkIOService = chunkIO;
+    }
+
+    public WorldGenerator getWorldGenerator() {
+        return this.worldGenerator;
+    }
+
 
     @Override
     public void setTick(long x, long y, long z) {
@@ -65,7 +112,10 @@ public class ServerWorld extends World {
                 continue;
             }
 
-            WorldChunk c = this.getChunk(ChunkPos.fromWorldPos(e.x, e.z));
+            var cx = ChunkPos.x(e);
+            var cz = ChunkPos.z(e);
+
+            WorldChunk c = this.getChunk(cx, cz, ChunkState.COMPLETE);
             if (c.task.shouldProcess(ChunkLoadTaskType.ENTITY_TICK)) {
                 e.tick();
             } else {
@@ -95,10 +145,6 @@ public class ServerWorld extends World {
         });
 
 
-        GCChunks();
-    }
-
-    public void GCChunks() {
         var it = this.chunkCache.values().iterator();
 
         try {
@@ -119,7 +165,6 @@ public class ServerWorld extends World {
         } catch (Exception ignored) {
         }
     }
-
 
     public CubecraftServer getServer() {
         return server;

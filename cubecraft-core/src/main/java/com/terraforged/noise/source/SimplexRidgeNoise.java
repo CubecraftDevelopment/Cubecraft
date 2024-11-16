@@ -94,10 +94,8 @@ public class SimplexRidgeNoise extends NoiseSource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SimplexRidgeNoise)) return false;
+        if (!(o instanceof SimplexRidgeNoise that)) return false;
         if (!super.equals(o)) return false;
-
-        SimplexRidgeNoise that = (SimplexRidgeNoise) o;
 
         if (Float.compare(that.min, min) != 0) return false;
         if (Float.compare(that.max, max) != 0) return false;

@@ -11,7 +11,7 @@ import me.gb2022.quantum3d.device.adapter.WindowEventAdapter;
 import net.cubecraft.client.ClientComponent;
 import net.cubecraft.client.CubecraftClient;
 
-public final class ClientDeviceContext extends ClientComponent {
+public final class Devicecontext extends ClientComponent {
     private final SimpleEventBus eventBus = new SimpleEventBus();
     private DeviceContext deviceContext;
     private Window window;

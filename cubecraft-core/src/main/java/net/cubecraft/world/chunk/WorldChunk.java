@@ -55,7 +55,7 @@ public final class WorldChunk extends Chunk {
         ticket.addToTask(this.task);
     }
 
-        /*
+    /*
         NBTTagCompound blockEntities = tag.getCompoundTag("block_entities");
         for (int i = 0; i < ChunkPos.WIDTH; i++) {
             for (int j = 0; j < ChunkPos.HEIGHT; j++) {
@@ -69,7 +69,7 @@ public final class WorldChunk extends Chunk {
                 }
             }
         }
-         */
+    */
 
     public ThreadLock getDataLock() {
         return dataLock;
@@ -96,30 +96,12 @@ public final class WorldChunk extends Chunk {
         return new ChunkBlockAccess(this.getWorld(), x, y, z, this);
     }
 
-    public BlockAccess[] getAllBlockInRange(long x0, long y0, long z0, long x1, long y1, long z1) {
-        BlockAccess[] result = new BlockAccess[(int) ((x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1))];
-        int counter = 0;
-        for (long i = x0; i <= x1; i++) {
-            for (long j = y0; j <= y1; j++) {
-                for (long k = z0; k <= z1; k++) {
-                    result[counter] = getBlockAccess(i, j, k);
-                    counter++;
-                }
-            }
-        }
-        return result;
-    }
-
     public ChunkState getState() {
         return state;
     }
 
     public void setState(ChunkState state) {
         this.state = state;
-    }
-
-    public BlockAccess getBlockAccessRelative(int x, long y, int z) {
-        return new ChunkBlockAccess(this.getWorld(), x + this.x * 16, y, z + this.z * 16, this);
     }
 
     @Override

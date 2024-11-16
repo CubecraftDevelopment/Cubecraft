@@ -38,13 +38,12 @@ public final class HUDScreen extends Screen {
     }
 
     @Override
-    public void render(DisplayScreenInfo info, float deltaTime) {
-        super.render(info, deltaTime);
+    public void render(DisplayScreenInfo info, float deltaTime, float alphaOverwrite) {
+        super.render(info, deltaTime, alphaOverwrite);
         GLUtil.enableBlend();
         if (!this.showGUI) {
             return;
         }
-
 
         this.renderActionBar(info);
 

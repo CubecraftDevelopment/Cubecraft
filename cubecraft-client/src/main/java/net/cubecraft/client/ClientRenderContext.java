@@ -15,15 +15,12 @@ import net.cubecraft.util.register.ShadowedRegistry;
 import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.blocks.Blocks;
 
-public interface ClientRenderContext{
+public interface ClientRenderContext {
     ShadowedRegistry<IBlockRenderer, Block> BLOCK_RENDERERS = new ShadowedRegistry<>(Blocks.REGISTRY);
 
     RegisterMap<IEntityRenderer> ENTITY_RENDERER = new RegisterMap<>(IEntityRenderer.class);
     ConstructingMap<IWorldRenderer> WORLD_RENDERER = new ConstructingMap<>(IWorldRenderer.class);
-    ModelManager<BlockModel> BLOCK_MODEL = new ModelManager<>(
-            BlockModel.class,
-            new ModelAsset("cubecraft:/block/fallback.json")
-    );
+    ModelManager<BlockModel> BLOCK_MODEL = new ModelManager<>(BlockModel.class, new ModelAsset("cubecraft:/block/fallback.json"));
     ModelManager<EntityModel> ENTITY_MODEL = new ModelManager<>(EntityModel.class, null);//todo:fallback
     TextureManager TEXTURE = new TextureManager();
     RegisterMap<ColorMap> COLOR_MAP = new RegisterMap<>(ColorMap.class);

@@ -10,8 +10,9 @@ public abstract class AnimationScreen extends Screen {
         super(grabMouse, id, type);
     }
 
+
     @Override
-    public void render(DisplayScreenInfo info, float deltaTime) {
+    public void render(DisplayScreenInfo info, float deltaTime, float alphaOverwrite) {
         Sync.sync(100);
         if(this.isAnimationNotCompleted()) {
             ++this.time;
