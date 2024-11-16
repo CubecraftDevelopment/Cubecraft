@@ -129,14 +129,6 @@ public final class ClientWorldManager extends ClientNetHandler {
         updateShowedList("");
     }
 
-
-    public void createWorld(LevelInfo info) {
-        var folder = new File(EnvironmentPath.getFolderName(info));
-        if (folder.mkdir()) {
-            LOGGER.info("created level folder: {}", folder.getAbsolutePath());
-        }
-    }
-
     @EventHandler
     @SubscribedEvent(ScreenType.SINGLE_PLAYER)
     public void buttonClicked(ButtonClickedEvent event) {

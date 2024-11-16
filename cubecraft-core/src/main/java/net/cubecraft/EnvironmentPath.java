@@ -71,6 +71,7 @@ public interface EnvironmentPath {
         return new File(CONFIG_FOLDER + "/" + name);
     }
 
+    //todo
     static File getEntityDBFile(String sid) {
         String path="%s/%s/%s".formatted(SAVE_FOLDER, sid, "entities");
         File f = new File(path);
@@ -78,24 +79,5 @@ public interface EnvironmentPath {
             f.mkdirs();
         }
         return f;
-    }
-
-    @Blocking
-    static String getFolderName(LevelInfo info) {
-        var folderName = info.getLevelName();
-
-        var folder = SAVE_FOLDER + "/" + folderName;
-
-        if (!new File(folder).exists()) {
-            return folder;
-        }
-
-        var aliasId = 1;
-
-        while (new File(folder + "(" + aliasId + ")").exists()) {
-            aliasId++;
-        }
-
-        return folder;
     }
 }
