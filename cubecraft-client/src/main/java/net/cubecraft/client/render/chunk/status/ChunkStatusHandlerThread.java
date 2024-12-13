@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.chunk.status;
 
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 
 import java.util.ConcurrentModificationException;
@@ -71,6 +71,8 @@ public final class ChunkStatusHandlerThread extends Thread {
                 }
             }
 
+            /*
+
             if (!this.parent.getResultQueue().isEmpty()) {
                 var it = this.parent.getResultQueue().iterator();
                 while (it.hasNext()) {
@@ -92,6 +94,8 @@ public final class ChunkStatusHandlerThread extends Thread {
                     }
                 }
             }
+
+             */
         } catch (ConcurrentModificationException ignored) {
         }
         if (this.checkPosition() || this.needRotationCheck()) {
@@ -110,8 +114,8 @@ public final class ChunkStatusHandlerThread extends Thread {
         var y = (int) (camera.getPosition().y) >> 4;
         var z = (int) (camera.getPosition().z) >> 4;
 
-        if (ClientSettingRegistry.FORCE_REBUILD_NEAREST_CHUNK.getValue()) {
-            //this.parent.setUpdate(x, y, z, true);
+        if (ClientSettings.RenderSetting.WorldSetting.ChunkSetting.FORCE_REBUILD_NEAR.getValue()) {
+            this.parent.setUpdate(x, y, z, true);
         }
 
         boolean check = false;

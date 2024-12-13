@@ -12,7 +12,7 @@ import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
@@ -60,7 +60,7 @@ public final class CloudRenderer extends IWorldRenderer {
             this.generateData(i);
         }
 
-        this.cloudRenderDistance = ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16 * 10;
+        this.cloudRenderDistance = ClientSettings.getFixedViewDistance() * 16 * 10;
         this.regionCache = new CloudRegionCache(this);
 
         long cx = (long) (this.getCamera().getPosition().x / this.cfg.cloudSize);
@@ -110,7 +110,7 @@ public final class CloudRenderer extends IWorldRenderer {
         this.setGlobalCamera(delta);
         this.camera.updateFrustum();
         GL11.glPopMatrix();
-        this.parent.setFog(ClientSettingRegistry.getFixedViewDistance() * 16 * 10);
+        this.parent.setFog(ClientSettings.getFixedViewDistance() * 16 * 10);
     }
 
     @Override
@@ -128,7 +128,7 @@ public final class CloudRenderer extends IWorldRenderer {
         var size = this.cfg.cloudSize;
         var radius = size / 2;
 
-        int range = (int) ((ClientSettingRegistry.getFixedViewDistance() * 16 * 5) / size) - 3;
+        int range = (int) ((ClientSettings.getFixedViewDistance() * 16 * 5) / size) - 3;
 
         var ox = 0;
         var oz = this.world.getTime() * 0.05f;
@@ -316,7 +316,7 @@ public final class CloudRenderer extends IWorldRenderer {
         private long centerZ = 0;
 
         public CloudRegionCache(CloudRenderer parent) {
-            this.cloudRenderDistance = (int) ((ClientSettingRegistry.CHUNK_RENDER_DISTANCE.getValue() * 16 * 5) / parent.cfg.cloudSize) + 4;
+            this.cloudRenderDistance = (int) ((ClientSettings.getFixedViewDistance() * 16 * 5) / parent.cfg.cloudSize) + 4;
             this.dataSize = this.cloudRenderDistance * 2 + 1;
             this.noiseCache = new boolean[dataSize * dataSize];
             this.noiseCacheCopied = new boolean[dataSize * dataSize];

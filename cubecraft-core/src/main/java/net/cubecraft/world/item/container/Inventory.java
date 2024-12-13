@@ -15,7 +15,7 @@ public abstract class Inventory extends Container {
         if (obj instanceof IBlockAccess b) {
             id = b.getBlock().getID();
         } else {
-            id = ((Entity) obj).getID() + Entity.AUTO_REGISTER_SPAWN_EGG_ID;
+            id = ((Entity) obj).getType() + Entity.AUTO_REGISTER_SPAWN_EGG_ID;
         }
         if (get(targetSlot) != null) {
             if (Objects.equals(get(targetSlot).getType(), id)) {

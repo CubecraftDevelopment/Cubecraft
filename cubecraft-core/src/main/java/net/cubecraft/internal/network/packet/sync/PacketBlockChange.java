@@ -1,27 +1,25 @@
-package net.cubecraft.internal.network.packet;
+package net.cubecraft.internal.network.packet.sync;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import me.gb2022.commons.nbt.NBT;
 import me.gb2022.commons.nbt.NBTTagCompound;
 import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.net.packet.Packet;
 import net.cubecraft.net.packet.PacketConstructor;
 import net.cubecraft.world.block.BlockState;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
-
-import java.io.IOException;
 
 /**
  * this packet hold a block change event to server
  */
 @TypeItem("cubecraft:block_change")
-public class PacketBlockChange implements Packet {
-    private long x;
-    private long y;
-    private long z;
-    private String world;
-    private BlockState state;
+public final class PacketBlockChange implements Packet {
+    private final long x;
+    private final long y;
+    private final long z;
+    private final String world;
+    private final BlockState state;
 
     public PacketBlockChange(long x, long y, long z, String world, BlockState state) {
         this.x = x;
@@ -32,27 +30,25 @@ public class PacketBlockChange implements Packet {
     }
 
     @PacketConstructor
-    public PacketBlockChange(){}
+    public PacketBlockChange(ByteBuf buffer) {
+        this.x = buffer.readLong();
+        this.y = buffer.readLong();
+        this.z = buffer.readLong();
+
+        NBTTagCompound tag;
+        tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
+        this.world = tag.getString("world");
+        this.state = new BlockState("", (byte) 0, (byte) 0);
+        this.state.setData(tag.getCompoundTag("state"));
+    }
 
     @Override
     public void writePacketData(ByteBuf buffer) {
         buffer.writeLong(x).writeLong(y).writeLong(z);
-        NBTTagCompound tag=new NBTTagCompound();
-        tag.setString("world",this.world);
-        tag.setCompoundTag("state",state.getData());
-        NBT.write(tag,new ByteBufOutputStream(buffer));
-    }
-
-    @Override
-    public void readPacketData(ByteBuf buffer) {
-        x=buffer.readLong();
-        y=buffer.readLong();
-        z=buffer.readLong();
-
-        NBTTagCompound tag;
-        tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
-        this.world=tag.getString("world");
-        this.state.setData(tag.getCompoundTag("state"));
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setString("world", this.world);
+        tag.setCompoundTag("state", state.getData());
+        NBT.write(tag, new ByteBufOutputStream(buffer));
     }
 
     public long getX() {

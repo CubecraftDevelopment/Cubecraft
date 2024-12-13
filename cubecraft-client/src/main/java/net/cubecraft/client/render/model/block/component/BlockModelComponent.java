@@ -11,13 +11,14 @@ import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.BlockAccess;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 public abstract class BlockModelComponent {
-    protected final Vector3d start, end;
+    protected final Vector3f start, end;
     protected final String layer;
     protected final int localizedLayer;
 
-    protected BlockModelComponent(String layer, Vector3d start, Vector3d end) {
+    protected BlockModelComponent(String layer, Vector3f start, Vector3f end) {
         this.start = start;
         this.end = end;
 
@@ -26,11 +27,11 @@ public abstract class BlockModelComponent {
     }
 
 
-    public Vector3d getStart() {
+    public Vector3f getStart() {
         return start;
     }
 
-    public Vector3d getEnd() {
+    public Vector3f getEnd() {
         return end;
     }
 

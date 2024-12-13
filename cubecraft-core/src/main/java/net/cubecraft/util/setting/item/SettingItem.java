@@ -22,4 +22,20 @@ public abstract class SettingItem<I> {
     public abstract I getValue();
 
     public abstract void setValue(Object obj);
+
+
+    public final String id() {
+        return this.namespace + ":" + this.path;
+    }
+
+    public String serialize() {
+        return "<not implemented>";
+    }
+
+    public boolean useCustomSerialization() {
+        return false;
+    }
+
+    public void deserialize(String data) {
+    }
 }

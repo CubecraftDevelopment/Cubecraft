@@ -2,8 +2,8 @@ package me.gb2022.quantum3d.texture;
 
 import org.lwjgl.opengl.*;
 
-public class TextureStateManager {
-    public static void setTextureClamp(Texture t,boolean clamp){
+public interface TextureStateManager {
+    static void setTextureClamp(Texture t,boolean clamp){
         t.bind();
         if (clamp) {
             GL21.glTexParameteri(3553, GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_BORDER);
@@ -16,7 +16,7 @@ public class TextureStateManager {
         t.unbind();
     }
 
-    public static void setTextureMipMap(Texture t,boolean mipMap){
+    static void setTextureMipMap(Texture t,boolean mipMap){
         t.bind();
         if(mipMap){
             GL11.glTexParameteri(t.getBindingType(),GL32.GL_TEXTURE_MAX_LOD,4);
@@ -37,7 +37,7 @@ public class TextureStateManager {
         t.unbind();
     }
 
-    public static void setTextureBlur(Texture t,boolean blur,int level){
+    static void setTextureBlur(Texture t,boolean blur,int level){
         t.bind();
         GL11.glTexParameteri(t.getBindingType(), GL32.GL_TEXTURE_MIN_LOD, blur?level:0);
         setTextureMipMap(t,blur);

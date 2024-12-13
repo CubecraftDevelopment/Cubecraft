@@ -1,12 +1,16 @@
 package net.cubecraft.util.setting.item;
 
-public final class BooleanSettingItem extends SettingItem<Boolean> {
+public final class BoolSetting extends SettingItem<Boolean> {
     private final Boolean define;
     private Boolean value;
 
-    public BooleanSettingItem(String namespace, String path, Boolean define) {
+    public BoolSetting(String namespace, String path, boolean define) {
         super(namespace, path);
         this.define = define;
+    }
+
+    public BoolSetting(String path, boolean define) {
+        this("*", path, define);
     }
     
     @Override

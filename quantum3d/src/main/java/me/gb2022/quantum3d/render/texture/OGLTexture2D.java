@@ -1,6 +1,6 @@
 package me.gb2022.quantum3d.render.texture;
 
-import me.gb2022.quantum3d.ITextureImage;
+import me.gb2022.quantum3d.texture.ITextureImage;
 import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 
@@ -23,16 +23,5 @@ public abstract class OGLTexture2D extends OGLTexture implements SimpleTexture2D
     @Override
     public int getHeight() {
         return this.height;
-    }
-
-    @Override
-    public void upload(ITextureImage image) {
-        this.width = image.getWidth();
-        this.height = image.getHeight();
-        this.name = image.getName();
-        this.bind();
-        ByteBuffer buffer = ByteBuffer.wrap(image.getPixels());
-        GL11.glTexImage2D(this.getBindingType(), 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-        GLUtil.checkError("load");
     }
 }

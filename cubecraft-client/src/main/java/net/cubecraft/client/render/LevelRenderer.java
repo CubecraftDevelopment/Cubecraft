@@ -12,8 +12,10 @@ import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.KeyboardReleaseEvent;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
-import me.gb2022.quantum3d.util.Camera;
 import me.gb2022.quantum3d.util.GLUtil;
+import me.gb2022.quantum3d.util.LegacyCamera;
+import me.gb2022.quantum3d.util.camera.Camera;
+import me.gb2022.quantum3d.util.camera.PerspectiveCamera;
 import net.cubecraft.client.ClientComponent;
 import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.ClientSharedContext;
@@ -34,7 +36,9 @@ public final class LevelRenderer extends ClientComponent {
     public static final BufferAllocator ALLOCATOR = new LWJGLBufferAllocator(16384, 16777216);
     public final MultiMap<String, IWorldRenderer> renderers = new MultiMap<>();
 
-    public final Camera camera = new Camera();
+    public final Camera viewCamera = new PerspectiveCamera(70.0f);
+
+    public final LegacyCamera camera = new LegacyCamera();
     private final FloatBuffer fogColor = ALLOCATOR.allocFloatBuffer(5);
 
     public World world;
@@ -90,11 +94,16 @@ public final class LevelRenderer extends ClientComponent {
             return;
         }
 
-        var vx = MathHelper.linearInterpolate(this.player.xo, this.player.x, delta) + this.player.getCameraPosition().x;
-        var vy = MathHelper.linearInterpolate(this.player.yo, this.player.y, delta) + this.player.getCameraPosition().y;
-        var vz = MathHelper.linearInterpolate(this.player.zo, this.player.z, delta) + this.player.getCameraPosition().z;
+        var cameraPos = this.player.getCameraPosition();
 
-        this.camera.setPos(vx, vy, vz);
+        var x = MathHelper.linearInterpolate(this.player.xo, this.player.x, delta) + cameraPos.x;
+        var y = MathHelper.linearInterpolate(this.player.yo, this.player.y, delta) + cameraPos.y;
+        var z = MathHelper.linearInterpolate(this.player.zo, this.player.z, delta) + cameraPos.z;
+
+        this.viewCamera.setPosition(x, y, z);
+        this.viewCamera.updateMatrix();
+
+        this.camera.setPos(x, y, z);
         this.camera.setupRotation(this.player.xRot, this.player.yRot, this.player.zRot);
         this.camera.setAspect(info.getAspect());
 
@@ -104,7 +113,6 @@ public final class LevelRenderer extends ClientComponent {
             GLUtil.checkError(renderer.getID() + ":pre:after");
         }
 
-        GL11.glShadeModel(GL11.GL_SMOOTH);
 
         GLUtil.disableBlend();
         GLUtil.enableAlphaTest();

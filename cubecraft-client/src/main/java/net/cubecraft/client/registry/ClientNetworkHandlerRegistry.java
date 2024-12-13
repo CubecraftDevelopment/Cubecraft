@@ -11,7 +11,6 @@ public class ClientNetworkHandlerRegistry {
     @ItemRegisterFunc(ClientNetHandler.class)
     public void registerClientHandlers(ConstructingMap<ClientNetHandler> handlers){
         handlers.registerItem(ClientHandlerDataReceive.class);
-        handlers.registerItem(ClientHandlerConnection.class);
         handlers.registerItem(ClientHandlerWorldListener.class);
     }
 }

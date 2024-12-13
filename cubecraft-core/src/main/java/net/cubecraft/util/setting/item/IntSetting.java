@@ -1,12 +1,16 @@
 package net.cubecraft.util.setting.item;
 
-public final class IntegerSettingItem extends SettingItem<Integer> {
+public final class IntSetting extends SettingItem<Integer> {
     private final Integer define;
     private Integer value;
 
-    public IntegerSettingItem(String namespace, String path, Integer define) {
+    public IntSetting(String namespace, String path, Integer define) {
         super(namespace, path);
         this.define = define;
+    }
+
+    public IntSetting(String path, Integer define) {
+        this("*", path, define);
     }
 
     @Override
@@ -25,6 +29,6 @@ public final class IntegerSettingItem extends SettingItem<Integer> {
             this.value = val;
             return;
         }
-        this.value = ((Long) value).intValue();
+        this.value = ((Number) value).intValue();
     }
 }

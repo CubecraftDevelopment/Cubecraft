@@ -1,13 +1,13 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import me.gb2022.quantum3d.util.Camera;
-import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.commons.memory.BufferAllocator;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.Window;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
+import me.gb2022.quantum3d.util.GLUtil;
+import me.gb2022.quantum3d.util.LegacyCamera;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.internal.entity.EntityPlayer;
@@ -16,16 +16,16 @@ import org.lwjgl.opengl.GL11;
 
 
 public abstract class IWorldRenderer {
-    private final BufferAllocator memoryAllocator = new LWJGLBufferAllocator();
+    private final BufferAllocator memoryAllocator = createMemoryAllocator();
     private final VertexBuilderAllocator vertexBuilderAllocator = new VertexBuilderAllocator(this.memoryAllocator);
 
     protected LevelRenderer parent;
     protected EntityPlayer player;
     protected World world;
-    protected Camera camera;
+    protected LegacyCamera camera;
     protected Window window;
 
-    public void initializeRenderer(LevelRenderer parent, Window window, World world, EntityPlayer player, Camera cam) {
+    public void initializeRenderer(LevelRenderer parent, Window window, World world, EntityPlayer player, LegacyCamera cam) {
         this.world = world;
         this.player = player;
         this.camera = cam;
@@ -41,8 +41,12 @@ public abstract class IWorldRenderer {
         return window;
     }
 
-    public Camera getCamera() {
+    public LegacyCamera getCamera() {
         return camera;
+    }
+
+    public BufferAllocator createMemoryAllocator() {
+        return new LWJGLBufferAllocator(4096, 33554432 * 8);
     }
 
     public void init() {
@@ -72,7 +76,7 @@ public abstract class IWorldRenderer {
     }
 
     protected void applyViewBobbing(float delta) {
-        if(!this.player.isOnGround()){
+        if (!this.player.isOnGround()) {
             //return;
         }
         float f = (float) (this.player.getWalkedDistance() - this.player.getLastWalkedDistance());
@@ -86,7 +90,7 @@ public abstract class IWorldRenderer {
     }
 
     protected void setGlobalCamera(float delta) {
-        GLUtil.setupPerspectiveCamera((float) Math.toRadians(this.camera.fov), this.window.getWidth(),this.window.getHeight());
+        GLUtil.setupPerspectiveCamera((float) Math.toRadians(this.camera.fov), this.window.getWidth(), this.window.getHeight());
         //GL11.glLoadIdentity();
         //GL11.glOrtho(0,window.getWindowWidth()*16f,0,window.getWindowHeight()*16f,,-1000000,1000000);
         //GL11.glLoadIdentity();

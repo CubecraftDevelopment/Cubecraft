@@ -1,9 +1,10 @@
 package net.cubecraft.client.render.chunk.status;
 
-import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 import net.cubecraft.world.chunk.Chunk;
+
+import java.util.Arrays;
 
 public class ChunkStatusCache {
     private final TerrainRenderer renderer;
@@ -80,7 +81,7 @@ public class ChunkStatusCache {
                                 toAbsZ(z),
                                 RenderChunkPos.toWorldPos(this.centerX, this.centerY, this.centerZ)
                         );
-                        int dist = ClientSettingRegistry.getFixedViewDistance() * 16;
+                        int dist = this.renderer.getViewDistance() * 16;
                         if (distance >= dist) {
                             this.chunkStatusCache[toArrayPos(x, y, z)] = create(x, y, z);
                         } else {
@@ -186,6 +187,11 @@ public class ChunkStatusCache {
         }
 
         return this.chunkStatusCache[ptr];
+    }
+
+    public void _delete(){
+        Arrays.fill(this.chunkStatusCache, null);
+        Arrays.fill(this.cacheCopy, null);
     }
 
     public interface UpdateHandler {

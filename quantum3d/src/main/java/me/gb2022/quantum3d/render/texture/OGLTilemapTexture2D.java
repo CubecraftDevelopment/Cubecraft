@@ -120,6 +120,11 @@ public class OGLTilemapTexture2D extends OGLTexture2D implements TilemapTexture2
         BufferAllocation.free(buffer);
     }
 
+    @Override
+    public void upload(ITextureImage image) {
+
+    }
+
 
     public static class Section {
         final boolean[][] usage;

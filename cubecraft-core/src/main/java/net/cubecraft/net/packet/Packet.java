@@ -1,8 +1,8 @@
 package net.cubecraft.net.packet;
 
-import me.gb2022.commons.registry.TypeItem;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import me.gb2022.commons.registry.TypeItem;
 import net.cubecraft.SharedContext;
 
 import java.nio.charset.StandardCharsets;
@@ -11,6 +11,10 @@ public interface Packet {
     int HEADER_LENGTH_LIMIT = 64;
     int PACKET_SIZE_LIMIT = 1024;
     byte PACKET_HEADER = 0xF;
+
+    default void readPacketData(ByteBuf buffer) throws Exception {
+
+    }
 
     static void writePacketId(Packet packet, ByteBuf target) {
         byte[] head = packet.getPacketId().getBytes(StandardCharsets.US_ASCII);
@@ -86,7 +90,7 @@ public interface Packet {
         ByteBuf data = ByteBufAllocator.DEFAULT.ioBuffer(len);
         buffer.readBytes(data, len);
 
-        Packet packet = SharedContext.PACKET.create(id);
+        Packet packet = SharedContext.PACKET.create(id, buffer);
 
         try {
             packet.readPacketData(data);
@@ -98,10 +102,7 @@ public interface Packet {
         return packet;
     }
 
-
     void writePacketData(ByteBuf buffer) throws Exception;
-
-    void readPacketData(ByteBuf buffer) throws Exception;
 
     default String getPacketId() {
         return this.getClass().getAnnotation(TypeItem.class).value();

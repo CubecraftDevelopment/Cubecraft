@@ -1,15 +1,13 @@
 package net.cubecraft.client.internal.net;
 
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.net.ClientNetHandler;
 import net.cubecraft.internal.network.NetHandlerType;
-import net.cubecraft.event.block.BlockChangeEvent;
 import net.cubecraft.event.entity.EntityAttackEvent;
 import net.cubecraft.event.entity.EntityMoveEvent;
-import net.cubecraft.event.world.ChunkLoadEvent;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.commons.event.EventHandler;
 import net.cubecraft.internal.network.packet.*;
+import net.cubecraft.internal.network.packet.sync.PacketEntityPosition;
 
 @TypeItem(NetHandlerType.CLIENT_WORLD_LISTENER)
 public class ClientHandlerWorldListener extends ClientNetHandler {

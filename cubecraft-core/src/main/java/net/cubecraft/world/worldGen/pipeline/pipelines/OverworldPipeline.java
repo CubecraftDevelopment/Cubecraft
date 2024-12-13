@@ -1,6 +1,7 @@
 package net.cubecraft.world.worldGen.pipeline.pipelines;
 
 import com.terraforged.noise.source.Builder;
+import com.terraforged.noise.source.RidgeNoise;
 import com.terraforged.noise.source.SimplexNoise2;
 import me.gb2022.commons.math.MathHelper;
 import me.gb2022.commons.registry.TypeItem;
@@ -27,7 +28,6 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
     public static final String TEMPERATURE_NOISE = "cubecraft:overworld/temperature";
     public static final String HUMIDITY_NOISE = "cubecraft:overworld/humidity";
     public static final String PV_NOISE = "cubecraft:overworld/pv";
-
     public static final String MAIN_HEIGHTMAP = "cubecraft:overworld/main";
 
 
@@ -44,6 +44,7 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
     @TypeItem("cubecraft:overworld/noise_builder")
     static final class NoiseBuilder implements TerrainGeneratorHandler {
         public static final String EROSION_SHAPE_NOISE = "cubecraft:overworld/erosion_shape";
+        private static final String MOUNTAIN_SHAPE_NOISE = "cubecraft:overworld/mountain_shape";
 
         public static final Spline HEIGHT = new Spline(
                 new Vector2d(0, 0.06),
@@ -90,8 +91,11 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
             var seed = context.getSeed();
             var p = chunk.getKey();
 
-
             var continental = context.createNoise(CONTINENTAL_NOISE, TFNoise.wrap(seed & 483190132, new SimplexNoise2(new Builder())));
+
+
+            var mountainShape = context.createNoise(MOUNTAIN_SHAPE_NOISE, TFNoise.wrap(seed & 483190132, new RidgeNoise(new Builder().octaves(2))));
+
             var erosion = context.createNoise(EROSION_NOISE, TFNoise.wrap(seed & 423111431, new SimplexNoise2(new Builder())));
             var erosionShape = context.createNoise(EROSION_SHAPE_NOISE, new PerlinNoise(new Random(seed | 74320917), 6));
             var peak = context.createNoise(PV_NOISE, new PerlinNoise(new Random(seed | 74320917), 6));
@@ -113,10 +117,16 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
 
 
                     var terrain = continentalMask * Chunk.HEIGHT;
+
                     var mountainMod = MOUNTAIN.interpolate(c) * Math.max(0, peak.getValue(wx / 16d, wz / 16d) * 3);
                     var erosionMod = erosionMask * erosionShapeValue;
 
-                    var h = terrain + mountainMod - erosionMod;
+
+                    var ms_ = mountainShape.getValue(seed, wx / 800d, wz / 800d) + 1;
+
+                    var ms = ms_*ms_*ms_;
+
+                    var h = terrain + ms - erosionMod;
 
                     heightMap.setValue(x, z, MathHelper.clamp(h, 16, Chunk.HEIGHT));
                 }

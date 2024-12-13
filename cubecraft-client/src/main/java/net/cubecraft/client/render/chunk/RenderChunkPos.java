@@ -2,7 +2,6 @@ package net.cubecraft.client.render.chunk;
 
 import me.gb2022.commons.container.keymap.Key;
 import me.gb2022.commons.math.AABB;
-import net.cubecraft.client.registry.ClientSettingRegistry;
 import org.joml.Vector3d;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +31,7 @@ public final class RenderChunkPos implements Key {
     }
 
     public static RenderChunkPos create(long x, long y, long z) {
-        if (ClientSettingRegistry.DISABLE_CONSTANT_POOL.getValue()) {
+        if(true){
             return new RenderChunkPos(x, y, z);
         }
         String k = toString(x, y, z);

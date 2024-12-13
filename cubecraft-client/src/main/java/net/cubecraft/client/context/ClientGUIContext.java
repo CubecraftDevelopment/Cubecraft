@@ -30,7 +30,7 @@ import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.client.gui.screen.*;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.render.gui.ComponentRendererPart;
 import net.cubecraft.client.resource.ModelAsset;
 import net.cubecraft.client.resource.TextureAsset;
@@ -162,7 +162,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
                 this.renderScreen(info, delta);
 
                 //this.buffer.blit();
-                //if (this.renderCount >= ClientSettingRegistry.GUI_RENDER_INTERVAL_COUNT.getValue()) {
+                //if (this.renderCount >= ClientSettings.GUI_RENDER_INTERVAL_COUNT.getValue()) {
                 //this.buffer.upload(() -> this.renderScreen(info, delta));
                 //this.renderCount = 0;
                 //}
@@ -247,7 +247,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
 
     @EventHandler
     public void onMousePos(MousePosEvent e) {
-        double scale = ClientSettingRegistry.getFixedGUIScale();
+        double scale = ClientSettings.UISetting.getFixedGUIScale();
         this.fixedMouseX = (int) (e.getX() / scale);
         this.fixedMouseY = (int) (e.getY() / scale);
     }

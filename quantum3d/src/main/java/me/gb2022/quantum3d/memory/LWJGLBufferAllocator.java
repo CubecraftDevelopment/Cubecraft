@@ -6,7 +6,8 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
-public class LWJGLBufferAllocator extends BufferAllocator {
+public final class LWJGLBufferAllocator extends BufferAllocator {
+
     public LWJGLBufferAllocator(int maxAllocateInstance, int maxAllocateCapacity) {
         super(maxAllocateInstance, maxAllocateCapacity);
     }
@@ -15,14 +16,15 @@ public class LWJGLBufferAllocator extends BufferAllocator {
         super();
     }
 
+
     @Override
     public ByteBuffer allocateBuffer(int size) {
-        return MemoryUtil.memAlloc(size);
+        return LWJGLSecureMemoryManager.allocate(size);
     }
 
     @Override
     public void freeBuffer(Buffer buffer) {
-        MemoryUtil.memFree(buffer);
+        LWJGLSecureMemoryManager.free(buffer);
     }
 
     @Override

@@ -15,8 +15,8 @@ import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
 import net.cubecraft.Side;
 import net.cubecraft.auth.Session;
-import net.cubecraft.client.context.Devicecontext;
 import net.cubecraft.client.context.ClientGUIContext;
+import net.cubecraft.client.context.Devicecontext;
 import net.cubecraft.client.event.app.ClientDisposeEvent;
 import net.cubecraft.client.event.app.ClientPostSetupEvent;
 import net.cubecraft.client.event.app.ClientSetupEvent;
@@ -32,7 +32,7 @@ import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.net.base.NetworkClient;
 import net.cubecraft.client.net.kcp.KCPNetworkClient;
 import net.cubecraft.client.particle.ParticleEngine;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.registry.TextureRegistry;
 import net.cubecraft.client.render.LevelRenderer;
@@ -91,10 +91,17 @@ public final class CubecraftClient extends GameApplication {
 
     @Override
     public void initDevice(Window window) {
+        var setting = ClientSharedContext.SETTING;
+
+        setting.load();
+        ClientSettings.register(setting);
+
+
+
         ClientSharedContext.CLIENT_SETTING.load();
-        ClientSharedContext.CLIENT_SETTING.register(ClientSettingRegistry.class);
+        ClientSharedContext.CLIENT_SETTING.register(ClientSettings.class);
         ClientSharedContext.CLIENT_SETTING.setEventBus(this.getClientEventBus());
-        this.maxFPS = ClientSettingRegistry.MAX_FPS.getValue();
+        this.maxFPS = ClientSettings.RenderSetting.MAX_FPS.getValue();
         LOGGER.info("config initialized.");
 
         GLContextManager.createLegacyGLContext();
@@ -115,9 +122,9 @@ public final class CubecraftClient extends GameApplication {
 
         window.setTitle("Cubecraft-" + CubecraftClient.VERSION.shortVersion());
         window.setSize(1280, 720);
-        window.setFullscreen(ClientSettingRegistry.FULL_SCREEN.getValue());
+        window.setFullscreen(ClientSettings.RenderSetting.FULL_SCREEN.getValue());
         window.setResizeable(true);
-        window.setVsync(ClientSettingRegistry.V_SYNC.getValue());
+        window.setVsync(ClientSettings.RenderSetting.VSYNC.getValue());
         window.setIcon(ResourceRegistry.GAME_ICON.getStream());
         window.addListener(new WindowEventAdapter(this.getClientEventBus()));
 
@@ -139,7 +146,7 @@ public final class CubecraftClient extends GameApplication {
 
         this.guiContext.init();
 
-        if (!ClientSettingRegistry.SKIP_STUDIO_LOGO.getValue()) {
+        if (!ClientSettings.UISetting.SKIP_STUDIO_LOGO.getValue()) {
             StudioLoadingScreen scr = new StudioLoadingScreen();
             this.guiContext.setScreen(scr);
             this.guiContext.renderAnimationScreen(scr);
@@ -259,7 +266,7 @@ public final class CubecraftClient extends GameApplication {
 
         Sync.sync(this.maxFPS);
 
-        if (System.currentTimeMillis() - this.lastGCTime > ClientSettingRegistry.TICK_GC.getValue()) {
+        if (System.currentTimeMillis() - this.lastGCTime > ClientSettings.TICK_GC.getValue()) {
             //System.gc();
             FontRenderer.ttf().gc();
             FontRenderer.icon().gc();
@@ -301,7 +308,7 @@ public final class CubecraftClient extends GameApplication {
 
     public DisplayScreenInfo getDisplaySize() {
         var window = this.getWindow();
-        var scale = ClientSettingRegistry.getFixedGUIScale();
+        var scale = ClientSettings.UISetting.getFixedGUIScale();
 
         return new DisplayScreenInfo(
                 (int) Math.max(window.getWidth() / scale, 1),

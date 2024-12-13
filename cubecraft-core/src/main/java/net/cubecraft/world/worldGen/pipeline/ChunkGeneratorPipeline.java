@@ -61,6 +61,10 @@ public final class ChunkGeneratorPipeline {
     }
 
     public void completeChunk(WorldChunk chunk, WorldGenerator generator) {
+        if(this.afterStructure.getHandlerList().isEmpty()) {
+            return;
+        }
+
         var cache = chunk.getWorld().getChunkCache();
         var pos = chunk.getKey();
 

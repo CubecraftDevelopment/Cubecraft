@@ -4,7 +4,7 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.Side;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.ClientRenderContext;
@@ -40,7 +40,7 @@ public final class CubecraftClientInternalMod {
     public static void onModConstruct(ModConstructEvent event) {
         ContentRegistries.EVENT_BUS.registerEventListener(ClientListener.class);
         ClientSharedContext.getClient().getClientEventBus().registerEventListener(CubecraftClientInternalMod.class);
-        ClientSharedContext.CLIENT_SETTING.register(ClientSettingRegistry.class);
+        ClientSharedContext.CLIENT_SETTING.register(ClientSettings.class);
 
         ClientListener listener = new ClientListener();
         ClientSharedContext.getClient().getClientEventBus().registerEventListener(listener);

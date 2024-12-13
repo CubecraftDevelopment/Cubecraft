@@ -45,7 +45,7 @@ public final class DataFormat {
 
     @Deprecated
     public ByteBuffer createBuffer(BufferAllocator allocator, int vertexCount) {
-        return allocator.allocateBuffer(this.getBufferCapacity(vertexCount));
+        return allocator.allocByteBuffer(this.getBufferCapacity(vertexCount));
     }
 
     @Deprecated

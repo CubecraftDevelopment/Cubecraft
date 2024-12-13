@@ -4,20 +4,19 @@ import me.gb2022.commons.math.AABB;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
-import org.joml.Vector3i;
 import org.lwjgl.opengl.GL11;
 
-public class Camera {
+public class LegacyCamera {
     private final Vector3d position = new Vector3d();
     private final Vector3d lastPosition = new Vector3d();
 
     private final Vector3d rotation = new Vector3d();
     private final Vector3d relativePosition = new Vector3d();
     private final FrustumCuller frustum = new FrustumCuller();
+
     public float fov = 70.0f;
     private Matrix4f proj = new Matrix4f();
     private double lastRotX, lastRotY, lastRotZ;
-
     private float aspect = 1.0f;
 
     public void setUpGlobalCamera() {
@@ -122,5 +121,7 @@ public class Camera {
     public Vector3d getLastPosition() {
         return this.lastPosition;
     }
+
+
 }
 

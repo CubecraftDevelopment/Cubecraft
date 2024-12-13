@@ -8,29 +8,13 @@ import me.gb2022.quantum3d.device.event.AnyClickInputEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.control.InputCommand;
-import net.cubecraft.client.control.InputSettingItem;
+import net.cubecraft.client.registry.ClientSettings.ControlSetting;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.entity.EntityLiving;
 import net.cubecraft.world.entity.controller.EntityController;
 import net.cubecraft.world.item.container.Inventory;
 
 public final class PlayerController extends EntityController<EntityPlayer> {
-    public static final InputSettingItem WALK_FORWARD = new InputSettingItem("move", "forward", InputCommand.KEYBOARD_W);
-    public static final InputSettingItem WALK_BACKWARD = new InputSettingItem("move", "forward", InputCommand.KEYBOARD_S);
-    public static final InputSettingItem WALK_LEFT = new InputSettingItem("move", "forward", InputCommand.KEYBOARD_A);
-    public static final InputSettingItem WALK_RIGHT = new InputSettingItem("move", "forward", InputCommand.KEYBOARD_D);
-
-    public static final InputSettingItem JUMP = new InputSettingItem("move", "jump", InputCommand.KEYBOARD_SPACE);
-    public static final InputSettingItem SNEAK = new InputSettingItem("move", "sneak", InputCommand.KEYBOARD_LEFT_SHIFT);
-    public static final InputSettingItem SPRINT = new InputSettingItem("move", "sprint", InputCommand.KEYBOARD_LEFT_CONTROL);
-
-    public static final InputSettingItem ATTACK = new InputSettingItem("action", "attack", InputCommand.MOUSE_BUTTON_LEFT);
-    public static final InputSettingItem INTERACT = new InputSettingItem("action", "interact", InputCommand.MOUSE_BUTTON_RIGHT);
-
-    public static final InputSettingItem SELECT = new InputSettingItem("inventory", "select", InputCommand.MOUSE_BUTTON_MIDDLE);
-    public static final InputSettingItem SHIFT_OFFHAND = new InputSettingItem("inventory", "select", InputCommand.KEYBOARD_F);
-
     private final CubecraftClient client;
     private EntityLiving entity;
     private int slot;
@@ -52,14 +36,14 @@ public final class PlayerController extends EntityController<EntityPlayer> {
         var keyboard = this.client.getClientDeviceContext().getKeyboard();
         var mouse = this.client.getClientDeviceContext().getMouse();
 
-        if (JUMP.isActive(keyboard, mouse)) {
+        if (ControlSetting.JUMP.isActive(keyboard, mouse)) {
             if (this.entity.isFlying()) {
                 this.flyUp();
             } else {
                 this.jump();
             }
         }
-        if (SNEAK.isActive(keyboard, mouse)) {
+        if (ControlSetting.SNEAK.isActive(keyboard, mouse)) {
             if (entity.isFlying()) {
                 entity.yd = -0.35f;
             } else {
@@ -69,16 +53,16 @@ public final class PlayerController extends EntityController<EntityPlayer> {
             this.entity.setSneaking(false);
         }
 
-        if (WALK_FORWARD.isActive(keyboard, mouse)) {
+        if (ControlSetting.WALK_FORWARD.isActive(keyboard, mouse)) {
             this.moveForward();
         }
-        if (WALK_BACKWARD.isActive(keyboard, mouse)) {
+        if (ControlSetting.WALK_BACKWARD.isActive(keyboard, mouse)) {
             this.moveBackward();
         }
-        if (WALK_LEFT.isActive(keyboard, mouse)) {
+        if (ControlSetting.WALK_LEFT.isActive(keyboard, mouse)) {
             this.moveLeft();
         }
-        if (WALK_RIGHT.isActive(keyboard, mouse)) {
+        if (ControlSetting.WALK_RIGHT.isActive(keyboard, mouse)) {
             this.moveRight();
         }
 
@@ -118,17 +102,17 @@ public final class PlayerController extends EntityController<EntityPlayer> {
 
     //@EventHandler
     public void onInput(AnyClickInputEvent event) {
-        if (SPRINT.isTriggered(event)) {
+        if (ControlSetting.SPRINT.isTriggered(event)) {
             this.toggleSprint();
         }
 
-        if (ATTACK.isTriggered(event)) {
+        if (ControlSetting.ATTACK.isTriggered(event)) {
             this.entity.attack();
         }
-        if (INTERACT.isTriggered(event)) {
+        if (ControlSetting.INTERACT.isTriggered(event)) {
             this.entity.interact();
         }
-        if (SELECT.isTriggered(event)) {
+        if (ControlSetting.SELECT.isTriggered(event)) {
             HitResult hitResult = this.entity.hitResult;
             if (hitResult != null) {
                 Hittable obj = this.entity.hitResult.getObject(Hittable.class);

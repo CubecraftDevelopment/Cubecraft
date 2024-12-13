@@ -50,9 +50,6 @@ public final class ChunkCompileResult {
     }
 
     public boolean isLayerComplete(int localIndex) {
-        if (!this.success) {
-            return false;
-        }
         return this.builders[localIndex] != null;
     }
 
@@ -85,16 +82,30 @@ public final class ChunkCompileResult {
         return z;
     }
 
-    public void freeLayer(int n) {
-        if (!this.success) {
-            return;
-        }
+    public boolean freeLayer(int n) {
         if (this.builders[n] == null) {
-            return;
+            return false;
         }
+        var complete = false;
+
         for (var b : this.builders[n]) {
-            b.free();
+            if (b == null) {
+                continue;
+            }
+            b.freeReferenced();
+            ModernChunkCompiler.REF_COUNTER.addAndGet(-1);
+            complete = true;
         }
         this.builders[n] = null;
+        return complete;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        for (var l = 0; l < this.layers.length; l++) {
+            if (freeLayer(l)) {
+                System.out.println("WTF!");
+            }
+        }
     }
 }

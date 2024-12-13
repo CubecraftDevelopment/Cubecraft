@@ -2,7 +2,7 @@ package net.cubecraft.client.gui;
 
 import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.base.Popup;
 import net.cubecraft.client.gui.font.FontAlignment;
@@ -22,7 +22,7 @@ public interface ScreenUtil {
     ArrayList<Popup> popupList=new ArrayList<>();
 
     static void renderPictureBackground(Window window){
-        double scale= ClientSettingRegistry.getFixedGUIScale();
+        double scale= ClientSettings.UISetting.getFixedGUIScale();
         TextureRegistry.IMAGE_BG.bind();
         ShapeRenderer.begin();
         ShapeRenderer.drawRectUV(0, window.getWidth()/ scale,0,window.getHeight()/scale,-1, 0,1,0,1);
@@ -32,7 +32,7 @@ public interface ScreenUtil {
 
     static void renderMask(Window window){
         GLUtil.enableBlend();
-        double scale= ClientSettingRegistry.getFixedGUIScale();
+        double scale= ClientSettings.UISetting.getFixedGUIScale();
         ShapeRenderer.setColor(0,0,0,127);
         ShapeRenderer.drawRect(0,window.getWidth()/ scale,0,window.getHeight()/scale,-1,-1);
     }
@@ -123,7 +123,7 @@ public interface ScreenUtil {
     }
 
     static void renderPictureBackgroundBlur(Window window) {
-        double scale= ClientSettingRegistry.getFixedGUIScale();
+        double scale= ClientSettings.UISetting.getFixedGUIScale();
         Texture2D tex= TextureRegistry.IMAGE_BG;
         TextureStateManager.setTextureBlur(tex,true,3);
         tex.bind();

@@ -1,4 +1,4 @@
-package me.gb2022.quantum3d.legacy.pipeline;
+package me.gb2022.quantum3d.render.pipeline;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL40;

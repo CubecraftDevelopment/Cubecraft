@@ -1,11 +1,16 @@
 package net.cubecraft.util.setting.item;
 
-public final class StringSettingItem extends SettingItem<String> {
+public final class StringSetting extends SettingItem<String> {
     private final String define;
     private String value;
 
-    public StringSettingItem(String namespace, String path, String define) {
+    public StringSetting(String namespace, String path, String define) {
         super(namespace, path);
+        this.define = define;
+    }
+
+    public StringSetting(String path, String define) {
+        super("*", path);
         this.define = define;
     }
     

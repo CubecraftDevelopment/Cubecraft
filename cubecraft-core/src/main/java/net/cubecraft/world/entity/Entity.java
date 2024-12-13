@@ -180,7 +180,7 @@ public abstract class Entity implements Hittable {
      *
      * @return id
      */
-    public String getID() {
+    public String getType() {
         return this.getClass().getAnnotation(TypeItem.class).value();
     }
 

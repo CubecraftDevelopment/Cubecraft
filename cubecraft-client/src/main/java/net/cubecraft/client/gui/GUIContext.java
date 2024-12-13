@@ -14,7 +14,7 @@ import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.screen.HUDScreen;
 import net.cubecraft.client.gui.screen.Screen;
 import net.cubecraft.client.gui.screen.ScreenBuilder;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.world.WorldContext;
 import org.lwjgl.opengl.GL11;
 
@@ -165,7 +165,7 @@ public final class GUIContext extends ClientComponent {
 
     @EventHandler
     public void onMousePos(MousePosEvent e) {
-        double scale = ClientSettingRegistry.getFixedGUIScale();
+        double scale = ClientSettings.UISetting.getFixedGUIScale();
         this.fixedMouseX = (int) (e.getX() / scale);
         this.fixedMouseY = (int) (e.getY() / scale);
     }

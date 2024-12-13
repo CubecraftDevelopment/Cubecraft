@@ -3,8 +3,10 @@ package net.cubecraft.client.gui.screen;
 import me.gb2022.commons.JVMInfo;
 import me.gb2022.commons.container.OrderedHashMap;
 import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.memory.LWJGLSecureMemoryManager;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.util.GLUtil;
+import net.cubecraft.SharedObjects;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
@@ -14,12 +16,16 @@ import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.node.Container;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.util.IMBlocker;
 import net.cubecraft.util.SystemInfoQuery;
 import org.w3c.dom.Element;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Screen extends Container {
+    protected final Set<ScreenAttachment> attachments = new HashSet<>();
     protected final OrderedHashMap<String, String> debugInfoLeft = new OrderedHashMap<>();
     protected final OrderedHashMap<String, String> debugInfoRight = new OrderedHashMap<>();
     protected final boolean grabMouse;
@@ -77,7 +83,6 @@ public class Screen extends Container {
         }
     }
 
-
     public void debugLeft(String id, String line, Object... format) {
         this.debugInfoLeft.put(id, line.formatted(format));
     }
@@ -100,18 +105,25 @@ public class Screen extends Container {
         var m_vmp = JVMInfo.getUsage();
         var m_vmt = JVMInfo.getTotalMemory();
 
+        var m_oi = LWJGLSecureMemoryManager.INSTANCES.get();
+        var m_oa = SharedObjects.SHORT_DECIMAL_FORMAT.format(LWJGLSecureMemoryManager.USAGE.get() / 1048576f);
+
         this.debugLeft("version", "version: %s".formatted(CubecraftClient.VERSION));
         this.debugLeft("fps", "fps: %d, builder: %d, vert: %d", r_fps, r_vac, r_vuc);
         this.debugLeft("tps", "tps: %d", this.client.getTPS());
         this.debugLeft("gui", "scr: %s(%s)".formatted(getId(), this.parent == null ? null : this.parent.getId()));
         this.debugRight("vm", "VM: %s-%s, os:%s-%s", vm_name, vm_ver, vm_osn, vm_osv);
-        this.debugRight("mem", "Mem: %s/%s[%s]", m_vmu, m_vmt,m_vmp);
+        this.debugRight("mem", "Mem: %s/%s[%s] (o:%s=%sMB)", m_vmu, m_vmt, m_vmp, m_oi, m_oa);
         this.debugRight("cpu", "CPU: %s".formatted(SystemInfoQuery.getCPUInfo()));
         this.debugRight("gpu", "GPU: %s".formatted(SystemInfoQuery.getGPUInfo()));
     }
 
     //run
-    public void render(DisplayScreenInfo info, float deltaTime,float alphaOverwrite) {
+    public void render(DisplayScreenInfo info, float deltaTime, float alphaOverwrite) {
+        for (var a : this.getAttachments()) {
+            a.render(this, info, deltaTime, alphaOverwrite);
+        }
+
         switch (this.backgroundType) {
             case IMAGE_BACKGROUND -> ScreenUtil.renderPictureBackground(this.client.getWindow());
             case TILE_BACKGROUND -> ScreenUtil.renderTileBackground();
@@ -141,13 +153,17 @@ public class Screen extends Container {
 
     public void tick() {
         super.tick();
-        double scale = ClientSettingRegistry.getFixedGUIScale();
+
+        for (var a : this.getAttachments()) {
+            a.tick();
+        }
+
+        double scale = ClientSettings.UISetting.getFixedGUIScale();
         this.onResize(0, 0, (int) (this.context.getWindow().getWidth() / scale), (int) (this.context.getWindow().getHeight() / scale));
     }
 
 
     //attribute
-
     public Screen getParentScreen() {
         return this.parent;
     }
@@ -161,6 +177,10 @@ public class Screen extends Container {
     }
 
     public void release() {
+        for (var a : this.getAttachments()) {
+            a.release();
+        }
+
         this.destroy();
         Screen.this.client.getDeviceEventBus().unregisterEventListener(this);
     }
@@ -172,5 +192,18 @@ public class Screen extends Container {
     @Override
     public String getId() {
         return this.id;
+    }
+
+    //attachment
+    public void addAttachment(ScreenAttachment attachment) {
+        this.attachments.add(attachment);
+    }
+
+    public void removeAttachment(ScreenAttachment attachment) {
+        this.attachments.remove(attachment);
+    }
+
+    public Set<ScreenAttachment> getAttachments() {
+        return attachments;
     }
 }

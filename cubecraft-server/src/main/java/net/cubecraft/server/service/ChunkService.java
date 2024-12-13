@@ -161,7 +161,7 @@ public final class ChunkService implements Service, PersistentChunkHolder {
             return null;
         }
 
-        var chunk = new WorldChunk(world, new ChunkPos(x, z));
+        var chunk = new WorldChunk(world, x, z);
         ChunkCodec.setWorldChunkData(chunk, (NBTTagCompound) NBT.readZipped(new ByteArrayInputStream(data)));
         return chunk;
     }

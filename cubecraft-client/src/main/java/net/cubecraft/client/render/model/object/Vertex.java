@@ -5,10 +5,12 @@ import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.joml.Vector4d;
 
+
 public record Vertex(
-        Vector3d pos,
+        Vector3f pos,
         Vector2d texture,
         Vector4d color,
         Vector3d normal
@@ -26,19 +28,23 @@ public record Vertex(
         builder.addVertex(x, y, z);
     }
 
-    public static Vertex create(Vector3d pos, Vector2d tex, Vector4d color) {
+    @Deprecated
+    public static Vertex create(Vector3f pos, Vector2d tex, Vector4d color) {
         return new Vertex(pos, tex, color, new Vector3d(1));
     }
 
-    public static Vertex create(Vector3d pos, Vector2d tex) {
+    @Deprecated
+    public static Vertex create(Vector3f pos, Vector2d tex) {
         return new Vertex(pos, tex, new Vector4d(1), new Vector3d(1));
     }
 
-    public static Vertex create(Vector3d pos, Vector4d color) {
+    @Deprecated
+    public static Vertex create(Vector3f pos, Vector4d color) {
         return new Vertex(pos, new Vector2d(0), color, new Vector3d(1));
     }
 
-    public static Vertex create(Vector3d pos, Vector2d tex, Vector3d color) {
+    @Deprecated
+    public static Vertex create(Vector3f pos, Vector2d tex, Vector3f color) {
         return create(pos, tex, new Vector4d(color, 1));
     }
 
@@ -60,7 +66,7 @@ public record Vertex(
         builder.tex(texture);
         builder.color(color);
         builder.normal(normal);
-        builder.vertex(pos);
+        builder.vertex(new Vector3d(pos));
     }
 
     public void draw(VertexBuilder builder) {

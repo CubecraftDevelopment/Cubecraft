@@ -15,7 +15,6 @@ public final class VertexBuilder {
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
     private final DrawMode drawMode;
     private final int capacity;
-
     private final BufferAllocator allocator;
     private ByteBuffer vertexBuffer;
     private ByteBuffer colorBuffer;
@@ -41,19 +40,19 @@ public final class VertexBuilder {
 
         this.lifetimeCounter.allocate();
 
-        this.vertexBuffer = this.allocator.allocateBuffer(this.format.getVertexBufferSize(cap));
+        this.vertexBuffer = this.allocator.allocByteBuffer(this.format.getVertexBufferSize(cap));
+        this.rawBuffer = this.allocator.allocByteBuffer(this.format.getRawBufferSize(cap));
 
         if (this.format.hasColorData()) {
-            this.colorBuffer = this.allocator.allocateBuffer(this.format.getColorBufferSize(cap));
+            this.colorBuffer = this.allocator.allocByteBuffer(this.format.getColorBufferSize(cap));
         }
         if (this.format.hasTextureData()) {
-            this.textureBuffer = this.allocator.allocateBuffer(this.format.getTextureBufferSize(cap));
+            this.textureBuffer = this.allocator.allocByteBuffer(this.format.getTextureBufferSize(cap));
         }
         if (this.format.hasNormalData()) {
-            this.normalBuffer = this.allocator.allocateBuffer(this.format.getNormalBufferSize(cap));
+            this.normalBuffer = this.allocator.allocByteBuffer(this.format.getNormalBufferSize(cap));
         }
 
-        this.rawBuffer = this.allocator.allocateBuffer(this.format.getRawBufferSize(cap));
 
         if (this.format.hasColorData()) {
             this.colorCache = new double[this.format.getColorFormat().getSize()];
@@ -71,25 +70,34 @@ public final class VertexBuilder {
         Arrays.fill(this.colorCache, 1.0f);
     }
 
-    public void free() {
-        if(!this.lifetimeCounter.isAllocated()){
-            return;
-        }
-        this.vertexBuilderAllocator.clearInstance(this);
-        this.lifetimeCounter.release();
-        this.allocator.free(this.vertexBuffer);
+    public void freeReferenced() {
+        this.vertexBuilderAllocator.free(this);
+    }
 
-        if (this.format.hasColorData()) {
+    public void free() {
+        if (!this.lifetimeCounter.isAllocated()) {
+           return;
+        }
+
+        if (this.vertexBuffer != null) {
+            this.allocator.free(this.vertexBuffer);
+        }
+        if (this.rawBuffer != null) {
+            this.allocator.free(this.rawBuffer);
+        }
+
+        if (this.format.hasColorData() && this.colorBuffer != null) {
             this.allocator.free(this.colorBuffer);
         }
-        if (this.format.hasTextureData()) {
+        if (this.format.hasTextureData() && this.textureBuffer != null) {
             this.allocator.free(this.textureBuffer);
         }
-        if (this.format.hasNormalData()) {
+        if (this.format.hasNormalData() && this.normalBuffer != null) {
             this.allocator.free(this.normalBuffer);
         }
 
-        this.allocator.free(this.rawBuffer);
+        this.vertexBuilderAllocator.clearInstance(this);
+        this.lifetimeCounter.release();
     }
 
     public void addVertex(double... data) {
@@ -200,13 +208,19 @@ public final class VertexBuilder {
         return lifetimeCounter;
     }
 
+    public VertexBuilderAllocator getAllocator() {
+        return vertexBuilderAllocator;
+    }
+
     @Override
     protected void finalize() {
         if (!this.lifetimeCounter.isAllocated()) {
             return;
         }
-        //System.err.println("unexpected free by"+ this);
-        this.free();
+
+        System.out.println("Un-expected freed buffer: " + this.toString());
+
+        this.vertexBuilderAllocator.free(this);
     }
 
     @Override

@@ -4,7 +4,7 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.WindowFocusEvent;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.ClientRendererInitializeEvent;
@@ -37,18 +37,18 @@ public class ClientListener {
     @EventHandler
     public void onFocusEvent(WindowFocusEvent event) {
         if (event.isFocus()) {
-            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.MAX_FPS.getValue();
+            ClientSharedContext.getClient().maxFPS = ClientSettings.RenderSetting.MAX_FPS.getValue();
         } else {
-            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
+            ClientSharedContext.getClient().maxFPS = ClientSettings.RenderSetting.INACTIVE_FPS.getValue();
         }
     }
 
     @EventHandler
     public void onSettingReload(SettingReloadEvent event) {
         if (ClientSharedContext.getClient().getWindow().isFocused()) {
-            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.MAX_FPS.getValue();
+            ClientSharedContext.getClient().maxFPS = ClientSettings.RenderSetting.MAX_FPS.getValue();
         } else {
-            ClientSharedContext.getClient().maxFPS = ClientSettingRegistry.INACTIVE_FPS_LIMIT.getValue();
+            ClientSharedContext.getClient().maxFPS = ClientSettings.RenderSetting.INACTIVE_FPS.getValue();
         }
     }
 }

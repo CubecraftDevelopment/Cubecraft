@@ -1,8 +1,8 @@
 package net.cubecraft.server.internal.network;
 
 import net.cubecraft.internal.network.NetHandlerType;
-import net.cubecraft.internal.network.packet.PacketBlockChange;
-import net.cubecraft.internal.network.packet.PacketEntityPosition;
+import net.cubecraft.internal.network.packet.sync.PacketBlockChange;
+import net.cubecraft.internal.network.packet.sync.PacketEntityPosition;
 import net.cubecraft.server.net.ServerNetHandler;
 import net.cubecraft.event.block.BlockChangeEvent;
 import net.cubecraft.event.entity.EntityMoveEvent;

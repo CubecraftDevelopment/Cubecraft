@@ -9,7 +9,9 @@ import me.gb2022.quantum3d.lwjgl.device.GLFWDeviceContext;
 import me.gb2022.quantum3d.render.RenderContext;
 import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.util.Platform;
+import net.cubecraft.util.setting.ModernGameSetting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -107,6 +109,16 @@ public final class ClientBootstrap {
             LOGGER.info("releasing library:{} -> {}}", localPath, targetPath);
         }
         return true;
+    }
+
+    interface ClientTest {
+        static void main(String[] args) {
+            var settings = new ModernGameSetting("");
+
+            settings.register(ClientSettings.RenderSetting.class);
+
+            settings.saveAsString();
+        }
     }
 
     static class PlatformSolutionProvider {

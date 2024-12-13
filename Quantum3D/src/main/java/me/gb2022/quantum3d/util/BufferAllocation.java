@@ -1,5 +1,6 @@
 package me.gb2022.quantum3d.util;
 
+import me.gb2022.quantum3d.memory.LWJGLSecureMemoryManager;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.*;
@@ -20,78 +21,78 @@ public interface BufferAllocation {
         checkSize();
         alloc.addAndGet(size);
         instances.addAndGet(1);
-        return MemoryUtil.memAlloc(size);
+        return LWJGLSecureMemoryManager.allocate(size);
     }
 
     static ShortBuffer allocShortBuffer(int size) {
         checkSize();
         alloc.addAndGet(size * 2);
         instances.addAndGet(1);
-        return MemoryUtil.memAlloc(size * 2).asShortBuffer();
+        return LWJGLSecureMemoryManager.allocate(size * 2).asShortBuffer();
     }
 
     static IntBuffer allocIntBuffer(int size) {
         checkSize();
         alloc.addAndGet(size * 4);
         instances.addAndGet(1);
-        return MemoryUtil.memAlloc(size * 4).asIntBuffer();
+        return LWJGLSecureMemoryManager.allocate(size * 4).asIntBuffer();
     }
 
     static FloatBuffer allocFloatBuffer(int size) {
         checkSize();
         alloc.addAndGet(size * 4);
         instances.addAndGet(1);
-        return MemoryUtil.memAlloc(size * 4).asFloatBuffer();
+        return LWJGLSecureMemoryManager.allocate(size * 4).asFloatBuffer();
     }
 
     static LongBuffer allocLongBuffer(int size) {
         checkSize();
         alloc.addAndGet(size * 8);
         instances.addAndGet(1);
-        return MemoryUtil.memAlloc(size * 8).asLongBuffer();
+        return LWJGLSecureMemoryManager.allocate(size * 8).asLongBuffer();
     }
 
     static DoubleBuffer allocDoubleBuffer(int size) {
         checkSize();
         alloc.addAndGet(size * 8);
         instances.addAndGet(1);
-        return MemoryUtil.memAlloc(size * 8).asDoubleBuffer();
+        return LWJGLSecureMemoryManager.allocate(size * 8).asDoubleBuffer();
     }
 
     static void free(ByteBuffer buffer) {
         alloc.addAndGet(-buffer.capacity());
         instances.addAndGet(-1);
-        MemoryUtil.memFree(buffer);
+        LWJGLSecureMemoryManager.free(buffer);
     }
 
     static void free(ShortBuffer buffer) {
         alloc.addAndGet(-buffer.capacity() * 2);
         instances.addAndGet(-1);
-        MemoryUtil.memFree(buffer);
+        LWJGLSecureMemoryManager.free(buffer);
     }
 
     static void free(IntBuffer buffer) {
         alloc.addAndGet(-buffer.capacity() * 4);
         instances.addAndGet(-1);
-        MemoryUtil.memFree(buffer);
+        LWJGLSecureMemoryManager.free(buffer);
     }
 
     static void free(FloatBuffer buffer) {
         alloc.addAndGet(-buffer.capacity() * 4);
         instances.addAndGet(-1);
-        MemoryUtil.memFree(buffer);
+        LWJGLSecureMemoryManager.free(buffer);
     }
 
     static void free(LongBuffer buffer) {
         alloc.addAndGet(-buffer.capacity() * 8);
         instances.addAndGet(-1);
-        MemoryUtil.memFree(buffer);
+        LWJGLSecureMemoryManager.free(buffer);
     }
 
     static void free(DoubleBuffer buffer) {
         alloc.addAndGet(-buffer.capacity() * 8);
         instances.addAndGet(-1);
-        MemoryUtil.memFree(buffer);
+        LWJGLSecureMemoryManager.free(buffer);
     }
 
     static long getAllocSize() {

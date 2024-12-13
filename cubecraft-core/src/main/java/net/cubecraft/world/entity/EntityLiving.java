@@ -30,7 +30,7 @@ public abstract class EntityLiving extends Entity {
 
     public EntityLiving(Level world) {
         super(world);
-        this.inventory = ContentRegistries.INVENTORY.create(this.getID());
+        this.inventory = ContentRegistries.INVENTORY.create(this.getType());
     }
 
     static Vector3d getVectorForRotation(float pitch, float yaw) {

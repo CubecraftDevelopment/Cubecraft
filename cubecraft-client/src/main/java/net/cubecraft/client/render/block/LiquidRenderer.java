@@ -17,7 +17,7 @@ import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
 import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.util.Objects;
 
@@ -98,133 +98,133 @@ public final class LiquidRenderer implements IBlockRenderer {
             v1 = terrain.exactTextureV(path, 1 / 32f);
         }
 
-        Vector3d v000 = new Vector3d(0, 0, 0);
-        Vector3d v001 = new Vector3d(0, 0, 1);
-        Vector3d v010 = new Vector3d(0, h00, 0);
-        Vector3d v011 = new Vector3d(0, h01, 1);
-        Vector3d v100 = new Vector3d(1, 0, 0);
-        Vector3d v101 = new Vector3d(1, 0, 1);
-        Vector3d v110 = new Vector3d(1, h10, 0);
-        Vector3d v111 = new Vector3d(1, h11, 1);
+        Vector3f v000 = new Vector3f(0, 0, 0);
+        Vector3f v001 = new Vector3f(0, 0, 1);
+        Vector3f v010 = new Vector3f(0, h00, 0);
+        Vector3f v011 = new Vector3f(0, h01, 1);
+        Vector3f v100 = new Vector3f(1, 0, 0);
+        Vector3f v101 = new Vector3f(1, 0, 1);
+        Vector3f v110 = new Vector3f(1, h10, 0);
+        Vector3f v111 = new Vector3f(1, h11, 1);
 
-        Vector3d render = new Vector3d(renderX, renderY, renderZ);
+        Vector3f render = new Vector3f((float) renderX, (float) renderY, (float) renderZ);
         int c = 0x3F76E4;
         if (face == 0) {
-            Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
+            Vector3f faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
 
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u0, v0), faceColor), v000, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u0, v0), faceColor), v000, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u1, v0), faceColor), v100, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u1, v0), faceColor), v100, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 0)
                     .draw(builder);
 
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u1, v0), faceColor), v110, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u1, v0), faceColor), v110, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u0, v1), faceColor), v011, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u0, v1), faceColor), v011, w, x, y, z, 0)
                     .draw(builder);
             return;
         }
         if (face == 1) {
-            Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 1)
+            Vector3f faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u0, v0), faceColor), v000, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u0, v0), faceColor), v000, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u1, v0), faceColor), v100, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u1, v0), faceColor), v100, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 1)
                     .draw(builder);
 
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u1, v0), faceColor), v110, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u1, v0), faceColor), v110, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u0, v1), faceColor), v011, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u0, v1), faceColor), v011, w, x, y, z, 1)
                     .draw(builder);
             return;
         }
         if (face == 2) {
-            Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u1, v0), faceColor), v010, w, x, y, z, 3)
+            Vector3f faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u1, v0), faceColor), v010, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u1, v1), faceColor), v000, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u1, v1), faceColor), v000, w, x, y, z, 3)
                     .draw(builder);
 
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u0, v0), faceColor), v011, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u0, v0), faceColor), v011, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 2)
                     .draw(builder);
             return;
         }
         if (face == 3) {
-            Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u0, v0), faceColor), v011, w, x, y, z, 2)
+            Vector3f faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u0, v0), faceColor), v011, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 2)
                     .draw(builder);
 
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u1, v0), faceColor), v010, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u1, v0), faceColor), v010, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u1, v1), faceColor), v000, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u1, v1), faceColor), v000, w, x, y, z, 3)
                     .draw(builder);
             return;
         }
         if (face == 4) {
-            Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v0), faceColor), v011, w, x, y, z, 5)
+            Vector3f faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u1, v0), faceColor), v011, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u0, v1), faceColor), v000, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u0, v1), faceColor), v000, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u1, v1), faceColor), v001, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u1, v1), faceColor), v001, w, x, y, z, 5)
                     .draw(builder);
 
 
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 4)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 4)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 4)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 4)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 4)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 4)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 4)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 4)
                     .draw(builder);
             return;
         }
         if (face == 5) {
-            Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u1, v0), faceColor), v011, w, x, y, z, 5)
+            Vector3f faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u1, v0), faceColor), v011, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u0, v1), faceColor), v000, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u0, v1), faceColor), v000, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u1, v1), faceColor), v001, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u1, v1), faceColor), v001, w, x, y, z, 5)
                     .draw(builder);
         }
     }

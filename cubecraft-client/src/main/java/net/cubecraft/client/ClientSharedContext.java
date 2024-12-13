@@ -6,8 +6,12 @@ import net.cubecraft.client.net.ClientNetHandler;
 import net.cubecraft.resource.ResourceManager;
 import net.cubecraft.util.ObjectContainer;
 import net.cubecraft.util.setting.GameSetting;
+import net.cubecraft.util.setting.ModernGameSetting;
 
 public interface ClientSharedContext {
+    ModernGameSetting SETTING = new ModernGameSetting("cubecraft-client");
+
+
     ConstructingMap<ClientNetHandler> NET_HANDLER = new ConstructingMap<>(ClientNetHandler.class);
     SimpleQueryHandler QUERY_HANDLER = new SimpleQueryHandler();
 
@@ -21,8 +25,4 @@ public interface ClientSharedContext {
     static CubecraftClient getClient() {
         return CLIENT_INSTANCE.getObj();
     }
-
-
-
-
 }

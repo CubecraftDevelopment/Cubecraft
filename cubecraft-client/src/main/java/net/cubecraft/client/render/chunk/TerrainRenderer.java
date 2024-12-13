@@ -3,11 +3,14 @@ package net.cubecraft.client.render.chunk;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.gb2022.commons.event.EventHandler;
+import me.gb2022.commons.memory.BlockedBufferAllocator;
+import me.gb2022.commons.memory.BufferAllocator;
 import me.gb2022.commons.registry.TypeItem;
+import me.gb2022.quantum3d.memory.LWJGLBlockedBufferAllocator;
+import me.gb2022.quantum3d.memory.LWJGLSecureMemoryManager;
 import me.gb2022.quantum3d.util.FrustumCuller;
 import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.registry.ClientSettingRegistry;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileRequest;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileResult;
@@ -24,6 +27,9 @@ import net.cubecraft.client.render.chunk.status.ChunkStatusHandlerThread;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.world.chunk.Chunk;
+
+import net.cubecraft.client.registry.ClientSettings.RenderSetting.WorldSetting.ChunkSetting;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector3d;
@@ -39,8 +45,8 @@ import java.util.concurrent.PriorityBlockingQueue;
 public final class TerrainRenderer extends IWorldRenderer implements ChunkStatusHandler {
     public static final Logger LOGGER = LogManager.getLogger("TerrainRenderer");
 
-    private final int viewDistance = ClientSettingRegistry.getFixedViewDistance();
-    private final boolean vbo = ClientSettingRegistry.CHUNK_USE_VBO.getValue();
+    private final int viewDistance = ChunkSetting.getFixedViewDistance();
+    private final boolean vbo = ChunkSetting.VBO.getValue();
 
     private final ChunkStatusCache chunkStatusCache = new ChunkStatusCache(this);
     private final ChunkStatusHandlerThread daemon = ChunkStatusHandlerThread.create(this);
@@ -55,7 +61,6 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
     private final BlockingQueue<ChunkCompileRequest> requestQueue = new PriorityBlockingQueue<>(4096, this.chunkCompileRequestSorter);
     private final ChunkCompileResultSorter chunkCompileResultSorter = new ChunkCompileResultSorter(this.frustum);
     private final Queue<ChunkCompileResult> resultQueue = new PriorityQueue<>(this.chunkCompileResultSorter);
-    private final Queue<ChunkCompileResult> pendingUploadQueue = new PriorityQueue<>(this.chunkCompileResultSorter);
     private final ChunkSorter chunkSorter;
     private final Vector3i lastChunkPos = new Vector3i();
     private ChunkCompilerTask[] compilers;
@@ -107,9 +112,18 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
     }
 
     @Override
+    public BufferAllocator createMemoryAllocator() {
+        var bs = 16384;
+        var bc = 65536;//todo:offheap leaks
+
+        return new LWJGLBlockedBufferAllocator(LWJGLSecureMemoryManager.allocate(bs * bc), bs, bc);
+    }
+
+    @SuppressWarnings("InstantiatingAThreadWithDefaultRunMethod")
+    @Override
     public void init() {
         this.world.getEventBus().registerEventListener(this);
-        int count = ClientSettingRegistry.CHUNK_UPDATE_THREAD.getValue();
+        int count = ChunkSetting.UPDATE_THREAD.getValue();
         this.compilers = new ChunkCompilerTask[count];
         for (int i = 0; i < count; i++) {
             ChunkCompilerTask task = ChunkCompilerTask.service(this);
@@ -138,7 +152,9 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     @Override
     public void preRender() {
-        for (int i = 0; i < ClientSettingRegistry.MAX_RECEIVE_COUNT.getValue(); i++) {
+        var a = ModernChunkCompiler.REF_COUNTER.get();
+
+        for (int i = 0; i < ChunkSetting.MAX_RECEIVE.getValue(); i++) {
             if (this.resultQueue.isEmpty()) {
                 return;
             }
@@ -159,19 +175,18 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
                     continue;
                 }
 
-                if (!result.success()) {
-                    result.freeLayer(n);
+                if (!result.success()) {// no buffers presented
                     container.removeLayer(x, y, z);
                     continue;
                 }
 
-                if (!result.isLayerComplete(n)) {
-                    result.freeLayer(n);
+                if (result.isLayerComplete(n)) {
+                    container.handle(result.getBuilders(n), x, y, z);
+                } else {
                     container.removeLayer(x, y, z);
-                    continue;
                 }
 
-                container.handle(result.getBuilders(n), x, y, z);
+                result.freeLayer(n);
             }
         }
     }
@@ -181,8 +196,7 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             return true;
         }
 
-        int dist = ClientSettingRegistry.getFixedViewDistance();
-        return chunkDistance(getCamera().getPosition(), x, y, z) > dist + addition;
+        return chunkDistance(getCamera().getPosition(), x, y, z) > this.viewDistance + addition;
     }
 
     @Override
@@ -191,7 +205,7 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         this.setGlobalCamera(delta);
         this.camera.updateFrustum();
         this.frustum.calculateFrustum();
-        this.parent.setFog(ClientSettingRegistry.getFixedViewDistance() * 16);
+        this.parent.setFog(this.viewDistance * 16);
     }
 
     @Override
@@ -228,7 +242,6 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     @Override
     public void stop() {
-        super.stop();
         this.daemon.setRunning(false);
         for (ChunkCompilerTask daemon : this.compilers) {
             daemon.setRunning(false);
@@ -238,14 +251,17 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         for (var container : this.containers.values()) {
             container.clear();
         }
-        this.containers.clear();
 
+        this.containers.clear();
+        this.chunkStatusCache._delete();
         this.requestQueue.clear();
         this.resultQueue.clear();
+
         ClientSharedContext.QUERY_HANDLER.unregisterCallback(this.getID());
         this.world.getEventBus().unregisterEventListener(this);
 
         this.getMemoryAllocator().clear();
+        LWJGLSecureMemoryManager.free(((BlockedBufferAllocator) this.getMemoryAllocator()).getHandle());
     }
 
     public void setUpdate(int x, int y, int z, boolean immediate) {

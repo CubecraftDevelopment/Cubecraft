@@ -13,7 +13,7 @@ import io.netty.buffer.ByteBufOutputStream;
 
 @TypeItem("cubecraft:join_world_response")
 public class PacketPlayerJoinWorldResponse implements Packet {
-    private LevelInfo levelInfo=new LevelInfo();
+    private LevelInfo levelInfo=new LevelInfo(null,null);
     private NBTTagCompound tag;
 
     public PacketPlayerJoinWorldResponse(LevelInfo info, EntityPlayer player) {
@@ -37,7 +37,7 @@ public class PacketPlayerJoinWorldResponse implements Packet {
     public void readPacketData(ByteBuf buffer) {
         NBTTagCompound tag;
         tag = (NBTTagCompound) NBT.read(new ByteBufInputStream(buffer));
-        this.levelInfo=new LevelInfo(tag.getCompoundTag("level"));
+        this.levelInfo=new LevelInfo(null,tag.getCompoundTag("level"));
         this.tag=tag.getCompoundTag("entity");
     }
 

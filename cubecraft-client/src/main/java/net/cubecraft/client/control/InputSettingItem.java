@@ -7,6 +7,8 @@ import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.event.AnyClickInputEvent;
 import net.cubecraft.util.setting.item.SettingItem;
 
+import java.util.Arrays;
+
 public final class InputSettingItem extends SettingItem<InputCommand[]> {
     private final InputCommand[] define;
     private InputCommand[] value;
@@ -29,6 +31,21 @@ public final class InputSettingItem extends SettingItem<InputCommand[]> {
     @Override
     public void setValue(Object obj) {
         this.value = (InputCommand[]) obj;
+    }
+
+    @Override
+    public String serialize() {
+        return String.join("|", Arrays.stream(this.getValue()).map(InputCommand::serialize).toArray(String[]::new));
+    }
+
+    @Override
+    public boolean useCustomSerialization() {
+        return true;
+    }
+
+    @Override
+    public void deserialize(String data) {
+        this.setValue(Arrays.stream(data.split("\\|")).map(InputCommand::of).toArray(InputCommand[]::new));
     }
 
     public boolean isActive(Keyboard keyboard, Mouse mouse) {

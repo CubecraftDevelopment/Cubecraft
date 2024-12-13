@@ -28,9 +28,9 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
     protected final int x, z;
     protected HashMap<String, BlockState> blockEntities = new HashMap<>();
 
-    public Chunk(ChunkPos p, RegistryStorageContainer<Block> blocks, RegistryStorageContainer<Biome> biomes, ByteDataSection[] blockMetaSections, ByteDataSection[] lightSections, ByteDataSection[] blockFacingSections) {
-        this.x = p.getX();
-        this.z = p.getZ();
+    public Chunk(int cx, int cz, RegistryStorageContainer<Block> blocks, RegistryStorageContainer<Biome> biomes, ByteDataSection[] blockMetaSections, ByteDataSection[] lightSections, ByteDataSection[] blockFacingSections) {
+        this.x = cx;
+        this.z = cz;
 
         this.blocks = blocks;
         this.biomes = biomes;
@@ -40,9 +40,9 @@ public abstract class Chunk implements KeyGetter<ChunkPos> {
     }
 
 
-    public Chunk(ChunkPos p) {
+    public Chunk(int cx, int cz) {
         this(
-                p,
+                cx, cz,
                 new RegistryStorageContainer<>(Blocks.REGISTRY, SECTION_SIZE),
                 new RegistryStorageContainer<>(Biome.BIOMES, SECTION_SIZE),
                 new ByteDataSection[SECTION_SIZE],

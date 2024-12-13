@@ -73,8 +73,8 @@ public class ParticleRenderer extends IWorldRenderer {
 
         ArrayList<EntityParticle> particles = new ArrayList<>(this.particleEngine.getParticles());
         for (EntityParticle p : particles) {
-            String s=p.getID();
-            IParticleRenderer renderer = PARTICLE_RENDERERS.get(p.getID());
+            String s=p.getType();
+            IParticleRenderer renderer = PARTICLE_RENDERERS.get(p.getType());
             if (renderer == null) {
                 continue;
             }

@@ -22,8 +22,8 @@ public final class WorldChunk extends Chunk {
     private ChunkState state;
     private World world;
 
-    public WorldChunk(World world, ChunkPos p) {
-        super(p);
+    public WorldChunk(World world, int x, int z) {
+        super(x, z);
         this.world = world;
         this.task.addTime(ChunkLoadTaskType.DATA_KEEP, 40);
         this.state = ChunkState.EMPTY;
@@ -31,7 +31,8 @@ public final class WorldChunk extends Chunk {
 
     public WorldChunk(World world, PrimerChunk providerChunk) {
         super(
-                providerChunk.getKey(),
+                providerChunk.x,
+                providerChunk.z,
                 providerChunk.blocks,
                 providerChunk.biomes,
                 providerChunk.blockMetaSections,

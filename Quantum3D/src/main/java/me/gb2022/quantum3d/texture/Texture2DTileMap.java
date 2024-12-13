@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Texture2DTileMap extends Texture2D {
-    public static final Logger logger = LogManager.getLogger("texture_tilemap");
+    public static final Logger logger = LogManager.getLogger("TextureTileMAP");
     public final ArrayList<Section> sections = new ArrayList<>();
     public final int minStepX, minStepY;
     private final HashMap<String, Section> map = new HashMap<>();

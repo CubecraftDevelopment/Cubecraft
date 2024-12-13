@@ -1,17 +1,11 @@
 package net.cubecraft.client.render.block;
 
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings.RenderSetting.WorldSetting.ChunkSetting;
 import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.world.BlockAccessor;
-import net.cubecraft.world.World;
-import net.cubecraft.world.block.EnumFacing;
 import net.cubecraft.world.block.access.BlockAccess;
-import me.gb2022.commons.container.Vector3;
-import me.gb2022.commons.math.MathHelper;
 import net.cubecraft.world.block.property.BlockPropertyDispatcher;
-import org.joml.Vector3d;
-
-import java.util.Arrays;
+import org.joml.Vector3f;
 
 
 public interface BlockBakery {
@@ -19,269 +13,236 @@ public interface BlockBakery {
     double CLASSIC_LIGHT_2 = 0.8;
     double CLASSIC_LIGHT_3 = 0.6;
     double CLASSIC_LIGHT_4 = 0.5;
-    /*
-            double bv000 = world.getBlockAccess(x - 1, y - 1, z - 1).getBlockLight();
-        double v000 = MathHelper.min3(
-                Math.min(bv000, world.getBlockAccess(x, y - 1, z - 1).getBlockLight()),
-                Math.min(bv000, world.getBlockAccess(x - 1, y, z - 1).getBlockLight()),
-                Math.min(bv000, world.getBlockAccess(x - 1, y - 1, z).getBlockLight())
-        );
 
-        double bv001 = world.getBlockAccess(x - 1, y - 1, z + 1).getBlockLight();
-        double v001 = MathHelper.min3(
-                Math.min(bv001, world.getBlockAccess(x, y - 1, z + 1).getBlockLight()),
-                Math.min(bv001, world.getBlockAccess(x - 1, y, z + 1).getBlockLight()),
-                Math.min(bv001, world.getBlockAccess(x - 1, y - 1, z).getBlockLight())
-        );
+    @SuppressWarnings({"DuplicatedCode"})
+    static double getSmoothedLight(BlockAccessor world, long x, long y, long z, float rx, float ry, float rz, int f) {
+        var v = 0.25;
 
-        double bv010 = world.getBlockAccess(x - 1, y + 1, z - 1).getBlockLight();
-        double v010 = MathHelper.min3(
-                Math.min(bv010, world.getBlockAccess(x, y + 1, z - 1).getBlockLight()),
-                Math.min(bv010, world.getBlockAccess(x - 1, y, z - 1).getBlockLight()),
-                Math.min(bv010, world.getBlockAccess(x - 1, y + 1, z).getBlockLight())
-        );
+        //top
+        if (f == 0) {
+            var mod = 1;
 
-        double bv011 = world.getBlockAccess(x - 1, y - 1, z + 1).getBlockLight();
-        double v011 = MathHelper.min3(
-                Math.min(bv011, world.getBlockAccess(x, y + 1, z + 1).getBlockLight()),
-                Math.min(bv011, world.getBlockAccess(x - 1, y, z + 1).getBlockLight()),
-                Math.min(bv011, world.getBlockAccess(x - 1, y + 1, z).getBlockLight())
-        );
+            //axis
+            if (rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z))) {
+                return v * mod;
+            }
+            if (rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z))) {
+                return v * mod;
+            }
+            if (rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y + 1, z - 1))) {
+                return v * mod;
+            }
+            if (rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y + 1, z + 1))) {
+                return v;
+            }
 
-        double bv100 = world.getBlockAccess(x + 1, y - 1, z - 1).getBlockLight();
-        double v100 = MathHelper.min3(
-                Math.min(bv100, world.getBlockAccess(x, y - 1, z - 1).getBlockLight()),
-                Math.min(bv100, world.getBlockAccess(x + 1, y, z - 1).getBlockLight()),
-                Math.min(bv100, world.getBlockAccess(x + 1, y - 1, z).getBlockLight())
-        );
-
-        double bv101 = world.getBlockAccess(x + 1, y - 1, z + 1).getBlockLight();
-        double v101 = MathHelper.min3(
-                Math.min(bv101, world.getBlockAccess(x, y - 1, z + 1).getBlockLight()),
-                Math.min(bv101, world.getBlockAccess(x + 1, y, z + 1).getBlockLight()),
-                Math.min(bv101, world.getBlockAccess(x + 1, y - 1, z).getBlockLight())
-        );
-
-        double bv110 = world.getBlockAccess(x + 1, y + 1, z - 1).getBlockLight();
-        double v110 = MathHelper.min3(
-                Math.min(bv110, world.getBlockAccess(x, y + 1, z - 1).getBlockLight()),
-                Math.min(bv110, world.getBlockAccess(x + 1, y, z - 1).getBlockLight()),
-                Math.min(bv110, world.getBlockAccess(x + 1, y + 1, z).getBlockLight())
-        );
-
-        double bv111 = world.getBlockAccess(x + 1, y - 1, z + 1).getBlockLight();
-        double v111 = MathHelper.min3(
-                Math.min(bv111, world.getBlockAccess(x, y + 1, z + 1).getBlockLight()),
-                Math.min(bv111, world.getBlockAccess(x + 1, y, z + 1).getBlockLight()),
-                Math.min(bv111, world.getBlockAccess(x + 1, y + 1, z).getBlockLight())
-        );
-
-        return MathHelper.linear_interpolate3d(
-                v000,v001,v010,v011,v100,v101,v110,v111,
-                relativePos
-        );
-
-     */
-
-
-    static float[] getTopAO(World world, long x, long y, long z) {
-        //00,01,10,11
-        float[] result = new float[4];
-
-        BlockAccess blockEPM = world.getBlockAccess(x, y + 1, z - 1);
-        BlockAccess blockMPE = world.getBlockAccess(x - 1, y + 1, z);
-        BlockAccess blockPPE = world.getBlockAccess(x + 1, y + 1, z);
-        BlockAccess blockEPP = world.getBlockAccess(x, y + 1, z + 1);
-
-        if (BlockPropertyDispatcher.isSolid(blockMPE)) {
-            result[0] = 0.5f;
-            result[1] = 0.5f;
-        }
-
-        if (BlockPropertyDispatcher.isSolid(blockPPE)) {
-            result[2] = 0.5f;
-            result[3] = 0.5f;
-        }
-
-        if (BlockPropertyDispatcher.isSolid(blockEPM)) {
-            result[0] = 0.5f;
-            result[2] = 0.5f;
-        }
-
-        if (BlockPropertyDispatcher.isSolid(blockEPP)) {
-            result[1] = 0.5f;
-            result[3] = 0.5f;
-        }
-
-        return result;
-    }
-
-
-    static float[] getAOModelModifier(World world, long x, long y, long z) {
-        float[] result = new float[8];
-        Arrays.fill(result, 1.0f);
-
-
-        BlockAccess blockMPM = world.getBlockAccess(x - 1, y + 1, z - 1);
-        BlockAccess blockEPM = world.getBlockAccess(x, y + 1, z - 1);
-        BlockAccess blockPPM = world.getBlockAccess(x + 1, y + 1, z - 1);
-        BlockAccess blockMPE = world.getBlockAccess(x - 1, y + 1, z);
-        BlockAccess blockEPE = world.getBlockAccess(x, y + 1, z);
-        BlockAccess blockPPE = world.getBlockAccess(x + 1, y + 1, z);
-        BlockAccess blockMPP = world.getBlockAccess(x - 1, y + 1, z + 1);
-        BlockAccess blockEPP = world.getBlockAccess(x, y + 1, z + 1);
-        BlockAccess blockPPP = world.getBlockAccess(x + 1, y + 1, z + 1);
-
-
-        BlockAccess blockEMM = world.getBlockAccess(x, y - 1, z - 1);
-        BlockAccess blockMME = world.getBlockAccess(x - 1, y - 1, z);
-        BlockAccess blockMMM = world.getBlockAccess(x - 1, y - 1, z - 1);
-
-
-        //v000,v001,v010,v011,v100,v101,v110,v111,
-
-        if (BlockPropertyDispatcher.isSolid(blockEPM) && BlockPropertyDispatcher.isSolid(blockMPE)) {
-            result[2] = 0.5f;
-        }
-
-        if (!(BlockPropertyDispatcher.isSolid(blockEPM) && BlockPropertyDispatcher.isSolid(blockMPE)) && BlockPropertyDispatcher.isSolid(blockMPM)) {
-            result[2] = 0.5f;
-        }
-
-
-        if (BlockPropertyDispatcher.isSolid(blockEPP) && BlockPropertyDispatcher.isSolid(blockMPP)) {
-            result[3] = 0.5f;
-        }
-
-        if (BlockPropertyDispatcher.isSolid(blockMPP)) {
-            result[3] = 0.5f;
-        }
-
-
-        /*
-        if (blockEPM) && blockMPE)) {
-            result[2] = 0.5f;
-        }
-
-        if (blockMPM)) {
-            result[2] =
-             0.5f;
-
-        }*/
-
-
-        return result;
-    }
-
-
-    static double getSmoothedLight(BlockAccessor world, long x, long y, long z, Vector3d relativePos) {
-
-
-        float[] cornerResults = new float[8];
-        // 定义8个顶点的坐标偏移量
-        int[][] cornerOffsets = {
-                {-1, -1, -1},
-                {-1, -1, 1},
-                {-1, 1, -1},
-                {-1, 1, 1},
-                {1, -1, -1},
-                {1, -1, 1},
-                {1, 1, -1},
-                {1, 1, 1},
-        };
-
-
-        boolean[] mark = new boolean[8];
-        Arrays.fill(mark, false);
-        // 遍历每个顶点的坐标偏移量
-        for (int i = 0; i < 8; i++) {
-            boolean[] adjacentBlocks = new boolean[3];
-            byte[] adjacentLights = new byte[3];
-
-            int[] offset = cornerOffsets[i];
-            long cornerX = x + offset[0];
-            long cornerY = y + offset[1];
-            long cornerZ = z + offset[2];
-
-            // 检查当前顶点的三个相邻方块
-
-            adjacentBlocks[0] = BlockPropertyDispatcher.isSolid(world.getBlockAccess(cornerX, y, cornerZ)); // 上下方向
-            adjacentBlocks[1] = BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, cornerY, cornerZ)); // 左右方向
-            adjacentBlocks[2] = BlockPropertyDispatcher.isSolid(world.getBlockAccess(cornerX, cornerY, z)); // 前后方向
-
-            adjacentLights[0] = world.getBlockAccess(cornerX, y, cornerZ).getBlockLight(); // 上下方向
-            adjacentLights[1] = world.getBlockAccess(x, cornerY, cornerZ).getBlockLight(); // 左右方向
-            adjacentLights[2] = world.getBlockAccess(cornerX, cornerY, z).getBlockLight(); // 前后方
-            // 判定凹拐角条件：存在两个相邻方块间的夹角等于90度
-
-            cornerResults[i] = (float) MathHelper.max(adjacentLights[0], adjacentLights[1], adjacentLights[2]);
-
-            if ((adjacentBlocks[0] && adjacentBlocks[1])
-                    || (adjacentBlocks[0] && adjacentBlocks[2])
-                    || (adjacentBlocks[1] && adjacentBlocks[2])
-            ) {
-                if (mark[i]) {
-                    continue;
-                }
-                cornerResults[i] *= 0.75f;
-                mark[i] = true;
+            //corner
+            if (rx == 0 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z - 1))) {
+                return v * mod;
+            }
+            if (rx == 1 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z + 1))) {
+                return v * mod;
+            }
+            if (rx == 0 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z + 1))) {
+                return v * mod;
+            }
+            if (rx == 1 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z - 1))) {
+                return v * mod;
             }
         }
 
-        //cornerResults = getAOModelModifier(world, x, y, z);
+        //bottom
+        if (f == 1) {
+            var mod = 1;
 
-        return MathHelper.linear_interpolate3d(
-                cornerResults[0],
-                cornerResults[1],
-                cornerResults[2],
-                cornerResults[3],
-                cornerResults[4],
-                cornerResults[5],
-                cornerResults[6],
-                cornerResults[7],
-                relativePos
-        );
+            //axis
+            if (rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z))) {
+                return v * mod;
+            }
+            if (rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z))) {
+                return v * mod;
+            }
+            if (rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y - 1, z - 1))) {
+                return v * mod;
+            }
+            if (rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y - 1, z + 1))) {
+                return v * mod;
+            }
 
-
-        //_000,_001,_010,_011,_100,_101,_110,_111
-
-
-        /*
-        if (blockEME) && blockEPE)) {
-            return 0.5;
+            //corner
+            if (rx == 0 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z - 1))) {
+                return v * mod;
+            }
+            if (rx == 1 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z + 1))) {
+                return v * mod;
+            }
+            if (rx == 0 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z + 1))) {
+                return v * mod;
+            }
+            if (rx == 1 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z - 1))) {
+                return v * mod;
+            }
         }
-        if (blockEME)) {
-            return MathHelper.linearInterpolate(0.5, 1, relativePos.y);
+
+
+        //z+
+        if (f == 2) {
+            var mod = 1;
+
+            //axis
+            if (ry == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y - 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y + 1, z + 1))) {
+                return v * mod;
+            }
+            if (rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y, z + 1))) {
+                return v * mod;
+            }
+            if (rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y, z + 1))) {
+                return v * mod;
+            }
+
+            //corner
+            if (ry == 1 && rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 1 && rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z + 1))) {
+                return v * mod;
+            }
         }
 
-        if (blockEPE)) {
-            return MathHelper.linearInterpolate(1, 0.5, relativePos.y);
+        if (f == 3) {
+            var mod = 1;
+
+            //axis
+            if (ry == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y - 1, z - 1))) {
+                return v * mod;
+            }
+            if (ry == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x, y + 1, z - 1))) {
+                return v * mod;
+            }
+            if (rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y, z - 1))) {
+                return v * mod;
+            }
+            if (rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y, z - 1))) {
+                return v * mod;
+            }
+
+            //corner
+            if (ry == 1 && rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z - 1))) {
+                return v * mod;
+            }
+            if (ry == 1 && rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z - 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rx == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z - 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rx == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z - 1))) {
+                return v * mod;
+            }
         }
-        world.getBlockAccess(x - 1, y - 1, z - 1).getBlockLight(),
-                world.getBlockAccess(x - 1, y - 1, z + 1).getBlockLight(),
-                world.getBlockAccess(x - 1, y + 1, z - 1).getBlockLight(),
-                world.getBlockAccess(x - 1, y + 1, z + 1).getBlockLight(),
-                world.getBlockAccess(x + 1, y - 1, z - 1).getBlockLight(),
-                world.getBlockAccess(x + 1, y - 1, z + 1).getBlockLight(),
-                world.getBlockAccess(x + 1, y + 1, z - 1).getBlockLight(),
-                world.getBlockAccess(x + 1, y + 1, z + 1).getBlockLight(),
-         */
 
 
-        //todo:smooth light
+        //x+
+        if (f == 4) {
+            var mod = 1;
+
+            //axis
+            if (ry == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z))) {
+                return v * mod;
+            }
+            if (ry == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z))) {
+                return v * mod;
+            }
+            if (rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y, z - 1))) {
+                return v * mod;
+            }
+            if (rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y, z + 1))) {
+                return v * mod;
+            }
+
+            //corner
+            if (ry == 1 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 1 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y + 1, z - 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x + 1, y - 1, z - 1))) {
+                return v * mod;
+            }
+        }
+
+        //x-
+        if (f == 5) {
+            var mod = 1;
+
+            //axis
+            if (ry == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z))) {
+                return v * mod;
+            }
+            if (ry == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z))) {
+                return v * mod;
+            }
+            if (rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y, z - 1))) {
+                return v * mod;
+            }
+            if (rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y, z + 1))) {
+                return v * mod;
+            }
+
+            //corner
+            if (ry == 1 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 1 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y + 1, z - 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rz == 1 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z + 1))) {
+                return v * mod;
+            }
+            if (ry == 0 && rz == 0 && BlockPropertyDispatcher.isSolid(world.getBlockAccess(x - 1, y - 1, z - 1))) {
+                return v * mod;
+            }
+        }
+
+        return 0;
     }
 
+    static double bakeLight(BlockAccessor w, float vx, float vy, float vz, BlockAccess b, int f) {
+        var light = b.near(w, f, 1).getBlockLight() / 128d;
 
-    static Vertex bakeVertex(Vertex v, Vector3d pos, BlockAccessor w, long x, long y, long z, int face) {
-        if (ClientSettingRegistry.CHUNK_USE_AO.getValue()) {
-            v.multiplyColor(getSmoothedLight(w, x, y, z, pos) / 128d);
-        } else if(w!=null){
-            Vector3<Long> v2 = EnumFacing.fromId(face).findNear(x, y, z, 1);
-            v.multiplyColor((int) w.getBlockAccess(v2.x(), v2.y(), v2.z()).getBlockLight() / 128d);
+        if (ChunkSetting.CLASSIC_LIGHTING.getValue()) {
+            light *= getClassicLight(f);
         }
-        if (ClientSettingRegistry.CHUNK_CLASSIC_LIGHTING.getValue()) {
-            v.multiplyColor(getClassicLight(face));
+        if (ChunkSetting.AMBIENT_OCCLUSION.getValue()) {
+            var rx = vx - (b.getX() & 15);
+            var ry = vy - (b.getY() & 15);
+            var rz = vz - (b.getZ() & 15);
+
+            var c2 = (1-getSmoothedLight(w, b.getX(), b.getY(), b.getZ(), rx, ry, rz, f));
+
+            light *= c2;
         }
+
+        return light;
+    }
+
+    @Deprecated
+    static Vertex bakeVertex(Vertex v, Vector3f pos, BlockAccessor w, long x, long y, long z, int face) {
+        var c = bakeLight(w, v.pos().x(), v.pos().y(), v.pos().z(), w.getBlockAccess(x, y, z), face);
+        v.multiplyColor(c);
         return v;
     }
 

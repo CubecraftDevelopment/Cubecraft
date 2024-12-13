@@ -9,7 +9,7 @@ import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientGUIContext;
 import org.lwjgl.opengl.GL11;
@@ -51,7 +51,7 @@ public class ScrollPanel extends Node {
         }
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        double scale = ClientSettingRegistry.getFixedGUIScale();
+        double scale = ClientSettings.UISetting.getFixedGUIScale();
         int sx = (int) (this.layout.getAbsoluteX() * scale);
         int i = this.context.getWindow().getHeight();
         int i2 = (int) (this.layout.getAbsoluteY() * scale);

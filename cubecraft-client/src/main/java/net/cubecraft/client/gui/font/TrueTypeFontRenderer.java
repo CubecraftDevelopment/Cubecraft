@@ -7,7 +7,7 @@ import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.text.TextComponent;
 
@@ -65,7 +65,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
         int width = this._width(start, 0);
 
 
-        var scaleMod = ClientSettingRegistry.getGUIScaleMod();
+        var scaleMod = ClientSettings.UISetting.getGUIScaleMod();
 
         int startX = -1;
         switch (alignment) {
@@ -80,7 +80,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
     private int _width(TextComponent text, int current) {
         CompiledComponent compiled = this.getCompiled(text);
 
-        current += (int) ((double) compiled.width() / RESOLUTION_SCALE / ClientSettingRegistry.getGUIScaleMod());
+        current += (int) ((double) compiled.width() / RESOLUTION_SCALE / ClientSettings.UISetting.getGUIScaleMod());
 
         if (text.getNext() == null) {
             return current;
@@ -107,7 +107,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
 
         _renderComponent(
                 text.getNext(),
-                (int) (x + (double) compiled.width() / RESOLUTION_SCALE * ClientSettingRegistry.getGUIScaleMod()),
+                (int) (x + (double) compiled.width() / RESOLUTION_SCALE * ClientSettings.UISetting.getGUIScaleMod()),
                 y
         );
     }
@@ -140,7 +140,7 @@ public final class TrueTypeFontRenderer implements FontRenderer {
                 return new CompiledComponent();
             }
 
-            var scale = ClientSettingRegistry.getGUIScaleMod();
+            var scale = ClientSettings.UISetting.getGUIScaleMod();
 
             img = new BufferedImage(
                     (int) (Math.abs(width) * RESOLUTION_SCALE * scale),

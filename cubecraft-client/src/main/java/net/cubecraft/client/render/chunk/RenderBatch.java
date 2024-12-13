@@ -8,6 +8,7 @@ import me.gb2022.quantum3d.render.vertex.VertexFormat;
 import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL30;
 
 public interface RenderBatch {
     static RenderBatch create(boolean vbo) {
@@ -79,6 +80,7 @@ public interface RenderBatch {
         }
     }
 
+
     final class VBORenderBatch implements RenderBatch {
         private DrawMode mode;
         private VertexFormat format;
@@ -100,14 +102,18 @@ public interface RenderBatch {
                 return;
             }
 
-            VertexBuilderUploader.enableState(this.format);
-
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
-            VertexBuilderUploader.setPointerAndEnableState(this.format);
+
+            //VertexBuilderUploader.setPointerAndEnableState(this.format, 0);
+
+            GL11.glVertexPointer(3, GL11.GL_FLOAT, 36, 0);
+            GL11.glColorPointer(4, GL11.GL_FLOAT, 36, 12);
+            GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 36, 28);
+
             GLUtil.drawArrays(GL11.GL_QUADS, 0, this.count);
-            VertexBuilderUploader.disableState(this.format);
 
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
             VertexBuilderUploader.UPLOAD_COUNT.addAndGet(this.count);
         }
 
@@ -120,6 +126,7 @@ public interface RenderBatch {
             this.format = builder.getFormat();
             this.count = builder.getVertexCount();
             VertexBuilderUploader.uploadBuffer(builder, this.vbo);
+            GL30.glBindVertexArray(0);
             this.uploaded = true;
         }
 

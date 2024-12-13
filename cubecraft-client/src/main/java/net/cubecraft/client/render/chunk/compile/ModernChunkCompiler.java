@@ -1,5 +1,6 @@
 package net.cubecraft.client.render.chunk.compile;
 
+import me.gb2022.commons.memory.BlockedBufferAllocator;
 import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
@@ -17,9 +18,12 @@ import oshi.annotation.concurrent.NotThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @NotThreadSafe
 public final class ModernChunkCompiler {
+    public static final AtomicInteger REF_COUNTER = new AtomicInteger(0);
+
     private final Map<Thread, VertexBuilder[]> builderCache = new HashMap<>();
     private final TerrainRenderer renderer;
     private final Logger logger;
@@ -30,28 +34,76 @@ public final class ModernChunkCompiler {
         this.logger = LogManager.getLogger("ChunkCompiler#" + renderer.hashCode());
     }
 
-    public void updateBuffers() {
+    private void updateBuffers_retry() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        updateBuffers();
+    }
+
+    public synchronized void updateBuffers() {
+        var allocator = ((BlockedBufferAllocator) this.renderer.getMemoryAllocator());
+
+        if (allocator.getAllocatableBlocks() < 128 || !allocator.testPreAllocate(8192 * 13)) {
+            updateBuffers_retry();
+            return;
+        }
+
         var thread = Thread.currentThread();
         var fmt = VertexFormat.V3F_C4F_T2F;
         var mode = DrawMode.QUADS;
         var stack = new VertexBuilder[7];
 
         for (var i = 0; i < 7; i++) {
-            stack[i] = this.renderer.getVertexBuilderAllocator().create(fmt, mode, 8192);
-            stack[i].allocate();
+            var builder = this.renderer.getVertexBuilderAllocator().create(fmt, mode, 8192);
+
+            try {
+                builder.allocate();
+            } catch (OutOfMemoryError e) {
+                for (var j = 0; j < 7; j++) {
+                    if(stack[j] == null) {
+                        continue;
+                    }
+                    stack[j].free();
+                }
+                builder.free();
+
+                updateBuffers_retry();
+                return;
+            }
+
+            stack[i] = builder;
         }
 
-        builderCache.put(thread, stack);
+        REF_COUNTER.addAndGet(7);
+
+        var previousStack = this.builderCache.get(thread);
+
+        if (previousStack != null) {
+            for (var buffer : previousStack) {
+                if (buffer.getVertexCount() > 0) {
+                    continue;
+                }
+
+                buffer.free();
+                REF_COUNTER.addAndGet(-1);
+            }
+        }
+
+        this.builderCache.put(thread, stack);
     }
 
     public VertexBuilder[] getBuffersForThread() {
         var thread = Thread.currentThread();
 
-        if (!builderCache.containsKey(thread)) {
+        if (!this.builderCache.containsKey(thread)) {
             updateBuffers();
         }
 
-        return builderCache.get(thread);
+        return this.builderCache.get(thread);
     }
 
     public void build(ChunkCompileRegion region, Queue<ChunkCompileResult> callback, World world, ChunkCompileRequest request) {
@@ -81,7 +133,6 @@ public final class ModernChunkCompiler {
 
             if (buildSection(region, layers[i], x, y, z, stack)) {
                 result.setLayerComplete(i, stack);
-
                 updateBuffers();
             } else {
                 result.setLayerFailed(i);

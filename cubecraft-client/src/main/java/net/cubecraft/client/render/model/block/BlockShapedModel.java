@@ -11,8 +11,8 @@ import net.cubecraft.client.render.model.ColorMap;
 import net.cubecraft.client.render.model.CullingPredication;
 import net.cubecraft.client.render.model.object.Vertex;
 import net.cubecraft.client.resource.TextureAsset;
-import net.cubecraft.util.DeserializedConstructor;
 import net.cubecraft.resource.MultiAssetContainer;
+import net.cubecraft.util.DeserializedConstructor;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.BlockAccess;
@@ -63,7 +63,6 @@ public abstract class BlockShapedModel extends BlockModel {
 
         var faceTexture = this.faceTextures[face];
         var terrainTexture = layer.get().getTextureUsed();
-        var faceLightModifier = BlockBakery.getClassicLight(face);
 
         var u0 = terrainTexture.exactTextureU(faceTexture, 0);
         var u1 = terrainTexture.exactTextureU(faceTexture, 1);
@@ -81,40 +80,40 @@ public abstract class BlockShapedModel extends BlockModel {
 
         switch (face) {
             case 0 -> {
-                Vertex.draw(builder, x1, y1, z1, u1, v1, c, faceLightModifier);
-                Vertex.draw(builder, x1, y1, z0, u1, v0, c, faceLightModifier);
-                Vertex.draw(builder, x0, y1, z0, u0, v0, c, faceLightModifier);
-                Vertex.draw(builder, x0, y1, z1, u0, v1, c, faceLightModifier);
+                Vertex.draw(builder, x1, y1, z1, u1, v1, c, BlockBakery.bakeLight(accessor, x1, y1, z1, block, face));
+                Vertex.draw(builder, x1, y1, z0, u1, v0, c, BlockBakery.bakeLight(accessor, x1, y1, z0, block, face));
+                Vertex.draw(builder, x0, y1, z0, u0, v0, c, BlockBakery.bakeLight(accessor, x0, y1, z0, block, face));
+                Vertex.draw(builder, x0, y1, z1, u0, v1, c, BlockBakery.bakeLight(accessor, x0, y1, z1, block, face));
             }
             case 1 -> {
-                Vertex.draw(builder, x0, y0, z1, u0, v1, c, faceLightModifier);
-                Vertex.draw(builder, x0, y0, z0, u0, v0, c, faceLightModifier);
-                Vertex.draw(builder, x1, y0, z0, u1, v0, c, faceLightModifier);
-                Vertex.draw(builder, x1, y0, z1, u1, v1, c, faceLightModifier);
+                Vertex.draw(builder, x0, y0, z1, u0, v1, c, BlockBakery.bakeLight(accessor, x0, y0, z1, block, face));
+                Vertex.draw(builder, x0, y0, z0, u0, v0, c, BlockBakery.bakeLight(accessor, x0, y0, z0, block, face));
+                Vertex.draw(builder, x1, y0, z0, u1, v0, c, BlockBakery.bakeLight(accessor, x1, y0, z0, block, face));
+                Vertex.draw(builder, x1, y0, z1, u1, v1, c, BlockBakery.bakeLight(accessor, x1, y0, z1, block, face));
             }
             case 2 -> {
-                Vertex.draw(builder, x0, y1, z1, u0, v0, c, faceLightModifier);
-                Vertex.draw(builder, x0, y0, z1, u0, v1, c, faceLightModifier);
-                Vertex.draw(builder, x1, y0, z1, u1, v1, c, faceLightModifier);
-                Vertex.draw(builder, x1, y1, z1, u1, v0, c, faceLightModifier);
+                Vertex.draw(builder, x0, y1, z1, u0, v0, c, BlockBakery.bakeLight(accessor, x0, y1, z1, block, face));
+                Vertex.draw(builder, x0, y0, z1, u0, v1, c, BlockBakery.bakeLight(accessor, x0, y0, z1, block, face));
+                Vertex.draw(builder, x1, y0, z1, u1, v1, c, BlockBakery.bakeLight(accessor, x1, y0, z1, block, face));
+                Vertex.draw(builder, x1, y1, z1, u1, v0, c, BlockBakery.bakeLight(accessor, x1, y1, z1, block, face));
             }
             case 3 -> {
-                Vertex.draw(builder, x0, y1, z0, u1, v0, c, faceLightModifier);
-                Vertex.draw(builder, x1, y1, z0, u0, v0, c, faceLightModifier);
-                Vertex.draw(builder, x1, y0, z0, u0, v1, c, faceLightModifier);
-                Vertex.draw(builder, x0, y0, z0, u1, v1, c, faceLightModifier);
+                Vertex.draw(builder, x0, y1, z0, u1, v0, c, BlockBakery.bakeLight(accessor, x0, y1, z0, block, face));
+                Vertex.draw(builder, x1, y1, z0, u0, v0, c, BlockBakery.bakeLight(accessor, x1, y1, z0, block, face));
+                Vertex.draw(builder, x1, y0, z0, u0, v1, c, BlockBakery.bakeLight(accessor, x1, y0, z0, block, face));
+                Vertex.draw(builder, x0, y0, z0, u1, v1, c, BlockBakery.bakeLight(accessor, x0, y0, z0, block, face));
             }
             case 4 -> {
-                Vertex.draw(builder, x1, y0, z1, u0, v1, c, faceLightModifier);
-                Vertex.draw(builder, x1, y0, z0, u1, v1, c, faceLightModifier);
-                Vertex.draw(builder, x1, y1, z0, u1, v0, c, faceLightModifier);
-                Vertex.draw(builder, x1, y1, z1, u0, v0, c, faceLightModifier);
+                Vertex.draw(builder, x1, y0, z1, u0, v1, c, BlockBakery.bakeLight(accessor, x1, y0, z1, block, face));
+                Vertex.draw(builder, x1, y0, z0, u1, v1, c, BlockBakery.bakeLight(accessor, x1, y0, z0, block, face));
+                Vertex.draw(builder, x1, y1, z0, u1, v0, c, BlockBakery.bakeLight(accessor, x1, y1, z0, block, face));
+                Vertex.draw(builder, x1, y1, z1, u0, v0, c, BlockBakery.bakeLight(accessor, x1, y1, z1, block, face));
             }
             case 5 -> {
-                Vertex.draw(builder, x0, y1, z1, u1, v0, c, faceLightModifier);
-                Vertex.draw(builder, x0, y1, z0, u0, v0, c, faceLightModifier);
-                Vertex.draw(builder, x0, y0, z0, u0, v1, c, faceLightModifier);
-                Vertex.draw(builder, x0, y0, z1, u1, v1, c, faceLightModifier);
+                Vertex.draw(builder, x0, y1, z1, u1, v0, c, BlockBakery.bakeLight(accessor, x0, y1, z1, block, face));
+                Vertex.draw(builder, x0, y1, z0, u0, v0, c, BlockBakery.bakeLight(accessor, x0, y1, z0, block, face));
+                Vertex.draw(builder, x0, y0, z0, u0, v1, c, BlockBakery.bakeLight(accessor, x0, y0, z0, block, face));
+                Vertex.draw(builder, x0, y0, z1, u1, v1, c, BlockBakery.bakeLight(accessor, x0, y0, z1, block, face));
             }
         }
     }

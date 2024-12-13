@@ -8,13 +8,16 @@ import net.cubecraft.ContentRegistries;
 
 import java.util.Collection;
 
+/**
+ * a clone of block
+ */
 public class BlockState implements NBTDataIO, Hittable {
     private long x;
     private long y;
     private long z;
 
-    private byte facing;
-    private String id;
+    private byte facing;//todo: remove
+    private String id;//todo: int
     private byte meta;
 
     public BlockState(String id, byte facing, byte meta) {

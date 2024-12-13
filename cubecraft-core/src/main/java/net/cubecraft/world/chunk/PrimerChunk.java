@@ -7,7 +7,7 @@ public final class PrimerChunk extends Chunk {
     private final ChunkContext context = new ChunkContext();
 
     public PrimerChunk(ChunkPos p) {
-        super(p);
+        super(p.getX(), p.getZ());
     }
 
     public ChunkContext getContext() {

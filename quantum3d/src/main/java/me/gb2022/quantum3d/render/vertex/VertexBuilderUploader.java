@@ -3,6 +3,7 @@ package me.gb2022.quantum3d.render.vertex;
 import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL21;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,6 +14,7 @@ public interface VertexBuilderUploader {
         VertexFormat format = builder.getFormat();
 
         GLUtil.checkError("upload_builder:setup-pointer");
+
         DataFormat vertexFormat = format.getVertexFormat();
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glVertexPointer(vertexFormat.getSize(), vertexFormat.getType().getGlId(), 0, builder.generateVertexBuffer());
@@ -31,6 +33,7 @@ public interface VertexBuilderUploader {
             GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
             GL11.glNormalPointer(fmt.getSize(), fmt.getType().getGlId(), builder.generateNormalBuffer());
         }
+
         GLUtil.checkError("upload_builder:data_upload");
         GL11.glDrawArrays(builder.getDrawMode().glId(), 0, builder.getVertexCount());
         GLUtil.checkError("upload_builder:draw_array");
@@ -68,32 +71,28 @@ public interface VertexBuilderUploader {
         }
     }
 
-    static void setPointerAndEnableState(VertexFormat format) {
+    static void setPointerAndEnableState(VertexFormat format, long offset) {
         DataFormat vertexFormat = format.getVertexFormat();
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-
-        var offset = 0;
         var stride = format.getTotalBytes();
 
 
         GL11.glVertexPointer(vertexFormat.getSize(), vertexFormat.getType().getGlId(), stride, offset);
-        offset += vertexFormat.getSize() * vertexFormat.getType().getBytes();
+        offset += (long) vertexFormat.getSize() * vertexFormat.getType().getBytes();
 
         if (format.hasColorData()) {
             DataFormat fmt = format.getColorFormat();
             GL11.glColorPointer(fmt.getSize(), fmt.getType().getGlId(), stride, offset);
-            offset += fmt.getSize() * fmt.getType().getBytes();
+            offset += (long) fmt.getSize() * fmt.getType().getBytes();
         }
         if (format.hasTextureData()) {
             DataFormat fmt = format.getTextureFormat();
-            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             GL11.glTexCoordPointer(fmt.getSize(), fmt.getType().getGlId(), stride, offset);
-            offset += fmt.getSize() * fmt.getType().getBytes();
+            offset += (long) fmt.getSize() * fmt.getType().getBytes();
         }
         if (format.hasNormalData()) {
             DataFormat fmt = format.getNormalFormat();
-            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
             GL11.glNormalPointer(fmt.getType().getGlId(), stride, offset);
         }
     }
@@ -101,7 +100,49 @@ public interface VertexBuilderUploader {
     static void uploadBuffer(VertexBuilder builder, int handle) {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, builder.generateRawBuffer(), GL15.GL_STATIC_DRAW);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+        /*
+        var format = builder.getFormat();
+        var index = 0;
+        var offset = 0;
+
+        var stride = format.getTotalBytes();
+
+        var vf = format.getVertexFormat();
+        GL21.glVertexAttribPointer(index, vf.getSize(), vf.getType().getGlId(), true, stride, offset);
+        GL21.glEnableVertexAttribArray(index);
+
+        offset += vf.getSize() * vf.getType().getBytes();
+
+        if (format.hasColorData()) {
+            var f = format.getColorFormat();
+
+            index++;
+            GL21.glVertexAttribPointer(index, f.getSize(), f.getType().getGlId(), true, stride, offset);
+            GL21.glEnableVertexAttribArray(index);
+
+            offset += f.getSize() * f.getType().getBytes();
+        }
+
+        if (format.hasTextureData()) {
+            var f = format.getTextureFormat();
+
+            index++;
+            GL21.glVertexAttribPointer(index, f.getSize(), f.getType().getGlId(), true, stride, offset);
+            GL21.glEnableVertexAttribArray(index);
+
+            offset += f.getSize() * f.getType().getBytes();
+        }
+
+        if (format.hasNormalData()) {
+            var f = format.getTextureFormat();
+
+            index++;
+            GL21.glVertexAttribPointer(index, f.getSize(), f.getType().getGlId(), true, stride, offset);
+            GL21.glEnableVertexAttribArray(index);
+        }
+
+         */
     }
 
     static int getUploadedCount() {

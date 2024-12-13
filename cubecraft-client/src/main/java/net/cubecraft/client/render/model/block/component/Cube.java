@@ -15,7 +15,8 @@ import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.BlockAccess;
 import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.Vector3f;
 
 import java.lang.reflect.Type;
 import java.util.Objects;
@@ -28,7 +29,7 @@ public final class Cube extends BlockModelComponent {
     private final BlockModelFace front;
     private final BlockModelFace back;
 
-    public Cube(String layer, Vector3d start, Vector3d end, BlockModelFace top1, BlockModelFace bottom1, BlockModelFace left1, BlockModelFace right1, BlockModelFace front1, BlockModelFace back1) {
+    public Cube(String layer, Vector3f start, Vector3f end, BlockModelFace top1, BlockModelFace bottom1, BlockModelFace left1, BlockModelFace right1, BlockModelFace front1, BlockModelFace back1) {
         super(layer, start, end);
         this.top = top1;
         this.bottom = bottom1;
@@ -39,12 +40,12 @@ public final class Cube extends BlockModelComponent {
     }
 
     public Cube(JsonObject json) {
-        super(json.get("layer").getAsString(), new Vector3d(json.get("start").getAsJsonArray().get(0).getAsDouble(),
-                                                            json.get("start").getAsJsonArray().get(1).getAsDouble(),
-                                                            json.get("start").getAsJsonArray().get(2).getAsDouble()
-        ), new Vector3d(json.get("end").getAsJsonArray().get(0).getAsDouble(),
-                        json.get("end").getAsJsonArray().get(1).getAsDouble(),
-                        json.get("end").getAsJsonArray().get(2).getAsDouble()
+        super(json.get("layer").getAsString(), new Vector3f(json.get("start").getAsJsonArray().get(0).getAsFloat(),
+                                                            json.get("start").getAsJsonArray().get(1).getAsFloat(),
+                                                            json.get("start").getAsJsonArray().get(2).getAsFloat()
+        ), new Vector3f(json.get("end").getAsJsonArray().get(0).getAsFloat(),
+                        json.get("end").getAsJsonArray().get(1).getAsFloat(),
+                        json.get("end").getAsJsonArray().get(2).getAsFloat()
         ));
 
         var faces = json.getAsJsonObject("faces");
@@ -132,92 +133,92 @@ public final class Cube extends BlockModelComponent {
         var v0 = terrain.exactTextureV(path, f.v0());
         var v1 = terrain.exactTextureV(path, f.v1());
 
-        var v000 = new Vector3d(this.start.x, this.start.y, this.start.z);
-        var v001 = new Vector3d(this.start.x, this.start.y, this.end.z);
-        var v010 = new Vector3d(this.start.x, this.end.y, this.start.z);
-        var v011 = new Vector3d(this.start.x, this.end.y, this.end.z);
-        var v100 = new Vector3d(this.end.x, this.start.y, this.start.z);
-        var v101 = new Vector3d(this.end.x, this.start.y, this.end.z);
-        var v110 = new Vector3d(this.end.x, this.end.y, this.start.z);
-        var v111 = new Vector3d(this.end.x, this.end.y, this.end.z);
+        var v000 = new Vector3f(this.start.x, this.start.y, this.start.z);
+        var v001 = new Vector3f(this.start.x, this.start.y, this.end.z);
+        var v010 = new Vector3f(this.start.x, this.end.y, this.start.z);
+        var v011 = new Vector3f(this.start.x, this.end.y, this.end.z);
+        var v100 = new Vector3f(this.end.x, this.start.y, this.start.z);
+        var v101 = new Vector3f(this.end.x, this.start.y, this.end.z);
+        var v110 = new Vector3f(this.end.x, this.end.y, this.start.z);
+        var v111 = new Vector3f(this.end.x, this.end.y, this.end.z);
 
-        var render = new Vector3d(renderX, renderY, renderZ);
+        var render = new Vector3f((float) renderX, (float) renderY, (float) renderZ);
         int c = ClientRenderContext.COLOR_MAP.get(f.color()).sample(w, block);
         if (face == 0) {
-            var faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 0)
+            var faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u1, v0), faceColor), v110, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u1, v0), faceColor), v110, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 0)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u0, v1), faceColor), v011, w, x, y, z, 0)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u0, v1), faceColor), v011, w, x, y, z, 0)
                     .draw(builder);
             return;
         }
 
         if (face == 1) {
-            var faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 1)
+            var faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u0, v0), faceColor), v000, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u0, v0), faceColor), v000, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u1, v0), faceColor), v100, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u1, v0), faceColor), v100, w, x, y, z, 1)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 1)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 1)
                     .draw(builder);
             return;
         }
 
         if (face == 2) {
-            var faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u0, v0), faceColor), v011, w, x, y, z, 2)
+            var faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u0, v0), faceColor), v011, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u0, v1), faceColor), v001, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 2)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 2)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 2)
                     .draw(builder);
             return;
         }
 
 
         if (face == 3) {
-            var faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u1, v0), faceColor), v010, w, x, y, z, 3)
+            var faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u1, v0), faceColor), v010, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 3)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u1, v1), faceColor), v000, w, x, y, z, 3)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u1, v1), faceColor), v000, w, x, y, z, 3)
                     .draw(builder);
             return;
         }
 
         if (face == 4) {
-            Vector3d faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v101).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 4)
+            var faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v101).add(render), new Vector2d(u0, v1), faceColor), v100, w, x, y, z, 4)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v100).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 4)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v100).add(render), new Vector2d(u1, v1), faceColor), v101, w, x, y, z, 4)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v110).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 4)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v110).add(render), new Vector2d(u1, v0), faceColor), v111, w, x, y, z, 4)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v111).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 4)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u0, v0), faceColor), v110, w, x, y, z, 4)
                     .draw(builder);
             return;
         }
 
         if (face == 5) {
-            var faceColor = new Vector3d(ColorUtil.int1ToFloat3(c));
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v011).add(render), new Vector2d(u1, v0), faceColor), v011, w, x, y, z, 5)
+            var faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v011).add(render), new Vector2d(u1, v0), faceColor), v011, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v010).add(render), new Vector2d(u0, v0), faceColor), v010, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v000).add(render), new Vector2d(u0, v1), faceColor), v000, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v000).add(render), new Vector2d(u0, v1), faceColor), v000, w, x, y, z, 5)
                     .draw(builder);
-            BlockBakery.bakeVertex(Vertex.create(new Vector3d(v001).add(render), new Vector2d(u1, v1), faceColor), v001, w, x, y, z, 5)
+            BlockBakery.bakeVertex(Vertex.create(new Vector3f(v001).add(render), new Vector2d(u1, v1), faceColor), v001, w, x, y, z, 5)
                     .draw(builder);
         }
     }

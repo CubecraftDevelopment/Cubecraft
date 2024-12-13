@@ -1,14 +1,14 @@
 package net.cubecraft.client.render.world;
 
 import com.google.gson.JsonObject;
-import me.gb2022.quantum3d.util.GLUtil;
-import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
 import me.gb2022.quantum3d.render.vertex.*;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import me.gb2022.quantum3d.texture.Texture2D;
+import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 public final class SkyBoxRenderer extends IWorldRenderer {
     private static final VertexBuilderAllocator ALLOCATOR = new VertexBuilderAllocator(LevelRenderer.ALLOCATOR);
     private final GLRenderList skyRenderBatch = new GLRenderList();
+    private final VertexBuilder builder = ALLOCATOR.allocate(VertexFormat.V3F_T2F, DrawMode.QUADS, 16);
     private Texture2D sunTexture;
     private ColorElement skyColor;
     private ColorElement skyFogColor;
@@ -30,6 +31,8 @@ public final class SkyBoxRenderer extends IWorldRenderer {
     public void stop() {
         this.skyRenderBatch.free();
         this.sunTexture.destroy();
+
+        ALLOCATOR.free(this.builder);
     }
 
     @Override
@@ -42,10 +45,11 @@ public final class SkyBoxRenderer extends IWorldRenderer {
     }
 
     public void build() {
+        VertexBuilder top = ALLOCATOR.allocate(VertexFormat.V3F_C3F, DrawMode.TRIANGLES, 5120);
+        VertexBuilder side = ALLOCATOR.allocate(VertexFormat.V3F_C3F, DrawMode.QUAD_STRIP, 5120);
+
         this.skyRenderBatch.allocate();
-        int d2 = ClientSettingRegistry.getFixedViewDistance();
-        VertexBuilder builder = ALLOCATOR.create(VertexFormat.V3F_C3F, DrawMode.TRIANGLES, 5120);
-        builder.allocate();
+        int d2 = ClientSettings.getFixedViewDistance();
 
         float cx = 0;
         float cy = d2 * 16 * 2;
@@ -58,23 +62,20 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
             float x1 = (float) Math.cos((double) (i + 1) * Math.PI / 180) * r + cx;
             float y1 = (float) Math.sin((double) (i + 1) * Math.PI / 180) * r + cy;
-            builder.setColor(this.skyColor.RGB_F());
-            builder.addVertex(cx, cy + d2 * 64, cz);
-            builder.setColor(this.skyFogColor.RGB_F());
-            builder.addVertex(x, cy, y);
-            builder.addVertex(x1, cy, y1);
+            top.setColor(this.skyColor.RGB_F());
+            top.addVertex(cx, cy + d2 * 64, cz);
+            top.setColor(this.skyFogColor.RGB_F());
+            top.addVertex(x, cy, y);
+            top.addVertex(x1, cy, y1);
 
-            builder.setColor(this.skyColor.RGB_F());
-            builder.addVertex(cx, -(cy + d2 * 64), cz);
-            builder.setColor(this.skyFogColor.RGB_F());
-            builder.addVertex(x, -cy, y);
-            builder.addVertex(x1, -cy, y1);
+            top.setColor(this.skyColor.RGB_F());
+            top.addVertex(cx, -(cy + d2 * 64), cz);
+            top.setColor(this.skyFogColor.RGB_F());
+            top.addVertex(x, -cy, y);
+            top.addVertex(x1, -cy, y1);
         }
 
-        VertexBuilder builder2 = ALLOCATOR.create(VertexFormat.V3F_C3F, DrawMode.QUAD_STRIP, 5120);
-        builder2.allocate();
-
-        builder2.setColor(this.skyFogColor.RGB_F());
+        side.setColor(this.skyFogColor.RGB_F());
         int sides = 32; // 设置圆柱体的边数
         double radius = d2 * 16 * 32; // 设置圆柱体的半径
         double height = d2 * 64; // 设置圆柱体的高度
@@ -84,17 +85,17 @@ public final class SkyBoxRenderer extends IWorldRenderer {
             double x = Math.cos(angle) * radius;
             double z = Math.sin(angle) * radius;
 
-            builder2.addVertex(x, height, z); // 上圆柱体的点
-            builder2.addVertex(x, -height, z); // 下圆柱体的点
+            side.addVertex(x, height, z); // 上圆柱体的点
+            side.addVertex(x, -height, z); // 下圆柱体的点
         }
 
         this.skyRenderBatch.upload(() -> {
-            VertexBuilderUploader.uploadPointer(builder);
-            VertexBuilderUploader.uploadPointer(builder2);
+            VertexBuilderUploader.uploadPointer(top);
+            VertexBuilderUploader.uploadPointer(side);
         });
 
-        ALLOCATOR.free(builder);
-        ALLOCATOR.free(builder2);
+        ALLOCATOR.free(top);
+        ALLOCATOR.free(side);
     }
 
     @Override
@@ -107,16 +108,18 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
     @Override
     public void render(RenderType type, float delta) {
+        this.builder.reset();
+
         GL11.glClearColor(1, 1, 1, 1);
 
         if (type != RenderType.ALPHA) {
             return;
         }
 
-        if(!parent.isInBlock()){
+        if (!parent.isInBlock()) {
             GL11.glDisable(GL11.GL_FOG);
-        }else{
-            this.parent.setFog(ClientSettingRegistry.getFixedViewDistance() * 16);
+        } else {
+            this.parent.setFog(ClientSettings.getFixedViewDistance() * 16);
         }
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -124,41 +127,37 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         this.skyRenderBatch.call();
 
 
-        long time = world.getTime();
-
-        VertexBuilder builder = ALLOCATOR.create(VertexFormat.V3F_T2F, DrawMode.QUADS, 16);
-        builder.allocate();
+        long time = this.world.getTime();
 
 
-        double distance = ClientSettingRegistry.getFixedViewDistance() * 16 * 6;
+        double distance = ClientSettings.getFixedViewDistance() * 16 * 6;
 
-        double r = distance;
         double size = distance / 1.3f;
 
 
         double angle = 0.5;
 
-        double vertAngle = Math.acos((2 * r * r - size * size) / (2 * r * r));
+        double vertAngle = Math.acos((2 * distance * distance - size * size) / (2 * distance * distance));
 
-        double x0 = r * Math.cos(angle - vertAngle / 2f);
-        double x1 = r * Math.cos(angle + vertAngle / 2f);
+        double x0 = distance * Math.cos(angle - vertAngle / 2f);
+        double x1 = distance * Math.cos(angle + vertAngle / 2f);
 
-        double y0 = r * Math.sin(angle - vertAngle / 2f);
-        double y1 = r * Math.sin(angle + vertAngle / 2f);
+        double y0 = distance * Math.sin(angle - vertAngle / 2f);
+        double y1 = distance * Math.sin(angle + vertAngle / 2f);
 
         double z = 0;
 
         double z0 = z - size / 2, z1 = z + size / 2;
 
 
-        builder.addVertex(x0, y0, z1);
-        builder.setTextureCoordinate(1, 0);
-        builder.addVertex(x0, y0, z0);
-        builder.setTextureCoordinate(1, 1);
-        builder.addVertex(x1, y1, z0);
-        builder.setTextureCoordinate(0, 1);
-        builder.addVertex(x1, y1, z1);
-        builder.setTextureCoordinate(0, 0);
+        this.builder.addVertex(x0, y0, z1);
+        this.builder.setTextureCoordinate(1, 0);
+        this.builder.addVertex(x0, y0, z0);
+        this.builder.setTextureCoordinate(1, 1);
+        this.builder.addVertex(x1, y1, z0);
+        this.builder.setTextureCoordinate(0, 1);
+        this.builder.addVertex(x1, y1, z1);
+        this.builder.setTextureCoordinate(0, 0);
 
 
         GLUtil.enableBlend();
@@ -166,10 +165,8 @@ public final class SkyBoxRenderer extends IWorldRenderer {
 
         this.sunTexture.bind();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        VertexBuilderUploader.uploadPointer(builder);
+        VertexBuilderUploader.uploadPointer(this.builder);
         this.sunTexture.unbind();
-
-        ALLOCATOR.free(builder);
 
         GLUtil.disableBlend();
 

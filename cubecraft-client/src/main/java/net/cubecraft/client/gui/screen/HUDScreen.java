@@ -66,6 +66,11 @@ public final class HUDScreen extends Screen {
         super.tick();
     }
 
+    @Override
+    public void release() {
+        super.release();
+        this.builder.freeReferenced();
+    }
 
     private void renderActionBar(DisplayScreenInfo info) {
         final var scale = 1.5f;
@@ -126,7 +131,6 @@ public final class HUDScreen extends Screen {
     public void getDebug() {
         super.getDebug();
 
-        var client = this.getClient();
         var world = this.getClient().getWorldContext().getWorld();
         var player = this.getClient().getWorldContext().getPlayer();
 

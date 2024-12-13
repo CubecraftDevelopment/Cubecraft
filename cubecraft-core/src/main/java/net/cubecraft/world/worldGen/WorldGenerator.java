@@ -9,6 +9,7 @@ import net.cubecraft.world.storage.PersistentChunkHolder;
 import net.cubecraft.world.worldGen.pipeline.ChunkGenerateTask;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
 import net.cubecraft.world.worldGen.pipeline.pipelines.OverworldPipeline;
+import net.cubecraft.world.worldGen.pipeline.pipelines.SingleNoisePipeline;
 
 import java.util.HashMap;
 

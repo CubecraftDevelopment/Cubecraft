@@ -9,7 +9,7 @@ import me.gb2022.quantum3d.texture.TextureStateManager;
 import net.cubecraft.SharedContext;
 import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.ClientRenderContext;
-import net.cubecraft.client.registry.ClientSettingRegistry;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.registry.ColorMaps;
 import net.cubecraft.client.render.Textures;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
@@ -100,7 +100,7 @@ public interface ClientAssetLoader {
             var language = "auto";
             var i18n = SharedContext.I18N;
 
-            language = ClientSettingRegistry.LANGUAGE.getValue();
+            language = ClientSettings.UISetting.LANGUAGE.getValue();
 
             if (Objects.equals(language, "auto")) {
                 Locale locale = Locale.getDefault();
