@@ -31,6 +31,7 @@ public interface RenderBatch {
 
     int getHandle();
 
+
     final class ListRenderBatch implements RenderBatch {
         private int list = -1;
         private int count;
@@ -38,7 +39,7 @@ public interface RenderBatch {
         @Override
         public void call() {
             if (!this.isAllocated()) {
-                throw new RuntimeException("ListRenderBatch is not allocated");
+                return;
             }
             GL11.glCallList(this.list);
 
@@ -47,6 +48,9 @@ public interface RenderBatch {
 
         @Override
         public void upload(VertexBuilder builder) {
+            if (!this.isAllocated()) {
+                return;
+            }
             GL11.glNewList(this.list, GL11.GL_COMPILE);
             if (!builder.getLifetimeCounter().isAllocated()) {
                 GL11.glEndList();
@@ -60,11 +64,17 @@ public interface RenderBatch {
 
         @Override
         public void allocate() {
+            if(this.isAllocated()) {
+                return;
+            }
             this.list = GL11.glGenLists(1);
         }
 
         @Override
         public void free() {
+            if(!this.isAllocated()) {
+                return;
+            }
             GL11.glDeleteLists(this.list, 1);
             this.list = -1;
         }

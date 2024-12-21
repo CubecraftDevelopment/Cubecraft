@@ -5,7 +5,7 @@ import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
 import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.quantum3d.util.ShapeRenderer;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.font.FontAlignment;
@@ -27,7 +27,7 @@ public final class LogoLoadingScreen extends AnimationScreen {
 
         var resource = ResourceRegistry.GAME_LOGO;
 
-        ClientSharedContext.RESOURCE_MANAGER.loadResource(resource);
+        ClientContext.RESOURCE_MANAGER.loadResource(resource);
         GAME_LOGO.load(ResourceRegistry.GAME_LOGO);
     }
 

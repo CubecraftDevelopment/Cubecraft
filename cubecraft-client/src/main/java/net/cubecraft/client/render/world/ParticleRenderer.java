@@ -1,17 +1,19 @@
 package net.cubecraft.client.render.world;
 
-import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
-import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
-import me.gb2022.quantum3d.util.FrustumCuller;
 import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.registry.RegisterMap;
 import me.gb2022.commons.registry.TypeItem;
-import net.cubecraft.client.ClientSharedContext;
+import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
+import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
+import me.gb2022.quantum3d.util.FrustumCuller;
+import me.gb2022.quantum3d.util.camera.ViewFrustum;
+import net.cubecraft.client.ClientContext;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.internal.renderer.world.WorldRendererType;
+import net.cubecraft.client.particle.ParticleEngine;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.renderer.IParticleRenderer;
 import net.cubecraft.world.entity.EntityParticle;
-import net.cubecraft.client.particle.ParticleEngine;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
@@ -24,18 +26,18 @@ public class ParticleRenderer extends IWorldRenderer {
     @SuppressWarnings("rawtypes")
     public static final RegisterMap<IParticleRenderer> PARTICLE_RENDERERS = new RegisterMap<>(IParticleRenderer.class);
 
-    private final FrustumCuller frustum;
+    private final ViewFrustum frustum = new ViewFrustum();
+
     private final ParticleEngine particleEngine;
     private int successSize;
 
     public ParticleRenderer() {
-        this.frustum = new FrustumCuller();
-        this.particleEngine = ClientSharedContext.getClient().getParticleEngine();
+        this.particleEngine = CubecraftClient.getInstance().getParticleEngine();
     }
 
     public void init() {
         this.world.getEventBus().registerEventListener(this);
-        ClientSharedContext.QUERY_HANDLER.registerCallback(this.getID(), (arg -> switch (arg) {
+        ClientContext.QUERY_HANDLER.registerCallback(this.getID(), (arg -> switch (arg) {
             case "success_size" -> this.successSize;
             // case "all_size" -> this.particleEngine.getParticles().size();
             default -> 0;
@@ -45,22 +47,21 @@ public class ParticleRenderer extends IWorldRenderer {
 
     @Override
     public void preRender() {
-        this.camera.setUpGlobalCamera();
-        this.frustum.calculateFrustum();
+        this.frustum.update(this.viewCamera);
     }
+
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void render(RenderType type, float delta) {
         if (type != RenderType.ALPHA) {
             return;
         }
-        if(this.particleEngine==null){
+        if (this.particleEngine == null) {
             return;
         }
 
-        this.camera.setUpGlobalCamera();
-        double yRot = this.camera.getRotation().y;
-        double xRot = this.camera.getRotation().x;
+        double yRot = this.viewCamera.getPitch();
+        double xRot = this.viewCamera.getYaw();
 
         float xa = -((float) Math.cos(yRot * Math.PI / 180.0));
         float za = -((float) Math.sin(yRot * Math.PI / 180.0));
@@ -73,28 +74,25 @@ public class ParticleRenderer extends IWorldRenderer {
 
         ArrayList<EntityParticle> particles = new ArrayList<>(this.particleEngine.getParticles());
         for (EntityParticle p : particles) {
-            String s=p.getType();
             IParticleRenderer renderer = PARTICLE_RENDERERS.get(p.getType());
             if (renderer == null) {
                 continue;
             }
 
-            AABB aabb = new AABB(p.x - 0.1, p.y - 0.1, p.z - 0.1, p.x + 0.1, p.y + 0.1, p.z + 0.1);
-            if (this.frustum.aabbVisible(this.camera.castAABB(aabb))) {
+            if (this.frustum.boxVisible(p.getCollisionBox(),this.viewCamera.getX(), this.viewCamera.getY(), this.viewCamera.getZ())) {
                 i++;
                 LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(128);
                 builder.begin();
                 renderer.render(p, builder, delta, xa, ya, za, xa2, za2);
                 builder.end();
-                GL11.glPushMatrix();
-                this.camera.setupObjectCamera(new Vector3d(p.x, p.y, p.z));
+                this.viewCamera.push().object(new Vector3d(p.x, p.y, p.z)).set();
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
                 builder.uploadPointer();
                 builder.free();
-                GL11.glPopMatrix();
+                this.viewCamera.pop();
             }
         }
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
         this.successSize = i;
     }
 }

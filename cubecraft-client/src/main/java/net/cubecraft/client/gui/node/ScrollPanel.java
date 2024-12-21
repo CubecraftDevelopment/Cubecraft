@@ -9,8 +9,8 @@ import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.registry.ClientSettings;
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.context.ClientGUIContext;
 import org.lwjgl.opengl.GL11;
 import org.w3c.dom.Element;
@@ -83,7 +83,7 @@ public class ScrollPanel extends Node {
 
     @EventHandler
     public void onScroll(MouseScrollEvent event) {
-        if (ClientSharedContext.getClient().getClientDeviceContext().getKeyboard().isKeyDown(KeyboardButton.KEY_LEFT_SHIFT)) {
+        if (CubecraftClient.getInstance().getClientDeviceContext().getKeyboard().isKeyDown(KeyboardButton.KEY_LEFT_SHIFT)) {
             if (this.horizontalEnabled) {
                 this.xd = 16 * -event.getYOffset();
             }

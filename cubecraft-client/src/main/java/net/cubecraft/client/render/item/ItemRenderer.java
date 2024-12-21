@@ -5,7 +5,7 @@ import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.RenderBatch;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
 import net.cubecraft.world.item.ItemStack;
@@ -31,7 +31,7 @@ public interface ItemRenderer {
         GL11.glEnable(3553);
 
         var block = stack.getType();
-        var renderer = ClientRenderContext.BLOCK_RENDERERS.get(block);
+        var renderer = IBlockRenderer.REGISTRY.get(block);
 
         if (renderer == null) {
             GL11.glPopMatrix();
@@ -74,7 +74,7 @@ public interface ItemRenderer {
 
     static RenderBatch bake(ItemStack stack) {
         var block = stack.getType();
-        var renderer = ClientRenderContext.BLOCK_RENDERERS.get(block);
+        var renderer = IBlockRenderer.REGISTRY.get(block);
 
         if (renderer == null) {
             return null;
@@ -112,6 +112,7 @@ public interface ItemRenderer {
         }catch (Throwable e) {
             ALLOCATOR.free(builder);
             GL11.glEndList();
+            e.printStackTrace();
 
             return null;
         }

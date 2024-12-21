@@ -5,7 +5,7 @@ import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.device.MouseButton;
 import me.gb2022.quantum3d.device.event.MouseClickEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontAlignment;
@@ -16,7 +16,7 @@ public class TopBar extends Component {
 
     @EventHandler
     public void onClicked(MouseClickEvent e) {
-        ClientGUIContext guiManager = ClientSharedContext.getClient().getClientGUIContext();
+        ClientGUIContext guiManager = CubecraftClient.getInstance().getClientGUIContext();
         if (hovered && e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
             if (guiManager.getScreen().getParentScreen() != null) {
                 guiManager.setScreen(guiManager.getScreen().getParentScreen());

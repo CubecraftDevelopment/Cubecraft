@@ -1,6 +1,6 @@
 package net.cubecraft.client.gui.base;
 
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.gui.font.FontAlignment;
 import net.cubecraft.SharedContext;
 import me.gb2022.commons.file.FAMLDeserializer;
@@ -62,7 +62,7 @@ public class Text {
             case "icon" -> String.valueOf(((char) MathHelper.hex2Int(src)));
             case "random" -> {
                 String[] splash;
-                splash = new Gson().fromJson(ClientSharedContext.RESOURCE_MANAGER.getResource(src).getAsText(), String[].class);
+                splash = new Gson().fromJson(ClientContext.RESOURCE_MANAGER.getResource(src).getAsText(), String[].class);
                 yield splash[new Random().nextInt(splash.length)];
             }
             default -> throw new IllegalArgumentException("no matched constant named %s".formatted(type));

@@ -8,6 +8,7 @@ import me.gb2022.quantum3d.device.event.AnyClickInputEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
 import me.gb2022.quantum3d.device.event.MouseScrollEvent;
 import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.registry.ClientSettings.ControlSetting;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.world.entity.EntityLiving;
@@ -100,7 +101,6 @@ public final class PlayerController extends EntityController<EntityPlayer> {
         this.entity.getInventory().setActiveSlot(this.slot);
     }
 
-    //@EventHandler
     public void onInput(AnyClickInputEvent event) {
         if (ControlSetting.SPRINT.isTriggered(event)) {
             this.toggleSprint();
@@ -119,6 +119,55 @@ public final class PlayerController extends EntityController<EntityPlayer> {
                 Inventory inv = this.entity.getInventory();
                 inv.selectItem(obj, this.slot);
             }
+        }
+
+        if (ClientSettings.CameraPlugin.SWITCH_VIEW.isTriggered(event)) {
+            var origin = ClientSettings.RenderSetting.WorldSetting.CAMERA_MODE.getValue();
+
+            //todo: more camera support
+            if (origin == 0) {
+                ClientSettings.RenderSetting.WorldSetting.CAMERA_MODE.setValue(1);
+            }
+            if (origin == 1) {
+                ClientSettings.RenderSetting.WorldSetting.CAMERA_MODE.setValue(0);
+            }
+        }
+
+        if (ControlSetting.ACTIONBAR_1.isTriggered(event)) {
+            this.slot = 0;
+            this.entity.getInventory().setActiveSlot(0);
+        }
+        if (ControlSetting.ACTIONBAR_2.isTriggered(event)) {
+            this.slot = 1;
+            this.entity.getInventory().setActiveSlot(1);
+        }
+        if (ControlSetting.ACTIONBAR_3.isTriggered(event)) {
+            this.slot = 2;
+            this.entity.getInventory().setActiveSlot(2);
+        }
+        if (ControlSetting.ACTIONBAR_4.isTriggered(event)) {
+            this.slot = 3;
+            this.entity.getInventory().setActiveSlot(3);
+        }
+        if (ControlSetting.ACTIONBAR_5.isTriggered(event)) {
+            this.slot = 4;
+            this.entity.getInventory().setActiveSlot(4);
+        }
+        if (ControlSetting.ACTIONBAR_6.isTriggered(event)) {
+            this.slot = 5;
+            this.entity.getInventory().setActiveSlot(5);
+        }
+        if (ControlSetting.ACTIONBAR_7.isTriggered(event)) {
+            this.slot = 6;
+            this.entity.getInventory().setActiveSlot(6);
+        }
+        if (ControlSetting.ACTIONBAR_8.isTriggered(event)) {
+            this.slot = 7;
+            this.entity.getInventory().setActiveSlot(7);
+        }
+        if (ControlSetting.ACTIONBAR_9.isTriggered(event)) {
+            this.slot = 8;
+            this.entity.getInventory().setActiveSlot(8);
         }
     }
 }

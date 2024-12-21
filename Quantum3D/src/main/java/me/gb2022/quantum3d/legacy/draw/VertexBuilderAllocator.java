@@ -12,10 +12,6 @@ public interface VertexBuilderAllocator {
         return new OffHeapVertexBuilder(capacity, drawMode);
     }
 
-    static OffHeapVertexBuilder createOffHeap(int capacity) {
-        return createOffHeap(capacity, DrawMode.QUADS);
-    }
-
     static LegacyVertexBuilder createByType(int capacity, DrawMode drawMode, int type) {
         return createOffHeap(capacity, drawMode);
     }

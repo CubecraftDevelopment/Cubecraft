@@ -7,21 +7,22 @@ import me.gb2022.commons.container.MultiMap;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.math.MathHelper;
 import me.gb2022.commons.memory.BufferAllocator;
+import me.gb2022.commons.registry.ConstructingMap;
 import me.gb2022.quantum3d.ColorElement;
 import me.gb2022.quantum3d.device.KeyboardButton;
 import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
 import me.gb2022.quantum3d.device.event.KeyboardReleaseEvent;
 import me.gb2022.quantum3d.memory.LWJGLBufferAllocator;
 import me.gb2022.quantum3d.util.GLUtil;
-import me.gb2022.quantum3d.util.LegacyCamera;
 import me.gb2022.quantum3d.util.camera.Camera;
 import me.gb2022.quantum3d.util.camera.PerspectiveCamera;
+import me.gb2022.quantum3d.util.camera.PoseStack;
 import net.cubecraft.client.ClientComponent;
-import net.cubecraft.client.ClientRenderContext;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.ClientRendererInitializeEvent;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
+import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.internal.entity.EntityPlayer;
 import net.cubecraft.resource.ResourceLocation;
@@ -34,11 +35,11 @@ import java.nio.FloatBuffer;
 
 public final class LevelRenderer extends ClientComponent {
     public static final BufferAllocator ALLOCATOR = new LWJGLBufferAllocator(16384, 16777216);
+    public static final ConstructingMap<IWorldRenderer> WORLD_RENDERER = new ConstructingMap<>(IWorldRenderer.class);
     public final MultiMap<String, IWorldRenderer> renderers = new MultiMap<>();
 
-    public final Camera viewCamera = new PerspectiveCamera(70.0f);
+    public final Camera<?> viewCamera = new PerspectiveCamera(70.0f);
 
-    public final LegacyCamera camera = new LegacyCamera();
     private final FloatBuffer fogColor = ALLOCATOR.allocFloatBuffer(5);
 
     public World world;
@@ -47,9 +48,15 @@ public final class LevelRenderer extends ClientComponent {
     private ColorElement fogColorElement;
     private boolean active;
 
-
-    public LevelRenderer() {
-        this.camera.setPosRelative(0, 0, 0.15);
+    public static void applyViewBobbing(EntityPlayer player, PoseStack stack, float delta) {
+        float f = (float) (player.getWalkedDistance() - player.getLastWalkedDistance());
+        float f1 = (float) -(player.getLastWalkedDistance() + f * delta);
+        float f2 = 0.07f;//horizontal
+        float f3 = 0.18f;//vertical
+        stack.translate((float) (Math.sin(f1 * Math.PI) * f2 * 0.5F), (float) -Math.abs(Math.cos(f1 * Math.PI) * f2), 0.0F);
+        stack.rotate((float) (Math.sin(f1 * (float) Math.PI) * f2 * 3.0F), 0.0F, 0.0F, 1.0F);
+        stack.rotate((float) (Math.abs(Math.cos(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F), 1.0F, 0.0F, 0.0F);
+        stack.rotate(f3, 1.0F, 0.0F, 0.0F);
     }
 
     @Override
@@ -72,8 +79,6 @@ public final class LevelRenderer extends ClientComponent {
 
     @Override
     public void clientSetup(CubecraftClient client) {
-        super.clientSetup(client);
-
         client.getClientEventBus().registerEventListener(this);
         client.getDeviceEventBus().registerEventListener(this);
     }
@@ -100,12 +105,25 @@ public final class LevelRenderer extends ClientComponent {
         var y = MathHelper.linearInterpolate(this.player.yo, this.player.y, delta) + cameraPos.y;
         var z = MathHelper.linearInterpolate(this.player.zo, this.player.z, delta) + cameraPos.z;
 
-        this.viewCamera.setPosition(x, y, z);
-        this.viewCamera.updateMatrix();
 
-        this.camera.setPos(x, y, z);
-        this.camera.setupRotation(this.player.xRot, this.player.yRot, this.player.zRot);
-        this.camera.setAspect(info.getAspect());
+        this.viewCamera.setPosition(x, y, z);
+        this.viewCamera.setRotation(this.player.xRot, this.player.yRot, this.player.zRot);
+
+        if (ClientSettings.RenderSetting.WorldSetting.CAMERA_MODE.getValue() == 1) {
+            this.viewCamera.setRelativePosition(0, 0, -2.55f);
+        } else {
+            this.viewCamera.setRelativePosition(0, 0, 0.15f);
+        }
+
+        if (this.viewCamera instanceof PerspectiveCamera p) {
+            p.setAspectRatio(info.getAspect());
+        }
+
+        this.viewCamera.push();
+
+        applyViewBobbing(this.player, this.viewCamera.getPoseStack(), delta);
+
+        this.viewCamera.local().set();
 
         for (IWorldRenderer renderer : this.renderers.values()) {
             GLUtil.checkError(renderer.getID() + ":pre:before");
@@ -127,15 +145,13 @@ public final class LevelRenderer extends ClientComponent {
             renderer.postRender();
         }
 
-        if (this.camera.isRotationChanged()) {
-            this.camera.updateRotation();
-        }
+        this.viewCamera.pop();
     }
 
 
     public void init(ResourceLocation configuration) {
         this.active = true;
-        var dom = ClientSharedContext.RESOURCE_MANAGER.getResource(configuration).getAsText();
+        var dom = ClientContext.RESOURCE_MANAGER.getResource(configuration).getAsText();
         var config = JsonParser.parseString(dom).getAsJsonObject();
         var eventBus = this.client.getClientEventBus();
 
@@ -149,7 +165,7 @@ public final class LevelRenderer extends ClientComponent {
         JsonObject renderers = config.get("renderers").getAsJsonObject();
 
         for (String id : renderers.keySet()) {
-            IWorldRenderer renderer = ClientRenderContext.WORLD_RENDERER.create(id);
+            IWorldRenderer renderer = WORLD_RENDERER.create(id);
 
             renderer.config(renderers.get(id).getAsJsonObject());
             client.getClientEventBus().registerEventListener(renderer);
@@ -158,7 +174,7 @@ public final class LevelRenderer extends ClientComponent {
         }
 
         for (var renderer : this.renderers.values()) {
-            renderer.initializeRenderer(this, client.getWindow(), this.world, this.player, this.camera);
+            renderer.initializeRenderer(this, client.getWindow(), this.world, this.player, this.viewCamera);
         }
 
         for (IWorldRenderer renderer : this.renderers.values()) {
@@ -170,7 +186,6 @@ public final class LevelRenderer extends ClientComponent {
 
     public void render(RenderType type, float delta) {
         for (IWorldRenderer renderer : this.renderers.values()) {
-            GL11.glPushMatrix();
             String rendererName = this.renderers.of(renderer);
             String postFix = "_%s|%s".formatted(rendererName, type.getName());
 
@@ -180,7 +195,6 @@ public final class LevelRenderer extends ClientComponent {
             GLUtil.checkError("shortTick" + postFix);
             renderer.postRender(type, delta);
             GLUtil.checkError("pre_render" + postFix);
-            GL11.glPopMatrix();
         }
     }
 
@@ -190,7 +204,6 @@ public final class LevelRenderer extends ClientComponent {
         }
         this.active = false;
     }
-
 
     public void setFog(double dist) {
         var position = this.player.getCameraPosition().add(this.player.getPosition());
@@ -222,16 +235,12 @@ public final class LevelRenderer extends ClientComponent {
             this.refresh();
         }
         if (event.getKey() == KeyboardButton.KEY_C) {
-            this.camera.setFov(20.0f);
+            if (this.viewCamera instanceof PerspectiveCamera p) {
+                p.setFov(20.0f);
+            }
         }
     }
 
-    @EventHandler
-    public void checkFov(KeyboardReleaseEvent event) {
-        if (event.getKey() == KeyboardButton.KEY_C) {
-            this.camera.setFov(70.0f);
-        }
-    }
 
 
     public void refresh() {
@@ -243,12 +252,15 @@ public final class LevelRenderer extends ClientComponent {
         this.init(ResourceLocation.worldRendererSetting(this.world.getId() + ".json"));
     }
 
-
     public FloatBuffer getFogColor() {
         return this.fogColor;
     }
 
     public <T extends IWorldRenderer> T getRenderer(String s, Class<T> type) {
         return type.cast(this.renderers.get(s));
+    }
+
+    public Camera<?> getViewCamera() {
+        return viewCamera;
     }
 }

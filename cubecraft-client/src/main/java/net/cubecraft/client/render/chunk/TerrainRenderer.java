@@ -8,9 +8,10 @@ import me.gb2022.commons.memory.BufferAllocator;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.memory.LWJGLBlockedBufferAllocator;
 import me.gb2022.quantum3d.memory.LWJGLSecureMemoryManager;
-import me.gb2022.quantum3d.util.FrustumCuller;
 import me.gb2022.quantum3d.util.GLUtil;
-import net.cubecraft.client.ClientSharedContext;
+import me.gb2022.quantum3d.util.camera.ViewFrustum;
+import net.cubecraft.client.ClientContext;
+import net.cubecraft.client.registry.ClientSettings.RenderSetting.WorldSetting.ChunkSetting;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileRequest;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileResult;
@@ -21,20 +22,13 @@ import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
 import net.cubecraft.client.render.chunk.sort.ChunkCompileRequestSorter;
 import net.cubecraft.client.render.chunk.sort.ChunkCompileResultSorter;
 import net.cubecraft.client.render.chunk.sort.ChunkSorter;
-import net.cubecraft.client.render.chunk.status.ChunkStatusCache;
-import net.cubecraft.client.render.chunk.status.ChunkStatusHandler;
-import net.cubecraft.client.render.chunk.status.ChunkStatusHandlerThread;
+import net.cubecraft.client.render.chunk.status.*;
 import net.cubecraft.client.render.world.IWorldRenderer;
 import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.world.chunk.Chunk;
-
-import net.cubecraft.client.registry.ClientSettings.RenderSetting.WorldSetting.ChunkSetting;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joml.Vector3d;
 import org.joml.Vector3i;
-import org.lwjgl.opengl.GL11;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -46,12 +40,11 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
     public static final Logger LOGGER = LogManager.getLogger("TerrainRenderer");
 
     private final int viewDistance = ChunkSetting.getFixedViewDistance();
-    private final boolean vbo = ChunkSetting.VBO.getValue();
 
-    private final ChunkStatusCache chunkStatusCache = new ChunkStatusCache(this);
+    private final ChunkMarkCache chunkStatusCache = new ModernChunkStatusCache(this);
     private final ChunkStatusHandlerThread daemon = ChunkStatusHandlerThread.create(this);
     private final ModernChunkCompiler compiler = new ModernChunkCompiler(this);
-    private final FrustumCuller frustum = new FrustumCuller();
+    private final ViewFrustum frustum = new ViewFrustum();
 
     private final Int2ObjectMap<ChunkLayerContainer> alphaContainers = new Int2ObjectOpenHashMap<>(8);
     private final Int2ObjectMap<ChunkLayerContainer> transparentContainers = new Int2ObjectOpenHashMap<>(8);
@@ -61,8 +54,10 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
     private final BlockingQueue<ChunkCompileRequest> requestQueue = new PriorityBlockingQueue<>(4096, this.chunkCompileRequestSorter);
     private final ChunkCompileResultSorter chunkCompileResultSorter = new ChunkCompileResultSorter(this.frustum);
     private final Queue<ChunkCompileResult> resultQueue = new PriorityQueue<>(this.chunkCompileResultSorter);
+
     private final ChunkSorter chunkSorter;
     private final Vector3i lastChunkPos = new Vector3i();
+
     private ChunkCompilerTask[] compilers;
 
     public TerrainRenderer() {
@@ -78,7 +73,8 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             };
 
             var id = provider.getId();
-            var layer = f.getFactory().createChunkLayer(this, this.viewDistance, this.vbo);
+            boolean vbo = ChunkSetting.VBO.getValue();
+            var layer = f.getFactory().createChunkLayer(this, this.viewDistance, vbo);
 
             map.put(id, layer);
             this.containers.put(id, layer);
@@ -86,7 +82,7 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
         LOGGER.info("created {} alpha renderers, {} transparent renderers", this.alphaContainers.size(), this.transparentContainers.size());
 
-        ClientSharedContext.QUERY_HANDLER.registerCallback(this.getID(), (arg -> switch (arg) {
+        ClientContext.QUERY_HANDLER.registerCallback(this.getID(), (arg -> switch (arg) {
             case "D/A" -> this.alphaContainers.values().stream().mapToInt((c) -> c.getLayers().size()).sum();
             case "D/T" -> this.transparentContainers.values().stream().mapToInt((c) -> c.getLayers().size()).sum();
             case "D/A_S" -> this.alphaContainers.values().stream().mapToInt((c) -> c.getVisibleLayers().size()).sum();
@@ -99,10 +95,10 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         }));
     }
 
-    public static double chunkDistance(Vector3d cam, int cx, int cy, int cz) {
-        var ccx = ((long) cam.x()) >> 4;
-        var ccy = ((long) cam.y()) >> 4;
-        var ccz = ((long) cam.z()) >> 4;
+    public static double chunkDistance(double vx, double vy, double vz, int cx, int cy, int cz) {
+        var ccx = (((long) Math.floor(vx))) >> 4;
+        var ccy = (((long) Math.floor(vy))) >> 4;
+        var ccz = (((long) Math.floor(vz))) >> 4;
 
         var dx = cx - ccx;
         var dy = cy - ccy;
@@ -113,8 +109,8 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     @Override
     public BufferAllocator createMemoryAllocator() {
-        var bs = 16384;
-        var bc = 65536;//todo:offheap leaks
+        var bs = 36 * 8192;
+        var bc = 512;
 
         return new LWJGLBlockedBufferAllocator(LWJGLSecureMemoryManager.allocate(bs * bc), bs, bc);
     }
@@ -139,10 +135,13 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     @Override
     public void tick() {
-        Vector3d camPos = this.camera.getPosition();
-        this.chunkSorter.setPos(camPos);
-        this.chunkCompileRequestSorter.setPos(camPos);
-        this.chunkCompileResultSorter.setPos(camPos);
+        var x = this.viewCamera.getX();
+        var y = this.viewCamera.getY();
+        var z = this.viewCamera.getZ();
+
+        this.chunkSorter.setPos(x, y, z);
+        this.chunkCompileRequestSorter.setPos(x, y, z);
+        this.chunkCompileResultSorter.setPos(x, y, z);
 
         for (var container : this.containers.values()) {
             container.remove((l) -> isChunkOutOfRange(l.getOwner().getX(), l.getOwner().getY(), l.getOwner().getZ(), 0));
@@ -152,16 +151,22 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     @Override
     public void preRender() {
-        var a = ModernChunkCompiler.REF_COUNTER.get();
-
         for (int i = 0; i < ChunkSetting.MAX_RECEIVE.getValue(); i++) {
             if (this.resultQueue.isEmpty()) {
                 return;
             }
-            ChunkCompileResult result = this.resultQueue.poll();
+            var result = this.resultQueue.poll();
             if (result == null) {
                 continue;
             }
+
+            if (this.isChunkOutOfRange(result.getX(), result.getY(), result.getZ(), 2)) {
+                result.free();
+                i--;
+                Thread.yield();
+                continue;
+            }
+
 
             for (var n = 0; n < result.getLayers().length; n++) {
                 var layer = result.getLayers()[n];
@@ -175,7 +180,7 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
                     continue;
                 }
 
-                if (!result.success()) {// no buffers presented
+                if (result.failed()) {
                     container.removeLayer(x, y, z);
                     continue;
                 }
@@ -185,9 +190,9 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
                 } else {
                     container.removeLayer(x, y, z);
                 }
-
-                result.freeLayer(n);
             }
+
+            result.free();
         }
     }
 
@@ -196,23 +201,24 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             return true;
         }
 
-        return chunkDistance(getCamera().getPosition(), x, y, z) > this.viewDistance + addition;
+        var vx = this.viewCamera.getX();
+        var vy = this.viewCamera.getY();
+        var vz = this.viewCamera.getZ();
+
+        return chunkDistance(vx, vy, vz, x, y, z) > this.viewDistance + addition;
     }
 
     @Override
     public void preRender(RenderType type, float delta) {
-        GL11.glPushMatrix();
-        this.setGlobalCamera(delta);
-        this.camera.updateFrustum();
-        this.frustum.calculateFrustum();
+        this.frustum.update(this.viewCamera);
         this.parent.setFog(this.viewDistance * 16);
     }
 
     @Override
     public void render(RenderType type, float deltas) {
-        var vx = this.camera.getPosition().x;
-        var vy = this.camera.getPosition().y;
-        var vz = this.camera.getPosition().z;
+        var vx = this.viewCamera.getX();
+        var vy = this.viewCamera.getY();
+        var vz = this.viewCamera.getZ();
 
         if (type == RenderType.ALPHA) {
             GLUtil.enableClientState();
@@ -236,11 +242,6 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
     }
 
     @Override
-    public void postRender(RenderType type, float delta) {
-        GL11.glPopMatrix();
-    }
-
-    @Override
     public void stop() {
         this.daemon.setRunning(false);
         for (ChunkCompilerTask daemon : this.compilers) {
@@ -253,11 +254,11 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         }
 
         this.containers.clear();
-        this.chunkStatusCache._delete();
+        this.chunkStatusCache.delete();
         this.requestQueue.clear();
         this.resultQueue.clear();
 
-        ClientSharedContext.QUERY_HANDLER.unregisterCallback(this.getID());
+        ClientContext.QUERY_HANDLER.unregisterCallback(this.getID());
         this.world.getEventBus().unregisterEventListener(this);
 
         this.getMemoryAllocator().clear();
@@ -265,21 +266,118 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
     }
 
     public void setUpdate(int x, int y, int z, boolean immediate) {
-        ChunkCompileRequest request = ChunkCompileRequest.build(this.world, x, y, z, ChunkLayerContainers.REGISTRY.ids());
+        var request = ChunkCompileRequest.build(this.world, x, y, z, ChunkLayerContainers.REGISTRY.ids());
 
         if (immediate) {
+            //direct
+            //noinspection CallToThreadRun
             ChunkCompilerTask.task(this, request).run();
             return;
         }
         this.requestQueue.add(request);
     }
 
-    public boolean isChunkOutOfRange(RenderChunkPos pos) {
-        return isChunkOutOfRange(pos.getX(), pos.getY(), pos.getZ(), 0);
-    }
+    public void update(int cx, int cy, int cz, int rx, int ry, int rz, boolean sync) {
+        var xd = rx == 0;
+        var xu = rx == 15;
+        var yd = ry == 0;
+        var yu = ry == 15;
+        var zd = rz == 0;
+        var zu = rz == 15;
 
-    public boolean isChunkVisible(RenderChunkPos pos) {
-        return this.frustum.aabbVisible(pos.getBounding(this.camera.getPosition()));
+        var xe = !xd && !xu;
+        var ye = !yd && !yu;
+        var ze = !zd && !zu;
+
+        setUpdate(cx, cy, cz, sync);
+
+        //face
+        if (xd) {
+            setUpdate(cx - 1, cy, cz, sync);
+        }
+        if (xu) {
+            setUpdate(cx + 1, cy, cz, sync);
+        }
+        if (yd) {
+            setUpdate(cx, cy - 1, cz, sync);
+        }
+        if (yu) {
+            setUpdate(cx, cy, cz + 1, sync);
+        }
+        if (zd) {
+            setUpdate(cx, cy, cz - 1, sync);
+        }
+        if (zu) {
+            setUpdate(cx, cy, cz + 1, sync);
+        }
+
+        //corner
+        if (xd && yd && zd) {
+            setUpdate(cx - 1, cy - 1, cz - 1, sync);
+        }
+        if (xu && yd && zd) {
+            setUpdate(cx + 1, cy - 1, cz - 1, sync);
+        }
+        if (xd && yu && zd) {
+            setUpdate(cx - 1, cy + 1, cz - 1, sync);
+        }
+        if (xu && yu && zd) {
+            setUpdate(cx + 1, cy + 1, cz - 1, sync);
+        }
+        if (xd && yd && zu) {
+            setUpdate(cx - 1, cy - 1, cz + 1, sync);
+        }
+        if (xu && yd && zu) {
+            setUpdate(cx + 1, cy - 1, cz + 1, sync);
+        }
+        if (xd && yu && zu) {
+            setUpdate(cx - 1, cy + 1, cz + 1, sync);
+        }
+        if (xu && yu && zu) {
+            setUpdate(cx + 1, cy + 1, cz + 1, sync);
+        }
+
+        //edge x-plane
+        if (xe && yd && zd) {
+            setUpdate(cx, cy - 1, cz - 1, sync);
+        }
+        if (xe && yu && zd) {
+            setUpdate(cx, cy + 1, cz - 1, sync);
+        }
+        if (xe && yd && zu) {
+            setUpdate(cx, cy - 1, cz + 1, sync);
+        }
+        if (xe && yu && zu) {
+            setUpdate(cx, cy + 1, cz + 1, sync);
+        }
+
+        //edge y-plane
+        if (xd && ye && zd) {
+            setUpdate(cx - 1, cy, cz - 1, sync);
+        }
+        if (xu && ye && zd) {
+            setUpdate(cx + 1, cy, cz - 1, sync);
+        }
+        if (xd && ye && zu) {
+            setUpdate(cx - 1, cy, cz + 1, sync);
+        }
+        if (xu && ye && zu) {
+            setUpdate(cx + 1, cy, cz + 1, sync);
+        }
+
+        //edge z-plane
+        if (xd && yd && ze) {
+            setUpdate(cx - 1, cy - 1, cz, sync);
+        }
+        if (xd && yu && ze) {
+            setUpdate(cx - 1, cy + 1, cz, sync);
+        }
+        if (xu && yd && ze) {
+            setUpdate(cx + 1, cy - 1, cz, sync);
+        }
+        if (xu && yu && ze) {
+            setUpdate(cx + 1, cy + 1, cz, sync);
+        }
     }
 
     @EventHandler
@@ -290,38 +388,14 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
         var cy = (int) (y >> 4);
         var cz = (int) (z >> 4);
 
-        var immediate = true;
-
-        if ((x & 15) == 0) {
-            setUpdate(cx - 1, cy, cz, immediate);
-        }
-        if ((x & 15) == 15) {
-            setUpdate(cx + 1, cy, cz, immediate);
-        }
-        if ((y & 15) == 0) {
-            setUpdate(cx, cy - 1, cz, immediate);
-        }
-        if ((y & 15) == 15) {
-            setUpdate(cx, cy + 1, cz, immediate);
-        }
-        if ((z & 15) == 0) {
-            setUpdate(cx, cy, cz - 1, immediate);
-        }
-        if ((z & 15) == 15) {
-            setUpdate(cx, cy, cz + 1, immediate);
-        }
-        setUpdate(cx, cy, cz, immediate);
+        update(cx, cy, cz, (int) (x & 15), (int) (y & 15), (int) (z & 15), true);
     }
 
     public int getViewDistance() {
         return this.viewDistance;
     }
 
-    public boolean isVBOEnabled() {
-        return vbo;
-    }
-
-    public ChunkStatusCache getStatusCache() {
+    public ChunkMarkCache getStatusCache() {
         return this.chunkStatusCache;
     }
 
@@ -339,9 +413,9 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
 
     @Override
     public void testFace(int x, int y, int z, boolean[] v) {
-        var vx = this.camera.getPosition().x();
-        var vy = this.camera.getPosition().y();
-        var vz = this.camera.getPosition().z();
+        var vx = this.viewCamera.getX();
+        var vy = this.viewCamera.getY();
+        var vz = this.viewCamera.getZ();
 
         var state = this.chunkStatusCache.get(x, y, z);
 
@@ -368,15 +442,22 @@ public final class TerrainRenderer extends IWorldRenderer implements ChunkStatus
             return true;
         }
 
-        return this.camera.aabbInFrustum(state.getBounding());
+        return this.frustum.boxVisible(state.getBounding(), this.viewCamera.getX(), this.viewCamera.getY(), this.viewCamera.getZ());
     }
 
     @Override
-    public boolean apply(RenderChunkPos pos) {
-        if (!this.isChunkVisible(pos)) {
+    public boolean apply(int x, int y, int z) {
+        if (!this.frustum.boxVisible(RenderChunkPos.getBounding(
+                this.viewCamera.getX(),
+                this.viewCamera.getY(),
+                this.viewCamera.getZ(),
+                x,
+                y,
+                z
+        ))) {
             return false;
         }
-        this.setUpdate(pos.getX(), pos.getY(), pos.getZ(), false);
+        this.setUpdate(x, y, z, false);
         return true;
     }
 

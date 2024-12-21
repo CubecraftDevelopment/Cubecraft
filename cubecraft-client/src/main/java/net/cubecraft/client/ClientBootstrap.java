@@ -11,7 +11,7 @@ import net.cubecraft.EnvironmentPath;
 import net.cubecraft.SharedContext;
 import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.util.Platform;
-import net.cubecraft.util.setting.ModernGameSetting;
+import net.cubecraft.util.setting.GameSetting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -113,7 +113,7 @@ public final class ClientBootstrap {
 
     interface ClientTest {
         static void main(String[] args) {
-            var settings = new ModernGameSetting("");
+            var settings = new GameSetting("");
 
             settings.register(ClientSettings.RenderSetting.class);
 

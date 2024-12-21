@@ -1,125 +1,226 @@
 package net.cubecraft.util.setting;
 
-import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
-import me.gb2022.commons.event.EventBus;
-import net.cubecraft.event.SettingReloadEvent;
-import net.cubecraft.EnvironmentPath;
-import net.cubecraft.util.setting.item.SettingItem;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.cubecraft.util.setting.item.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class GameSetting {
-    private final HashMap<String, SettingItem<?>> data = new HashMap<>();
-    private final HashMap<String, Object> modify = new HashMap<>();
-    private final HashMap<String, Map<String, Object>> map = new HashMap<>();
-    private final String file;
-    private EventBus eventBus;
+    public static final Logger LOGGER = LogManager.getLogger("GameSettings");
+    public static final String FILE = System.getProperty("user.dir") + "/config/%s.cfg.json";
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public GameSetting(String file) {
-        this.file = file;
+    private final String name;
+    private final Map<String, SettingItem<?>> items = new HashMap<>();
+    private final Map<String, Object> loadedValues = new HashMap<>();
+
+    public GameSetting(String name) {
+        this.name = name;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
+    public void register(SettingItem<?> item) {
+        this.items.put(item.id(), item);
+
+        if (this.loadedValues.containsKey(item.id())) {
+            if (item.useCustomSerialization()) {
+                item.deserialize(((String) this.loadedValues.get(item.id())));
+                return;
+            }
+            item.setValue(this.loadedValues.get(item.id()));
+        }
     }
 
-    public void setEventBus(EventBus eventBus) {
-        this.eventBus = eventBus;
+    public void register(SettingItem<?> item, String namespace) {
+        SettingNSInjector.inject(item, namespace);
+
+        register(item);
     }
 
-    public HashMap<String, Object> getModify() {
-        return modify;
+    public String getName() {
+        return name;
     }
 
-    public HashMap<String, SettingItem<?>> getData() {
-        return data;
+    public void register(Class<?> c) {
+        var namespace = "";
+
+        if (c.isAnnotationPresent(Settings.class)) {
+            namespace = c.getAnnotation(Settings.class).value();
+        }
+
+        for (var field : c.getDeclaredFields()) {
+            if (!SettingItem.class.isAssignableFrom(field.getType())) {
+                continue;
+            }
+
+            try {
+                register((SettingItem<?>) field.get(null), namespace);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    public String getFile() {
+    public <I extends SettingItem<?>> I get(String path, Class<I> type) {
+        return type.cast(this.items.get(path));
+    }
+
+    public <I> I getValue(String path, Class<I> type) {
+        return type.cast(this.items.get(path).getValue());
+    }
+
+    private File getFile() {
+        var file = new File(FILE.formatted(getName()));
+
+        if (!file.exists()) {
+            if (file.getParentFile().mkdirs()) {
+                LOGGER.info("created settings folder.");
+            }
+            try {
+                if (file.createNewFile()) {
+                    LOGGER.info("created settings file {}.", file.getAbsolutePath());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return file;
     }
 
     public void load() {
-        Toml toml = new Toml();
-        File f=new File(EnvironmentPath.CONFIG_FOLDER + this.file);
-        if(!f.exists()){
-            return;
-        }
-        toml.read(f);
-        for (String s : toml.toMap().keySet()) {
-            Toml table = toml.getTable(s);
-            if (toml.getTable(s) == null) {
-                continue;
+        var f = getFile();
+
+        try {
+            var root = JsonParser.parseReader(new FileReader(f));
+
+            if (root == null || root.isJsonNull()) {
+                return;
             }
-            Map<String,Object> map=table.toMap();
-            for (String pth:map.keySet()){
-                if(!this.data.containsKey(s+":"+pth)){
-                    continue;
+
+            _loadItem(null, root.getAsJsonObject());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (var item : this.items.values()) {
+            if (this.loadedValues.containsKey(item.id())) {
+                if (item.useCustomSerialization()) {
+                    item.deserialize(((String) this.loadedValues.get(item.id())));
+                    return;
                 }
-                this.data.get(s+":"+pth).setValue(map.get(pth));
+                item.setValue(this.loadedValues.get(item.id()));
             }
-            this.map.put(s, table.toMap());
         }
-        if(this.eventBus==null){
-            return;
-        }
-        this.eventBus.callEvent(new SettingReloadEvent(this));
     }
 
-    private void save() {
-        for (String s : this.modify.keySet()) {
-            this.data.get(s).setValue(this.modify.get(s));
-            this.map.get(s.split(":")[0]).put(s.split(":")[1], this.modify.get(s));
-        }
-        this.modify.clear();
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(EnvironmentPath.CONFIG_FOLDER + this.file);
-            fileOutputStream.write(new TomlWriter().write(this.map).getBytes(StandardCharsets.UTF_8));
-            fileOutputStream.close();
+    public void save() {
+        var file = getFile();
+
+        try (var o = new FileOutputStream(file)) {
+            o.write(saveAsString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void modify(String ns, String path, Object value) {
-        this.modify(ns + ":" + path, value);
+    public String saveAsString() {
+        var root = new JsonObject();
+
+        for (var id : this.items.keySet()) {
+            _saveItem(get(id, SettingItem.class), root, id.split(":"), 0);
+        }
+
+        return GSON.toJson(root);
     }
 
-    public void modify(String path, Object value) {
-        this.modify.put(path, value);
+    private void _loadItem(String path, JsonObject o) {
+        for (var s : o.keySet()) {
+            var e = o.get(s);
+            var id = path == null ? s : path + ":" + s;
+
+            if (e.isJsonObject()) {
+                _loadItem(id, e.getAsJsonObject());
+                continue;
+            }
+
+            var p = e.getAsJsonPrimitive();
+
+            if (p.isNumber()) {
+                this.loadedValues.put(id, p.getAsNumber());
+                continue;
+            }
+            if (p.isString()) {
+                this.loadedValues.put(id, p.getAsString());
+                continue;
+            }
+            if (p.isBoolean()) {
+                this.loadedValues.put(id, p.getAsBoolean());
+            }
+        }
     }
 
-    public void register(Class<?> clazz) {
-        for (Field f : clazz.getDeclaredFields()) {
-            if (f.getAnnotation(SettingItemRegistry.class) == null) {
-                continue;
+    private void _saveItem(SettingItem<?> item, JsonObject o, String[] dc, int pIndex) {
+        var cursor = dc[pIndex];
+
+        if (pIndex != dc.length - 1) {
+            var sect = o.getAsJsonObject(cursor);
+
+            if (sect == null) {
+                sect = new JsonObject();
+                o.add(cursor, sect);
             }
-            if (!Modifier.isStatic(f.getModifiers())) {
-                continue;
-            }
-            SettingItem<?> item;
-            f.setAccessible(true);
+
+            _saveItem(item, sect, dc, pIndex + 1);
+            return;
+        }
+
+        if (item instanceof BoolSetting b) {
+            o.addProperty(cursor, b.getValue());
+            return;
+        }
+        if (item instanceof IntSetting i) {
+            o.addProperty(cursor, i.getValue());
+            return;
+        }
+        if (item instanceof FloatSetting f) {
+            o.addProperty(cursor, f.getValue());
+            return;
+        }
+        if (item instanceof StringSetting i) {
+            o.addProperty(cursor, i.getValue());
+            return;
+        }
+        o.addProperty(cursor, item.serialize());
+    }
+
+    private static final class SettingNSInjector {
+        public static final Field F_NAMESPACE;
+
+        static {
             try {
-                item = (SettingItem<?>) f.get(null);
+                F_NAMESPACE = SettingItem.class.getDeclaredField("namespace");
+                F_NAMESPACE.setAccessible(true);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        static void inject(SettingItem<?> item, String namespace) {
+            try {
+                var origin = F_NAMESPACE.get(item);
+                F_NAMESPACE.set(item, ((String) origin).replaceFirst("\\*", namespace));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            this.data.put(item.getNamespace() + ":" + item.getPath(), item);
-            Map<String, Object> section = this.map.computeIfAbsent(item.getNamespace(), k -> new HashMap<>());
-            if (section.containsKey(item.getPath())) {
-                item.setValue(section.get(item.getPath()));
-            } else {
-                section.put(item.getPath(), item.getDefine());
-            }
         }
-        this.save();
     }
 }

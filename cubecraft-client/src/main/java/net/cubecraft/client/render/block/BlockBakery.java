@@ -16,9 +16,8 @@ public interface BlockBakery {
 
     @SuppressWarnings({"DuplicatedCode"})
     static double getSmoothedLight(BlockAccessor world, long x, long y, long z, float rx, float ry, float rz, int f) {
-        var v = 0.25;
+        var v = 0.375;
 
-        //top
         if (f == 0) {
             var mod = 1;
 
@@ -51,7 +50,6 @@ public interface BlockBakery {
             }
         }
 
-        //bottom
         if (f == 1) {
             var mod = 1;
 
@@ -84,8 +82,6 @@ public interface BlockBakery {
             }
         }
 
-
-        //z+
         if (f == 2) {
             var mod = 1;
 
@@ -150,8 +146,6 @@ public interface BlockBakery {
             }
         }
 
-
-        //x+
         if (f == 4) {
             var mod = 1;
 
@@ -184,7 +178,6 @@ public interface BlockBakery {
             }
         }
 
-        //x-
         if (f == 5) {
             var mod = 1;
 
@@ -221,28 +214,42 @@ public interface BlockBakery {
     }
 
     static double bakeLight(BlockAccessor w, float vx, float vy, float vz, BlockAccess b, int f) {
-        var light = b.near(w, f, 1).getBlockLight() / 128d;
+        var mod = 1.0d;
 
         if (ChunkSetting.CLASSIC_LIGHTING.getValue()) {
-            light *= getClassicLight(f);
+            mod *= getClassicLight(f);
         }
+
+        if (b == null || w == null) {
+            return mod;
+        }
+
+        var bx = ((b.getX()+ 32768) % 65535) - 32768;
+        var bz = ((b.getZ() + 32768) % 65535) - 32768;
+
+
         if (ChunkSetting.AMBIENT_OCCLUSION.getValue()) {
-            var rx = vx - (b.getX() & 15);
-            var ry = vy - (b.getY() & 15);
-            var rz = vz - (b.getZ() & 15);
+            var rx = vx - bx;
+            var ry = vy - b.getY();
+            var rz = vz - bz;
 
-            var c2 = (1-getSmoothedLight(w, b.getX(), b.getY(), b.getZ(), rx, ry, rz, f));
+            var c2 = (1 - getSmoothedLight(w, b.getX(), b.getY(), b.getZ(), rx, ry, rz, f));
 
-            light *= c2;
+            mod *= c2;
         }
 
-        return light;
+        return b.near(w, f, 1).getBlockLight() / 128d * mod;
     }
 
     @Deprecated
     static Vertex bakeVertex(Vertex v, Vector3f pos, BlockAccessor w, long x, long y, long z, int face) {
-        var c = bakeLight(w, v.pos().x(), v.pos().y(), v.pos().z(), w.getBlockAccess(x, y, z), face);
-        v.multiplyColor(c);
+        if (w == null) {
+            v.multiplyColor(bakeLight(null, v.pos().x(), v.pos().y(), v.pos().z(), null, face));
+        } else {
+            v.multiplyColor(bakeLight(w, v.pos().x(), v.pos().y(), v.pos().z(), w.getBlockAccess(x, y, z), face));
+        }
+
+
         return v;
     }
 

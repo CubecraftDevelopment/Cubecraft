@@ -12,7 +12,8 @@ import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.quantum3d.util.ShapeRenderer;
 import net.cubecraft.SharedObjects;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.internal.handler.PlayerController;
 import net.cubecraft.client.registry.ResourceRegistry;
@@ -26,6 +27,7 @@ public final class HUDScreen extends Screen {
     private final Texture2D actionBar = new Texture2D(false, false);
     private final Texture2D pointer = new Texture2D(false, false);
     private final VertexBuilder builder = ItemRenderer.ALLOCATOR.allocate(VertexFormat.V3F_C3F_T2F, DrawMode.QUADS, 120);
+    private final long openTimestamp = System.currentTimeMillis();
 
     private boolean showGUI = true;
 
@@ -59,7 +61,7 @@ public final class HUDScreen extends Screen {
 
     @Override
     public void tick() {
-        PlayerController controller = ClientSharedContext.getClient().getPlayerController();
+        PlayerController controller = CubecraftClient.getInstance().getPlayerController();
         if (controller != null) {
             controller.tick();
         }
@@ -69,7 +71,7 @@ public final class HUDScreen extends Screen {
     @Override
     public void release() {
         super.release();
-        this.builder.freeReferenced();
+        this.builder.free();
     }
 
     private void renderActionBar(DisplayScreenInfo info) {
@@ -134,22 +136,22 @@ public final class HUDScreen extends Screen {
         var world = this.getClient().getWorldContext().getWorld();
         var player = this.getClient().getWorldContext().getPlayer();
 
-        var c_pc = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "PC", int.class);
-        var c_cr = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "C/R", int.class);
-        var c_cd = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "C/D", int.class);
-        var c_das = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/A_S", int.class);
-        var c_dts = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/T_S", int.class);
-        var c_da = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/A", int.class);
-        var c_dt = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/T", int.class);
-        var c_sc = ClientSharedContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "SC", String.class);
+        var c_pc = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "PC", int.class);
+        var c_cr = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "C/R", int.class);
+        var c_cd = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "C/D", int.class);
+        var c_das = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/A_S", int.class);
+        var c_dts = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/T_S", int.class);
+        var c_da = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/A", int.class);
+        var c_dt = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "D/T", int.class);
+        var c_sc = ClientContext.QUERY_HANDLER.query("cubecraft:chunk_renderer", "SC", String.class);
 
-        var e_es = ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "E/S", int.class);
-        var e_ea = ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "E/A", int.class);
-        var e_bs = ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "BE/S", int.class);
-        var e_ba = ClientSharedContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "BE/A", int.class);
+        var e_es = ClientContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "E/S", int.class);
+        var e_ea = ClientContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "E/A", int.class);
+        var e_bs = ClientContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "BE/S", int.class);
+        var e_ba = ClientContext.QUERY_HANDLER.query("cubecraft:entity_renderer", "BE/A", int.class);
 
-        var p_s = ClientSharedContext.QUERY_HANDLER.query("cubecraft:particle_renderer", "success_size", int.class);
-        var p_a = ClientSharedContext.QUERY_HANDLER.query("cubecraft:particle_renderer", "all_size", int.class);
+        var p_s = ClientContext.QUERY_HANDLER.query("cubecraft:particle_renderer", "success_size", int.class);
+        var p_a = ClientContext.QUERY_HANDLER.query("cubecraft:particle_renderer", "all_size", int.class);
 
         var v_x = SharedObjects.SHORT_DECIMAL_FORMAT.format(player.x);
         var v_y = SharedObjects.SHORT_DECIMAL_FORMAT.format(player.y);
@@ -201,8 +203,8 @@ public final class HUDScreen extends Screen {
     @EventHandler
     public void onInput(AnyClickInputEvent event) {
         this.client.getClientDeviceContext().getMouse().setMouseGrabbed(true);
-        var controller = ClientSharedContext.getClient().getPlayerController();
-        if (controller != null) {
+        var controller = CubecraftClient.getInstance().getPlayerController();
+        if (controller != null && System.currentTimeMillis() - this.openTimestamp > 10) {
             controller.onInput(event);
         }
 

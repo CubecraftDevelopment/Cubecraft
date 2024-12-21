@@ -1,14 +1,12 @@
 package net.cubecraft.client.internal.handler;
 
-import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.ClientRenderContext;
+import me.gb2022.commons.event.EventHandler;
+import net.cubecraft.client.CubecraftClient;
+import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.client.render.model.block.BlockModel;
+import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.internal.block.BlockType;
 import net.cubecraft.resource.ResourceLocation;
-import me.gb2022.commons.event.EventHandler;
-
-import net.cubecraft.client.internal.entity.BlockBrakeParticle;
-import net.cubecraft.event.BlockIDChangedEvent;
 import net.cubecraft.world.block.blocks.Blocks;
 
 import java.util.Objects;
@@ -23,11 +21,11 @@ public class ParticleHandler {
         long z = e.z();
 
         String id = Blocks.REGISTRY.name(e.old());
-        BlockModel m = ClientRenderContext.BLOCK_MODEL.get(ResourceLocation.blockModel(id + ".json").format());
+        BlockModel m = BlockModel.REGISTRY.get(ResourceLocation.blockModel(id + ".json").format());
         if (m == null) {
             return;
         }
-        if(Objects.equals(id, BlockType.AIR)){
+        if (Objects.equals(id, BlockType.AIR)) {
             return;
         }
         String tex = m.getParticleTexture();
@@ -41,7 +39,17 @@ public class ParticleHandler {
                     double xp = (double) x + ((double) xx + 0.5F) / (double) SD;
                     double yp = (double) y + ((double) yy + 0.5F) / (double) SD;
                     double zp = (double) z + ((double) zz + 0.5F) / (double) SD;
-                    ClientSharedContext.getClient().getParticleEngine().add(new BlockBrakeParticle(e.world(), xp, yp, zp, xp - (double) x - 0.5F, yp - (double) y - 0.5F, zp - (double) z - 0.5F, tex));
+                    CubecraftClient.getInstance()
+                            .getParticleEngine()
+                            .add(new BlockBrakeParticle(e.world(),
+                                                        xp,
+                                                        yp,
+                                                        zp,
+                                                        xp - (double) x - 0.5F,
+                                                        yp - (double) y - 0.5F,
+                                                        zp - (double) z - 0.5F,
+                                                        tex
+                            ));
                 }
             }
         }

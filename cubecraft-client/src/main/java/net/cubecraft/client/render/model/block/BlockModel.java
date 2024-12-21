@@ -4,10 +4,12 @@ import com.google.gson.*;
 import me.gb2022.commons.container.Pair;
 import me.gb2022.commons.registry.ConstructingMap;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
+import net.cubecraft.client.render.model.ModelManager;
 import net.cubecraft.client.render.model.object.Model;
+import net.cubecraft.client.resource.ModelAsset;
 import net.cubecraft.resource.ResourceLocation;
 import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
@@ -18,12 +20,13 @@ import java.util.ArrayList;
 
 
 public abstract class BlockModel implements Model, IBlockRenderer {
-    public static final ConstructingMap<BlockModel> REGISTRY = new ConstructingMap<>(BlockModel.class, JsonObject.class);
+    public static final ModelManager<BlockModel> REGISTRY = new ModelManager<>(BlockModel.class, new ModelAsset("cubecraft:/block/fallback.json"));
+    public static final ConstructingMap<BlockModel> COMPONENTS = new ConstructingMap<>(BlockModel.class, JsonObject.class);
 
     static {
-        REGISTRY.registerItem(SimpleBlockModel.class);
-        REGISTRY.registerItem(LogBlockModel.class);
-        REGISTRY.registerItem(ComponentBlockModel.class);
+        COMPONENTS.registerItem(SimpleBlockModel.class);
+        COMPONENTS.registerItem(LogBlockModel.class);
+        COMPONENTS.registerItem(ComponentBlockModel.class);
     }
 
     public abstract void render(BlockAccess block, BlockAccessor accessor, Registered<ChunkLayerContainerFactory.Provider> layer, int face, float x, float y, float z, VertexBuilder builder);
@@ -36,7 +39,7 @@ public abstract class BlockModel implements Model, IBlockRenderer {
                 return element;
             }
             JsonObject root = element.getAsJsonObject().get("cover_json").getAsJsonObject();
-            String src = ClientSharedContext.RESOURCE_MANAGER.getResource(ResourceLocation.blockModel(root.get("import").getAsString()))
+            String src = ClientContext.RESOURCE_MANAGER.getResource(ResourceLocation.blockModel(root.get("import").getAsString()))
                     .getAsText();
 
             JsonArray arr = root.get("replacement").getAsJsonArray();
@@ -60,7 +63,7 @@ public abstract class BlockModel implements Model, IBlockRenderer {
         @Override
         public BlockModel deserialize(JsonElement element, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject root = processReplacement(element, new ArrayList<>()).getAsJsonObject();
-            return REGISTRY.create(root.get("type").getAsString(), root);
+            return COMPONENTS.create(root.get("type").getAsString(), root);
         }
     }
 }

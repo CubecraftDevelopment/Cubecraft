@@ -4,7 +4,7 @@ import me.gb2022.commons.memory.BlockedBufferAllocator;
 import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
 import net.cubecraft.world.BlockAccessor;
@@ -18,12 +18,9 @@ import oshi.annotation.concurrent.NotThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @NotThreadSafe
 public final class ModernChunkCompiler {
-    public static final AtomicInteger REF_COUNTER = new AtomicInteger(0);
-
     private final Map<Thread, VertexBuilder[]> builderCache = new HashMap<>();
     private final TerrainRenderer renderer;
     private final Logger logger;
@@ -58,39 +55,7 @@ public final class ModernChunkCompiler {
         var stack = new VertexBuilder[7];
 
         for (var i = 0; i < 7; i++) {
-            var builder = this.renderer.getVertexBuilderAllocator().create(fmt, mode, 8192);
-
-            try {
-                builder.allocate();
-            } catch (OutOfMemoryError e) {
-                for (var j = 0; j < 7; j++) {
-                    if(stack[j] == null) {
-                        continue;
-                    }
-                    stack[j].free();
-                }
-                builder.free();
-
-                updateBuffers_retry();
-                return;
-            }
-
-            stack[i] = builder;
-        }
-
-        REF_COUNTER.addAndGet(7);
-
-        var previousStack = this.builderCache.get(thread);
-
-        if (previousStack != null) {
-            for (var buffer : previousStack) {
-                if (buffer.getVertexCount() > 0) {
-                    continue;
-                }
-
-                buffer.free();
-                REF_COUNTER.addAndGet(-1);
-            }
+            stack[i] = this.renderer.getVertexBuilderAllocator().allocate(fmt, mode, 8192);
         }
 
         this.builderCache.put(thread, stack);
@@ -121,12 +86,10 @@ public final class ModernChunkCompiler {
             this.logger.warn("failed to read compile data at chunk [{},{},{}]", x, y, z);
             this.logger.throwing(t);
             callback.add(ChunkCompileResult.failed(x, y, z, layers));
-
             return;
         }
 
-
-        var result = new ChunkCompileResult(x, y, z, true, layers);
+        var result = ChunkCompileResult.success(x, y, z, layers);
 
         for (int i = 0; i < layers.length; i++) {
             var stack = getBuffersForThread();
@@ -144,8 +107,6 @@ public final class ModernChunkCompiler {
 
     public boolean buildSection(BlockAccessor accessor, int layerId, int x, int y, int z, VertexBuilder[] builders) {
         var layer = ChunkLayerContainers.REGISTRY.registered(layerId);
-        var chunked = layer.get().isChunked();
-
 
         for (var n = 0; n < 4096; n++) {
             var cx = n & 15;
@@ -156,9 +117,8 @@ public final class ModernChunkCompiler {
             var wy = ((long) y << 4) + cy;
             var wz = ((long) z << 4) + cz;
 
-            var rx = chunked ? wx & 0xFFFF : cx;
-            var ry = chunked ? wy & 0xFFFF : cy;
-            var rz = chunked ? wz & 0xFFFF : cz;
+            var rx = (wx + 32768) % 65535 - 32768;
+            var rz = (wz + 32768) % 65535 - 32768;
 
             var block = accessor.getBlockAccess(wx, wy, wz);
             var id = block.getBlockId();
@@ -166,14 +126,14 @@ public final class ModernChunkCompiler {
                 continue;
             }
 
-            var renderer = ClientRenderContext.BLOCK_RENDERERS.get(id);
+            var renderer = IBlockRenderer.REGISTRY.get(id);
 
             if (renderer == null) {
                 continue;
             }
 
             for (int face = 0; face < 7; face++) {
-                renderer.render(block, accessor, layer, face, rx, ry, rz, builders[face]);
+                renderer.render(block, accessor, layer, face, rx, wy, rz, builders[face]);
             }
         }
 

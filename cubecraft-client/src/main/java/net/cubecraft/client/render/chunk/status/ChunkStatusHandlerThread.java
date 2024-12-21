@@ -3,8 +3,6 @@ package net.cubecraft.client.render.chunk.status;
 import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
 
-import java.util.ConcurrentModificationException;
-
 @SuppressWarnings("BusyWait")
 public final class ChunkStatusHandlerThread extends Thread {
     public static final int ROTATION_SENSITIVE_VALUE = 3;
@@ -37,7 +35,6 @@ public final class ChunkStatusHandlerThread extends Thread {
     @Override
     public void run() {
         this.checkPosition();
-        this.parent.getStatusCache().processUpdate();
         while (this.running) {
             if (System.currentTimeMillis() - last < DELAY_INTERVAL) {
                 try {
@@ -54,65 +51,21 @@ public final class ChunkStatusHandlerThread extends Thread {
 
     public void process() {
         this.last = System.currentTimeMillis();
-        try {
-            if (!this.parent.getRequestQueue().isEmpty()) {
-                var it = this.parent.getRequestQueue().iterator();
-                while (it.hasNext()) {
-                    var result = it.next();
-
-                    if (result == null) {
-                        it.remove();
-                        continue;
-                    }
-
-                    if (this.parent.isChunkOutOfRange(result.getX(), result.getY(), result.getZ(), 0)) {
-                       it.remove();
-                    }
-                }
-            }
-
-            /*
-
-            if (!this.parent.getResultQueue().isEmpty()) {
-                var it = this.parent.getResultQueue().iterator();
-                while (it.hasNext()) {
-                    var result = it.next();
-
-                    if (result == null) {
-                        it.remove();
-                        continue;
-                    }
-
-                    if (!this.parent.isChunkOutOfRange(result.getPos())) {
-                        continue;
-                    }
-
-                    it.remove();
-
-                    for (var n = 0; n < result.getLayers().length; n++) {
-                        result.freeLayer(n);
-                    }
-                }
-            }
-
-             */
-        } catch (ConcurrentModificationException ignored) {
-        }
         if (this.checkPosition() || this.needRotationCheck()) {
             this.parent.getStatusCache().processUpdate();
         }
     }
 
     public boolean checkPosition() {
-        var camera = this.parent.getCamera();
+        var camera = this.parent.getViewCamera();
 
         if (camera == null) {
             return false;
         }
 
-        var x = (int) (camera.getPosition().x) >> 4;
-        var y = (int) (camera.getPosition().y) >> 4;
-        var z = (int) (camera.getPosition().z) >> 4;
+        var x = ((int) Math.floor(camera.getX())) >> 4;
+        var y = ((int) Math.floor(camera.getY())) >> 4;
+        var z = ((int) Math.floor(camera.getZ())) >> 4;
 
         if (ClientSettings.RenderSetting.WorldSetting.ChunkSetting.FORCE_REBUILD_NEAR.getValue()) {
             this.parent.setUpdate(x, y, z, true);
@@ -140,15 +93,15 @@ public final class ChunkStatusHandlerThread extends Thread {
     }
 
     public boolean needRotationCheck() {
-        var camera = this.parent.getCamera();
+        var camera = this.parent.getViewCamera();
 
         if (camera == null) {
             return false;
         }
 
-        double xr = camera.getRotation().x;
-        double yr = camera.getRotation().y;
-        double zr = camera.getRotation().z;
+        double xr = camera.getYaw();
+        double yr = camera.getPitch();
+        double zr = camera.getRoll();
 
         if (Math.abs(xr - this.lastRotX) > ROTATION_SENSITIVE_VALUE) {
             this.lastRotX = xr;

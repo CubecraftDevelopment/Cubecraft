@@ -1,9 +1,14 @@
 package net.cubecraft.client.render.chunk.compile;
 
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import net.cubecraft.client.render.chunk.RenderChunkPos;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
 
 public final class ChunkCompileResult {
+    public static final Logger LOGGER = LogManager.getLogger("ChunkCompileResult");
+
     private final int x;
     private final int y;
     private final int z;
@@ -11,17 +16,7 @@ public final class ChunkCompileResult {
     private final int[] layers;
     private final boolean success;
 
-    private ChunkCompileResult(RenderChunkPos pos, int[] layers, boolean success) {
-        this.x = pos.getX();
-        this.y = pos.getY();
-        this.z = pos.getZ();
-
-        this.layers = layers;
-        this.builders = new VertexBuilder[7][layers.length];
-        this.success = success;
-    }
-
-    ChunkCompileResult(int x, int y, int z, boolean success, int[] layers) {
+    private ChunkCompileResult(int x, int y, int z, boolean success, int[] layers) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -34,6 +29,9 @@ public final class ChunkCompileResult {
         return new ChunkCompileResult(x, y, z, false, layers);
     }
 
+    public static ChunkCompileResult success(int x, int y, int z, int[] layers) {
+        return new ChunkCompileResult(x, y, z, true, layers);
+    }
 
     public void setLayerFailed(int localIndex) {
         if (!this.success) {
@@ -53,10 +51,6 @@ public final class ChunkCompileResult {
         return this.builders[localIndex] != null;
     }
 
-    public RenderChunkPos getPos() {
-        return RenderChunkPos.create(x, y, z);
-    }
-
     public int[] getLayers() {
         return layers;
     }
@@ -66,8 +60,8 @@ public final class ChunkCompileResult {
     }
 
 
-    public boolean success() {
-        return this.success;
+    public boolean failed() {
+        return !this.success;
     }
 
     public int getX() {
@@ -82,29 +76,34 @@ public final class ChunkCompileResult {
         return z;
     }
 
-    public boolean freeLayer(int n) {
-        if (this.builders[n] == null) {
-            return false;
-        }
-        var complete = false;
 
-        for (var b : this.builders[n]) {
-            if (b == null) {
+    public void free() {
+        for (var i = 0; i < this.builders.length; i++) {
+            if (this.builders[i] == null) {
                 continue;
             }
-            b.freeReferenced();
-            ModernChunkCompiler.REF_COUNTER.addAndGet(-1);
-            complete = true;
+
+            for (var j = 0; j < this.builders[i].length; j++) {
+                var builder = this.builders[i][j];
+                if (builder == null || !builder.getLifetimeCounter().isAllocated()) {
+                    continue;
+                }
+
+                builder.free();
+            }
+
+            this.builders[i] = null;
         }
-        this.builders[n] = null;
-        return complete;
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        for (var l = 0; l < this.layers.length; l++) {
-            if (freeLayer(l)) {
-                System.out.println("WTF!");
+    protected void finalize() {
+        for (VertexBuilder[] builder : this.builders) {
+            if (builder != null) {
+                //todo:caching
+                LOGGER.warn("un-expect free compilation: {},{},{} -> {}", x, y, z, Arrays.toString(this.layers));
+                free();
+                return;
             }
         }
     }

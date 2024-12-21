@@ -7,11 +7,12 @@ import me.gb2022.commons.I18nHelper;
 import me.gb2022.quantum3d.texture.Texture2DTileMap;
 import me.gb2022.quantum3d.texture.TextureStateManager;
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.ClientContext;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.registry.ColorMaps;
 import net.cubecraft.client.render.Textures;
+import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainers;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.client.resource.TextureAsset;
@@ -36,7 +37,7 @@ public interface ClientAssetLoader {
 
             var resources = new HashSet<IResource>();
 
-            for (var renderer : ClientRenderContext.BLOCK_RENDERERS.values()) {
+            for (var renderer : IBlockRenderer.REGISTRY.values()) {
                 if (renderer == null) {
                     continue;
                 }
@@ -46,7 +47,7 @@ public interface ClientAssetLoader {
 
             rm.loadBlocking(resources, "_block_model", true);
 
-            for (var renderer : ClientRenderContext.BLOCK_RENDERERS.values()) {
+            for (var renderer : IBlockRenderer.REGISTRY.values()) {
                 if (renderer == null) {
                     continue;
                 }
@@ -68,7 +69,7 @@ public interface ClientAssetLoader {
                 var texture = Texture2DTileMap.autoGenerate(a, false);
 
                 texture.generateTexture();
-                texture.completePlannedLoad(ClientSharedContext.getClient().getClientGUIContext(), 0, 100);
+                texture.completePlannedLoad(CubecraftClient.getInstance().getClientGUIContext(), 0, 100);
                 texture.drawSection();
                 texture.upload();
 
@@ -76,7 +77,7 @@ public interface ClientAssetLoader {
 
                 switch (layer){
                     case "cubecraft:alpha_block"->{
-                        ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().set("cubecraft:terrain", texture);
+                        ClientContext.TEXTURE.getTexture2DTileMapContainer().set("cubecraft:terrain", texture);
                         Textures.BLOCK_TEXTURES.register("cubecraft:block_simple", texture);
                         TextureStateManager.setTextureMipMap(texture, true);
                         TextureStateManager.setTextureClamp(texture, true);
@@ -147,7 +148,7 @@ public interface ClientAssetLoader {
 
 
     static void init() {
-        var rm = ClientSharedContext.RESOURCE_MANAGER;
+        var rm = ClientContext.RESOURCE_MANAGER;
         rm.addNameSpace("cubecraft");
 
         rm.addPlugin("client:default", blockModelPlugin());

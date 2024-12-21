@@ -1,7 +1,6 @@
 package net.cubecraft.client.particle;
 
 import me.gb2022.commons.event.EventHandler;
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.event.BlockIDChangedEvent;
@@ -30,7 +29,7 @@ public class ParticleEngine {
     }
 
     public void tick() {
-        Iterator<EntityParticle> iterator =this.particles.iterator();
+        Iterator<EntityParticle> iterator = this.particles.iterator();
         while (iterator.hasNext()) {
             EntityParticle particle = iterator.next();
             particle.tick();
@@ -53,11 +52,11 @@ public class ParticleEngine {
         long z = e.z();
 
         String id = Blocks.REGISTRY.name(e.old());
-        BlockModel m = ClientRenderContext.BLOCK_MODEL.get(ResourceLocation.blockModel(id + ".json").format());
+        BlockModel m = BlockModel.REGISTRY.get(ResourceLocation.blockModel(id + ".json").format());
         if (m == null) {
             return;
         }
-        if(Objects.equals(id, BlockType.AIR)){
+        if (Objects.equals(id, BlockType.AIR)) {
             return;
         }
         String tex = m.getParticleTexture();
@@ -71,7 +70,16 @@ public class ParticleEngine {
                     double xp = (double) x + ((double) xx + 0.5F) / (double) SD;
                     double yp = (double) y + ((double) yy + 0.5F) / (double) SD;
                     double zp = (double) z + ((double) zz + 0.5F) / (double) SD;
-                    this.add(new BlockBrakeParticle(e.world(), xp, yp, zp, xp - (double) x - 0.5F, yp - (double) y - 0.5F, zp - (double) z - 0.5F, tex));
+                    this.add(new BlockBrakeParticle(
+                            e.world(),
+                            xp,
+                            yp,
+                            zp,
+                            xp - (double) x - 0.5F,
+                            yp - (double) y - 0.5F,
+                            zp - (double) z - 0.5F,
+                            tex
+                    ));
                 }
             }
         }

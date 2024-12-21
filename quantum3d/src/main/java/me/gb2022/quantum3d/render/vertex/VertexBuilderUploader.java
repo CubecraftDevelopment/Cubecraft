@@ -3,7 +3,7 @@ package me.gb2022.quantum3d.render.vertex;
 import me.gb2022.quantum3d.util.GLUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL21;
+import org.lwjgl.system.MemoryUtil;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,21 +17,32 @@ public interface VertexBuilderUploader {
 
         DataFormat vertexFormat = format.getVertexFormat();
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        GL11.glVertexPointer(vertexFormat.getSize(), vertexFormat.getType().getGlId(), 0, builder.generateVertexBuffer());
+
+        var addr = MemoryUtil.memAddress(builder.generateData());
+        var vBytes = format.getVertexBufferSize(1);
+        var cBytes = format.getColorBufferSize(1);
+        var tBytes = format.getTextureBufferSize(1);
+        var nBytes = format.getNormalBufferSize(1);
+
+        var stride = vBytes + cBytes + tBytes + nBytes;
+
+        GL11.glVertexPointer(vertexFormat.getSize(), vertexFormat.getType().getGlId(), stride, addr);
+
         if (format.hasColorData()) {
-            DataFormat fmt = format.getColorFormat();
+            var fmt = format.getColorFormat();
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-            GL11.glColorPointer(fmt.getSize(), fmt.getType().getGlId(), 0, builder.generateColorBuffer());
+            GL11.glColorPointer(fmt.getSize(), fmt.getType().getGlId(), stride, addr + vBytes);
         }
+
         if (format.hasTextureData()) {
             DataFormat fmt = format.getTextureFormat();
             GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-            GL11.glTexCoordPointer(fmt.getSize(), fmt.getType().getGlId(), 0, builder.generateTextureBuffer());
+            GL11.glTexCoordPointer(fmt.getSize(), fmt.getType().getGlId(), stride, addr + vBytes + cBytes);
         }
         if (format.hasNormalData()) {
             DataFormat fmt = format.getNormalFormat();
             GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-            GL11.glNormalPointer(fmt.getSize(), fmt.getType().getGlId(), builder.generateNormalBuffer());
+            GL11.glNormalPointer(fmt.getSize(), fmt.getType().getGlId(), addr + vBytes + cBytes + tBytes);
         }
 
         GLUtil.checkError("upload_builder:data_upload");
@@ -99,7 +110,7 @@ public interface VertexBuilderUploader {
 
     static void uploadBuffer(VertexBuilder builder, int handle) {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, builder.generateRawBuffer(), GL15.GL_STATIC_DRAW);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, builder.generateData(), GL15.GL_STATIC_DRAW);
 
         /*
         var format = builder.getFormat();

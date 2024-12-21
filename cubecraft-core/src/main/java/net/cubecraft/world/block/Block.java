@@ -5,7 +5,6 @@ import me.gb2022.commons.math.AABB;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.util.register.Named;
 import net.cubecraft.world.block.access.BlockAccess;
-import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.behavior.BlockBehavior;
 import net.cubecraft.world.block.property.BlockProperty;
 import net.cubecraft.world.block.property.BooleanProperty;
@@ -112,8 +111,6 @@ public abstract class Block implements Initializable, Named {
     public int opacity() {
         return this.opacity;
     }
-
-
 
 
     public void onBlockUpdate(BlockAccess block) {

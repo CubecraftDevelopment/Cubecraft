@@ -3,7 +3,7 @@ package net.cubecraft.client.internal.renderer.particle;
 import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.texture.Texture2DTileMap;
 import me.gb2022.commons.registry.TypeItem;
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.client.render.renderer.IParticleRenderer;
 
@@ -12,7 +12,7 @@ public class BlockBrakeParticleRenderer implements IParticleRenderer<BlockBrakeP
 
     @Override
     public void render(BlockBrakeParticle particle, LegacyVertexBuilder builder, double a, double xa, double ya, double za, double xa2, double za2) {
-        Texture2DTileMap tex = ClientRenderContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
+        Texture2DTileMap tex = ClientContext.TEXTURE.getTexture2DTileMapContainer().get("cubecraft:terrain");
         float u0 = tex.exactTextureU(particle.getTexture(), particle.getUOffset() / 4f);
         float u1 = tex.exactTextureU(particle.getTexture(), particle.getUOffset() / 4f + 0.25f);
         float v0 = tex.exactTextureV(particle.getTexture(), particle.getVOffset() / 4f);

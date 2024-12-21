@@ -2,8 +2,7 @@ package net.cubecraft.client.render.block;
 
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import net.cubecraft.client.ClientSharedContext;
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
 import net.cubecraft.client.render.model.block.BlockModel;
 import net.cubecraft.client.resource.ModelAsset;
@@ -24,12 +23,12 @@ public final class ModelBlockRenderer implements IBlockRenderer {
 
     public ModelBlockRenderer(ModelAsset asset) {
         this.model = asset;
-        ClientSharedContext.RESOURCE_MANAGER.registerResource(
+        ClientContext.RESOURCE_MANAGER.registerResource(
                 LOAD_STAGE,
                 "cubecraft:block_model@" + this.model.getAbsolutePath(),
                 this.model
         );
-        ClientSharedContext.RESOURCE_MANAGER.loadResource(this.model);
+        ClientContext.RESOURCE_MANAGER.loadResource(this.model);
     }
 
     public ModelAsset getModel() {
@@ -43,8 +42,8 @@ public final class ModelBlockRenderer implements IBlockRenderer {
 
     @Override
     public void provideTileMapItems(MultiAssetContainer<TextureAsset> list) {
-        ClientRenderContext.BLOCK_MODEL.load(this.model);
-        this.blockModel = ClientRenderContext.BLOCK_MODEL.get(this.model.getAbsolutePath());
+        BlockModel.REGISTRY.load(this.model);
+        this.blockModel = BlockModel.REGISTRY.get(this.model.getAbsolutePath());
         this.blockModel.provideTileMapItems(list);
     }
 

@@ -35,7 +35,7 @@ public abstract class ChunkCompilerTask extends Thread {
 
 
     public void processRequest(ChunkCompileRequest request) {
-        if (this.owner.isChunkOutOfRange(request.getPos())) {
+        if (this.owner.isChunkOutOfRange(request.getX(), request.getY(), request.getZ(), 2)) {
             return;
         }
 
@@ -64,7 +64,7 @@ public abstract class ChunkCompilerTask extends Thread {
             if (this.request == null) {
                 return;
             }
-            if (this.owner.isChunkOutOfRange(this.request.getPos())) {
+            if (this.owner.isChunkOutOfRange(this.request.getX(), this.request.getY(), this.request.getZ(), 2)) {
                 return;
             }
             this.processRequest(this.request);
@@ -80,12 +80,9 @@ public abstract class ChunkCompilerTask extends Thread {
         public void run() {
             while (this.isRunning()) {
                 try {
-                    ChunkCompileRequest request;
-                    synchronized ("chunk_poll") {
-                        request = this.requestQueue.take();
-                    }
+                    var request = this.requestQueue.take();
 
-                    if (this.owner.isChunkOutOfRange(request.getPos())) {
+                    if (this.owner.isChunkOutOfRange(request.getX(), request.getY(), request.getZ(), 2)) {
                         Thread.yield();
                         continue;
                     }

@@ -3,7 +3,6 @@ package net.cubecraft.client.internal.handler;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.gui.component.ButtonClickedEvent;
@@ -29,11 +28,11 @@ public class ScreenController {
     @SubscribedEvent("cubecraft:pause_screen")
     public void buttonClicked_PauseScreen(ButtonClickedEvent e) {
         if (Objects.equals(e.getButton().getId(), "button_resume")) {
-            ClientSharedContext.getClient().getClientGUIContext().setScreen(new HUDScreen());
+            CubecraftClient.getInstance().getClientGUIContext().setScreen(new HUDScreen());
         }
         if (Objects.equals(e.getButton().getId(), "button_quit")) {
-            ClientSharedContext.getClient().getClientGUIContext().setScreen(ScreenBuilders.TITLE_SCREEN);
-            ClientSharedContext.getClient().getClientWorldManager().leaveWorld();
+            CubecraftClient.getInstance().getClientGUIContext().setScreen(ScreenBuilders.TITLE_SCREEN);
+            CubecraftClient.getInstance().getClientWorldManager().leaveWorld();
         }
     }
 
@@ -54,14 +53,14 @@ public class ScreenController {
                     100,
                     Popup.INFO
             );
-            case "button_quit" -> ClientSharedContext.getClient().setRunning(false);
+            case "button_quit" -> CubecraftClient.getInstance().setRunning(false);
         }
     }
 
     @EventHandler
     @SubscribedEvent("cubecraft:title_screen")
     public void onComponentInitialize(ComponentInitializeEvent event) {
-        Text auth = Text.translated("title_screen.auth", FontAlignment.LEFT, ClientSharedContext.getClient().getSession());
+        Text auth = Text.translated("title_screen.auth", FontAlignment.LEFT, CubecraftClient.getInstance().getSession());
         Text version = Text.translated(
                 "title_screen.version",
                 FontAlignment.LEFT,

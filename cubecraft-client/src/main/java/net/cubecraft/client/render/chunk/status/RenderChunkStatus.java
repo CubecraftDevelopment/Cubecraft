@@ -10,9 +10,10 @@ public final class RenderChunkStatus {
     private final int x;
     private final int y;
     private final int z;
-
     private final TerrainRenderer handle;
     private final boolean[] faceVisibility = new boolean[6];
+    private int lastTestCX = Integer.MIN_VALUE;
+    private int lastTestCZ = Integer.MAX_VALUE;
     private boolean frustumVisible;
     private ChunkUpdateStatus status;
 
@@ -25,7 +26,7 @@ public final class RenderChunkStatus {
         this.y = y;
         this.z = z;
 
-        Arrays.fill(this.faceVisibility, true);
+        Arrays.fill(this.faceVisibility, false);
         this.frustumVisible = false;
         this.status = ChunkUpdateStatus.UPDATE_REQUIRED;
         this.aabb = new AABB(x * 16, y * 16, z * 16, x * 16 + 16, y * 16 + 16, z * 16 + 16);
@@ -92,5 +93,16 @@ public final class RenderChunkStatus {
 
     public AABB getBounding() {
         return this.aabb;
+    }
+
+    public boolean checkFaceVisibilityDirty(int cx, int cz) {
+        if (cx == this.lastTestCX && cz == this.lastTestCZ) {
+            return false;
+        }
+
+        this.lastTestCX = cx;
+        this.lastTestCZ = cz;
+
+        return true;
     }
 }

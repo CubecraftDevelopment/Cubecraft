@@ -2,9 +2,10 @@ package net.cubecraft.client.render.chunk;
 
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import net.cubecraft.client.render.chunk.compile.ModernChunkCompiler;
 import net.cubecraft.client.render.chunk.status.RenderChunkStatus;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -27,7 +28,11 @@ public final class ChunkLayer {
     }
 
     public static long hash(int x, int y, int z) {
-        return x ^ ((long) y << 8) ^ ((long) z << 16);
+        var sx = (x & 0xFFFFFFL) << 40;
+        var sz = (z & 0xFFFFFFL) << 16;
+        var sy = y & 0xFFFF;
+
+        return sx | sz | sy;
     }
 
     public void allocate() {

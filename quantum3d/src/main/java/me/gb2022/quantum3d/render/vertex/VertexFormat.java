@@ -73,27 +73,6 @@ public class VertexFormat {
         return this.normalFormat != null;
     }
 
-    //dispatch
-    public void putVertexData(ByteBuffer dataBuffer, ByteBuffer rawBuffer, double... data) {
-        putData(this.getVertexFormat(), dataBuffer, data);
-        putData(this.getVertexFormat(), rawBuffer, data);
-    }
-
-    public void putColorData(ByteBuffer dataBuffer, ByteBuffer rawBuffer, double... data) {
-        putData(this.getColorFormat(), dataBuffer, data);
-        putData(this.getColorFormat(), rawBuffer, data);
-    }
-
-    public void putTextureData(ByteBuffer dataBuffer, ByteBuffer rawBuffer, double... data) {
-        putData(this.getTextureFormat(), dataBuffer, data);
-        putData(this.getTextureFormat(), rawBuffer, data);
-    }
-
-    public void putNormalData(ByteBuffer dataBuffer, ByteBuffer rawBuffer, double... data) {
-        putData(this.getNormalFormat(), dataBuffer, data);
-        putData(this.getNormalFormat(), rawBuffer, data);
-    }
-
     //buffer size
     public int getVertexBufferSize(int vertexCount) {
         return this.getVertexFormat().getBufferCapacity(vertexCount);

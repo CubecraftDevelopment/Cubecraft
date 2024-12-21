@@ -103,7 +103,9 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         if (type != RenderType.ALPHA) {
             return;
         }
-        this.setGlobalCamera(delta);
+
+        //@rem
+        this.viewCamera.set();
     }
 
     @Override

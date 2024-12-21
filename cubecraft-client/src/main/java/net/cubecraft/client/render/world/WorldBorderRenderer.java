@@ -59,7 +59,6 @@ public final class WorldBorderRenderer extends IWorldRenderer {
         }
 
         GL11.glPushMatrix();
-        this.camera.setupGlobalTranslate();
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_CULL_FACE);

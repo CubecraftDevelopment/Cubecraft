@@ -1,9 +1,9 @@
 package net.cubecraft.client.registry;
 
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.control.InputCommand;
 import net.cubecraft.client.control.InputSettingItem;
-import net.cubecraft.util.setting.ModernGameSetting;
+import net.cubecraft.util.setting.GameSetting;
 import net.cubecraft.util.setting.Settings;
 import net.cubecraft.util.setting.item.BoolSetting;
 import net.cubecraft.util.setting.item.FloatSetting;
@@ -12,13 +12,13 @@ import net.cubecraft.util.setting.item.StringSetting;
 
 @Settings
 public interface ClientSettings {
-    IntSetting TICK_GC = new IntSetting( "gc_frequency", 100);
+    IntSetting TICK_GC = new IntSetting("", "gc_frequency", 100);
 
     static int getFixedViewDistance() {
         return RenderSetting.WorldSetting.ChunkSetting.getFixedViewDistance();
     }
 
-    static void register(ModernGameSetting setting) {
+    static void register(GameSetting setting) {
         setting.register(ClientSettings.class);
 
         setting.register(UISetting.class);
@@ -27,7 +27,7 @@ public interface ClientSettings {
         setting.register(RenderSetting.class);
         setting.register(RenderSetting.WorldSetting.class);
         setting.register(RenderSetting.WorldSetting.ChunkSetting.class);
-
+        setting.register(RenderSetting.WorldSetting.CloudSetting.class);
 
         setting.save();
     }
@@ -45,6 +45,24 @@ public interface ClientSettings {
         InputSettingItem INTERACT = new InputSettingItem("*:action", "interact", InputCommand.MOUSE_BUTTON_RIGHT);
         InputSettingItem SELECT = new InputSettingItem("*:inventory", "select", InputCommand.MOUSE_BUTTON_MIDDLE);
         InputSettingItem SHIFT_OFFHAND = new InputSettingItem("*:inventory", "shift-offhand", InputCommand.KEY_F);
+
+        InputSettingItem ACTIONBAR_1 = new InputSettingItem("*:inventory", "actionbar_1", InputCommand.KEY_1);
+        InputSettingItem ACTIONBAR_2 = new InputSettingItem("*:inventory", "actionbar_2", InputCommand.KEY_2);
+        InputSettingItem ACTIONBAR_3 = new InputSettingItem("*:inventory", "actionbar_3", InputCommand.KEY_3);
+        InputSettingItem ACTIONBAR_4 = new InputSettingItem("*:inventory", "actionbar_4", InputCommand.KEY_4);
+        InputSettingItem ACTIONBAR_5 = new InputSettingItem("*:inventory", "actionbar_5", InputCommand.KEY_5);
+        InputSettingItem ACTIONBAR_6 = new InputSettingItem("*:inventory", "actionbar_6", InputCommand.KEY_6);
+        InputSettingItem ACTIONBAR_7 = new InputSettingItem("*:inventory", "actionbar_7", InputCommand.KEY_7);
+        InputSettingItem ACTIONBAR_8 = new InputSettingItem("*:inventory", "actionbar_8", InputCommand.KEY_8);
+        InputSettingItem ACTIONBAR_9 = new InputSettingItem("*:inventory", "actionbar_9", InputCommand.KEY_9);
+    }
+
+    @Settings("zoom")
+    interface CameraPlugin {
+        InputSettingItem SWITCH_VIEW = new InputSettingItem("*:camera", "switch-view", InputCommand.KEY_F5);
+        InputSettingItem CAMERA_ZOOM = new InputSettingItem("*:camera", "zoom", InputCommand.KEY_C);
+        IntSetting CAMERA_ZOOM_VALUE = new IntSetting("*:camera", "zoom-scale", -50);
+        IntSetting CAMERA_ZOOM_TRANSITION = new IntSetting("*:camera", "zoom-transition", 150);
     }
 
     @Settings("render")
@@ -57,9 +75,13 @@ public interface ClientSettings {
 
         @Settings("render:world")
         interface WorldSetting {
-            @Settings("render:clouds")
-            interface CloudsSetting {
+            IntSetting CAMERA_MODE = new IntSetting("camera-mode", 0);
+            FloatSetting FOV = new FloatSetting("fov", 70.0f);
 
+            @Settings("render:world:clouds")
+            interface CloudSetting {
+                BoolSetting ENABLE = new BoolSetting("enabled", true);
+                IntSetting QUALITY = new IntSetting("quality", 2);
             }
 
             @Settings("render:world:chunk")
@@ -98,12 +120,12 @@ public interface ClientSettings {
         StringSetting LANGUAGE = new StringSetting("language", "auto");
 
         static float getGUIScaleMod() {
-            var width = ClientSharedContext.getClient().getWindow().getWidth();
-            var height = ClientSharedContext.getClient().getWindow().getHeight();
+            var width = CubecraftClient.getInstance().getWindow().getWidth();
+            var height = CubecraftClient.getInstance().getWindow().getHeight();
 
 
             if (width > 2600 && height > 1500) {
-                return 1.5f;
+                //return 1.5f;
             }
 
             if (width < 500 || height < 300) {

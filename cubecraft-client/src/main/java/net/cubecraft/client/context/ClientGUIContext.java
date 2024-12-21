@@ -18,8 +18,7 @@ import me.gb2022.quantum3d.render.ShapeRenderer;
 import me.gb2022.quantum3d.render.vertex.*;
 import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.ClientRenderContext;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.gui.context.GUIContextInitEvent;
 import net.cubecraft.client.gui.ComponentRenderer;
@@ -43,7 +42,7 @@ import java.util.Objects;
 import java.util.Set;
 
 
-public final class ClientGUIContext extends ClientContext implements TaskProgressUpdateListener {
+public final class ClientGUIContext extends net.cubecraft.client.context.ClientContext implements TaskProgressUpdateListener {
     public static final BufferAllocator BUFFER_ALLOCATOR = new LWJGLBufferAllocator();
     public static final VertexBuilderAllocator BUILDER_ALLOCATOR = new VertexBuilderAllocator(BUFFER_ALLOCATOR);
 
@@ -82,7 +81,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
         this.client.getDeviceEventBus().registerEventListener(this);
         deserializer.registerDeserializer(Text.class, new Text.XMLDeserializer());
         deserializer.registerDeserializer(Layout.class, new Layout.XMLDeserializer());
-        ClientSharedContext.RESOURCE_MANAGER.getEventBus().registerEventListener(this);
+        net.cubecraft.client.ClientContext.RESOURCE_MANAGER.getEventBus().registerEventListener(this);
     }
 
     @Override
@@ -90,7 +89,7 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
         this.client.getClientEventBus().callEvent(new GUIContextInitEvent(this.client, this));
         this.loadingScreen = new LogoLoadingScreen();
 
-        ClientSharedContext.getClient().getWindow().addListener(new WindowListener() {
+        CubecraftClient.getInstance().getWindow().addListener(new WindowListener() {
             @Override
             public void onSizeEvent(Window window, int width, int height) {
                 FontRenderer.ttf().resize();
@@ -263,8 +262,8 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
         }));
         for (TextureAsset resource : locations) {
             //todo:delegate resource
-            ClientSharedContext.RESOURCE_MANAGER.loadResource(resource);
-            ClientRenderContext.TEXTURE.createTexture2D(resource, false, false);
+            ClientContext.RESOURCE_MANAGER.loadResource(resource);
+            net.cubecraft.client.ClientContext.TEXTURE.createTexture2D(resource, false, false);
         }
         if (Objects.equals(event.getStage(), "client:startup")) {
             this.loadingScreen = new LogoLoadingScreen();
@@ -335,8 +334,8 @@ public final class ClientGUIContext extends ClientContext implements TaskProgres
 
             ModelAsset asset = new ModelAsset("cubecraft:/ui/" + id + ".json");
             String resID = "cubecraft:" + id + "_render_controller";
-            ClientSharedContext.RESOURCE_MANAGER.registerResource("default", resID, asset);
-            ClientSharedContext.RESOURCE_MANAGER.loadResource(asset);
+            net.cubecraft.client.ClientContext.RESOURCE_MANAGER.registerResource("default", resID, asset);
+            net.cubecraft.client.ClientContext.RESOURCE_MANAGER.loadResource(asset);
             ComponentRenderer renderer = SharedContext.createJsonReader().fromJson(asset.getRawText(), ComponentRenderer.class);
             COMPONENT_RENDERER.put(event.getItem(Node.class.getClass()), renderer);
         }

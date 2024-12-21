@@ -1,6 +1,5 @@
 package net.cubecraft.client.internal.net;
 
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.net.ClientNetHandler;
 import net.cubecraft.internal.network.NetHandlerType;
@@ -11,7 +10,7 @@ import me.gb2022.commons.registry.TypeItem;
 
 @TypeItem(NetHandlerType.CLIENT_DATA_RECEIVE)
 public class ClientHandlerDataReceive extends ClientNetHandler {
-    private final CubecraftClient client= ClientSharedContext.getClient();
+    private final CubecraftClient client= CubecraftClient.getInstance();
 
     @PacketListener
     public void chunkDataReceived(PacketChunkData packet, NetHandlerContext context) {

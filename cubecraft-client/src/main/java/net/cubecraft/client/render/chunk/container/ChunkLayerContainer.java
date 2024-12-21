@@ -3,10 +3,8 @@ package net.cubecraft.client.render.chunk.container;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
-import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.render.chunk.ChunkLayer;
 import net.cubecraft.client.render.chunk.TerrainRenderer;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +19,7 @@ public abstract class ChunkLayerContainer {
     private final TerrainRenderer parent;
 
     protected ChunkLayerContainer(TerrainRenderer parent, int viewRange, boolean useVBO) {
-        this.layers = new Long2ObjectOpenHashMap<>((int) (viewRange * viewRange * viewRange * 0.125));
+        this.layers = new Long2ObjectOpenHashMap<>((int) (viewRange * viewRange * viewRange * 0.325));
         this.useVBO = useVBO;
         this.parent = parent;
         this.provider = ChunkLayerContainers.REGISTRY.object(getId());
@@ -38,21 +36,26 @@ public abstract class ChunkLayerContainer {
         }
     }
 
+    public int group(int v) {
+        return (v + 32768) / 65535;
+    }
+
     public void render(double vx, double vy, double vz, long frame) {
         var cx = ((long) Math.floor(vx)) >> 4;
         var cy = ((long) Math.floor(vy)) >> 4;
         var cz = ((long) Math.floor(vz)) >> 4;
 
+        var camera = this.parent.getViewCamera();
         var lc = this.parent.getLastChunkPos();
-        var lp = this.parent.getCamera().getLastPosition();
 
         var chunkPosChanged = cx != lc.x() || cy != lc.y() || cz != lc.z();
-        var camPosChanged = vx != lp.x() || vy != lp.y() || vz != lp.z();
+        var camPosChanged = vx != camera.getLastX() || vy != camera.getLastY() || vz != camera.getLastZ();
 
-        if (this.parent.getCamera().isRotationChanged() || camPosChanged) {
+
+        if (this.parent.getViewCamera().isRotationChanged() || camPosChanged) {
             for (var layer : this.layers.values()) {
                 layer.getOwner().updateFrustumVisibility(frame, this.parent);
-                if (this.updateLayerVisible(layer)) {
+                if (this.updateLayerVisible(layer) && layer.getOwner().checkFaceVisibilityDirty((int) cx, (int) cz)) {
                     layer.getOwner().updateFaceVisibility(frame, this.parent);
                 }
             }
@@ -71,17 +74,35 @@ public abstract class ChunkLayerContainer {
 
         this.setup();
 
+        var matX = Integer.MIN_VALUE;
+        var matZ = Integer.MIN_VALUE;
+
+        camera.push();
 
         for (var layer : this.visibleLayers) {
-            var x = layer.getOwner().getX() * 16;//center render of 4 chunks
-            var y = layer.getOwner().getY() * 16;
+            var x = layer.getOwner().getX() * 16;
             var z = layer.getOwner().getZ() * 16;
 
-            GL11.glPushMatrix();
-            GL11.glTranslatef((float) (x - vx), (float) (y - vy), (float) (z - vz));
+            var gx = group(x);
+            var gz = group(z);
+
+            if (gx != matX || gz != matZ) {
+
+                camera.pop();
+
+                var grx = gx * 65536;
+                var grz = gz * 65536;
+
+                camera.push().object(grx, 0, grz).set();
+
+                matX = gx;
+                matZ = gz;
+            }
+
             layer.render();
-            GL11.glPopMatrix();
         }
+
+        camera.pop();
     }
 
     public boolean updateLayerVisible(ChunkLayer layer) {
@@ -129,7 +150,7 @@ public abstract class ChunkLayerContainer {
 
     public void handle(VertexBuilder[] builder, int x, int y, int z) {
         if (!hasLayer(x, y, z)) {
-            var owner = this.parent.getStatusCache().get(x, y, z);
+            var owner = this.parent.getStatusCache().getWithFallback(x, y, z);
             var layer = new ChunkLayer(owner, this.useVBO);
             layer.allocate();
             this.setLayer(x, y, z, layer);
@@ -157,6 +178,8 @@ public abstract class ChunkLayerContainer {
             if (filter.test(layer)) {
                 it.remove();
                 layer.setActive(false);
+
+                layer.destroy();
             }
         }
 
@@ -164,7 +187,11 @@ public abstract class ChunkLayerContainer {
             if (!filter.test(layer)) {
                 continue;
             }
-            this.layers.remove(ChunkLayer.hash(layer.getOwner().getX(), layer.getOwner().getY(), layer.getOwner().getZ()));
+            var a = this.layers.remove(ChunkLayer.hash(layer.getOwner().getX(), layer.getOwner().getY(), layer.getOwner().getZ()));
+
+            if (a != null) {
+                a.destroy();
+            }
         }
     }
 

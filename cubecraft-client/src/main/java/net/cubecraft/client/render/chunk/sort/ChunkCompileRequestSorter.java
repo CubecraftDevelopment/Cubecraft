@@ -1,15 +1,15 @@
 package net.cubecraft.client.render.chunk.sort;
 
-import me.gb2022.quantum3d.util.FrustumCuller;
+import me.gb2022.quantum3d.util.camera.ViewFrustum;
 import net.cubecraft.client.render.chunk.compile.ChunkCompileRequest;
 import org.joml.Vector3d;
 
 import java.util.Comparator;
 
 public final class ChunkCompileRequestSorter extends DistanceSorter implements Comparator<ChunkCompileRequest> {
-    private final FrustumCuller frustum;
+    private final ViewFrustum frustum;
 
-    public ChunkCompileRequestSorter(FrustumCuller frustum) {
+    public ChunkCompileRequestSorter(ViewFrustum frustum) {
         this.frustum = frustum;
     }
 
@@ -20,12 +20,22 @@ public final class ChunkCompileRequestSorter extends DistanceSorter implements C
             return -order;
         }
 
-        order = this.getOrderFrustum(this.frustum, o1.getPos(), o2.getPos());
+        var x1 = o1.getX();
+        var y1 = o1.getY();
+        var z1 = o1.getZ();
+        var x2 = o2.getX();
+        var y2 = o2.getY();
+        var z2 = o2.getZ();
+
+        order = this.getOrderFrustum(this.frustum, x1, y1, z1, x2, y2, z2);
         if (order != 0) {
             return -order;
         }
 
         Vector3d camPos = this.getCameraPosition();
-        return Double.compare(o1.getPos().distanceTo(camPos), o2.getPos().distanceTo(camPos));
+        return Double.compare(
+                camPos.distance(x1 * 16 + 8, y1 * 16 + 8, z1 * 16 + 8),
+                camPos.distance(x2 * 16 + 8, y2 * 16 + 8, z2 * 16 + 8)
+        );
     }
 }

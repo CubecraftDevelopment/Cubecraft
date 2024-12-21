@@ -15,7 +15,7 @@ public abstract class ColorMap {
     }
 
     public void load() {
-        //this.image= ClientSharedContext.RESOURCE_MANAGER.getResource(loc).getAsImage();
+        //this.image= ClientContext.RESOURCE_MANAGER.getResource(loc).getAsImage();
     }
 
     public int sample(BlockAccessor w, BlockAccess b) {

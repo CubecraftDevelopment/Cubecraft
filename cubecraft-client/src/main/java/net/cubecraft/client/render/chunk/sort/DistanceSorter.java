@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.chunk.sort;
 
+import me.gb2022.quantum3d.util.camera.ViewFrustum;
 import net.cubecraft.client.render.chunk.RenderChunkPos;
-import me.gb2022.quantum3d.util.FrustumCuller;
 import org.joml.Vector3d;
 
 public abstract class DistanceSorter {
@@ -19,24 +19,19 @@ public abstract class DistanceSorter {
         this.cameraPosition.set(x, y, z);
     }
 
-    public int getOrderFrustum(FrustumCuller frustum, RenderChunkPos pos, RenderChunkPos pos2) {
+    public int getOrderFrustum(ViewFrustum frustum, int x1, int y1, int z1, int x2, int y2, int z2) {
         Vector3d camPos = this.getCameraPosition();
-        if (!frustum.aabbVisible(pos.getBounding(camPos))) {
+        if (!frustum.boxVisible(RenderChunkPos.getBounding(camPos, x1, y1, z1))) {
             return -1;
         }
-        if (!frustum.aabbVisible(pos2.getBounding(camPos))) {
+        if (!frustum.boxVisible(RenderChunkPos.getBounding(camPos, x2, y2, z2))) {
             return 1;
         }
         return 0;
     }
 
-    public int getOrderDistance(RenderChunkPos pos, RenderChunkPos pos2) {
-        Vector3d camPos = this.getCameraPosition();
-        return -Double.compare(pos.distanceTo(camPos), pos2.distanceTo(camPos));
-    }
-
-    public int getOrderObject(Object o1,Object o2){
-        if(o1==o2&&o1==null){
+    public int getOrderObject(Object o1, Object o2) {
+        if (o1 == o2 && o1 == null) {
             return 0;
         }
         if (o1 == null) {

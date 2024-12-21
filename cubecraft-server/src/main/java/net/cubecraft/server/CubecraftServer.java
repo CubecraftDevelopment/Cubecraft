@@ -32,8 +32,7 @@ import java.util.Properties;
 public final class CubecraftServer extends LoopTickingThread {
     public static final VersionInfo VERSION = new VersionInfo("server-0.3.2-b2");
     private static final Logger LOGGER = LogManager.getLogger("Server");
-
-    private final GameSetting setting = new GameSetting(EnvironmentPath.CONFIG_FOLDER + "/server_setting.toml");
+    private final GameSetting setting = new GameSetting("cubecraft-server");
     private final InetSocketAddress localAddress;
     private final NetworkServer networkServer = new KCPNetworkServer();
     private final PlayerTable playerTable = new PlayerTable();

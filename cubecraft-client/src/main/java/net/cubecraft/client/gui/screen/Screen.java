@@ -7,7 +7,6 @@ import me.gb2022.quantum3d.memory.LWJGLSecureMemoryManager;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.SharedObjects;
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
 import net.cubecraft.client.gui.ScreenUtil;
@@ -39,14 +38,14 @@ public class Screen extends Container {
         this.grabMouse = grabMouse;
         this.id = id;
         this.backgroundType = type;
-        this.context = ClientSharedContext.getClient().getClientGUIContext();
+        this.context = CubecraftClient.getInstance().getClientGUIContext();
     }
 
 
     public Screen(Element element) {
         this(false, "_test", ScreenBackgroundType.EMPTY);
         this.init(element);
-        this.setContext(this, this, ClientSharedContext.getClient().getClientGUIContext());
+        this.setContext(this, this, CubecraftClient.getInstance().getClientGUIContext());
     }
 
     @Override
@@ -64,7 +63,7 @@ public class Screen extends Container {
 
     public void init() {
         super.init();
-        this.client = ClientSharedContext.getClient();
+        this.client = CubecraftClient.getInstance();
         this.client.getClientDeviceContext().getMouse().setMouseGrabbed(this.grabMouse);
         this.context.getEventBus().callEvent(new ComponentInitializeEvent(this, this, this.context), getId());
     }
@@ -140,7 +139,7 @@ public class Screen extends Container {
         super.render(deltaTime);
 
 
-        if (ClientSharedContext.getClient().isDebug) {
+        if (CubecraftClient.getInstance().isDebug) {
             this.debugInfoLeft.clear();
             this.debugInfoRight.clear();
             this.getDebug();

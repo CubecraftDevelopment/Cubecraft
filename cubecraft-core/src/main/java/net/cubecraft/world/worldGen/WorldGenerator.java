@@ -8,8 +8,7 @@ import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.storage.PersistentChunkHolder;
 import net.cubecraft.world.worldGen.pipeline.ChunkGenerateTask;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
-import net.cubecraft.world.worldGen.pipeline.pipelines.OverworldPipeline;
-import net.cubecraft.world.worldGen.pipeline.pipelines.SingleNoisePipeline;
+import net.cubecraft.world.worldGen.pipeline.pipelines.FlatWorldPipeline;
 
 import java.util.HashMap;
 
@@ -22,7 +21,7 @@ public class WorldGenerator {
         this.world = world;
 
         long seed = world.getLevel().getLevelInfo().getSeed();
-        this.pipelineCache.put(world.getId(), new OverworldPipeline().build(world.getId(), seed));
+        this.pipelineCache.put(world.getId(), new FlatWorldPipeline().build(world.getId(), seed));
     }
 
     public static long hash(int x, int z, ChunkState state) {

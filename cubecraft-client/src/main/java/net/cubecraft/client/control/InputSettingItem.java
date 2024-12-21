@@ -61,6 +61,15 @@ public final class InputSettingItem extends SettingItem<InputCommand[]> {
         return isTriggered(event.getKeyboard(), event.getMouse(), event.getKeyboardButton(), event.getMouseButton());
     }
 
+    public boolean isAnyTriggered(KeyboardButton kb,MouseButton mb) {
+        for (InputCommand c : this.getValue()) {
+            if (!c.isTriggered(kb, mb)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean isTriggered(Keyboard keyboard, Mouse mouse, KeyboardButton kb, MouseButton mb) {
         for (InputCommand c : this.getValue()) {
             if (!c.isActive(keyboard, mouse) && !c.isTriggered(kb, mb)) {

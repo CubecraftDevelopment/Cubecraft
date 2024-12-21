@@ -1,6 +1,6 @@
 package net.cubecraft.client.render.gui;
 
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.resource.TextureAsset;
 import me.gb2022.quantum3d.texture.Texture2D;
 
@@ -27,6 +27,6 @@ public abstract class ImageComponentRendererPart implements ComponentRendererPar
     }
 
     public Texture2D getTexture(){
-        return ClientRenderContext.TEXTURE.getTexture2DContainer().get(TextureAsset.format(this.textureLocation));
+        return ClientContext.TEXTURE.getTexture2DContainer().get(TextureAsset.format(this.textureLocation));
     }
 }

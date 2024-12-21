@@ -1,7 +1,7 @@
 package net.cubecraft.client.gui.node;
 
 
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.resource.TextureAsset;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.util.ShapeRenderer;
@@ -23,7 +23,7 @@ public class Image extends Component {
 
         TextureAsset resource = new TextureAsset(file.trim().split(":")[0], file.trim().split(":")[1]);
 
-        ClientSharedContext.RESOURCE_MANAGER.loadResource(resource);
+        ClientContext.RESOURCE_MANAGER.loadResource(resource);
 
         this.texture.load(resource);
         this.texture.bind();

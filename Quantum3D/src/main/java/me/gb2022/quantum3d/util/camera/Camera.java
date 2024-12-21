@@ -1,29 +1,70 @@
 package me.gb2022.quantum3d.util.camera;
 
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
-public abstract class Camera {
-    private final Matrix4f globalViewMatrix = new Matrix4f();
-    private final Matrix4f localViewMatrix = new Matrix4f();
-    private final Matrix4f projectionMatrix = new Matrix4f().zero();
+@SuppressWarnings("unchecked")
+public abstract class Camera<I extends Camera<?>> {
+    private final Vector3f relativePosition = new Vector3f(0, 0, 0);
 
-    private float lastXRot, lastYRot, lastZRot;
-    private float xRot, yRot, zRot;
+    private final PoseStack poseStack = new PoseStack();
+    private final Matrix4f projection = new Matrix4f();
+    private float lastYaw, lastPitch, lastRoll;
+    private float yaw, pitch, roll;
     private double lastX, lastY, lastZ;
     private double x, y, z;
 
-    public void updateMatrix() {
-        this.projectionMatrix.set(createProjectionMatrix());
+    public abstract Matrix4f createProjectionMatrix();
 
-        this.globalViewMatrix.identity();
-        var rotAspect = new Quaternionf();
+    public I local() {
+        this.projection.set(createProjectionMatrix());
+        MatrixAppender.setProjectionMatrix(this.createProjectionMatrix());
 
-        rotAspect.fromAxisAngleDeg(this.xRot / 180f, this.yRot / 180f, this.zRot / 180f, 180);
-        rotAspect.get(this.globalViewMatrix);
+        this.poseStack.translate(this.relativePosition);
 
-        this.localViewMatrix.set(this.globalViewMatrix);
-        this.globalViewMatrix.translate((float) -this.x, (float) -this.y, (float) -this.z);
+        this.poseStack.rotate(this.yaw, 1, 0, 0);
+        this.poseStack.rotate(this.pitch, 0, 1, 0);
+        this.poseStack.rotate(this.roll, 0, 0, 1);
+
+        return (I) this;
+    }
+
+    public I global() {
+        this.poseStack.translate((float) -this.x, (float) -this.y, (float) -this.z);
+
+        return (I) this;
+    }
+
+    public I object(Vector3d objPosition) {
+        var rx = (float) (objPosition.x - this.x);
+        var ry = (float) (objPosition.y - this.y);
+        var rz = (float) (objPosition.z - this.z);
+
+        this.poseStack.translate(rx, ry, rz);
+        return (I) this;
+    }
+
+    public I object(double x, double y, double z) {
+        var rx = (float) (x - this.x);
+        var ry = (float) (y - this.y);
+        var rz = (float) (z - this.z);
+
+        this.poseStack.translate(rx, ry, rz);
+        return (I) this;
+    }
+
+    public I push() {
+        this.poseStack.pushMatrix();
+        return (I) this;
+    }
+
+    public void set() {
+        MatrixAppender.setModelViewMatrix(this.poseStack.getMatrix());
+    }
+
+    public void pop() {
+        this.poseStack.popMatrix();
     }
 
     public void setPosition(double x, double y, double z) {
@@ -36,36 +77,48 @@ public abstract class Camera {
     }
 
     public void setRotation(float xRot, float yRot, float zRot) {
-        this.lastXRot = this.xRot;
-        this.lastYRot = this.yRot;
-        this.lastZRot = this.zRot;
-        this.xRot = xRot;
-        this.yRot = yRot;
-        this.zRot = zRot;
+        this.lastYaw = this.yaw;
+        this.lastPitch = this.pitch;
+        this.lastRoll = this.roll;
+        this.yaw = xRot;
+        this.pitch = yRot;
+        this.roll = zRot;
+    }
+
+    public void setRelativePosition(float x, float y, float z) {
+        this.relativePosition.set(x, y, z);
+    }
+
+    public boolean isRotationChanged() {
+        return this.yaw != this.lastYaw || this.pitch != this.lastPitch || this.roll != this.lastRoll;
     }
 
 
-    //----[matrix]----
-    public abstract Matrix4f createProjectionMatrix();
-
-    public Matrix4f getGlobalViewMatrix() {
-        return globalViewMatrix;
+    //----[access]----
+    public double getX() {
+        return x;
     }
 
-    public Matrix4f getLocalViewMatrix() {
-        return localViewMatrix;
+    public double getY() {
+        return y;
     }
 
-    public Matrix4f getProjectionMatrix() {
-        return projectionMatrix;
+    public double getZ() {
+        return z;
     }
 
-    public Matrix4f getObjectMatrix(double ox, double oy, double oz) {
-        return new Matrix4f(this.localViewMatrix).translate(this.xRot, this.yRot, this.zRot);
+    public float getYaw() {
+        return yaw;
     }
 
+    public float getPitch() {
+        return pitch;
+    }
 
-    //----[matrix]----
+    public float getRoll() {
+        return roll;
+    }
+
     public double getLastX() {
         return lastX;
     }
@@ -78,15 +131,23 @@ public abstract class Camera {
         return lastZ;
     }
 
-    public float getLastXRot() {
-        return lastXRot;
+    public float getLastYaw() {
+        return lastYaw;
     }
 
-    public float getLastYRot() {
-        return lastYRot;
+    public float getLastPitch() {
+        return lastPitch;
     }
 
-    public float getLastZRot() {
-        return lastZRot;
+    public float getLastRoll() {
+        return lastRoll;
+    }
+
+    public PoseStack getPoseStack() {
+        return poseStack;
+    }
+
+    public Matrix4f getProjection() {
+        return projection;
     }
 }

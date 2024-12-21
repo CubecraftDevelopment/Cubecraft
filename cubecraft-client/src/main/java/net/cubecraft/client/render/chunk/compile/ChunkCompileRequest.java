@@ -1,6 +1,5 @@
 package net.cubecraft.client.render.chunk.compile;
 
-import net.cubecraft.client.render.chunk.RenderChunkPos;
 import net.cubecraft.world.World;
 
 public final class ChunkCompileRequest {
@@ -22,11 +21,6 @@ public final class ChunkCompileRequest {
     public static ChunkCompileRequest build(World world, int x, int y, int z, int[] layers) {
         return new ChunkCompileRequest(world, x, y, z, layers);
     }
-
-    public RenderChunkPos getPos() {
-        return RenderChunkPos.create(this.x, this.y, this.z);
-    }
-
 
     @Override
     public boolean equals(Object obj) {

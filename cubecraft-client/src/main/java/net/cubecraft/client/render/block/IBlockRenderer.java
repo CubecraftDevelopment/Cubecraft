@@ -8,12 +8,17 @@ import net.cubecraft.resource.MultiAssetContainer;
 import net.cubecraft.resource.ResourceHolder;
 import net.cubecraft.resource.item.IResource;
 import net.cubecraft.util.register.Registered;
+import net.cubecraft.util.register.ShadowedRegistry;
 import net.cubecraft.world.BlockAccessor;
+import net.cubecraft.world.block.Block;
 import net.cubecraft.world.block.access.BlockAccess;
+import net.cubecraft.world.block.blocks.Blocks;
 
 import java.util.Collection;
 
 public interface IBlockRenderer extends ResourceHolder {
+    ShadowedRegistry<IBlockRenderer, Block> REGISTRY = new ShadowedRegistry<>(Blocks.REGISTRY);
+
     static boolean isFaceCulled(CullingPredication culling, int face, BlockAccess block, BlockAccessor accessor) {
         if (block == null || accessor == null) {
             return false;

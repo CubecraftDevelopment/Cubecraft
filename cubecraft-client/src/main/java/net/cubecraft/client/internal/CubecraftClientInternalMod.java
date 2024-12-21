@@ -4,10 +4,8 @@ import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.event.SubscribedEvent;
 import net.cubecraft.ContentRegistries;
 import net.cubecraft.Side;
-import net.cubecraft.client.registry.ClientSettings;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.context.ClientGUIContext;
-import net.cubecraft.client.ClientRenderContext;
 import net.cubecraft.client.event.app.ClientDisposeEvent;
 import net.cubecraft.client.event.app.ClientSetupEvent;
 import net.cubecraft.client.event.gui.context.GUIContextInitEvent;
@@ -16,8 +14,11 @@ import net.cubecraft.client.internal.handler.ClientAssetLoader;
 import net.cubecraft.client.internal.handler.ClientListener;
 import net.cubecraft.client.internal.handler.ParticleHandler;
 import net.cubecraft.client.internal.handler.ScreenController;
+import net.cubecraft.client.internal.plugins.CameraPlugin;
 import net.cubecraft.client.internal.renderer.particle.ParticleRenderers;
 import net.cubecraft.client.registry.*;
+import net.cubecraft.client.render.LevelRenderer;
+import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.block.LiquidRenderer;
 import net.cubecraft.client.render.block.ModelBlockRenderer;
 import net.cubecraft.client.render.world.ParticleRenderer;
@@ -39,12 +40,11 @@ public final class CubecraftClientInternalMod {
     @SubscribedEvent(MOD_ID)
     public static void onModConstruct(ModConstructEvent event) {
         ContentRegistries.EVENT_BUS.registerEventListener(ClientListener.class);
-        ClientSharedContext.getClient().getClientEventBus().registerEventListener(CubecraftClientInternalMod.class);
-        ClientSharedContext.CLIENT_SETTING.register(ClientSettings.class);
+        CubecraftClient.getInstance().getClientEventBus().registerEventListener(CubecraftClientInternalMod.class);
 
         ClientListener listener = new ClientListener();
-        ClientSharedContext.getClient().getClientEventBus().registerEventListener(listener);
-        ClientSharedContext.getClient().getDeviceEventBus().registerEventListener(listener);
+        CubecraftClient.getInstance().getClientEventBus().registerEventListener(listener);
+        CubecraftClient.getInstance().getDeviceEventBus().registerEventListener(listener);
         event.getModManager().getModLoaderEventBus().registerEventListener(listener);
 
         LOGGER.info("mod constructed.");
@@ -57,13 +57,14 @@ public final class CubecraftClientInternalMod {
 
     @EventHandler
     public static void onClientSetup(ClientSetupEvent event) {
-        ClientSharedContext.NET_HANDLER.registerGetFunctionProvider(ClientNetworkHandlerRegistry.class);
-        ClientRenderContext.COLOR_MAP.registerGetter(ColorMapRegistry.class);
-        ClientSharedContext.getClient().getClientEventBus().registerEventListener(new ParticleHandler());
+        event.getClient().addComponent(new CameraPlugin());
+
+        ColorMaps.COLOR_MAP.registerGetter(ColorMapRegistry.class);
+        CubecraftClient.getInstance().getClientEventBus().registerEventListener(new ParticleHandler());
 
         ClientAssetLoader.init();
 
-        ClientRenderContext.WORLD_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
+        LevelRenderer.WORLD_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
         ParticleRenderer.PARTICLE_RENDERERS.registerFieldHolder(ParticleRenderers.class);
 
         Blocks.REGISTRY.withShadow((reg) -> {
@@ -71,7 +72,7 @@ public final class CubecraftClientInternalMod {
             var namespace = NSStringDispatcher.getNameSpace(id);
             var localId = NSStringDispatcher.getId(id);
 
-            if (ClientRenderContext.BLOCK_RENDERERS.isPresent(id)) {
+            if (IBlockRenderer.REGISTRY.isPresent(id)) {
                 return;
             }
 
@@ -81,11 +82,11 @@ public final class CubecraftClientInternalMod {
                 var still = new TextureAsset("cubecraft:/block/water_still.png");
                 var flow = new TextureAsset("cubecraft:/block/water_flow.png");
 
-                ClientRenderContext.BLOCK_RENDERERS.register(id, new LiquidRenderer(still, flow));
+                IBlockRenderer.REGISTRY.register(id, new LiquidRenderer(still, flow));
                 return;
             }
 
-            ClientRenderContext.BLOCK_RENDERERS.register(
+            IBlockRenderer.REGISTRY.register(
                     id,
                     new ModelBlockRenderer(new ModelAsset(namespace + ":/block/" + localId + ".json"))
             );
@@ -99,7 +100,7 @@ public final class CubecraftClientInternalMod {
 
     @EventHandler
     public static void onGUIContextInit(GUIContextInitEvent event) {
-        ClientSharedContext.getClient().getClientGUIContext().getEventBus().registerEventListener(new ScreenController());
+        CubecraftClient.getInstance().getClientGUIContext().getEventBus().registerEventListener(new ScreenController());
 
         ClientGUIContext.COMPONENT_RENDERER_PART.registerGetFunctionProvider(GUIRegistry.class);
         ClientGUIContext.NODE.registerGetFunctionProvider(GUIRegistry.class);

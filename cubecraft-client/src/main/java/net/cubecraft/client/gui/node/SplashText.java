@@ -1,7 +1,7 @@
 package net.cubecraft.client.gui.node;
 
 import com.google.gson.Gson;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.gui.font.FontAlignment;
 import me.gb2022.commons.file.DocumentUtil;
 import me.gb2022.commons.math.MathHelper;
@@ -24,7 +24,7 @@ public class SplashText extends Component {
     public void init(Element element) {
         super.init(element);
         String[] splash;
-        splash = new Gson().fromJson(ClientSharedContext.RESOURCE_MANAGER.getResource(element.getTextContent().trim()).getAsText(), String[].class);
+        splash = new Gson().fromJson(ClientContext.RESOURCE_MANAGER.getResource(element.getTextContent().trim()).getAsText(), String[].class);
         this.text = splash[new Random().nextInt(splash.length)];
         this.bobbing = DocumentUtil.getAttributeB(element, "bobbing", false);
         this.rotation = DocumentUtil.getAttributeI(element, "rotation", 0);

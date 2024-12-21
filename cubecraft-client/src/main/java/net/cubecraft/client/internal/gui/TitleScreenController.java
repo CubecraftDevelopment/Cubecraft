@@ -1,13 +1,12 @@
 package net.cubecraft.client.internal.gui;
 
 import me.gb2022.commons.event.EventHandler;
-import net.cubecraft.client.ClientSharedContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.event.gui.component.ButtonClickedEvent;
 import net.cubecraft.client.gui.controller.ScreenController;
 
 public class TitleScreenController extends ScreenController {
-    private final CubecraftClient client = ClientSharedContext.getClient();
+    private final CubecraftClient client = CubecraftClient.getInstance();
 
     @Override
     public void initializeController() {

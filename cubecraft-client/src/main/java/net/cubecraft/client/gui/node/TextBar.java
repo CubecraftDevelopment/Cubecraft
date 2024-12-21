@@ -43,7 +43,7 @@ public class TextBar extends Component {
 
     private void processPress(KeyboardButton k) {
         if (this.focus) {
-            if (k == KeyboardButton.KEY_BACKSPACE && this.text.length() > 0 && this.cursorPos > 0) {
+            if (k == KeyboardButton.KEY_BACKSPACE && !this.text.isEmpty() && this.cursorPos > 0) {
                 this.text.deleteCharAt(this.cursorPos - 1);
                 this.cursorPos--;
             }
@@ -89,13 +89,7 @@ public class TextBar extends Component {
 
     @EventHandler
     public void onClick_t(MouseClickEvent e) {
-        int xm = this.context.getFixedMouseX();
-        int ym = this.context.getFixedMouseY();
-        int x0 = this.getLayout().getAbsoluteX();
-        int x1 = x0 + this.getLayout().getAbsoluteWidth();
-        int y0 = this.getLayout().getAbsoluteY();
-        int y1 = y0 + this.getLayout().getAbsoluteHeight();
-        this.focus = xm > x0 && xm < x1 && ym > y0 && ym < y1;
+        this.focus = isMouseInbound();
         IMBlocker.set(this.focus);
         if (!this.focus) {
             this.context.getEventBus().callEvent(new TextBarSubmitEvent(this, this.screen, this.context, this.text.toString()), this.screen.getId());

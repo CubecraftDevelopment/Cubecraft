@@ -125,6 +125,33 @@ public interface ShapeRenderer {
         builder.vertex(aabb.x1, aabb.y0, aabb.z1);
     }
 
+    static void renderAABB(VertexBuilder builder, double x0, double y0, double z0, double x1, double y1, double z1) {
+        builder.addVertex(x0, y0, z0);
+        builder.addVertex(x1, y0, z0);
+        builder.addVertex(x0, y1, z0);
+        builder.addVertex(x1, y1, z0);
+        builder.addVertex(x0, y0, z1);
+        builder.addVertex(x1, y0, z1);
+        builder.addVertex(x0, y1, z1);
+        builder.addVertex(x1, y1, z1);
+        builder.addVertex(x0, y0, z0);
+        builder.addVertex(x0, y1, z0);
+        builder.addVertex(x1, y0, z0);
+        builder.addVertex(x1, y1, z0);
+        builder.addVertex(x0, y0, z1);
+        builder.addVertex(x0, y1, z1);
+        builder.addVertex(x1, y0, z1);
+        builder.addVertex(x1, y1, z1);
+        builder.addVertex(x0, y0, z0);
+        builder.addVertex(x0, y0, z1);
+        builder.addVertex(x1, y0, z0);
+        builder.addVertex(x1, y0, z1);
+        builder.addVertex(x0, y1, z0);
+        builder.addVertex(x0, y1, z1);
+        builder.addVertex(x1, y1, z0);
+        builder.addVertex(x1, y1, z1);
+    }
+
     static void renderAABB(LegacyVertexBuilder builder, double x0, double y0, double z0, double x1, double y1, double z1) {
         builder.vertex(x0, y0, z0);
         builder.vertex(x1, y0, z0);
@@ -150,6 +177,10 @@ public interface ShapeRenderer {
         builder.vertex(x0, y1, z1);
         builder.vertex(x1, y1, z0);
         builder.vertex(x1, y1, z1);
+    }
+
+    static void renderAABB(VertexBuilder builder, AABB aabb) {
+        renderAABB(builder, aabb.x0, aabb.y0, aabb.z0, aabb.x1, aabb.y1, aabb.z1);
     }
 
     static void renderAABB(LegacyVertexBuilder builder, AABB aabb) {

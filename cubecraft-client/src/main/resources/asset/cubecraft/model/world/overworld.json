@@ -11,6 +11,7 @@
       "allow_debug": true
     },
     "cubecraft:particle_renderer": {},
+    "cubecraft:entity_renderer": {},
     "cubecraft:cloud_renderer": {
       "color": "#FFFFFF44",
       "thick": 20,

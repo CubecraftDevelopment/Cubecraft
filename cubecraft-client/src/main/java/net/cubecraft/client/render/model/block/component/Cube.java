@@ -4,7 +4,7 @@ import com.google.gson.*;
 import me.gb2022.commons.ColorUtil;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.texture.Texture2DTileMap;
-import net.cubecraft.client.ClientRenderContext;
+import net.cubecraft.client.registry.ColorMaps;
 import net.cubecraft.client.render.block.BlockBakery;
 import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.chunk.container.ChunkLayerContainerFactory;
@@ -15,7 +15,6 @@ import net.cubecraft.util.register.Registered;
 import net.cubecraft.world.BlockAccessor;
 import net.cubecraft.world.block.access.BlockAccess;
 import org.joml.Vector2d;
-import org.joml.Vector3f;
 import org.joml.Vector3f;
 
 import java.lang.reflect.Type;
@@ -143,7 +142,7 @@ public final class Cube extends BlockModelComponent {
         var v111 = new Vector3f(this.end.x, this.end.y, this.end.z);
 
         var render = new Vector3f((float) renderX, (float) renderY, (float) renderZ);
-        int c = ClientRenderContext.COLOR_MAP.get(f.color()).sample(w, block);
+        int c = ColorMaps.COLOR_MAP.get(f.color()).sample(w, block);
         if (face == 0) {
             var faceColor = new Vector3f(ColorUtil.int1ToFloat3(c));
             BlockBakery.bakeVertex(Vertex.create(new Vector3f(v111).add(render), new Vector2d(u1, v1), faceColor), v111, w, x, y, z, 0)

@@ -1,7 +1,7 @@
 package net.cubecraft.client.render.model;
 
 import net.cubecraft.SharedContext;
-import net.cubecraft.client.ClientSharedContext;
+import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.render.model.object.Model;
 import net.cubecraft.client.resource.ModelAsset;
 
@@ -18,7 +18,7 @@ public final class ModelManager<I extends Model> {
         if(fallback==null){
             return;
         }
-        ClientSharedContext.RESOURCE_MANAGER.loadResource(this.fallback);
+        ClientContext.RESOURCE_MANAGER.loadResource(this.fallback);
     }
 
     public I get(String id) {

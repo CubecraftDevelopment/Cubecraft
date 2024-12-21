@@ -5,7 +5,7 @@
         <label layout="origin/middle_middle,0,0,0,8" type="lang" color="000000" align="middle">singleplayer.title</label>
     </topbar>
 
-    <panel layout="origin/left_top,0,0,190,193" border="20,10,40,10" style="dark">
+    <panel layout="origin/left_top,0,0,190,193" border="0,10,40,10" style="dark">
         <label type="lang" layout="origin/middle_top,0,10,0,12" color="ffffff" align="middle">
             singleplayer.menu.select
         </label>

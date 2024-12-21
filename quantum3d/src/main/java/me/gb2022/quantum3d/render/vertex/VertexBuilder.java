@@ -2,6 +2,8 @@ package me.gb2022.quantum3d.render.vertex;
 
 import me.gb2022.commons.LifetimeCounter;
 import me.gb2022.commons.memory.BufferAllocator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -9,30 +11,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public final class VertexBuilder {
-    private final VertexBuilderAllocator vertexBuilderAllocator;
-    private final AtomicInteger vertexCount = new AtomicInteger();
-    private final VertexFormat format;
+    public static final Logger LOGGER = LogManager.getLogger("VertexBuilder");
+
     private final LifetimeCounter lifetimeCounter = new LifetimeCounter();
+    private final AtomicInteger vertexCount = new AtomicInteger();
+
+    private final VertexBuilderAllocator allocator;
+    private final BufferAllocator memoryAllocator;
+    private final VertexFormat format;
     private final DrawMode drawMode;
     private final int capacity;
-    private final BufferAllocator allocator;
-    private ByteBuffer vertexBuffer;
-    private ByteBuffer colorBuffer;
-    private ByteBuffer textureBuffer;
-    private ByteBuffer normalBuffer;
-    private ByteBuffer rawBuffer;
+    private ByteBuffer data;
 
     private double[] colorCache;
     private double[] textureCache;
     private double[] normalCache;
 
-
-    public VertexBuilder(VertexFormat format, int capacity, DrawMode drawMode, VertexBuilderAllocator allocator) {
+    public VertexBuilder(VertexFormat format, int capacity, DrawMode drawMode, VertexBuilderAllocator memoryAllocator) {
         this.format = format;
         this.drawMode = drawMode;
         this.capacity = capacity;
-        this.vertexBuilderAllocator = allocator;
-        this.allocator = allocator.getAllocator();
+        this.allocator = memoryAllocator;
+        this.memoryAllocator = memoryAllocator.getAllocator();
     }
 
     public void allocate() {
@@ -40,19 +40,7 @@ public final class VertexBuilder {
 
         this.lifetimeCounter.allocate();
 
-        this.vertexBuffer = this.allocator.allocByteBuffer(this.format.getVertexBufferSize(cap));
-        this.rawBuffer = this.allocator.allocByteBuffer(this.format.getRawBufferSize(cap));
-
-        if (this.format.hasColorData()) {
-            this.colorBuffer = this.allocator.allocByteBuffer(this.format.getColorBufferSize(cap));
-        }
-        if (this.format.hasTextureData()) {
-            this.textureBuffer = this.allocator.allocByteBuffer(this.format.getTextureBufferSize(cap));
-        }
-        if (this.format.hasNormalData()) {
-            this.normalBuffer = this.allocator.allocByteBuffer(this.format.getNormalBufferSize(cap));
-        }
-
+        this.data = this.memoryAllocator.allocByteBuffer(this.format.getRawBufferSize(cap));
 
         if (this.format.hasColorData()) {
             this.colorCache = new double[this.format.getColorFormat().getSize()];
@@ -70,33 +58,16 @@ public final class VertexBuilder {
         Arrays.fill(this.colorCache, 1.0f);
     }
 
-    public void freeReferenced() {
-        this.vertexBuilderAllocator.free(this);
-    }
-
     public void free() {
         if (!this.lifetimeCounter.isAllocated()) {
-           return;
+            return;
         }
 
-        if (this.vertexBuffer != null) {
-            this.allocator.free(this.vertexBuffer);
-        }
-        if (this.rawBuffer != null) {
-            this.allocator.free(this.rawBuffer);
+        if (this.data != null) {
+            this.memoryAllocator.free(this.data);
         }
 
-        if (this.format.hasColorData() && this.colorBuffer != null) {
-            this.allocator.free(this.colorBuffer);
-        }
-        if (this.format.hasTextureData() && this.textureBuffer != null) {
-            this.allocator.free(this.textureBuffer);
-        }
-        if (this.format.hasNormalData() && this.normalBuffer != null) {
-            this.allocator.free(this.normalBuffer);
-        }
-
-        this.vertexBuilderAllocator.clearInstance(this);
+        this.allocator.clearInstance(this);
         this.lifetimeCounter.release();
     }
 
@@ -105,10 +76,10 @@ public final class VertexBuilder {
             throw new RuntimeException("Builder overflowed: reached capacity " + this.capacity);
         }
         this.vertexCount.incrementAndGet();
-        this.format.putVertexData(this.vertexBuffer, this.rawBuffer, data);
-        this.format.putColorData(this.colorBuffer, this.rawBuffer, this.colorCache);
-        this.format.putTextureData(this.textureBuffer, this.rawBuffer, this.textureCache);
-        this.format.putNormalData(this.normalBuffer, this.rawBuffer, this.normalCache);
+        VertexFormat.putData(this.format.getVertexFormat(), this.data, data);
+        VertexFormat.putData(this.format.getColorFormat(), this.data, this.colorCache);
+        VertexFormat.putData(this.format.getTextureFormat(), this.data, this.textureCache);
+        VertexFormat.putData(this.format.getNormalFormat(), this.data, this.normalCache);
     }
 
     public VertexBuilder setColor(double... data) {
@@ -143,73 +114,27 @@ public final class VertexBuilder {
         if (this.colorCache != null) {
             Arrays.fill(this.colorCache, 1.0f);
         }
-        this.vertexBuffer.clear().position(0);
-
-        if (this.format.hasColorData()) {
-            this.colorBuffer.clear().position(0);
-        }
-        if (this.format.hasTextureData()) {
-            this.textureBuffer.clear().position(0);
-        }
-        if (this.format.hasNormalData()) {
-            this.normalBuffer.clear().position(0);
-        }
-        this.rawBuffer.clear().position(0);
+        this.data.clear().position(0);
     }
 
     public VertexFormat getFormat() {
         return format;
     }
 
-
-    //buffer reference
-    public ByteBuffer getVertexBuffer() {
-        return vertexBuffer;
+    public ByteBuffer getData() {
+        return data;
     }
 
-    public ByteBuffer getColorBuffer() {
-        return colorBuffer;
-    }
-
-    public ByteBuffer getTextureBuffer() {
-        return textureBuffer;
-    }
-
-    public ByteBuffer getNormalBuffer() {
-        return normalBuffer;
-    }
-
-    public ByteBuffer getRawBuffer() {
-        return rawBuffer;
-    }
-
-    //generate buffer
-    public ByteBuffer generateVertexBuffer() {
-        return getVertexBuffer().slice(0, this.format.getVertexBufferSize(this.getVertexCount()));
-    }
-
-    public ByteBuffer generateColorBuffer() {
-        return getColorBuffer().slice(0, this.format.getColorBufferSize(this.getVertexCount()));
-    }
-
-    public ByteBuffer generateTextureBuffer() {
-        return getTextureBuffer().slice(0, this.format.getTextureBufferSize(this.getVertexCount()));
-    }
-
-    public ByteBuffer generateNormalBuffer() {
-        return getNormalBuffer().slice(0, this.format.getNormalBufferSize(this.getVertexCount()));
-    }
-
-    public ByteBuffer generateRawBuffer() {
-        return getRawBuffer().slice(0, this.format.getRawBufferSize(this.getVertexCount()));
+    public ByteBuffer generateData() {
+        return getData().slice(0, this.format.getRawBufferSize(this.getVertexCount()));
     }
 
     public LifetimeCounter getLifetimeCounter() {
         return lifetimeCounter;
     }
 
-    public VertexBuilderAllocator getAllocator() {
-        return vertexBuilderAllocator;
+    public VertexBuilderAllocator getMemoryAllocator() {
+        return allocator;
     }
 
     @Override
@@ -218,13 +143,8 @@ public final class VertexBuilder {
             return;
         }
 
-        System.out.println("Un-expected freed buffer: " + this.toString());
+        LOGGER.warn("unexpected free: {}[v={}] -> {}", hashCode(), this.getCapacity(), this.memoryAllocator.getClass().getSimpleName());
 
-        this.vertexBuilderAllocator.free(this);
-    }
-
-    @Override
-    public String toString() {
-        return "VertexBuilder{" + "vertexCount=" + vertexCount + ", format=" + format + ", lifetimeCounter=" + lifetimeCounter + ", drawMode=" + drawMode + ", capacity=" + capacity + ", allocator=" + allocator + '}';
+        this.free();
     }
 }

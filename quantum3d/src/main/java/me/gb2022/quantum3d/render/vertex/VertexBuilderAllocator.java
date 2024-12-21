@@ -13,7 +13,7 @@ public final class VertexBuilderAllocator {
     }
 
     public void free(VertexBuilder builder) {
-        if (builder.getAllocator() != this) {
+        if (builder.getMemoryAllocator() != this) {
             throw new IllegalArgumentException("not from here");
         }
         builder.free();
