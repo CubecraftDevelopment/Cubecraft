@@ -37,13 +37,13 @@ public final class ServerWorld extends World {
 
     @Override
     public WorldChunk getChunk(int cx, int cz, ChunkState state) {
-        var ch = this.ownerThread != Thread.currentThread() ? this.chunkCache.get(cx, cz) : this.chunkCache.cachedGet(cx, cz);
+        var ch = !this.isThreadSafe() ? this.chunkCache.get(cx, cz) : this.chunkCache.cachedGet(cx, cz);
 
         if (ch != null && ch.getState().isComplete(state)) {
             return ch;
         }
 
-        if (this.ownerThread != Thread.currentThread()) {
+        if (!isThreadSafe()) {
             return CompletableFuture.supplyAsync(() -> {
                 var c = this.worldGenerator.load(cx, cz, state);
                 this.chunkCache.add(c);
@@ -54,6 +54,11 @@ public final class ServerWorld extends World {
         this.chunkCache.add(c);
 
         return c;
+    }
+
+    @Override
+    public boolean isThreadSafe() {
+        return this.ownerThread == Thread.currentThread();
     }
 
     @Override

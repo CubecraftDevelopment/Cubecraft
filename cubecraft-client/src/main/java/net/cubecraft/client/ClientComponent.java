@@ -8,6 +8,10 @@ import net.cubecraft.world.WorldContext;
 public abstract class ClientComponent {
     protected CubecraftClient client;
 
+    public ClientComponent() {
+        this.client = CubecraftClient.getInstance();
+    }
+
     public final void init(CubecraftClient client) {
         this.client = client;
     }
@@ -15,7 +19,6 @@ public abstract class ClientComponent {
     public final CubecraftClient getClient() {
         return client;
     }
-
 
     public void deviceSetup(CubecraftClient client, Window window, DeviceContext ctx) {
     }

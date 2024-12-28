@@ -42,6 +42,10 @@ public abstract class World implements BlockAccessor {
         this.environment = Environments.REGISTRY.object(id);
     }
 
+    public boolean isThreadSafe(){
+        return true;
+    }
+
 
     //----[BlockAccessor]----
     @Override

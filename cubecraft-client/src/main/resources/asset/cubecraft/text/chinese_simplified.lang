@@ -3,16 +3,20 @@ button.confirm=确认
 button.back=返回
 
 # main screen
-title_screen.button.singleplayer=单人游戏
-title_screen.button.multiplayer=多人游戏
-title_screen.button.option=选项
-title_screen.button.quit=退出
-title_screen.version=Cubecraft-%s(模组:%s个)
-title_screen.auth=当前账号：%s
+title.game=游戏
+title.option=选项
+title.quit=退出
+title.version=Cubecraft-%s(模组:%s个)
+title.auth=当前账号：%s
 
-title_screen.button.game=游戏
-title_screen.button.settings=设置
-title_screen.button.quit=退出
+# singleplayer
+singleplayer.title=单人游戏
+singleplayer.search=搜索世界...
+singleplayer.list=世界列表 (%s)
+singleplayer.create=创建世界
+singleplayer.import=导入世界
+singleplayer.join=进入世界
+singleplayer.edit=编辑世界
 
 # pause screen
 pause_screen.title=游戏菜单
@@ -22,24 +26,24 @@ pause_screen.button.advancement=成就(暂不可用)
 pause_screen.button.open_to_net=对局域网开放(暂不可用)
 pause_screen.button.quit=保存并退出
 
+pause.title=游戏菜单
+pause.resume=回到游戏
+pause.stats=统计信息
+pause.quit_sp=保存并退出
+
 #option screen
 option.title=选项
+option.apply=应用
+option.discard=取消
+
 option.video=视频
 option.control=控制
 option.other=其他
 option.audio=声音
-option.resource_pack=资源包
+option.resource=资源
 option.about=关于
 option.language=语言
 option.mod=模组
-option.button.confirm=确认
-option.button.apply=应用
-option.button.quit=取消
-option.apply.title=应用成功
-option.apply.subtitle=您的更改已经全部刷新并应用.
-
-
-
 
 # update check
 version_check.exception.title=无法检查更新
@@ -55,29 +59,6 @@ version_check.require.subtitle=当前版本：%s，最新版本:%s。
 version_check.start=正在检查版本...
 version_check.start_detail=正在与仓库通信...
 
-# singleplayer
-singleplayer.title=单人游戏
-
-singleplayer.menu.select=选择
-singleplayer.menu.join=进入世界
-singleplayer.menu.delete=删除世界
-singleplayer.menu.edit=编辑世界
-
-singleplayer.menu.new=新建
-singleplayer.menu.create=创建世界
-singleplayer.menu.import=导入世界
-singleplayer.menu.export=导出世界
-
-singleplayer.search_world=搜索世界...
-singleplayer.select_world=世界选择
-
-singleplayer.menu.list=世界列表
-
-
-
-
-
-
 
 
 # multiplayer
@@ -87,21 +68,6 @@ multiplayer.title=多人游戏
 multiplayer.button.join=进入服务器
 multiplayer.button.create=添加服务器
 multiplayer.button.delete=删除服务器
-
-
-
-
-
-connection.statement.failed=无法连接到服务器
-connection.statement.connecting=正在连接到服务器
-connection.reason.failed_client=客户端异常:%s
-connection.reason.failed_server=服务器/网络异常:%s
-
-
-
-
-
-
 
 join_singleplayer.before_server_init=内置服务器初始化...
 join_singleplayer.server_init=内置服务器启动...

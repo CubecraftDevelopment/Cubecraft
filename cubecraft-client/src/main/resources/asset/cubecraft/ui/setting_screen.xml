@@ -1,10 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<screen bg="image-bg-blur-mask" id="cubecraft:setting_screen">
-    <topbar layout="flow/top,0,28">
-        <label layout="origin/middle_middle,0,0,0,8" type="lang" color="000000" align="middle">setting.title</label>
-    </topbar>
-</screen>
+<Screen bg="image-bg-blur-mask" id="cubecraft:option_screen">
+    <Topbar layout="anchor(0,0,0,28,0,0,0,-1)">
+        <Label layout="origin(MIDDLE_MIDDLE,0,0,0,8)" align="middle">
+            {"translate":"option.title","color":"#000000","size":8}
+        </Label>
+    </Topbar>
+
+    <Panel layout="anchor(0,0,200,0,0,-1,28,0)" style="dark">
+        <TextInput id="search" layout="anchor(0,0,0,30,10,60,10,-1)">
+        </TextInput>
+        <Button id="searchSettings" layout="anchor(0,0,50,30,-1,10,10,-1)" style="light">
+            <Label layout="origin(middle_middle,0,0,0,12" align="middle">
+                {"icon":"F002","color":"#333333"}
+            </Label>
+        </Button>
+
+        <ListView id="menu" layout="anchor(0,0,0,0,10,10,50,90)" style="default">
+            <Button layout="anchor(0,0,10,20,0,0,-1,-1)" id="_template_setting_category" style="side_menu">
+                <Label id="_icon" layout="origin(LEFT_TOP,6,4,0,8)">
+                    {"icon":"f03d","color":"#FFFFFF"}
+                </Label>
+                <Label id="_name" layout="origin(LEFT_TOP,18,4,0,8)">
+                    {"text":"视频设置","color":"#FFFFFF"}
+                </Label>
+            </Button>
+        </ListView>
+
+        <Button id="apply" layout="anchor(0,0,50,30,6,6,-1,41)" style="important">
+            <Label layout="origin(middle_middle,0,0,0,8)" align="middle">
+                {"translate":"option.apply","color":"#FFFFFF"}
+            </Label>
+        </Button>
+
+        <Button id="discard" layout="anchor(0,0,50,30,6,6,-1,6)" style="danger">
+            <Label layout="origin(middle_middle,0,0,0,8)" align="middle">
+                {"translate":"option.discard","color":"#FFFFFF"}
+            </Label>
+        </Button>
+    </Panel>
+</Screen>
 
 
 <!--

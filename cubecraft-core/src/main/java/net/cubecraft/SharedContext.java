@@ -48,5 +48,4 @@ public interface SharedContext {
     static void initializeLogContext() {
         //LogManager.loadUp(new ConfigBuilder());
     }
-
 }

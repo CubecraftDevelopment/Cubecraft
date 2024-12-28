@@ -38,6 +38,82 @@
       }
     ]
   },
+  "important:normal": {
+    "child_offset_x": 0,
+    "child_offset_y": -2,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_important.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "light:normal": {
+    "child_offset_x": 0,
+    "child_offset_y": -2,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_light.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "important:selected": {
+    "child_offset_x": 0,
+    "child_offset_y": -1,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_important_selected.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "light:selected": {
+    "child_offset_x": 0,
+    "child_offset_y": -1,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_important_selected.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "danger:normal": {
+    "child_offset_x": 0,
+    "child_offset_y": -2,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_danger.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "danger:selected": {
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_danger_selected.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
   "default:normal": {
     "components": [
       {
@@ -68,6 +144,28 @@
         "boarderH": 0,
         "boarderV": 0,
         "loc": "cubecraft:/gui/controls/button/button_disabled.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "card:normal": {
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_card.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "card:selected": {
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_card_selected.png",
         "pos": [0, 1, 0, 1]
       }
     ]

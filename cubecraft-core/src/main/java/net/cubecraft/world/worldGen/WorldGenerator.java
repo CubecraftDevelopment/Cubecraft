@@ -1,6 +1,7 @@
 package net.cubecraft.world.worldGen;
 
 import net.cubecraft.world.World;
+import net.cubecraft.world.chunk.Chunk;
 import net.cubecraft.world.chunk.ChunkState;
 import net.cubecraft.world.chunk.PrimerChunk;
 import net.cubecraft.world.chunk.WorldChunk;
@@ -8,7 +9,7 @@ import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.storage.PersistentChunkHolder;
 import net.cubecraft.world.worldGen.pipeline.ChunkGenerateTask;
 import net.cubecraft.world.worldGen.pipeline.ChunkGeneratorPipeline;
-import net.cubecraft.world.worldGen.pipeline.pipelines.FlatWorldPipeline;
+import net.cubecraft.world.worldGen.pipeline.pipelines.OverworldPipeline;
 
 import java.util.HashMap;
 
@@ -21,7 +22,7 @@ public class WorldGenerator {
         this.world = world;
 
         long seed = world.getLevel().getLevelInfo().getSeed();
-        this.pipelineCache.put(world.getId(), new FlatWorldPipeline().build(world.getId(), seed));
+        this.pipelineCache.put(world.getId(), new OverworldPipeline().build(world.getId(), seed));
     }
 
     public static long hash(int x, int z, ChunkState state) {
@@ -45,6 +46,9 @@ public class WorldGenerator {
     }
 
     public WorldChunk load(int x, int z, ChunkState state) {
+        if(!this.world.isThreadSafe()){
+            throw new IllegalStateException("not on a world owner thread!");
+        }
         if (state == ChunkState.EMPTY) {
             throw new IllegalArgumentException("what should i do to create an empty chunk");
         }
@@ -77,6 +81,17 @@ public class WorldGenerator {
         }
 
         if (state == ChunkState.STRUCTURE) {
+            return chunk;
+        }
+
+        if(!chunk.getState().isComplete(ChunkState.NEIGHBOR_STRUCTURE)){
+            load(x-1, z, ChunkState.STRUCTURE);
+            load(x+1, z, ChunkState.STRUCTURE);
+            load(x, z+1, ChunkState.STRUCTURE);
+            load(x, z-1, ChunkState.STRUCTURE);
+        }
+
+        if (state == ChunkState.NEIGHBOR_STRUCTURE) {
             return chunk;
         }
 

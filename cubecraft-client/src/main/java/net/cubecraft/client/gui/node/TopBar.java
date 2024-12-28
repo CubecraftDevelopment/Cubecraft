@@ -7,11 +7,14 @@ import me.gb2022.quantum3d.device.event.MouseClickEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.context.ClientGUIContext;
-import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontAlignment;
+import net.cubecraft.client.gui.node.component.Component;
+import net.cubecraft.text.TextComponent;
 
 @TypeItem("topbar")
-public class TopBar extends Component {
+public final class TopBar extends Component {
+    public static final TextComponent BACK_ICON = TextComponent.iconFont("F060");
+
     private boolean hovered;
 
     @EventHandler
@@ -35,8 +38,13 @@ public class TopBar extends Component {
     }
 
     @Override
-    public Text queryText(String query) {
-        return new Text("  \ue72b ", 0xffffff, FontAlignment.LEFT, true);
+    public TextComponent queryText(String query) {
+        return BACK_ICON;
+    }
+
+    @Override
+    public FontAlignment queryTextAlignment(String query) {
+        return FontAlignment.LEFT;
     }
 
 }

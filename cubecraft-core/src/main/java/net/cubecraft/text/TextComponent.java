@@ -1,9 +1,13 @@
 package net.cubecraft.text;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.Objects;
 
-public final class TextComponent {
-    private String text;
+public class TextComponent {
+    public static final TextComponent EMPTY = text("");
+    private String content;
     private int color;
     private boolean bold;
     private boolean italic;
@@ -15,8 +19,8 @@ public final class TextComponent {
     private boolean underline;
     private float size;
 
-    public TextComponent(String text, float size, int color, boolean bold, boolean italic, boolean delete, boolean underline) {
-        this.text = text;
+    public TextComponent(String content, float size, int color, boolean bold, boolean italic, boolean delete, boolean underline) {
+        this.content = content;
         this.color = color;
         this.bold = bold;
         this.italic = italic;
@@ -25,12 +29,64 @@ public final class TextComponent {
         this.size = size;
     }
 
-    public static TextComponent create(Object text) {
+    public static TextComponent text(Object text) {
         return new TextComponent(String.valueOf(text), 8, 0xFFFFFF, false, false, false, false);
     }
 
-    public static TextComponent create(String text) {
+    public static TextComponent text(String text) {
         return new TextComponent(text, 8, 0xFFFFFF, false, false, false, false);
+    }
+
+    public static TranslatableComponent translatable(String text) {
+        return new TranslatableComponent(text, 8, 0xFFFFFF, false, false, false, false);
+    }
+
+    public static IconFontComponent iconFont(String point) {
+        return new IconFontComponent(point, 8, 0xFFFFFF, false, false, false, false);
+    }
+
+    public static TextComponent deserialize(JsonObject json) {
+        var dom = json.getAsJsonObject();
+
+        var color = dom.has("color") ? parseString(dom.get("color").getAsString()) : 0xFFFFFF;
+        var italic = dom.has("italic") && dom.get("italic").getAsBoolean();
+        var bold = dom.has("bold") && dom.get("bold").getAsBoolean();
+        var delete = dom.has("delete") && dom.get("delete").getAsBoolean();
+        var underline = dom.has("underline") && dom.get("underline").getAsBoolean();
+        var size = dom.has("size") ? dom.get("size").getAsFloat() : 8F;
+
+        var component = ((TextComponent) null);
+
+        if (dom.has("text")) {
+            component = TextComponent.text(dom.get("text").getAsString());
+        }
+        if (dom.has("translate")) {
+            component = TextComponent.translatable(dom.get("translate").getAsString());
+        }
+        if (dom.has("icon")) {
+            component = TextComponent.iconFont(dom.get("icon").getAsString());
+        }
+
+        if (component == null) {
+            throw new IllegalArgumentException("unknown Component type->" + json);
+        }
+
+        component.color(color);
+        component.bold(bold);
+        component.italic(italic);
+        component.delete(delete);
+        component.underline(underline);
+        component.size(size);
+
+        if (dom.has("next")) {
+            component.append(deserialize(dom.getAsJsonObject("next")));
+        }
+
+        return component;
+    }
+
+    public static TextComponent resolveJson(String json) {
+        return deserialize(JsonParser.parseString(json).getAsJsonObject());
     }
 
     public static int hash(String text, float size, int color, boolean bold, boolean italic, boolean delete, boolean underline) {
@@ -44,12 +100,22 @@ public final class TextComponent {
         return 31 * result + (underline ? 1 : 0);
     }
 
-    public String getText() {
-        return text;
+    public static int parseString(String str) {
+        if (str.startsWith("#")) {
+            return Integer.parseInt(str.substring(1), 16);
+        }
+        if (str.startsWith("0")) {
+            return Integer.parseInt(str.substring(1), 8);
+        }
+        return Integer.parseInt(str, 10);
     }
 
-    public TextComponent text(String text) {
-        this.text = text;
+    public String getContent() {
+        return content;
+    }
+
+    public TextComponent content(String text) {
+        this.content = text;
         return this;
     }
 
@@ -111,7 +177,6 @@ public final class TextComponent {
         return append;
     }
 
-
     public TextComponent getNext() {
         return next;
     }
@@ -122,7 +187,7 @@ public final class TextComponent {
 
     @Override
     public int hashCode() {
-        return hash(text, size, color, bold, italic, delete, underline);
+        return hash(content, size, color, bold, italic, delete, underline);
     }
 
     @Override
@@ -131,14 +196,14 @@ public final class TextComponent {
             return false;
         }
         return Objects.equals(
-                other.text,
-                this.text
+                other.content,
+                this.content
         ) && other.bold == this.bold && other.italic == this.italic && other.delete == this.delete && other.underline == this.underline;
     }
 
     @Override
     public String toString() {
-        return this.text + this.next.toString();
+        return this.content + this.next.toString();
     }
 
     public boolean isUnderline() {
@@ -146,10 +211,10 @@ public final class TextComponent {
     }
 
     public boolean isEmpty() {
-        if (this.text == null) {
+        if (this.content == null) {
             return true;
         }
-        return this.text.isEmpty();
+        return this.content.isEmpty();
     }
 
     public float getSize() {
@@ -168,5 +233,10 @@ public final class TextComponent {
             return this;
         }
         return this.getNext().getLast();
+    }
+
+
+    public TranslatableComponent translatable() {
+        return ((TranslatableComponent) this);
     }
 }

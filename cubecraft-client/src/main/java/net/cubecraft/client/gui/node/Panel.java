@@ -6,7 +6,6 @@ import me.gb2022.commons.registry.TypeItem;
 public class Panel extends Container {
     @Override
     public String getStatement() {
-        return super.getStatement();
-        //return this.style + ":normal";
+        return this.style;
     }
 }

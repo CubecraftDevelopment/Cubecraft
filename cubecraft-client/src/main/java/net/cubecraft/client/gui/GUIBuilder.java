@@ -10,12 +10,12 @@ import java.util.Objects;
 
 public interface GUIBuilder {
     static Layout createLayout(String content, String border) {
-        String type = content.split("/")[0];
-        String cont = content.split("/")[1];
+        var id = content.split("\\(")[0];
+        var args = content.split("\\(")[1].replace(")", "").split(",");
 
-        Layout layout = ClientGUIContext.LAYOUT.create(type);
+        Layout layout = ClientGUIContext.LAYOUT.create(id);
 
-        layout.initialize(cont.split(","));
+        layout.initialize(args);
 
         if (Objects.equals(border, "")) {
             return layout;

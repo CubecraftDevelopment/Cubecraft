@@ -1,6 +1,44 @@
-[
-  {
-    "state": "default:normal",
+{
+  "dark:normal": {
+    "child_offset_x": 0,
+    "child_offset_y": -2,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_dark.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "dark:selected": {
+    "child_offset_x": 0,
+    "child_offset_y": -1,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_dark_selected.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "dark:disabled": {
+    "child_offset_x": 0,
+    "child_offset_y": 0,
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_dark.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "default:normal": {
     "components": [
       {
         "type": "border_image",
@@ -11,8 +49,7 @@
       }
     ]
   },
-  {
-    "state": "default:selected",
+  "default:selected": {
     "components": [
       {
         "type": "border_image",
@@ -23,7 +60,7 @@
       }
     ]
   },
-  {
+  "default:disabled": {
     "state": "default:disabled",
     "components": [
       {
@@ -35,40 +72,26 @@
       }
     ]
   },
-  {
-    "state": "ore_ui:normal",
+  "card:normal": {
     "components": [
       {
         "type": "border_image",
-        "boarderH": 1,
-        "boarderV": 1,
-        "loc": "cubecraft:/gui/controls/button/button_ore_ui.png",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_card.png",
         "pos": [0, 1, 0, 1]
       }
     ]
   },
-  {
-    "state": "ore_ui:selected",
+  "card:selected": {
     "components": [
       {
         "type": "border_image",
-        "boarderH": 8,
-        "boarderV": 8,
-        "loc": "cubecraft:/gui/controls/button/button_selected_ore_ui.png",
-        "pos": [0, 1, 0, 1]
-      }
-    ]
-  },
-  {
-    "state": "ore_ui:disabled",
-    "components": [
-      {
-        "type": "border_image",
-        "boarderH": 8,
-        "boarderV": 8,
-        "loc": "cubecraft:/gui/controls/button/button_disabled_ore_ui.png",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/button_card_selected.png",
         "pos": [0, 1, 0, 1]
       }
     ]
   }
-]
+}

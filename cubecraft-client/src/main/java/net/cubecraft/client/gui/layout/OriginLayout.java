@@ -50,7 +50,7 @@ public final class OriginLayout extends Layout {
         switch (this.origin) {
             case LEFT_TOP -> {
             }
-            case LEFT_MIDDLE -> oy = scrHeight / 2 - this.height / 2 + x;
+            case LEFT_MIDDLE -> oy += scrHeight / 2 - this.height / 2;
             case LEFT_BOTTOM -> oy = scrHeight - this.height + y;
             case MIDDLE_TOP -> ox = scrWidth / 2 - this.width / 2 + x;
             case MIDDLE_MIDDLE -> {
@@ -100,28 +100,10 @@ public final class OriginLayout extends Layout {
 
 
     public enum Origin {
-        LEFT_TOP,
-        LEFT_MIDDLE,
-        LEFT_BOTTOM,
-        MIDDLE_MIDDLE,
-        MIDDLE_TOP,
-        MIDDLE_BOTTOM,
-        RIGHT_TOP,
-        RIGHT_MIDDLE,
-        RIGHT_BOTTOM;
+        LEFT_TOP, LEFT_MIDDLE, LEFT_BOTTOM, MIDDLE_MIDDLE, MIDDLE_TOP, MIDDLE_BOTTOM, RIGHT_TOP, RIGHT_MIDDLE, RIGHT_BOTTOM;
 
         public static Origin from(String meta) {
-            return switch (meta) {
-                case "left_top" -> LEFT_TOP;
-                case "left_middle" -> LEFT_MIDDLE;
-                case "left_bottom" -> LEFT_BOTTOM;
-                case "middle_top" -> MIDDLE_TOP;
-                case "middle_bottom" -> MIDDLE_BOTTOM;
-                case "right_top" -> RIGHT_TOP;
-                case "right_middle" -> RIGHT_MIDDLE;
-                case "right_bottom" -> RIGHT_BOTTOM;
-                default -> MIDDLE_MIDDLE;
-            };
+            return Origin.valueOf(meta.toUpperCase());
         }
     }
 

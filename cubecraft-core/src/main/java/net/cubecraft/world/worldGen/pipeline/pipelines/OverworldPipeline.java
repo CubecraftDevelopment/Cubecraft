@@ -107,13 +107,13 @@ public final class OverworldPipeline implements WorldGenPipelineBuilder {
                     var wx = p.toWorldPosX(x);
                     var wz = p.toWorldPosZ(z);
 
-                    var c = continental.getValue(seed, wx / 12000d, wz / 12000d);
+                    var c = continental.getValue(seed, wx / 3000d, wz / 3000d);
 
                     var continentalMask = HEIGHT.interpolate(c);
                     var erosionMask = EROSION.interpolate(c);
                     var erosionShapeValue = (erosionShape.getValue(wx / 5d, wz / 5d)) * 1.4f;
 
-                    //erosionMask *= MathHelper.scale(continentalMask, 0.35, 1.4, 0, 1);
+                    erosionMask *= MathHelper.scale(continentalMask, 0.35, 1.4, 0, 1);
 
 
                     var terrain = continentalMask * Chunk.HEIGHT;

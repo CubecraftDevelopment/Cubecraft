@@ -2,7 +2,7 @@ package net.cubecraft.client.resource;
 
 import net.cubecraft.resource.item.JsonResource;
 
-public class ModelAsset extends JsonResource {
+public final class ModelAsset extends JsonResource {
     public ModelAsset(String namespace, String relativePath) {
         super(namespace, relativePath);
     }

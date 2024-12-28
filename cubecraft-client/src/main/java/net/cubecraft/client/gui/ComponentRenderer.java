@@ -23,6 +23,10 @@ public final class ComponentRenderer {
     }
 
     public void render(Node node) {
+        if(node.getStatement().contains("none")){
+            return;
+        }
+
         ComponentRendererPart[] list = this.renderers.get(node.getStatement());
         if (list != null) {
             for (ComponentRendererPart componentPartRenderer : list) {

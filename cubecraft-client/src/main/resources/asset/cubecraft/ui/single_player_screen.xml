@@ -1,65 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<screen bg="image-bg-blur-mask" id="cubecraft:single_player_screen">
-    <topbar layout="flow/top,0,28">
-        <label layout="origin/middle_middle,0,0,0,8" type="lang" color="000000" align="middle">singleplayer.title</label>
-    </topbar>
+<Screen bg="image-bg-blur-mask" id="cubecraft:single_player_screen">
 
-    <panel layout="origin/left_top,0,0,190,193" border="0,10,40,10" style="dark">
-        <label type="lang" layout="origin/middle_top,0,10,0,12" color="ffffff" align="middle">
-            singleplayer.menu.select
-        </label>
-        <textbar id="world_search" layout="origin/middle_top,0,30,160,30" border="10,10,4,4" />
-        <button id="join_world" layout="origin/middle_top,0,75,160,30" border="10,10,4,4" enabled="false">
-            <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-                singleplayer.menu.join
-            </label>
-        </button>
-        <button id="edit_world" layout="origin/middle_top,-40,105,80,30" border="10,5,4,4" enabled="false">
-            <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-                singleplayer.menu.edit
-            </label>
-        </button>
-        <button id="delete_world" layout="origin/middle_top,40,105,80,30" border="5,10,4,4" enabled="false">
-            <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-                singleplayer.menu.delete
-            </label>
-        </button>
-    </panel>
+    <Topbar layout="anchor(0,0,0,28,0,0,0,-1)">
+        <Label layout="origin(MIDDLE_MIDDLE,0,0,0,8)" align="middle">
+            {"translate":"singleplayer.title","color":"#000000","size":8}
+        </Label>
+    </Topbar>
 
-    <panel layout="origin/left_top,0,193,190,118" border="20,10,0,20">
-        <label type="lang" layout="origin/middle_top,0,10,0,12" color="ffffff" align="middle">
-            singleplayer.menu.new
-        </label>
-        <button id="create_world" layout="origin/middle_top,0,30,160,30" border="10,10,4,4">
-            <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-                singleplayer.menu.create
-            </label>
-        </button>
-        <button id="import_world" layout="origin/middle_top,0,60,160,30" border="10,10,4,4" enabled="false">
-            <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-                singleplayer.menu.import
-            </label>
-        </button>
-    </panel>
+    <Panel layout="anchor(0,0,0,0,0,0,28,0)" style="none">
 
-    <panel layout="origin/left_top,0,0,370,150" border="190,20,40,20" scale="false,true,true,true">
-        <label type="lang" layout="origin/middle_top,0,10,0,12" color="ffffff" align="middle">
-            singleplayer.menu.list
-        </label>
+        <Panel layout="viewport(0,35,100,0)" style="dark">
+            <TextInput id="search" layout="anchor(0,0,0,30,10,60,10,-1)">
 
-        <scroll_panel id="world_list" layout="origin/left_top,0,10,0,0" border="10,10,35,10" scale="true,true,true,true">
-            <toggle_button id="card_example" layout="origin/left_top,0,50,100,60" scale="false,true,false,false" border="10,10,10,0">
-                <label id="title" type="raw" layout="origin/left_top,5,5,0,12" color="ffffff" align="left">
-                    {level_name}
-                </label>
-                <label id="created_time" type="raw" layout="origin/left_top,5,20,0,6" color="ffffff" align="left">
-                    {level_create_time}
-                </label>
-                <label id="size" type="raw" layout="origin/left_top,5,35,0,6" color="ffffff" align="left">
-                    {size}
-                </label>
-            </toggle_button>
-        </scroll_panel>
-    </panel>
-</screen>
+            </TextInput>
+
+            <Button id="searchWorld" layout="anchor(0,0,50,30,-1,10,10,-1)" style="light">
+                <Label layout="origin(middle_middle,0,0,0,12" align="middle">
+                    {"icon":"F002","color":"#333333"}
+                </Label>
+            </Button>
+
+            <Button id="importWorld" layout="anchor(0,0,50,30,-1,10,-1,10)" style="light">
+                <Label layout="origin(middle_middle,0,0,0,12" align="middle">
+                    {"icon":"F56F","color":"#333333"}
+                </Label>
+            </Button>
+
+            <Button id="createWorld" layout="anchor(0,0,50,30,10,65,-1,10)" border="6,3,0,0" style="light">
+                <Label layout="origin(middle_middle,0,0,0,8" align="middle">
+                    {"translate":"singleplayer.create","color":"#333333"}
+                </Label>
+            </Button>
+
+            <Panel layout="anchor(0,0,0,30,10,10,50,-1)" style="button_dark">
+                <Label id="worldListSize" layout="origin(LEFT_MIDDLE,4,0,0,8" align="left">
+                    {"translate":"singleplayer.list","color":"#FFFFFF"}
+                </Label>
+            </Panel>
+            <ListView id="worldList" layout="anchor(0,0,0,0,10,10,80,50)">
+                <Button layout="anchor(0,0,10,34,0,0,-1,-1)" id="_template_worldInfo" style="card">
+                    <Label id="_world_name" layout="origin(LEFT_TOP,4,4,0,12)">
+                        {"text":"{#name}","color":"#FFFFFF"}
+                    </Label>
+                    <Label id="_world_open_time" layout="origin(LEFT_TOP,4,18,0,8)">
+                        {"text":"{#world_open_time}","color":"#aaaaaa"}
+                    </Label>
+                </Button>
+            </ListView>
+        </Panel>
+
+        <Panel id="worldInfo" layout="viewport(35,100,100,0)" border="0,0,0,0" style="none">
+            <Button id="joinWorld" layout="origin(RIGHT_BOTTOM,-10,-10,120,40)" style="important">
+                <Label layout="origin(MIDDLE_MIDDLE,0,0,0,8" align="middle">
+                    {"translate":"singleplayer.join"}
+                </Label>
+            </Button>
+
+            <Label id="worldName" layout="origin(LEFT_BOTTOM,10,-40,0,36" align="left">
+                {"text":"新的世界","color":"#FFFFFF"}
+            </Label>
+            <Label id="worldFolder" layout="origin(LEFT_BOTTOM,10,-22,0,8" align="left">
+                {"text":"E:/Game/.cubecraft/saves/new_world","color":"#AAAAAA"}
+            </Label>
+            <Label id="worldLastPlayed" layout="origin(LEFT_BOTTOM,10,-12,0,8" align="left">
+                {"text":"2024/12/20 13:07:45","color":"#AAAAAA"}
+            </Label>
+        </Panel>
+    </Panel>
+</Screen>

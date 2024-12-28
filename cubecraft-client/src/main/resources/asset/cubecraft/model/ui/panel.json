@@ -1,5 +1,5 @@
 {
-  "default:normal": {
+  "default": {
     "components": [
       {
         "type": "border_image",
@@ -10,11 +10,35 @@
       }
     ]
   },
-  "dark:normal": {
+  "dark": {
     "components": [
       {
-        "type": "color",
-        "color": "#313234",
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/panel_dark.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "button_dark": {
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/panel_button_dark.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "light": {
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/panel_light.png",
         "pos": [0, 1, 0, 1]
       }
     ]

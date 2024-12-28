@@ -7,16 +7,11 @@ import me.gb2022.quantum3d.device.event.WindowFocusEvent;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.context.ClientGUIContext;
 import net.cubecraft.client.event.ClientRendererInitializeEvent;
+import net.cubecraft.client.internal.plugins.ParticlePlugin;
 import net.cubecraft.client.registry.ClientSettings;
 
 
 public class ClientListener {
-
-    @EventHandler
-    public void onClientRendererInitialize(ClientRendererInitializeEvent e) {
-        e.renderer().world.getEventBus().registerEventListener(new ParticleHandler());
-    }
-
     @EventHandler
     public void onKeyEventPressed(KeyboardPressEvent e) {
         if (e.getKey() == KeyboardButton.KEY_F11) {
@@ -27,9 +22,6 @@ public class ClientListener {
             if (guiManager.getScreen().getParentScreen() != null) {
                 guiManager.setScreen(guiManager.getScreen().getParentScreen());
             }
-        }
-        if (e.getKey() == KeyboardButton.KEY_F3) {
-            CubecraftClient.getInstance().isDebug = !CubecraftClient.getInstance().isDebug;
         }
     }
 

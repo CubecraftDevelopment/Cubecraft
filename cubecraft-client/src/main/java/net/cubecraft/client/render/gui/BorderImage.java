@@ -1,13 +1,14 @@
 package net.cubecraft.client.render.gui;
 
-import com.google.gson.*;
+import com.google.gson.JsonObject;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
-import me.gb2022.quantum3d.util.ShapeRenderer;
 import me.gb2022.quantum3d.texture.Texture2D;
+import me.gb2022.quantum3d.util.ShapeRenderer;
 import net.cubecraft.client.gui.node.Node;
 import net.cubecraft.util.DeserializedConstructor;
+import org.lwjgl.opengl.GL11;
 
 @TypeItem("border_image")
 public final class BorderImage extends ImageComponentRendererPart {
@@ -45,9 +46,8 @@ public final class BorderImage extends ImageComponentRendererPart {
         double tbh = (double) boarderH / tex.getWidth();
         double tbv = (double) boarderV / tex.getHeight();
 
-        int b = (int) (tbh * h);
-        int x0In = x + b, x1In = x + w - b, x1Out = x + w;
-        int y0In = (int) (y + tbv * h), y1In = (int) (y + h - tbv * h), y1Out = y + h;
+        int x0In = x + this.boarderH, x1In = x + w - this.boarderH, x1Out = x + w;
+        int y0In = (y + this.boarderV), y1In = (y + h - this.boarderV), y1Out = y + h;
 
         tex.bind();
         LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(36);

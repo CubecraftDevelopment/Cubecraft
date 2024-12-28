@@ -12,14 +12,13 @@ import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
 import me.gb2022.quantum3d.util.ShapeRenderer;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
-@TypeItem(WorldRendererType.HUD)
+@TypeItem("cubecraft:hud_renderer")
 public class HUDRenderer extends IWorldRenderer {
     public boolean allowDebug = true;
 
@@ -49,7 +48,6 @@ public class HUDRenderer extends IWorldRenderer {
         LegacyVertexBuilder builder = VertexBuilderAllocator.createByPrefer(64, DrawMode.LINES);
         builder.begin();
         builder.color(0.1f, 0.1f, 0.1f, 1.0f);
-
 
         var vx = Math.abs(this.viewCamera.getX() - sel.getX()-0.3);
         var vy = Math.abs(this.viewCamera.getY() - sel.getY()-0.3);

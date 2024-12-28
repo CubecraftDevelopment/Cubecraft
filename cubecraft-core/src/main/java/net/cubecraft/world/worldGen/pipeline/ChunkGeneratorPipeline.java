@@ -32,7 +32,7 @@ public final class ChunkGeneratorPipeline {
     }
 
     public ChunkGeneratorPipeline addStructure(StructureController controller) {
-        structureControllers.add(controller);
+        this.structureControllers.add(controller);
         return this;
     }
 
@@ -61,10 +61,6 @@ public final class ChunkGeneratorPipeline {
     }
 
     public void completeChunk(WorldChunk chunk, WorldGenerator generator) {
-        if(this.afterStructure.getHandlerList().isEmpty()) {
-            return;
-        }
-
         var cache = chunk.getWorld().getChunkCache();
         var pos = chunk.getKey();
 

@@ -23,7 +23,7 @@ public interface FontRenderer {
     }
 
     default void render(String string, int x, int y, int color, int size, double z, FontAlignment alignment) {
-        render(TextComponent.create(string).size(size).color(color), x, y, z, alignment);
+        render(TextComponent.text(string).size(size).color(color), x, y, z, alignment);
     }
 
     default void gc(){

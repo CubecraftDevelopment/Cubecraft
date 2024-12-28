@@ -6,17 +6,21 @@ import net.cubecraft.ContentRegistries;
 import net.cubecraft.Side;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.context.ClientGUIContext;
-import net.cubecraft.client.event.app.ClientDisposeEvent;
-import net.cubecraft.client.event.app.ClientSetupEvent;
-import net.cubecraft.client.event.gui.context.GUIContextInitEvent;
+import net.cubecraft.client.event.ClientDisposeEvent;
+import net.cubecraft.client.event.ClientSetupEvent;
+import net.cubecraft.client.gui.event.ctx.GUIContextInitEvent;
 import net.cubecraft.client.internal.entity.BlockBrakeParticle;
 import net.cubecraft.client.internal.handler.ClientAssetLoader;
 import net.cubecraft.client.internal.handler.ClientListener;
-import net.cubecraft.client.internal.handler.ParticleHandler;
 import net.cubecraft.client.internal.handler.ScreenController;
 import net.cubecraft.client.internal.plugins.CameraPlugin;
+import net.cubecraft.client.internal.plugins.DebugPlugin;
+import net.cubecraft.client.internal.plugins.ParticlePlugin;
 import net.cubecraft.client.internal.renderer.particle.ParticleRenderers;
-import net.cubecraft.client.registry.*;
+import net.cubecraft.client.registry.ColorMapRegistry;
+import net.cubecraft.client.registry.ColorMaps;
+import net.cubecraft.client.registry.GUIRegistry;
+import net.cubecraft.client.registry.RenderRegistry;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.block.IBlockRenderer;
 import net.cubecraft.client.render.block.LiquidRenderer;
@@ -57,16 +61,21 @@ public final class CubecraftClientInternalMod {
 
     @EventHandler
     public static void onClientSetup(ClientSetupEvent event) {
-        event.getClient().addComponent(new CameraPlugin());
+        var client = event.getClient();
+
+        client.addComponent(new CameraPlugin());
+        client.addComponent(new ParticlePlugin());
+        client.addComponent(new DebugPlugin());
+
 
         ColorMaps.COLOR_MAP.registerGetter(ColorMapRegistry.class);
-        CubecraftClient.getInstance().getClientEventBus().registerEventListener(new ParticleHandler());
 
         ClientAssetLoader.init();
 
         LevelRenderer.WORLD_RENDERER.registerGetFunctionProvider(RenderRegistry.class);
         ParticleRenderer.PARTICLE_RENDERERS.registerFieldHolder(ParticleRenderers.class);
 
+        //block model plugin
         Blocks.REGISTRY.withShadow((reg) -> {
             var id = reg.getName();
             var namespace = NSStringDispatcher.getNameSpace(id);
@@ -86,10 +95,7 @@ public final class CubecraftClientInternalMod {
                 return;
             }
 
-            IBlockRenderer.REGISTRY.register(
-                    id,
-                    new ModelBlockRenderer(new ModelAsset(namespace + ":/block/" + localId + ".json"))
-            );
+            IBlockRenderer.REGISTRY.register(id, new ModelBlockRenderer(new ModelAsset(namespace + ":/block/" + localId + ".json")));
         });
     }
 

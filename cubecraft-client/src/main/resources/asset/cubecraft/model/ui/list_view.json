@@ -1,0 +1,27 @@
+{
+  "default:normal": {
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/panel_dark.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  },
+  "light:normal": {
+    "components": [
+      {
+        "type": "border_image",
+        "boarderH": 3,
+        "boarderV": 3,
+        "loc": "cubecraft:/gui/control/panel_light.png",
+        "pos": [0, 1, 0, 1]
+      }
+    ]
+  }
+}
+
+
+

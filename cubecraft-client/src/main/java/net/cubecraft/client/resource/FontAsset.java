@@ -5,7 +5,7 @@ import net.cubecraft.resource.item.IResource;
 import java.awt.*;
 import java.io.InputStream;
 
-public class FontAsset extends IResource {
+public final class FontAsset extends IResource {
     private Font font;
 
     public FontAsset(String namespace, String relativePath) {

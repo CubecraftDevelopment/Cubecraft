@@ -16,10 +16,9 @@ import net.cubecraft.SharedContext;
 import net.cubecraft.Side;
 import net.cubecraft.auth.Session;
 import net.cubecraft.client.context.ClientGUIContext;
-import net.cubecraft.client.context.Devicecontext;
-import net.cubecraft.client.event.app.ClientDisposeEvent;
-import net.cubecraft.client.event.app.ClientPostSetupEvent;
-import net.cubecraft.client.event.app.ClientSetupEvent;
+import net.cubecraft.client.event.ClientDisposeEvent;
+import net.cubecraft.client.event.ClientPostSetupEvent;
+import net.cubecraft.client.event.ClientSetupEvent;
 import net.cubecraft.client.gui.GUIContext;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
@@ -27,8 +26,9 @@ import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.screen.HUDScreen;
 import net.cubecraft.client.gui.screen.Screen;
 import net.cubecraft.client.gui.screen.ScreenBuilder;
-import net.cubecraft.client.gui.screen.StudioLoadingScreen;
-import net.cubecraft.client.internal.handler.PlayerController;
+import net.cubecraft.client.gui.screen.animation.StudioLoadingScreen;
+import net.cubecraft.client.internal.PlayerController;
+import net.cubecraft.client.internal.plugins.ScreenControllerBinder;
 import net.cubecraft.client.net.base.NetworkClient;
 import net.cubecraft.client.net.kcp.KCPNetworkClient;
 import net.cubecraft.client.particle.ParticleEngine;
@@ -36,7 +36,8 @@ import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.registry.TextureRegistry;
 import net.cubecraft.client.render.LevelRenderer;
-import net.cubecraft.client.world.ClientWorldManager;
+import net.cubecraft.client.world.ActiveLevelProvider;
+import net.cubecraft.client.world.LocalLevelProvider;
 import net.cubecraft.mod.ModLoader;
 import net.cubecraft.mod.ModManager;
 import net.cubecraft.util.ObjectContainer;
@@ -50,6 +51,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class CubecraftClient extends GameApplication {
     public static final ObjectContainer<CubecraftClient> INSTANCE = new ObjectContainer<>(null);
@@ -57,20 +59,18 @@ public final class CubecraftClient extends GameApplication {
     private static final Logger LOGGER = LogManager.getLogger("Client");
 
     private final List<ClientComponent> components = new ArrayList<>(4);
-    private final Devicecontext deviceContext = new Devicecontext();
+    private final DeviceHolder deviceContext = new DeviceHolder();
     private final GUIContext gui = new GUIContext();
-    private final ClientGUIContext guiContext = new ClientGUIContext(this, this.getWindow());
-
+    private final ClientGUIContext guiContext;
 
     private final SimpleEventBus clientEventBus = new SimpleEventBus();
 
     private final NetworkClient clientIO = new KCPNetworkClient();
-    private final ClientWorldManager clientWorldManager = new ClientWorldManager(this);
     private final Session session = new Session("GrassBlock2022", "cubecraft:default");
     private final GameSetting setting = new GameSetting("cubecraft-client");
-
     public int maxFPS = 60;
     public boolean isDebug;
+    private ActiveLevelProvider activeLevelProvider = null;
     private PlayerController controller;
     private ParticleEngine particleEngine;
     private long lastGCTime;
@@ -82,13 +82,17 @@ public final class CubecraftClient extends GameApplication {
         INSTANCE.setObj(this);
         deviceContext.initContext();
 
-        this.components.add(this.deviceContext);
-        //this.components.add(this.gui);
+        //inject components here...
+        this.components.add(new DeviceHolder());
+        this.components.add(new LocalLevelProvider());
         this.components.add(new LevelRenderer());
+        this.components.add(new ScreenControllerBinder());
 
         for (var component : this.components) {
             component.init(this);
         }
+
+        this.guiContext = new ClientGUIContext(this, this.getWindow());
     }
 
     public static CubecraftClient getInstance() {
@@ -244,12 +248,13 @@ public final class CubecraftClient extends GameApplication {
         }
 
 
-        GLUtil.setupOrthogonalCamera(0,
-                                     0,
-                                     window.getWidth(),
-                                     window.getHeight(),
-                                     screenInfo.getScreenWidth(),
-                                     screenInfo.getScreenHeight()
+        GLUtil.setupOrthogonalCamera(
+                0,
+                0,
+                window.getWidth(),
+                window.getHeight(),
+                screenInfo.getScreenWidth(),
+                screenInfo.getScreenHeight()
         );
 
 
@@ -303,6 +308,13 @@ public final class CubecraftClient extends GameApplication {
         }
     }
 
+    public void setActiveLevelProvider(ActiveLevelProvider activeLevelProvider) {
+        this.activeLevelProvider = activeLevelProvider;
+    }
+
+    public Optional<ActiveLevelProvider> getActiveLevelProvider() {
+        return Optional.of(this.activeLevelProvider);
+    }
 
     //----[Client component API]----
     public void addComponent(ClientComponent component) {
@@ -313,14 +325,14 @@ public final class CubecraftClient extends GameApplication {
         this.components.removeIf(t::isInstance);
     }
 
-    public <C extends ClientComponent> C getComponent(Class<C> t) {
+    public <C extends ClientComponent> Optional<C> getComponent(Class<C> t) {
         for (var c : this.components) {
             if (t.isInstance(c)) {
-                return t.cast(c);
+                return Optional.of(t.cast(c));
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
@@ -328,10 +340,11 @@ public final class CubecraftClient extends GameApplication {
         var window = this.getWindow();
         var scale = ClientSettings.UISetting.getFixedGUIScale();
 
-        return new DisplayScreenInfo((int) Math.max(window.getWidth() / scale, 1),
-                                     (int) Math.max(window.getHeight() / scale, 1),
-                                     (int) (Math.max(window.getWidth() / scale, 1) / 2),
-                                     (int) (Math.max(window.getHeight() / scale, 1) / 2)
+        return new DisplayScreenInfo(
+                (int) Math.max(window.getWidth() / scale, 1),
+                (int) Math.max(window.getHeight() / scale, 1),
+                (int) (Math.max(window.getWidth() / scale, 1) / 2),
+                (int) (Math.max(window.getHeight() / scale, 1) / 2)
         );
     }
 
@@ -359,12 +372,8 @@ public final class CubecraftClient extends GameApplication {
         return this.session;
     }
 
-    public ClientWorldManager getClientWorldManager() {
-        return this.clientWorldManager;
-    }
-
-    public Devicecontext getClientDeviceContext() {
-        return deviceContext;
+    public DeviceHolder getClientDeviceContext() {
+        return this.getComponent(DeviceHolder.class).orElseThrow();
     }
 
     public ClientGUIContext getClientGUIContext() {

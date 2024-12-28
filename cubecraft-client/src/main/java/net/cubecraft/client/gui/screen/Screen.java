@@ -8,7 +8,8 @@ import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.SharedObjects;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.event.gui.component.ComponentInitializeEvent;
+import net.cubecraft.client.gui.event.ScreenInitializeEvent;
+import net.cubecraft.client.gui.event.component.ComponentInitializeEvent;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
 import net.cubecraft.client.gui.font.FontAlignment;
@@ -65,7 +66,7 @@ public class Screen extends Container {
         super.init();
         this.client = CubecraftClient.getInstance();
         this.client.getClientDeviceContext().getMouse().setMouseGrabbed(this.grabMouse);
-        this.context.getEventBus().callEvent(new ComponentInitializeEvent(this, this, this.context), getId());
+        this.context.getEventBus().callEvent(new ComponentInitializeEvent(this), getId());
     }
 
     //debug

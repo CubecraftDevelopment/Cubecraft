@@ -7,16 +7,16 @@ public abstract class WorldEvent {
     private final Level level;
     private final World world;
 
-    protected WorldEvent(Level level, World world) {
+    public WorldEvent(Level level, World world) {
         this.level = level;
         this.world = world;
     }
 
-    public Level getLevel() {
+    public final Level getLevel() {
         return level;
     }
 
-    public World getWorld() {
+    public final World getWorld() {
         return world;
     }
 }

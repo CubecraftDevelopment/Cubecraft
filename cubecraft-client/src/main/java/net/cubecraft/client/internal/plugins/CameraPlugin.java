@@ -11,13 +11,13 @@ import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.util.AnimatedValue;
 
-public class CameraPlugin extends ClientComponent {
+public final class CameraPlugin extends ClientComponent {
     private final AnimatedValue zoom = new AnimatedValue();
     private LevelRenderer renderer;
 
     @Override
     public void clientSetup(CubecraftClient client) {
-        this.renderer = client.getComponent(LevelRenderer.class);
+        this.renderer = client.getComponent(LevelRenderer.class).orElseThrow();
 
         client.getClientEventBus().registerEventListener(this);
         client.getDeviceEventBus().registerEventListener(this);

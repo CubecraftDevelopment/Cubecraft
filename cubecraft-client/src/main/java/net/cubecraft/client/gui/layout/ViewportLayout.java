@@ -23,8 +23,8 @@ public final class ViewportLayout extends Layout {
         this.setAbsoluteY((int) (top / 100 * scrHeight));
         this.width = (int) (right / 100 * scrWidth - getAbsoluteX());
         this.height = (int) (bottom / 100 * scrHeight - getAbsoluteY());
-        this.setAbsoluteX(this.getAbsoluteX() + this.getBorder().left());
-        this.setAbsoluteY(this.getAbsoluteY() + this.getBorder().top());
+        this.setAbsoluteX(x + this.getAbsoluteX() + this.getBorder().left());
+        this.setAbsoluteY(y + this.getAbsoluteY() + this.getBorder().top());
         this.width -= this.getBorder().right() * 2;
         this.height -= this.getBorder().bottom() * 2;
 

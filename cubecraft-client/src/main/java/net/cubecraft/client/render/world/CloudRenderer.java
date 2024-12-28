@@ -12,7 +12,6 @@ import me.gb2022.quantum3d.render.vertex.VertexBuilderAllocator;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
 import me.gb2022.quantum3d.util.GLUtil;
 import me.gb2022.quantum3d.util.camera.ViewFrustum;
-import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.render.LevelRenderer;
 import net.cubecraft.client.render.RenderType;
@@ -22,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
-@TypeItem(WorldRendererType.CLOUD)
+@TypeItem("cubecraft:cloud_renderer")
 public final class CloudRenderer extends IWorldRenderer {
     public static final VertexBuilderAllocator ALLOCATOR = new VertexBuilderAllocator(LevelRenderer.ALLOCATOR);
 

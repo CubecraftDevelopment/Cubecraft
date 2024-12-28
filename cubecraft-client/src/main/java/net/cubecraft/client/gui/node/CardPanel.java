@@ -1,7 +1,7 @@
 package net.cubecraft.client.gui.node;
 
 import net.cubecraft.client.context.ClientGUIContext;
-import net.cubecraft.client.event.gui.component.CardPanelClickedEvent;
+import net.cubecraft.client.gui.event.component.CardPanelClickedEvent;
 import me.gb2022.commons.event.EventHandler;
 import me.gb2022.commons.file.FAMLDeserializer;
 import me.gb2022.commons.file.XmlReader;
@@ -30,7 +30,7 @@ public class CardPanel extends Container {
     @EventHandler
     public void onClicked(MouseClickEvent e) {
         if (this.hovered && this.enabled && e.getButton() == MouseButton.MOUSE_BUTTON_LEFT) {
-            this.context.getEventBus().callEvent(new CardPanelClickedEvent(this, this.screen, this.context), this.screen.getId());
+            this.context.getEventBus().callEvent(new CardPanelClickedEvent(this), this.screen.getId());
         }
     }
 

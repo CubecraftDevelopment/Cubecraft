@@ -1,15 +1,12 @@
 package net.cubecraft.client.render.world;
 
-import me.gb2022.commons.math.AABB;
 import me.gb2022.commons.registry.RegisterMap;
 import me.gb2022.commons.registry.TypeItem;
 import me.gb2022.quantum3d.legacy.draw.LegacyVertexBuilder;
 import me.gb2022.quantum3d.legacy.draw.VertexBuilderAllocator;
-import me.gb2022.quantum3d.util.FrustumCuller;
 import me.gb2022.quantum3d.util.camera.ViewFrustum;
 import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.particle.ParticleEngine;
 import net.cubecraft.client.render.RenderType;
 import net.cubecraft.client.render.renderer.IParticleRenderer;
@@ -21,7 +18,7 @@ import java.util.ArrayList;
 
 //todo:全局透明
 //todo:修复贴图丢失
-@TypeItem(WorldRendererType.PARTICLE)
+@TypeItem("cubecraft:particle_renderer")
 public class ParticleRenderer extends IWorldRenderer {
     @SuppressWarnings("rawtypes")
     public static final RegisterMap<IParticleRenderer> PARTICLE_RENDERERS = new RegisterMap<>(IParticleRenderer.class);

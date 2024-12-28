@@ -2,13 +2,15 @@ package net.cubecraft.client.registry;
 
 import me.gb2022.commons.registry.ConstructingMap;
 import me.gb2022.commons.registry.ItemRegisterFunc;
-import net.cubecraft.client.gui.layout.FlowLayout;
-import net.cubecraft.client.gui.layout.Layout;
-import net.cubecraft.client.gui.layout.OriginLayout;
-import net.cubecraft.client.gui.layout.ViewportLayout;
+import net.cubecraft.client.gui.layout.*;
 import net.cubecraft.client.gui.node.*;
+import net.cubecraft.client.gui.node.component.ImageView;
+import net.cubecraft.client.gui.node.component.Label;
+import net.cubecraft.client.gui.node.component.SplashText;
+import net.cubecraft.client.gui.node.control.Button;
+import net.cubecraft.client.gui.node.control.TextInput;
+import net.cubecraft.client.gui.node.control.ToggleButton;
 import net.cubecraft.client.render.gui.*;
-import net.cubecraft.client.render.gui.ComponentRendererPart;
 
 public class GUIRegistry {
     @ItemRegisterFunc(ComponentRendererPart.class)
@@ -23,18 +25,20 @@ public class GUIRegistry {
 
     @ItemRegisterFunc(Node.class)
     public static void registerComponents(ConstructingMap<Node> nodes) {
-        nodes.registerItem(Label.class);
-        nodes.registerItem(Button.class);
-        nodes.registerItem(Panel.class);
-        nodes.registerItem(Image.class);
-        nodes.registerItem(Icon.class);
+        nodes.registerItem("Label", Label.class);
+        nodes.registerItem("Button", Button.class);
+        nodes.registerItem("Panel", Panel.class);
+        nodes.registerItem("ImageView", ImageView.class);
+        nodes.registerItem("FontIcon", SplashText.class);
 
-        nodes.registerItem(ScrollPanel.class);
-        nodes.registerItem(CardPanel.class);
-        nodes.registerItem(SplashText.class);
-        nodes.registerItem(TopBar.class);
-        nodes.registerItem(TextBar.class);
-        nodes.registerItem(ToggleButton.class);
+        nodes.registerItem("ListView", ListView.class);
+        nodes.registerItem("ScrollPanel",ScrollPanel.class);
+        nodes.registerItem("CardPanel",CardPanel.class);
+        nodes.registerItem("Splash",SplashText.class);
+        nodes.registerItem("Topbar",TopBar.class);
+        nodes.registerItem("TextInput", TextInput.class);
+        nodes.registerItem("ToggleButton", ToggleButton.class);
+
     }
 
     @ItemRegisterFunc(Layout.class)
@@ -42,5 +46,6 @@ public class GUIRegistry {
         layouts.registerItem(OriginLayout.class);
         layouts.registerItem(ViewportLayout.class);
         layouts.registerItem(FlowLayout.class);
+        layouts.registerItem(AnchorLayout.class);
     }
 }

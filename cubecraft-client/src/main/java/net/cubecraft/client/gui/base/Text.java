@@ -18,7 +18,7 @@ public class Text {
     private final boolean isIcon;
 
     public Text(String text, int color, FontAlignment alignment, boolean isIcon) {
-        this.text = TextComponent.create(text).color(color);
+        this.text = TextComponent.text(text).color(color);
         this.alignment = alignment;
         this.isIcon = isIcon;
     }

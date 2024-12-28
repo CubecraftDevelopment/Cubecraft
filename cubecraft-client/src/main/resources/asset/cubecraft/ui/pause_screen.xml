@@ -1,31 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<screen bg="in-game-mask" id="cubecraft:pause_screen">
-    <label type="lang" layout="origin/middle_middle,0,-105,0,16" color="ffffff" align="middle">
-        pause_screen.title
-    </label>
-    <button layout="origin/middle_middle,0,-60,300,30" border="0,0,0,4" id="button_resume">
-        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            pause_screen.button.resume
-        </label>
-    </button>
-    <button layout="origin/middle_middle,0,-30,300,30" border="0,0,0,4" id="button_option">
-        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            pause_screen.button.option
-        </label>
-    </button>
-    <button layout="origin/middle_middle,-75,0,150,30" border="0,4,0,4" id="button_advancement">
-        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            pause_screen.button.advancement
-        </label>
-    </button>
-    <button layout="origin/middle_middle,75,0,150,30" border="4,0,0,4" id="button_open_to_net">
-        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            pause_screen.button.open_to_net
-        </label>
-    </button>
-    <button layout="origin/middle_middle,0,30,300,30" border="0,0,0,4" id="button_quit">
-        <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
-            pause_screen.button.quit
-        </label>
-    </button>
-</screen>
+<Screen bg="in-game-mask" id="cubecraft:pause_screen">
+    <Topbar layout="anchor(0,0,0,28,0,0,0,-1)">
+        <Label layout="origin(MIDDLE_MIDDLE,0,0,0,8)" align="middle">
+            {"translate":"pause.title","color":"#000000","size":8}
+        </Label>
+    </Topbar>
+
+
+    <Panel layout="anchor(0,0,0,0,0,0,28,0)" style="none">
+        <Panel layout="anchor(0,0,200,0,0,-1,0,0)" style="dark">
+            <Label layout="origin(LEFT_TOP,10,24,0,12)" align="left">
+                {"icon":"f0c9",color:"#FFFFFF"}
+            </Label>
+
+            <Label layout="origin(LEFT_TOP,24,24,0,12)" align="left">
+                {"translate":"pause.title","color":"#FFFFFF"}
+            </Label>
+
+            <Button id="back" layout="anchor(0,0,50,30,6,6,50,-1)" style="light">
+                <Label layout="origin(middle_middle,0,0,0,8)" align="middle">
+                    {"translate":"pause.resume","color":"#333333"}
+                </Label>
+            </Button>
+
+            <Button id="options" layout="anchor(0,0,50,30,6,6,85,-1)" style="light">
+                <Label layout="origin(middle_middle,0,0,0,8)" align="middle">
+                    {"translate":"option.title","color":"#333333"}
+                </Label>
+            </Button>
+
+            <Button id="stats" layout="anchor(0,0,50,30,6,6,120,-1)" style="light">
+                <Label layout="origin(middle_middle,0,0,0,8)" align="middle">
+                    {"translate":"pause.stats","color":"#333333"}
+                </Label>
+            </Button>
+
+
+            <Button id="quit" layout="anchor(0,0,50,30,6,6,-1,6)" style="danger">
+                <Label layout="origin(middle_middle,0,0,0,8)" align="middle">
+                    {"translate":"pause.quit_sp","color":"#FFFFFF"}
+                </Label>
+            </Button>
+        </Panel>
+
+        <Panel layout="viewport(35,100,100,0)" border="0,0,0,0" style="none">
+            <!--todo-->
+            <button layout="origin/middle_middle,75,0,150,30" border="4,0,0,4" id="button_open_to_net">
+                <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+                    pause_screen.button.open_to_net
+                </label>
+            </button>
+            <button layout="origin/middle_middle,0,30,300,30" border="0,0,0,4" id="button_quit">
+                <label type="lang" layout="origin/middle_middle,0,0,0,8" color="ffffff" align="middle">
+                    pause_screen.button.quit
+                </label>
+            </button>
+        </Panel>
+    </Panel>
+</Screen>

@@ -10,6 +10,9 @@ import me.gb2022.commons.registry.ConstructingMap;
 import me.gb2022.commons.registry.ItemRegisterEvent;
 import me.gb2022.commons.threading.TaskProgressUpdateListener;
 import me.gb2022.quantum3d.device.Window;
+import me.gb2022.quantum3d.device.event.KeyboardCharEvent;
+import me.gb2022.quantum3d.device.event.KeyboardPressEvent;
+import me.gb2022.quantum3d.device.event.MouseClickEvent;
 import me.gb2022.quantum3d.device.event.MousePosEvent;
 import me.gb2022.quantum3d.device.listener.WindowListener;
 import me.gb2022.quantum3d.lwjgl.FrameBuffer;
@@ -20,7 +23,7 @@ import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.SharedContext;
 import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.event.gui.context.GUIContextInitEvent;
+import net.cubecraft.client.gui.event.ctx.GUIContextInitEvent;
 import net.cubecraft.client.gui.ComponentRenderer;
 import net.cubecraft.client.gui.ScreenUtil;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
@@ -28,7 +31,11 @@ import net.cubecraft.client.gui.base.Text;
 import net.cubecraft.client.gui.font.FontRenderer;
 import net.cubecraft.client.gui.layout.Layout;
 import net.cubecraft.client.gui.node.Node;
-import net.cubecraft.client.gui.screen.*;
+import net.cubecraft.client.gui.screen.HUDScreen;
+import net.cubecraft.client.gui.screen.Screen;
+import net.cubecraft.client.gui.screen.ScreenBuilder;
+import net.cubecraft.client.gui.screen.animation.AnimationScreen;
+import net.cubecraft.client.gui.screen.animation.LogoLoadingScreen;
 import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.render.gui.ComponentRendererPart;
 import net.cubecraft.client.resource.ModelAsset;
@@ -236,20 +243,30 @@ public final class ClientGUIContext extends net.cubecraft.client.context.ClientC
         return window;
     }
 
-    public int getFixedMouseX() {
-        return fixedMouseX;
-    }
-
-    public int getFixedMouseY() {
-        return fixedMouseY;
-    }
-
     @EventHandler
     public void onMousePos(MousePosEvent e) {
         double scale = ClientSettings.UISetting.getFixedGUIScale();
         this.fixedMouseX = (int) (e.getX() / scale);
         this.fixedMouseY = (int) (e.getY() / scale);
+
+        this.screen.onMousePosition(e.getMouse(), this.fixedMouseX, this.fixedMouseY);
     }
+
+    @EventHandler
+    public void onMouseClick(MouseClickEvent e) {
+        this.screen.onMouseClicked(e.getMouse(), this.fixedMouseX, this.fixedMouseY, e.getButton());
+    }
+
+    @EventHandler
+    public void onKeyboardPress(KeyboardPressEvent e) {
+        this.screen.onKeyboardPressed(e.getKeyboard(), e.getKey());
+    }
+
+    @EventHandler
+    public void onKeyboardChar(KeyboardCharEvent e) {
+        this.screen.onKeyboardChar(e.getKeyboard(), e.getCharacter());
+    }
+
 
     @EventHandler
     public void onResourceReload(ResourceLoadStartEvent event) {
@@ -330,7 +347,9 @@ public final class ClientGUIContext extends net.cubecraft.client.context.ClientC
             if (!event.isMap(NODE)) {
                 return;
             }
-            String id = event.getId();
+            String id = event.getId().replaceAll("([a-z])([A-Z])", "$1_$2")  // 小写字母和大写字母之间插入下划线
+                    .replaceAll("([A-Z])([A-Z][a-z])", "$1_$2")  // 处理连续的大写字母
+                    .toLowerCase();
 
             ModelAsset asset = new ModelAsset("cubecraft:/ui/" + id + ".json");
             String resID = "cubecraft:" + id + "_render_controller";

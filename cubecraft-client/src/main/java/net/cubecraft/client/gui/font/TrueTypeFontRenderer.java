@@ -1,14 +1,15 @@
 package net.cubecraft.client.gui.font;
 
-import me.gb2022.quantum3d.util.GLUtil;
-import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.quantum3d.render.ShapeRenderer;
 import me.gb2022.quantum3d.render.vertex.DrawMode;
 import me.gb2022.quantum3d.render.vertex.VertexBuilder;
 import me.gb2022.quantum3d.render.vertex.VertexBuilderUploader;
 import me.gb2022.quantum3d.render.vertex.VertexFormat;
-import net.cubecraft.client.registry.ClientSettings;
+import me.gb2022.quantum3d.texture.Texture2D;
+import me.gb2022.quantum3d.util.GLUtil;
 import net.cubecraft.client.context.ClientGUIContext;
+import net.cubecraft.client.registry.ClientSettings;
+import net.cubecraft.text.IconFontComponent;
 import net.cubecraft.text.TextComponent;
 
 import java.awt.*;
@@ -64,7 +65,6 @@ public final class TrueTypeFontRenderer implements FontRenderer {
 
         int width = this._width(start, 0);
 
-
         var scaleMod = ClientSettings.UISetting.getGUIScaleMod();
 
         int startX = -1;
@@ -113,6 +113,12 @@ public final class TrueTypeFontRenderer implements FontRenderer {
     }
 
     private static final class CompiledComponent {
+        private static final BufferedImage V_HOLDER = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
+        static {
+
+        }
+
         private final Texture2D texture;
 
         private CompiledComponent(Texture2D texture) {
@@ -124,44 +130,41 @@ public final class TrueTypeFontRenderer implements FontRenderer {
         }
 
         static CompiledComponent generate(Font fontFamily, TextComponent text) {
-            float size = text.getSize();
+            var size = text.getSize();
+            var scale = ClientSettings.UISetting.getGUIScaleMod();
+            var v_graphics = V_HOLDER.createGraphics();
+            var font = createStyledFont(
+                    fontFamily.deriveFont((size * RESOLUTION_SCALE * scale)),
+                    text.isBold(),
+                    text.isItalic(),
+                    text.isUnderline(),
+                    text.isDelete()
+            );
 
-            Font font = fontFamily.deriveFont(size);
+            v_graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            v_graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
+            v_graphics.setFont(font);
 
-            BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-            FontMetrics fm = img.getGraphics().getFontMetrics(font);
-
-            String wrap = text.getText();
-
-            int width = (int) fm.getStringBounds(wrap, img.getGraphics()).getWidth();
-            int height = (int) fm.getStringBounds(wrap, img.getGraphics()).getHeight();
+            var fm = v_graphics.getFontMetrics(font);
+            var wrap = text.getContent();
+            var width = fm.stringWidth(wrap);
+            var height = fm.getHeight();
 
             if (width == 0 || height == 0) {
                 return new CompiledComponent();
             }
 
-            var scale = ClientSettings.UISetting.getGUIScaleMod();
+            var image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            var g = image.createGraphics();
 
-            img = new BufferedImage(
-                    (int) (Math.abs(width) * RESOLUTION_SCALE * scale),
-                    (int) (Math.abs(height) * RESOLUTION_SCALE * scale),
-                    BufferedImage.TYPE_INT_ARGB
-            );
-            Graphics2D g = img.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
-            g.setFont(createStyledFont(
-                    font.deriveFont((float) (size * RESOLUTION_SCALE * scale)),
-                    text.isBold(),
-                    text.isItalic(),
-                    text.isUnderline(),
-                    text.isDelete()
-            ));
+            g.setFont(font);
             g.setColor(new Color(text.getColor()));
             g.drawString(wrap, 0, (int) (size * RESOLUTION_SCALE * scale));
             Texture2D tex = new Texture2D(false, false);
             tex.generateTexture();
-            tex.load(img);
+            tex.load(image);
 
             return new CompiledComponent(tex);
         }

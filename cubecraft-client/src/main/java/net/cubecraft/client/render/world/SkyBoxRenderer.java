@@ -7,7 +7,6 @@ import me.gb2022.quantum3d.lwjgl.batching.GLRenderList;
 import me.gb2022.quantum3d.render.vertex.*;
 import me.gb2022.quantum3d.texture.Texture2D;
 import me.gb2022.quantum3d.util.GLUtil;
-import net.cubecraft.client.internal.renderer.world.WorldRendererType;
 import net.cubecraft.client.registry.ClientSettings;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.render.LevelRenderer;
@@ -18,7 +17,7 @@ import org.lwjgl.opengl.GL14;
 
 import java.awt.image.BufferedImage;
 
-@TypeItem(WorldRendererType.SKY_BOX)
+@TypeItem("cubecraft:sky_box_renderer")
 public final class SkyBoxRenderer extends IWorldRenderer {
     private static final VertexBuilderAllocator ALLOCATOR = new VertexBuilderAllocator(LevelRenderer.ALLOCATOR);
     private final GLRenderList skyRenderBatch = new GLRenderList();
@@ -182,6 +181,4 @@ public final class SkyBoxRenderer extends IWorldRenderer {
         this.skyColor = ColorElement.parseFromString(json.get("sky_color").getAsString());
         this.skyFogColor = ColorElement.parseFromString(json.get("sky_fog_color").getAsString());
     }
-
-
 }

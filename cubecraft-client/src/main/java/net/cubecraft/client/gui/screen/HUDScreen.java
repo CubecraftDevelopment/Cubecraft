@@ -15,7 +15,7 @@ import net.cubecraft.SharedObjects;
 import net.cubecraft.client.ClientContext;
 import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.client.gui.base.DisplayScreenInfo;
-import net.cubecraft.client.internal.handler.PlayerController;
+import net.cubecraft.client.internal.PlayerController;
 import net.cubecraft.client.registry.ResourceRegistry;
 import net.cubecraft.client.render.item.ItemRenderer;
 import net.cubecraft.client.util.IMBlocker;

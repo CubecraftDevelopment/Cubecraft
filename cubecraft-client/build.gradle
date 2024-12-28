@@ -52,6 +52,10 @@ dependencies {
     implementation projectLocal("fcommon-1.0.5")
 }
 
+task HotSwap_Resources(type: Copy) {
+    from 'src/main/resources'    // 源目录
+    into 'out/production/resources'    // 目标目录
+}
 
 jar {
     archivesBaseName = 'cubecraft-client'

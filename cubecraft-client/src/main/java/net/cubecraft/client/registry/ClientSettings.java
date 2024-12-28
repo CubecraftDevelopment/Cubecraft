@@ -1,8 +1,8 @@
 package net.cubecraft.client.registry;
 
 import net.cubecraft.client.CubecraftClient;
-import net.cubecraft.client.control.InputCommand;
-import net.cubecraft.client.control.InputSettingItem;
+import net.cubecraft.client.util.control.InputCommand;
+import net.cubecraft.client.util.control.InputSettingItem;
 import net.cubecraft.util.setting.GameSetting;
 import net.cubecraft.util.setting.Settings;
 import net.cubecraft.util.setting.item.BoolSetting;
@@ -62,7 +62,7 @@ public interface ClientSettings {
         InputSettingItem SWITCH_VIEW = new InputSettingItem("*:camera", "switch-view", InputCommand.KEY_F5);
         InputSettingItem CAMERA_ZOOM = new InputSettingItem("*:camera", "zoom", InputCommand.KEY_C);
         IntSetting CAMERA_ZOOM_VALUE = new IntSetting("*:camera", "zoom-scale", -50);
-        IntSetting CAMERA_ZOOM_TRANSITION = new IntSetting("*:camera", "zoom-transition", 150);
+        IntSetting CAMERA_ZOOM_TRANSITION = new IntSetting("*:camera", "zoom-transition", 90);
     }
 
     @Settings("render")
@@ -132,7 +132,7 @@ public interface ClientSettings {
                 return 0.5f;
             }
 
-            if (width < 1100 || height < 600) {
+            if (width < 800 || height < 450) {
                 return 0.75f;
             }
 

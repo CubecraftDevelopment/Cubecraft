@@ -4,6 +4,7 @@ import net.cubecraft.client.CubecraftClient;
 import net.cubecraft.level.Level;
 import net.cubecraft.world.World;
 
+@Deprecated
 public abstract class ClientContext {
     protected final CubecraftClient client;
 

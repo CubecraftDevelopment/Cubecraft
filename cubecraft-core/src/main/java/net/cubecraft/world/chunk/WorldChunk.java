@@ -2,11 +2,13 @@ package net.cubecraft.world.chunk;
 
 import me.gb2022.commons.threading.ThreadLock;
 import net.cubecraft.event.BlockIDChangedEvent;
+import net.cubecraft.event.world.BlockBreakEvent;
 import net.cubecraft.world.World;
 import net.cubecraft.world.block.access.BlockAccess;
 import net.cubecraft.world.block.access.ChunkBlockAccess;
 import net.cubecraft.world.block.access.IBlockAccess;
 import net.cubecraft.world.block.access.NonLoadedBlockAccess;
+import net.cubecraft.world.block.blocks.Blocks;
 import net.cubecraft.world.chunk.pos.ChunkPos;
 import net.cubecraft.world.chunk.task.ChunkLoadTaskType;
 import net.cubecraft.world.chunk.task.ChunkLoadTicket;
@@ -117,6 +119,10 @@ public final class WorldChunk extends Chunk {
 
         var wx = ChunkPos.toWorld(this.x, x);
         var wz = ChunkPos.toWorld(this.z, z);
+
+        if (id == Blocks.AIR.getId()) {
+            this.world.getEventBus().callEvent(new BlockBreakEvent(this.world.getLevel(), this.world, wx, y, wz, prev));
+        }
 
         this.world.getEventBus().callEvent(new BlockIDChangedEvent(this.world, wx, y, wz, prev, id));
         for (BlockAccess blockAccess : this.world.getBlockNeighbor(wx, y, wz)) {

@@ -45,11 +45,11 @@ public interface ResourceRegistry {
 
     @Load("client:startup")
     @FieldRegistry("text_font")
-    FontAsset TEXT_FONT = new FontAsset("cubecraft:/source.otf");
+    FontAsset TEXT_FONT = new FontAsset("cubecraft:/MiSans-Medium.ttf");
 
     @Load("client:startup")
     @FieldRegistry("icon_font")
-    FontAsset ICON_FONT = new FontAsset("cubecraft:/icon.ttf");
+    FontAsset ICON_FONT = new FontAsset("cubecraft:/FontAwesome6_Free_Solid_900.otf");
 
     //hud
     @FieldRegistry("action_bar_texture")
